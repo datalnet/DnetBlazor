@@ -1,0 +1,125 @@
+﻿@page "/Tree"
+
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.Tree
+@using Dnet.Blazor.Components.Checkbox
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+		<span class="dnet-m-r-10  dnet-app-comp-name">Tree View</span>
+	</div>
+	<div class="dnet-m-l-30 dnet-m-t-30">
+		<div style="display: flex; align-items: center; margin-bottom: 20px;">
+			<DnetInputCheckbox Value ="@_isExpanded" ValueChanged ="Expand" ValueExpression="() => _isExpanded" class="dnet-m-r-5">Toggle Expand</DnetInputCheckbox>
+		</div>
+		<DnetTree TNode="Food"
+				  Nodes="_treeData"
+				  DisplayValueConverter="(value) => value.Name"
+				  ChildNodes="(value) => value.Children"
+				  CheckboxSelection="true"
+				  OnTreeNodeClicked="TreeNodeClicked"
+				  OnCheckboxClicked="CheckboxClicked"
+				  OnSelectionChange="SelectionChange"
+				  @ref="_dnettree">
+			<NodeContent><span>@context.Name</span></NodeContent>
+		</DnetTree>
+	</div>
+</div>
+
+
+@code {
+
+	private List<Food> _treeData = new List<Food>();
+
+	private DnetTree<Food> _dnettree;
+
+	private bool _isExpanded { get; set; }
+
+	protected override void OnInitialized()
+	{
+		_isExpanded = false;
+		_treeData = GetTreeData();
+	}
+
+	private void TreeNodeClicked(Food food)
+	{
+		var clickedFood = food;
+	}
+
+	private void CheckboxClicked(Food food)
+	{
+		var clickedFood = food;
+	}
+
+	private void SelectionChange(List<Food> foods)
+	{
+		var selectedFoods = foods;
+	}
+
+	private void Expand()
+	{
+		_isExpanded = !_isExpanded;
+		_dnettree.Expand(_isExpanded);
+	}
+
+	private List<Food> GetTreeData()
+	{
+		var treeData = new List<Food>
+		{
+			new Food {
+				Name = "Fruit",
+				Children = new List<Food> {
+							new Food {
+								Name = "Apple",
+							},
+							new Food {
+								Name = "Banana",
+							},
+							new Food {
+								Name = "Fruit loops",
+							},
+				}
+			},
+			new Food {
+				Name = "Vegetables",
+				Children = new List<Food> {
+								new Food {
+									Name = "Green",
+									Children = new List<Food> {
+													new Food {
+														Name = "Broccoli",
+													},
+													new Food {
+														Name = "Brussels sprouts",
+													}
+											}
+							},
+							new Food {
+								Name = "Orange",
+								Children = new List<Food> {
+												new Food {
+													Name = "Pumpkins",
+												},
+												new Food {
+													Name = "Carrots",
+												}
+											}
+
+							}
+							},
+			}
+		};
+
+		return treeData;
+	}
+
+	public class Food
+	{
+		public string Name { get; set; }
+		public List<Food> Children { get; set; }
+	}
+}
+
+
+

@@ -1,0 +1,30 @@
+.dnet-desktop-header {
+    background-color: var(--dnet-dash-header-background);
+    height: var(--dnet-dash-navbar-height);
+    margin: 0 0 0 calc(var(--dnet-dash-asideWidth) * -1);
+    z-index: 101;
+    border-bottom: var(--dnet-dash-header-border);
+}
+
+.minified {
+    .dnet-desktop-header {
+        margin: 0 0 0 calc(var(--dnet-dash-navbar-height) * -1);
+    }
+}
+
+.hidden-header .dnet-desktop-header {
+    display: none;
+}
+
+.hidden-left-column .dnet-desktop-header {
+    margin: 0;
+}
+
+.fixed-header {
+    .dnet-desktop-header {
+        position: sticky;
+        position: -webkit-sticky;
+        width: calc(100vw - 0vw);
+        top: 0px;
+    }
+}

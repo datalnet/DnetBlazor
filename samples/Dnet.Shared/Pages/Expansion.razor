@@ -1,0 +1,65 @@
+﻿@page "/Expansion"
+@using Dnet.Blazor.Components.Checkbox
+@using Dnet.Blazor.Components.ExpansionPanel
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+		<span class="dnet-m-r-10 dnet-app-comp-name">Expansion Panel</span>
+	</div>
+	<div class="dnet-m-l-30 dnet-m-t-30">
+		<div class="row" style="height: calc(100% - 10px)">
+			<div class="col-6" style="height: calc(100% - 0px); margin-bottom: 30px">
+				<div class="dnet-m-b-15" style="display:flex;align-items:center;justify-content:flex-start">
+					<span style="font-size:14px;">Expansion Panel:</span>
+				</div>
+				<div style="height: calc(100% - 0px); width: 700px; background-color: #FFFFFF">
+					<div style="display: flex; align-items: center; margin-bottom: 20px;">
+						<DnetInputCheckbox Value ="@_isExpanded" ValueChanged ="Expand" ValueExpression="() => _isExpanded" class="dnet-m-r-5">Toggle Expand</DnetInputCheckbox>
+					</div>
+					<DnetExpansionPanel @ref="_dnetExpansionPanel"
+										OnExpandedChanged="ExpandedChanged"
+										ExpansionPanelDisplayMode="@(ExpansionPanelDisplayMode.Spacing)">
+						<DnetExpansionPanelItem Title="ExpansionPanel 1" Description="Description for ExpansionPanel 1">
+							<span>Expansion Panel Content 1</span>
+						</DnetExpansionPanelItem>
+						<DnetExpansionPanelItem Title="ExpansionPanel 2" Description="Description for ExpansionPanel 2">
+							<span>Expansion Panel Content 2</span>
+						</DnetExpansionPanelItem>
+						<DnetExpansionPanelItem Title="ExpansionPanel 3" Description="Description for ExpansionPanel 3">
+							<span>Expansion Panel Content 3</span>
+						</DnetExpansionPanelItem>
+						<DnetExpansionPanelItem Title="ExpansionPanel 4" Description="Description for ExpansionPanel 4">
+							<span>Expansion Panel Content 4</span>
+						</DnetExpansionPanelItem>
+					</DnetExpansionPanel>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@code {
+
+	private int _selectedId;
+
+	private int _previousSelectedId;
+
+	private DnetExpansionPanel _dnetExpansionPanel;
+
+	private bool _isExpanded { get; set; }
+
+	public void ExpandedChanged(DnetExpansionPanelItem expansionPanelItem)
+	{
+		var panel = expansionPanelItem;
+	}
+
+	private void Expand()
+	{
+		_isExpanded = !_isExpanded;
+		_dnetExpansionPanel.ExpandAll(_isExpanded);
+	}
+}
+
+
+

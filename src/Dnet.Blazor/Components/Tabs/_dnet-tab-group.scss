@@ -1,0 +1,77 @@
+﻿@import '_dnet-tab-common.scss';
+
+$mat-xsmall: 'max-width: 599px';
+$mat-small: 'max-width: 959px';
+
+@mixin mat-fill {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+}
+
+.mat-tab-group {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    &.mat-tab-group-inverted-header {
+        flex-direction: column-reverse;
+    }
+}
+
+// Wraps each tab label
+.mat-tab-label {
+    @include tab-label;
+    position: relative;
+}
+
+@media ($mat-xsmall) {
+    .mat-tab-label {
+        padding: 0 12px;
+    }
+}
+
+@media ($mat-small) {
+    .mat-tab-label {
+        padding: 0 12px;
+    }
+}
+
+// Note that we only want to target direct descendant tabs.
+.mat-tab-group[mat-stretch-tabs] > .mat-tab-header .mat-tab-label {
+    flex-basis: 0;
+    flex-grow: 1;
+}
+
+// The bottom section of the view; contains the tab bodies
+.mat-tab-body-wrapper {
+    @include _noop-animation();
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    transition: height $mat-tab-animation-duration $ease-in-out-curve-function;
+    height: 100%;
+}
+
+// Wraps each tab body
+.mat-tab-body {
+    @include mat-fill;
+    display: block;
+    overflow: hidden;
+    // Fix for auto content wrapping in IE11
+    flex-basis: 100%;
+
+    &.mat-tab-body-active {
+        position: relative;
+        overflow-x: hidden;
+        overflow-y: auto;
+        z-index: 1;
+        flex-grow: 1;
+    }
+
+    .mat-tab-group.mat-tab-group-dynamic-height &.mat-tab-body-active {
+        overflow-y: hidden;
+    }
+}

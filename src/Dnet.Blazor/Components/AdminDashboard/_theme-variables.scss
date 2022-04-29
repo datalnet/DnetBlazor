@@ -1,0 +1,62 @@
+:root {
+    --dnet-dash-font-family-text: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --dnet-dash-font-family-Headline: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --dnet-dash-primary-reset: rgb(66, 176, 213);
+    --dnet-dash-primary-dark: rgb(0, 36, 61);
+    --dnet-dash-primary-light: #ffb2ff;
+    --dnet-dash-secondary-reset: rgb(0, 36, 61);
+    --dnet-dash-secondary-dark: #c25123;
+    --dnet-dash-secondary-light: #ffb17d;
+    --dnet-dash-black: #000;
+    --dnet-dash-red: #d6b7be;
+    --dnet-dash-white: #ffffff;
+    --dnet-dash-navigation-color: #000000;
+    /*--gray-dark: lighten(var(--dnet-dash-black), 20%); // #333*/
+    --dnet-dash-gray-dark: lighten(#000, 20%); // #333
+    --dnet-dash-base-url: "/blazor-admin-dashboard/img";
+    --dnet-dash-body-bg: #fff;
+    //** Global textual link color.
+    --dnet-dash-link-color: var(--dnet-dash-primary-dark);
+    /*--link-hover-color: darken(var(--dnet-dash-link-color), 15%);*/
+    --dnet-dash-link-hover-color: darken(rgb(0, 36, 61), 15%);
+    --dnet-dash-html-background-color: white;
+    --dnet-dash-body-background-color: #F7F7F7;
+    --dnet-dash-font-rem-reference: 16px;
+    --dnet-dash-default-font-color: #5f6368;
+    //== HEADER
+    //
+    //##
+    --dnet-dash-header-background: #FAFAFA;
+    --dnet-dash-navbar-height: 50px;
+    --dnet-dash-navbar-color: var(--dnet-dash-primary-reset);
+    --dnet-dash-header-border: 0px solid #ebebeb;
+    //== ASIDE WIDTH (NAVIGATION WIDTH & COLOR)
+    //
+    //##
+    --dnet-dash-asideWidth-minified: 60px;
+    --dnet-dash-asideWidth: 250px;
+    --dnet-dash-asideDataURL: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgPHN0b3Agb2Zmc2V0PSI5NyUiIHN0b3AtY29sb3I9IiMzYTM2MzMiIHN0b3Atb3BhY2l0eT0iMSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMmEyNzI1IiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==";
+    /*--dnet-dash-asideColor: var(--dnet-dash-primary-reset);*/
+    --dnet-dash-asideColor: #F5F5F5;
+    --dnet-dash-asideLinkColor: #FFFFFF;
+    --dnet-dash-minifymeBg: var(--dnet-dash-primary-dark);
+    --dnet-dash-minifymeColor: #38455b;
+    --dnet-dash-floating-menu-left: 3.4rem;
+    --dnet-dash-menu-text-size: var(--dnet-component-sm-font-size);
+    --dnet-dash-menu-border: 1px;
+    --dnet-dash-menu-left-padding-firts-level: 1.6em;
+    --dnet-dash-menu-left-padding-second-level: 4.6em;
+    --dnet-dash-menu-left-padding-third-level: 7.6em;
+    --dnet-dash-menu-left-padding-firts-level-has-image: 0.6em;
+    //== FOOTER
+    //
+    //##
+    --dnet-dash-footer-height: 50px;
+    --dnet-dash-footer-background: #FFFFFF;
+    /***
+        Scrollbars
+    ***/
+    --dnet-dash-scrollbar-size: .4rem;
+    --dnet-dash-scrollbar-foreground-color: lighten(rgb(66, 176, 213), 20%);
+    --dnet-dash-scrollbar-background-color: rgba(0, 0, 0, 0);
+}

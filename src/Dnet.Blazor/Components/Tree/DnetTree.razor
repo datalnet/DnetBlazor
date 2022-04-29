@@ -1,0 +1,125 @@
+@using Microsoft.AspNetCore.Components.Web
+
+@typeparam TNode
+
+<CascadingValue Value="@this" IsFixed="true">
+	<div class="dnet-desktop-navigation-menu">
+		<ul>
+			@foreach (var treeNodeModel in _treeNodeModels)
+			{
+				<DnetTreeNode Node="@treeNodeModel"
+						  DisplayValueConverter="DisplayValueConverter"
+						  ChildNodes="ChildNodes"
+						  CheckboxSelection="CheckboxSelection"
+						  OnTreeNodeClicked="OnTreeNodeClicked"
+						  OnCheckboxClicked="OnCheckboxClicked"
+						  OnSelectionChange="OnSelectionChange"
+						  NodeContent="NodeContent">
+				</DnetTreeNode>
+			}
+		</ul>
+	</div>
+</CascadingValue>
+
+@code {
+
+	[Parameter]
+	public RenderFragment<TNode> NodeContent { get; set; }
+
+	[Parameter]
+	public EventCallback<TNode> OnTreeNodeClicked { get; set; }
+
+	[Parameter]
+	public EventCallback<TNode> OnCheckboxClicked { get; set; }
+
+	[Parameter]
+	public EventCallback<List<TNode>> OnSelectionChange { get; set; }
+
+	[Parameter]
+	public ICollection<TNode> Nodes { get; set; }
+
+	[Parameter]
+	public Func<TNode, string> DisplayValueConverter { get; set; }
+
+	[Parameter]
+	public Func<TNode, List<TNode>> ChildNodes { get; set; }
+
+	[Parameter]
+	public Type ComponentType { get; set; }
+
+	[Parameter]
+	public IDictionary<string, object> Parameters { get; set; }
+
+	[Parameter]
+	public bool CheckboxSelection { get; set; }
+
+	private long _nextId { get; set; } = -1;
+
+	internal List<TreeNodeModel<TNode>> _treeNodeModels { get; set; }
+
+	internal TreeNodeModel<TNode> _selectedNode { get; set; }
+
+
+	protected override void OnInitialized()
+	{
+		var treeNodeModel = new TreeNodeModel<TNode>
+			{
+				RowNodeId = GetId(),
+				Show = true,
+				Children = new List<TreeNodeModel<TNode>>()
+			};
+
+		_treeNodeModels = TrasverseTreeNodes(treeNodeModel, Nodes).Children;
+
+		_selectedNode = new TreeNodeModel<TNode>();
+
+		Nodes = new List<TNode>();
+	}
+
+	private TreeNodeModel<TNode> TrasverseTreeNodes(TreeNodeModel<TNode> treeNodeModel, ICollection<TNode> nodes)
+	{
+		foreach (var node in nodes)
+		{
+			var nodeModel = new TreeNodeModel<TNode>
+				{
+					RowNodeId = GetId(),
+					TreeNodeData = node,
+					Show = true,
+					Children = new List<TreeNodeModel<TNode>>()
+				};
+
+			if (ChildNodes(node) != null && ChildNodes(node).Count > 0)
+			{
+				TrasverseTreeNodes(nodeModel, ChildNodes(node));
+			}
+
+			treeNodeModel.Children.Add(nodeModel);
+		}
+
+		return treeNodeModel;
+	}
+
+	private long GetId()
+	{
+		_nextId++;
+		return _nextId;
+	}
+
+	public void Expand(bool expand)
+	{
+		ToggleExpand(_treeNodeModels, expand);
+	}
+
+	private void ToggleExpand(List<TreeNodeModel<TNode>> nodes, bool expand)
+	{
+		foreach (var node in nodes)
+		{
+			node.ExpandNode(expand);
+
+			if (node.Children != null && node.Children.Count > 0)
+			{
+				ToggleExpand(node.Children, expand);
+			}
+		}
+	}
+}

@@ -1,0 +1,154 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Drawing
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.Button
+@using Dnet.Blazor.Components.Dialog.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Dialog.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Components.Toast.Infrastructure.Enums
+@using Dnet.Blazor.Components.Toast.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Toast.Infrastructure.Models
+@using Dnet.Blazor.Components.Autocomplete
+@using Dnet.Blazor.Components.DatePicker.Infrastructure.Models
+@using Dnet.Blazor.Components.DatePicker
+
+@inject IToastService ToastService
+@inject IDialogService DialogService
+
+@implements IDisposable
+
+<div class="" style="display:flex;flex-direction: column;justify-content:space-between; height: calc(100% - 0px); width: 100%;">
+    <div class="dnet-panel-header" style="height: 50px">
+        <div style="display: flex;align-items: center;height: 100%">
+            <span style="font-size: 0.875rem;font-weight: 700">Edit user profile</span>
+        </div>
+    </div>
+    <div class="dnet-panel-content" style="flex: 1 0 calc(100% - 100px); overflow:scroll">
+        <div style="width: 350px">
+            <FormFieldTest Person="@_person"></FormFieldTest>
+        </div>
+    </div>
+    <div class="dnet-panel-footer" style="height: 50px;display: flex;align-items: center;justify-content: flex-end;">
+        <DnetButton OnClick="CancelOverlay" class="dnet-m-r-10">Close</DnetButton>
+        <DnetButton OnClick="ShowDialog" class="dnet-m-r-10">Show Dialog</DnetButton>
+        <DnetButton OnClick="ShowToast" class="dnet-m-r-10">Show Toast</DnetButton>
+        <DnetButton OnClick="CloseOverlay" InitialFocus="true" class="dnet-m-r-10">Ok</DnetButton>
+    </div>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private int OverlayReferenceId { get; set; }
+
+    [Parameter]
+    public Person Person { get; set; }
+
+    [Parameter]
+    public int SecuenceNumber { get; set; }
+
+    Person _person = new Person();
+
+    string _dialogData;
+
+    private OverlayReference _dialogReference;
+
+
+    protected override void OnInitialized()
+    {
+        _person = Person;
+    }
+
+    void CloseOverlay()
+    {
+        var dataResult = new OverlayResult()
+            {
+                CloseReason = CloseReason.Ok,
+                ComponentData = $"Overlay ReferenceId => {OverlayReferenceId}",
+                OverlayReferenceId = OverlayReferenceId
+            };
+
+        DialogService.Close(dataResult);
+    }
+
+    void CancelOverlay()
+    {
+        var dataResult = new OverlayResult()
+            {
+                CloseReason = CloseReason.Cancel,
+                ComponentData = null,
+                OverlayReferenceId = OverlayReferenceId
+            };
+
+        DialogService.Close(dataResult);
+    }
+
+    void ShowDialog()
+    {
+        SecuenceNumber++;
+
+        var dialogConfig = new DialogConfig()
+            {
+                Title = "Editor de imagenes",
+                HasBackdrop = true,
+                HasTransparentBackdrop = false,
+                Width = $"{600 + 30*SecuenceNumber}px",
+                Height = $"{400 + 30*SecuenceNumber}px"
+            };
+
+        var person = new Person()
+            {
+                Name = "Adrian",
+                LastName = "Mustelier"
+            };
+
+        var parameters = new Dictionary<string, object>();
+
+        parameters.Add("Person", person);
+        parameters.Add("SecuenceNumber", SecuenceNumber);
+
+        _dialogReference = DialogService.Open(typeof(DialogTestContent), parameters, dialogConfig);
+
+        _dialogReference.Close += CloseDialog;
+    }
+
+    void ShowToast()
+    {
+        var text = !string.IsNullOrEmpty(_dialogData) ? $"Dialog Ok result: {_dialogData}" : "Data save in 10 seconds";
+
+        var toastConfig = new ToastConfig
+            {
+                Title = "Toast title 12:",
+                Text = text,
+                HasBackdrop = false,
+                HasTransparentBackdrop = false,
+                ToastType = !string.IsNullOrEmpty(_dialogData) ? ToastType.Success : ToastType.Information,
+                ToastPostion = ToastPostion.BottomRight,
+                ExcutionTime = 5,
+                ShowExcutionTime = false,
+                Height = 80
+            };
+
+        ToastService.Show(toastConfig);
+    }
+
+    void CloseDialog(OverlayResult overlayDataResult)
+    {
+        _dialogData = overlayDataResult.CloseReason == CloseReason.Ok ? overlayDataResult.ComponentData.ToString() : "";
+
+        ShowToast();
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        if (_dialogReference != null)
+        {
+            _dialogReference.Close -= CloseDialog;
+        }
+    }
+
+}

@@ -1,0 +1,25 @@
+﻿@use 'palette';
+@use 'theming';
+@use 'typography';
+
+@use 'form-field';
+@use 'form-field-fill';
+@use 'form-field-input';
+@use 'form-field-outline';
+@use 'form-field-standard';
+@use 'form-field-legacy';
+@use '_form-field-theme';
+
+
+$primary: theming.define-palette(palette.$indigo-palette);
+$accent: theming.define-palette(palette.$pink-palette, A200, A100, A400);
+$typography-config: typography.define-typography-config();
+
+$theme: theming.define-light-theme(( color: ( primary: $primary, accent: $accent )));
+@include form-field-theme.theme($theme);
+
+$theme: theming.define-light-theme((density: -1));
+@include form-field-theme.theme($theme);
+
+$theme: theming.define-light-theme((typography: $typography-config));
+@include form-field-theme.theme($theme);

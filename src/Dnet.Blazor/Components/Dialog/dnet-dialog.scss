@@ -1,0 +1,106 @@
+:root {
+    --dnet-dialog-padding-top-bottom: 10px;
+    --dnet-dialog-padding-left-right: 24px;
+    --dnet-dialog-border-radius: 0px;
+    --dnet-dialog-max-height: 100%;
+    --dnet-dialog-button-margin: 8px;
+    --dnet-dialog-header-margin-bottom: 15px;
+    --dnet-dialog-title-font-size: 1.25rem;
+    --dnet-dialog-height-compensation: 4px;
+}
+
+.dnet-dialog-container {
+    display: block;
+    padding: var(--dnet-dialog-padding-top-bottom) var(--dnet-dialog-padding-left-right);
+    border-radius: var(--dnet-dialog-border-radius);
+    box-sizing: border-box;
+    overflow: auto;
+    outline: 0;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.dnet-dialog-container {
+    box-shadow: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12);
+    background: #fff;
+    color: rgba(0,0,0,.87);
+}
+
+.dnet-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--dnet-dialog-header-margin-bottom);
+
+    h1 {
+        margin: 0;
+    }
+}
+
+.dnet-dialog-title {
+    display: block;
+    letter-spacing: normal;
+    font-weight: 500;
+    font-size: var(--dnet-dialog-title-font-size);
+    color: rgba(0,0,0,.87);
+}
+
+.dnet-dialog-content {
+    display: block;
+    margin: 0 calc(var(--dnet-dialog-padding) * -1);
+    padding: 0 var(--dnet-dialog-padding);
+    max-height: var(--dnet-dialog-max-height);
+    overflow: auto;
+    height: calc(100% - var(--dnet-dialog-title-font-size) - var(--dnet-dialog-header-margin-bottom) - var(--dnet-dialog-height-compensation));
+    -webkit-overflow-scrolling: touch;
+}
+
+.dnet-dialog-actions {
+    /*padding: 8px 0;*/
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 52px;
+    align-items: flex-end;
+    margin-bottom: calc(var(--dnet-dialog-padding) * -1);
+
+    &[align='end'] {
+        justify-content: flex-end;
+    }
+
+    &[align='center'] {
+        justify-content: center;
+    }
+
+    .dnet-button-base + .dnet-button-base,
+    .dnet-mdc-button-base + .dnet-mdc-button-base {
+        margin-left: var(--dnet-dialog-button-margin);
+
+        [dir='rtl'] & {
+            margin-left: 0;
+            margin-right: var(--dnet-dialog-button-margin);
+        }
+    }
+}
+
+.dnet-dialog-icon-wrapper {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dnet-dialog-icon {
+    display: block;
+    background-repeat: no-repeat;
+    background-size: 24px 24px;
+    height: 24px;
+    width: 24px;
+    cursor: pointer;
+    color: #5f6368;
+}
+
+.dnet-dialog-close-icon {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M12 11.291l5.646-5.646.708.707-5.647 5.646 5.647 5.647-.707.707L12 12.705l-5.646 5.647-.708-.707 5.647-5.647-5.647-5.646.708-.707L12 11.29z'/></svg>");
+}
+

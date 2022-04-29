@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Authors>Adrian Mustelier Camino</Authors>
+		<Company>Datalnet</Company>
+		<Product>Datalnet Blazor Components</Product>
+		<Description>Set of Components for Blazor Framework</Description>
+		<Copyright>Datalnet</Copyright>
+		<PackageTags>Blazor-Components-Datalnet</PackageTags>
+		<PackageVersion>1.2.5</PackageVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.4" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="wwwroot\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+</Project>

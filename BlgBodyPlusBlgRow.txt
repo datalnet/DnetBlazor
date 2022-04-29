@@ -1,0 +1,439 @@
+@using Dnet.Blazor.Components.Grid.Infrastructure.Entities
+@using Dnet.Blazor.Components.Grid.Infrastructure.Enums
+@using Dnet.Blazor.Components.Grid.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Grid.Infrastructure.Models
+@using Dnet.Blazor.Components.Grid.Infrastructure.Services
+@using Dnet.Blazor.Components.Grid.BlgRow
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Rendering
+@using System.Globalization
+
+@implements IDisposable
+
+@typeparam TItem
+
+@inject IBlGridMessageService<List<RowNode<TItem>>> BlGridMessageService
+
+    @RenderRows
+
+@code {
+    [Parameter]
+    public EventCallback<long> OnChangeExpanded { get; set; }
+
+    //In Events OnCellClicked, OnRowClicked, OnRowDoubleClicked, OnSelectionChanged T should be
+    //the generic form of RowNode, GridColumn etc. See implementation in BlGrid
+    //It is a Bug in Blazor https://github.com/dotnet/aspnetcore/issues/17480
+    [Parameter]
+    public EventCallback<CellClikedEventData> OnCellClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<long> OnRowClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<long> OnRowDoubleClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<List<long>> OnSelectionChanged { get; set; }
+
+    [Parameter]
+    public List<RowNode<TItem>> RowNodes { get; set; }
+
+    [Parameter]
+    public List<GridColumn<TItem>> GridColumns { get; set; }
+
+    [Parameter]
+    public GridColumn<TItem> GroupGridColumn { get; set; }
+
+    [Parameter]
+    public GridOptions<TItem> GridOptions { get; set; }
+
+    [Parameter]
+    public GridApi<TItem> GridApi { get; set; }
+
+    [Parameter]
+    public bool HasGrouping { get; set; }
+
+    [Parameter]
+    public BlGridMessageEmitter ComponentName { get; set; }
+
+    [Parameter]
+    public Pinned Pinned { get; set; }
+
+    [Parameter]
+    public bool CheckboxSelectionPinned { get; set; }
+
+    public int RowId { get; set; }
+
+    private List<RowNode<TItem>> _selectedRowNodes;
+
+    private RowNode<TItem> _previousSelectedRowNode;
+
+    private bool _shouldRender;
+
+    private long _hoverRowId { get; set; } = -1;
+
+    protected override bool ShouldRender() => _shouldRender;
+
+
+    protected override void OnInitialized()
+    {
+        RowId = 0;
+
+        _selectedRowNodes = new List<RowNode<TItem>>();
+
+        (BlGridMessageService).OnMessage += MessageReceived;
+    }
+
+    protected override void OnAfterRender(bool first)
+    {
+        _shouldRender = false;
+    }
+
+    public void ActiveRender()
+    {
+        _shouldRender = true;
+    }
+
+    private void ManageSelections(long rowNodeId)
+    {
+        var rowNode = RowNodes.FirstOrDefault(p => p.RowNodeId == rowNodeId);
+
+        if (rowNode == null) return;
+
+        if (GridOptions.RowMultiSelectWithClick)
+        {
+            if (rowNode.IsSelected())
+            {
+                _selectedRowNodes.Add(rowNode);
+            }
+            else
+            {
+                _selectedRowNodes.Remove(rowNode);
+            }
+        }
+        else
+        {
+            if (_previousSelectedRowNode != null)
+            {
+                _selectedRowNodes.Remove(_previousSelectedRowNode);
+                _previousSelectedRowNode.SelectThisNode(false);
+            }
+
+            _selectedRowNodes.Add(rowNode);
+
+            _previousSelectedRowNode = rowNode;
+        }
+    }
+
+    private void RenderRows(RenderTreeBuilder builder)
+    {
+        var rowIndex = 0;
+
+        foreach (var item in RowNodes)
+        {
+            RenderRow(builder, rowIndex++, item);
+        }
+    }
+
+    private void RenderRow(RenderTreeBuilder __builder, int rowIndex, RowNode<TItem> rowNode)
+    {
+        var _rowCssClasses = GetRowCssClasses(rowNode, RowId);
+
+        @if (GridOptions.CheckboxSelectionColumn && CheckboxSelectionPinned)
+        {
+            <div class="blg-cell blg-cell-value @_rowCssClasses @((rowNode.RowNodeId == _hoverRowId) ? "blg-hover-class" : null)"
+         id="@($"Row{rowNode.RowNodeId}Cell0")"
+         style="flex:0 0 auto; width: 40px; height: 40px; grid-column: 1/1">
+                <input type="checkbox" checked="@rowNode.IsSelected()" @onchange="() => CheckboxClicked(rowNode)" class="blg-checkbox-no-label">
+            </div>
+        }
+
+        @if (!rowNode.IsGroup)
+        {
+            @if (HasGrouping && GridColumns.Any() && Pinned == Pinned.None)
+            {
+                var width = GroupGridColumn.Width + "px";
+                var height = GroupGridColumn.Height + "px";
+
+                <div class="blg-cell blg-cell-value @_rowCssClasses @(rowNode.RowNodeId == _hoverRowId ? "blg-hover-class" : null)"
+         style="height: @height; width: @width;">
+                </div>
+            }
+
+            var cellId = 0;
+
+            uint spanColumnBy = 0;
+
+            var gridColumns = GridColumns.FindAll(p => !p.Hide);
+
+            @for (var i = 0; i < gridColumns.Count; ++i)
+            {
+                var cell = gridColumns[i];
+
+                if (!rowNode.First && rowNode.RowSpanSkippedCells.ContainsKey(cell) && rowNode.RowSpanSkippedCells[cell])
+                    continue;
+
+                if (spanColumnBy > 0)
+                {
+                    spanColumnBy--;
+                    continue;
+                }
+
+                var cellParams = new CellParams<TItem>
+                    {
+                        RowData = rowNode.RowData,
+                        GridColumn = cell,
+                        GridApi = GridApi,
+                        RowNode = rowNode
+                    };
+
+                var cellStyle = GetCellStyles(cellParams, cell);
+
+                var columnSpanFn = cell.ColumnSpanFn ?? (val => 1);
+
+                spanColumnBy = columnSpanFn(cellParams) - 1;
+
+                var spanRowBy = cell.RowSpanFn?.Invoke(cellParams) ?? 1;
+
+                var data = cell.CellDataFn(cellParams);
+
+                @* if (RowNode.RowSpanTargetCells.ContainsKey(cell))
+                    spanRowBy = Math.Max(spanRowBy, RowNode.RowSpanTargetCells[cell]);*@
+
+                if (rowNode.First && rowNode.RowSpanSkippedCells.ContainsKey(cell) && rowNode.RowSpanSkippedCells[cell])
+                {
+                    spanRowBy = rowNode.FirstSpanRow[cell];
+                }
+
+                cellId++;
+
+                <div class="blg-cell blg-cell-value @_rowCssClasses @(rowNode.RowNodeId == _hoverRowId && cell.RowSpanFn == null ? "blg-hover-class" : null)"
+     role="gridcell"
+     id="@($"Row{rowNode.RowNodeId}Cell{cellId}")"
+     style="justify-content: @cell.AlingContent; grid-column-end: span @Math.Min(@columnSpanFn(cellParams), gridColumns.Count - i);grid-row-end: span @spanRowBy; @cellStyle"
+     title="@data"
+         @onmouseover="() => MouseOver(rowNode)"
+         @onmouseout="MouseOut"
+         @onclick="() => CellClicked(rowNode, cell)"
+         @ondblclick="() => RowDoubleClicked(rowNode, cell)"
+         @onclick:preventDefault="true">
+
+                    @if (cell.CellTemplateFn != null && cell.CellTemplate == null)
+                    {
+                        @cell.CellTemplateFn(cellParams)
+                    }
+                    else if (cell.CellTemplate != null && typeof(ComponentBase).IsAssignableFrom(cell.CellTemplate))
+                    {
+                        @CreateCellTemplateComponent(cellParams, cell.CellTemplate)
+                    }
+                    else
+                    {
+                        if (cell.CellDataFn != null)
+                        {
+                            var cellTExtStyle = cell.WrapCellText ? "white-space: normal;" : "overflow: hidden;text-overflow: ellipsis;";
+
+                            <span style="@cellTExtStyle">@data</span>
+                        }
+                        else
+                        {
+                            <span></span>
+                        }
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            @if (HasGrouping && GridColumns.Any() && Pinned == Pinned.None)
+            {
+                var width = GroupGridColumn.Width + "px";
+                var height = GroupGridColumn.Height + "px";
+                var paddingLeft = 30 * (rowNode.Level - 1) + "px";
+                var iconClass = rowNode.Expanded ? "blg-icon-tree-open" : "blg-icon-tree-closed";
+                var checkboxCounter = GridOptions.CheckboxSelectionColumn && CheckboxSelectionPinned ? 1 : 0;
+
+                <div class="blg-cell blg-cell-value @_rowCssClasses @(rowNode.RowNodeId == _hoverRowId ? "blg-hover-class" : null)"
+         style="height: @height; grid-column: @(1 + checkboxCounter)/@(GridColumns.Count + 2 + checkboxCounter)">
+                    <span style="padding-left: @paddingLeft; width: 100%; display: flex">
+                        <span @onclick="() => ChangeExpanded(rowNode.RowNodeId)" class="blg-icon-wrapper">
+                            <span class="blg-icon @iconClass" unselectable="on"></span>
+                        </span>
+                        <span>@rowNode.GroupValue</span>
+                    </span>
+                </div>
+            }
+            else
+            {
+                var paddingLeft = 30 * (rowNode.Level - 1) + "px";
+                var iconClass = rowNode.Expanded ? "blg-icon-tree-open" : "blg-icon-tree-closed";
+
+                foreach (var cell in GridColumns)
+                {
+                    <div class="blg-cell blg-cell-value @_rowCssClasses @(rowNode.RowNodeId == _hoverRowId ? "blg-hover-class" : null)">
+                        <span style="padding-left: @paddingLeft; width: 100%; display: flex">
+                            <span @onclick="() => ChangeExpanded(rowNode.RowNodeId)" class="blg-icon-wrapper">
+                            </span>
+                        </span>
+                    </div>
+                }
+            }
+        }
+    }
+
+    private string GetRowCssClasses(RowNode<TItem> rowNode, int rowId)
+    {
+        var cellParams = new CellParams<TItem>
+            {
+                RowData = rowNode.RowData,
+                GridApi = GridApi,
+                RowNode = rowNode
+            };
+
+        var rowClassFunc = GridOptions.RowClassFn != null ? string.Concat(GridOptions.RowClassFn(cellParams)) : "";
+
+        var classes = new CssBuilder(string.Concat(GridOptions.RowClasses))
+            .AddClass("blg-row-even ", when: rowId % 2 == 0 && GridOptions.RowAlternateColorSchema)
+            .AddClass("blg-row-odd ", when: rowId % 2 != 0 && GridOptions.RowAlternateColorSchema)
+            .AddClass(rowClassFunc)
+            .AddClass("blg-row-selected", when: rowNode.IsSelected)
+            .Build();
+
+        return classes;
+    }
+
+    private string GetCellStyles(CellParams<TItem> cellParams, GridColumn<TItem> cell)
+    {
+        var userStyle = cell.CellStyleFn != null ? string.Concat(cell.CellStyleFn(cellParams)) : "";
+
+        var styles = new StyleBuilder()
+               .AddStyle(userStyle)
+               .Build();
+
+        return Convert.ToString(styles, CultureInfo.InvariantCulture);
+    }
+
+    private RenderFragment CreateCellTemplateComponent(CellParams<TItem> cellParams, Type componeType) => builder =>
+    {
+        builder.OpenComponent(0, componeType);
+        builder.AddAttribute(1, "CellParams", cellParams);
+        builder.CloseComponent();
+    };
+
+    private void CheckboxClicked(RowNode<TItem> rowNode)
+    {
+        rowNode.SelectThisNode(!rowNode.IsSelected());
+
+        ManageSelections(rowNode.RowNodeId);
+
+        var actionMessage = new BlGridActionMessage<List<RowNode<TItem>>>
+            {
+                Emitter = ComponentName,
+                Data = _selectedRowNodes,
+                Type = 1
+            };
+
+        BlGridMessageService.SendMessage(actionMessage);
+
+        OnSelectionChanged.InvokeAsync(_selectedRowNodes.Select(p => p.RowNodeId).ToList());
+
+        _shouldRender = true;
+    }
+
+    private void RowDoubleClicked(RowNode<TItem> rowNode, GridColumn<TItem> cell)
+    {
+        OnRowDoubleClicked.InvokeAsync(rowNode.RowNodeId);
+
+        _shouldRender = true;
+    }
+
+    private void CellClicked(RowNode<TItem> rowNode, GridColumn<TItem> cell)
+    {
+        OnCellClicked.InvokeAsync(new CellClikedEventData { RowNodeId = rowNode.RowNodeId, CellId = cell.ColumnId });
+
+        RowClicked(rowNode, cell);
+    }
+
+    private void RowClicked(RowNode<TItem> rowNode, GridColumn<TItem> cell)
+    {
+        rowNode.SelectThisNode(!rowNode.IsSelected());
+
+        if (GridOptions.SuppressRowClickSelection == false)
+        {
+            ManageSelections(rowNode.RowNodeId);
+
+            var actionMessage = new BlGridActionMessage<List<RowNode<TItem>>>
+                {
+                    Emitter = ComponentName,
+                    Data = _selectedRowNodes,
+                    Type = 1
+                };
+
+            BlGridMessageService.SendMessage(actionMessage);
+
+            OnSelectionChanged.InvokeAsync(_selectedRowNodes.Select(p => p.RowNodeId).ToList());
+        }
+
+        _shouldRender = true;
+
+        OnRowClicked.InvokeAsync(rowNode.RowNodeId);
+    }
+
+    private void RowDoubleClicked(long rowNodeId)
+    {
+        OnRowDoubleClicked.InvokeAsync(rowNodeId);
+    }
+
+    private void MouseOut()
+    {
+        _hoverRowId = -1;
+        _shouldRender = true;
+    }
+
+    private void MouseOver(RowNode<TItem> rowNode)
+    {
+        _hoverRowId = rowNode.RowNodeId;
+
+        var actionMessage = new BlGridActionMessage<List<RowNode<TItem>>>
+            {
+                Emitter = ComponentName,
+                RowNodeId = rowNode.RowNodeId,
+                Type = 2
+            };
+
+        BlGridMessageService.SendMessage(actionMessage);
+
+        _shouldRender = true;
+    }
+
+    public async Task ChangeExpanded(long id)
+    {
+        await OnChangeExpanded.InvokeAsync(id);
+        _shouldRender = true;
+    }
+
+    private void MessageReceived(BlGridActionMessage<List<RowNode<TItem>>> data)
+    {
+        if (data.Emitter == ComponentName) return;
+
+        switch (data.Type)
+        {
+            case 1:
+                _shouldRender = true;
+                break;
+
+            case 2:
+                _hoverRowId = data.RowNodeId;
+                _shouldRender = true;
+                break;
+        }
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        (BlGridMessageService).OnMessage -= MessageReceived;
+    }
+}

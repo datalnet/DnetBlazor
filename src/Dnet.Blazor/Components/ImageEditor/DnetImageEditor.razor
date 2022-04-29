@@ -1,0 +1,162 @@
+﻿@using System.Globalization
+@using System.IO
+@using Dnet.Blazor.Components.Dialog.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Dialog.Infrastructure.Models
+@using Dnet.Blazor.Components.ImageEditor.Infrastructure.Enums
+@using Dnet.Blazor.Components.ImageEditor.Infrastructure.Models
+@using Dnet.Blazor.Components.ImageEditor.Infrastructure.Services
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Formats
+@using SixLabors.ImageSharp.Formats.Jpeg
+@using SixLabors.ImageSharp.Processing
+
+@implements IDisposable
+
+@inject IJSRuntime JSRuntime
+
+@inject IStyleService StyleService
+@inject IImageEditorService ImageEditorService
+@inject IDialogService DialogService
+
+@code {
+
+    [Parameter]
+    public EventCallback<MemoryStream> OnImageSelected { get; set; }
+
+    [Parameter]
+    public EventCallback OnStarLoadingImage { get; set; }
+
+    [Parameter]
+    public EventCallback OnEndLoadingImage { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public int ImageContainerHeight { get; set; } = 480;
+
+    [Parameter]
+    public int ImageContainerWidth { get; set; } = 640;
+
+    [Parameter]
+    public int ImagePreviewHeight { get; set; } = 170;
+
+    [Parameter]
+    public int ImagePreviewWidth { get; set; } = 170;
+
+    [Parameter]
+    public int ModalDialogHeight { get; set; } = 668;
+
+    [Parameter]
+    public int ModalDialogWidth { get; set; } = 1024;
+
+    [Parameter]
+    public long MaxFileSizes { get; set; }
+
+    [Parameter]
+    public List<string> AllowedFormats { get; set; }
+
+    [Parameter]
+    public List<ImageEditorControlType> ImageEditingControls { get; set; }
+
+    [Parameter]
+    public IBrowserFile ImageFile { get; set; }
+
+    private long _maxFileSizes { get; set; } = 1024 * 1024 * 15;
+
+    private OverlayReference _dialogReference { get; set; }
+
+    private string _imageUrl { get; set; }
+
+
+    public async Task ShowDialog(MemoryStream fullSizeImageStream)
+    {
+        await OnStarLoadingImage.InvokeAsync();
+
+        var dialogConfig = new DialogConfig()
+            {
+                Title = "Image Editor",
+                HasBackdrop = true,
+                HasTransparentBackdrop = false,
+                Width = $"{ModalDialogWidth}px",
+                Height = $"{ModalDialogHeight}px"
+            };
+
+        var image = Image.Load(fullSizeImageStream.ToArray());
+        //var jpegDecoder = new JpegDecoder();
+        //var image = await Image.LoadAsync(fullSizeImageStream, jpegDecoder);
+
+        MemoryStream workingImageStream = new();
+
+        if (image.Height > ImageContainerHeight || image.Width > ImageContainerWidth)
+        {
+            using var outStream = new MemoryStream();
+
+            var clone = image.Clone(i => i.Resize(Convert.ToInt32(ImageContainerWidth), Convert.ToInt32(ImageContainerHeight)));
+
+            var jpegEncoder = new JpegEncoder { Quality = 75 };
+
+            clone.Save(outStream, jpegEncoder);
+
+            workingImageStream = outStream;
+        }
+        else
+        {
+            workingImageStream = fullSizeImageStream;
+        }
+
+        var imageUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(workingImageStream.ToArray())}";
+
+        await OnEndLoadingImage.InvokeAsync();
+
+        var dialogData = new DialogData
+            {
+                imageFile = fullSizeImageStream,
+                ImageContainerHeight = ImageContainerHeight,
+                ImageContainerWidth = ImageContainerWidth,
+                ImagePreviewHeight = ImagePreviewHeight,
+                ImagePreviewWidth = ImagePreviewWidth,
+                ModalDialogHeight = ModalDialogHeight,
+                ModalDialogWidth = ModalDialogWidth,
+                ImageEditingControls = ImageEditingControls,
+                WorkingImageStream = workingImageStream,
+                ImageUrl = imageUrl
+            };
+
+        var parameters = new Dictionary<string, object>();
+
+        parameters.Add("DialogData", dialogData);
+
+        _dialogReference = DialogService.Open(typeof(ImageEditorContent), parameters, dialogConfig);
+
+        _dialogReference.Close += CloseDialog;
+    }
+
+    void CloseDialog(OverlayResult overlayDataResult)
+    {
+        if (overlayDataResult.CloseReason == CloseReason.Ok)
+        {
+            var stream = (MemoryStream)overlayDataResult.ComponentData;
+
+            OnImageSelected.InvokeAsync(stream);
+        }
+        else
+        {
+            OnCancel.InvokeAsync();
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        if (_dialogReference != null) _dialogReference.Close -= CloseDialog;
+    }
+}
+

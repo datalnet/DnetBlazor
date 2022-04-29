@@ -1,0 +1,15 @@
+﻿@import "blg-base-theme-vars.scss";
+
+:root {
+    --blg-secondary-foreground-color: #5f6368;
+    --blg-background-color: white;
+    --blg-odd-row-background-color: #f9f9f9;
+    --blg-header-foreground-color: var(--blg-secondary-foreground-color);
+    --blg-header-background-color: transparent;
+    --blg-range-selection-background-color: rgba(120, 120, 120, 0.4);
+    --blg-hover-color: rgba(239,246,252,1);
+    --blg-selected-color: var(--blg-hover-color);
+    --blg-clicked-color: #FFECDD;
+    --blg-disabled-color: rgba(0, 0, 0, 0.3);
+    ;
+}

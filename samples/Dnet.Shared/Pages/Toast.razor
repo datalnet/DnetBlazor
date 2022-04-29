@@ -1,0 +1,114 @@
+﻿@page "/Toast"
+
+@using Dnet.App.Shared.Infrastructure.Models
+@using Dnet.Blazor.Components.Button
+@using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Enums
+@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Select
+@using Dnet.Blazor.Components.Toast.Infrastructure.Enums
+@using Dnet.Blazor.Components.Toast.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Toast.Infrastructure.Models
+
+@inject IToastService ToastService
+
+<div class="container-fluid" style="padding-top: 10px;">
+    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+        <span class="dnet-m-r-10 dnet-app-comp-name">Toast</span>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-30">
+        <EditForm Model="@_formData1">
+            <DataAnnotationsValidator />
+            <div style="display: flex; flex-direction: column">
+                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 250px;">
+                    <DnetSelect Value="@_formData1.Value"
+                                ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                ValueExpression="@( () => _formData1.Value )"
+                                Items="_features"
+                                TItem="KeyValueModel<ToastType>"
+                                DisplayValueConverter="(value) => (value.Value)"
+                                OnItemSelected="ItemSelected"
+                                InputTextToUpper="true"
+                                PlaceHolder="Toast type"
+                                Label="Toast type"
+                                Appearance="Appearance.Fill">
+                        <ErrorContent>
+                            <ValidationMessage For="@(() => _formData1.Key)" />
+                        </ErrorContent>
+                    </DnetSelect>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-30">
+        <DnetButton OnClick="ShowToast" InitialFocus="true" class="dnet-m-r-10">Show Toast</DnetButton>
+    </div>
+</div>
+
+
+@code {
+
+    private KeyValueModel<ToastType> _formData1 = new();
+
+    private List<KeyValueModel<ToastType>> _features = new();
+
+
+    protected override void OnInitialized()
+    {
+        _features = GetKeyValueModels();
+
+        _formData1 = _features.FirstOrDefault();
+    }
+
+    void ShowToast()
+    {
+        var toastConfig = new ToastConfig
+            {
+                Title = "Toast title 12:",
+                Text = "Data save in 10 seconds",
+                HasBackdrop = false,
+                HasTransparentBackdrop = false,
+                ToastType = _formData1.Key,
+                ToastPostion = ToastPostion.BottomRight,
+                ExcutionTime = 5,
+                ShowExcutionTime = true,
+                Height = 80
+            };
+
+        RenderFragment userContent = x =>
+        {
+            x.OpenElement(0, "span");
+            x.AddAttribute(0, "style", "color: green");
+            x.AddContent(1, toastConfig.Text);
+            x.CloseElement();
+        };
+
+        //ToastService.Show(toastConfig, null, null, userContent);
+        ToastService.Show(toastConfig);
+    }
+
+    private void MyValueChangeHandler(string item)
+    {
+        //_formData1.Value = item;
+    }
+
+    private void ItemSelected(KeyValueModel<ToastType> ItemSelected)
+    {
+        _formData1 = ItemSelected;
+    }
+
+    private List<KeyValueModel<ToastType>> GetKeyValueModels()
+    {
+        var keyValueModels = new List<KeyValueModel<ToastType>>
+        {
+            new KeyValueModel<ToastType> { Key = ToastType.Information, Value = "Information" },
+            new KeyValueModel<ToastType> { Key = ToastType.Danger, Value = "Danger" },
+            new KeyValueModel<ToastType> { Key = ToastType.Success, Value = "Success" },
+            new KeyValueModel<ToastType> { Key = ToastType.Warning, Value = "Warning" },
+        };
+
+        return keyValueModels;
+    }
+}
+
+
+

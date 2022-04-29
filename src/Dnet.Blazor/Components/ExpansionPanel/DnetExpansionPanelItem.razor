@@ -1,0 +1,120 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+
+<div class="@_expansionPanelClass">
+	<div class="dnet-expansion-panel-header" @onclick="(() => Toggle())" aria-disabled="@Disabled">
+		@if (ItemHeaderTemplate != null)
+		{
+			@ItemHeaderTemplate
+		}
+		else
+		{
+			<div class="dnet-content">
+				<div class="dnet-expansion-panel-header-title">
+					@if (TitleContent != null)
+					{
+						@TitleContent
+					} else
+					{
+						@Title
+					}
+				</div>
+				<div class="dnet-expansion-panel-header-description">
+					@if (DescriptionContent != null)
+					{
+						@DescriptionContent
+					} else
+					{
+						@Description
+					}
+				</div>
+			</div>
+			if (!HideToggle)
+			{
+				<span class="dnet-expansion-indicator" style="transform:@(_expanded ? "rotate(180deg)" : "rotate(0deg)")">
+				</span>
+			}
+		}
+	</div>
+	<div class="dnet-expansion-panel-content" role="region" style="visibility:@(_expanded ? "visible" : "hidden");height:@(_expanded ? "auto" : "0px")">
+		<div class="dnet-expansion-panel-body">
+			@ChildContent
+		</div>
+	</div>
+</div>
+
+@code {
+
+	[CascadingParameter]
+	private DnetExpansionPanel Parent { get; set; }
+
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+
+	[Parameter]
+	public RenderFragment? ItemHeaderTemplate { get; set; }
+
+	[Parameter]
+	public string Title { get; set; }
+
+	[Parameter]
+	public RenderFragment TitleContent { get; set; }
+
+	[Parameter]
+	public string Description { get; set; }
+
+	[Parameter]
+	public RenderFragment DescriptionContent { get; set; }
+
+	[Parameter]
+	public int Order { get; set; } = 0;
+
+	[Parameter]
+	public bool Disabled { get; set; } = false;
+
+	[Parameter]
+	public bool HideToggle { get; set; } = false;
+
+	[Parameter]
+	public bool AccordionShadow { get; set; } = true;
+
+	internal int Id { get; set; } = 0;
+
+	private bool _expanded { get; set; } = false;
+
+	private string _expansionPanelClass =>
+        new CssBuilder("dnet-expansion-panel")
+            .AddClass("dnet-expanded dnet-expansion-panel-spacing", Parent.ExpansionPanelDisplayMode == ExpansionPanelDisplayMode.Spacing && _expanded)
+            .AddClass("dnet-elevation-z", !AccordionShadow)
+        .Build();
+
+
+	protected override void OnInitialized()
+	{
+		Parent.AddExpansionPanelItem(this);
+	}
+
+	private void Toggle()
+	{
+		Expand(!IsExpanded());
+		Parent.CloseLastOpenedPanel(this);
+	}
+
+	public bool IsExpanded()
+	{
+		return _expanded;
+	}
+
+	public bool Expand(bool newValue)
+	{
+		if (Disabled) { return false; }
+
+		if (_expanded == newValue) { return false; }
+
+		_expanded = newValue;
+
+		StateHasChanged();
+
+		return true;
+	}
+}

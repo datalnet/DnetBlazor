@@ -1,0 +1,105 @@
+﻿@using Dnet.Blazor.Components.Tabs.Infrastructure.Models
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="mat-tab-group" @attributes=AllOtherAttributes>
+    <DnetTabHeader TabHeaderBorder="@TabHeaderBorder">
+        @foreach (var tab in Tabs.OrderBy(p => p.Order))
+        {
+            <div class="mat-tab-label mat-focus-indicator @(_selectedId == tab.Id ? "mat-tab-label-active" : null)" @onclick="(() => TabClicked(tab))">
+                <div class="mat-tab-label-content">
+
+                    @if (tab.HeaderTemplate != null && typeof(ComponentBase).IsAssignableFrom(tab.HeaderTemplate))
+                    {
+                        @CreateHeaderTemplateComponent(tab.HeaderTemplate)
+                    }
+                    else
+                    {
+                        <span>@tab.Label</span>
+                    }
+                </div>
+            </div>
+        }
+    </DnetTabHeader>
+    <div class="mat-tab-body-wrapper">
+        <DnetTabBody>
+            @_activeTabContent
+        </DnetTabBody>
+    </div>
+    <CascadingValue Value="this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public int SelectedTabId { get; set; }
+
+    [Parameter]
+    public bool TabHeaderBorder { get; set; }
+
+    [Parameter]
+    public EventCallback<TabClikedEventData> OnTabClicked { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+
+    private int _selectedId;
+
+    public List<DnetTab> Tabs = new List<DnetTab>();
+
+    private RenderFragment _activeTabContent;
+
+    private List<int> tabIds = new List<int>();
+
+
+    protected override void OnInitialized()
+    {
+        _selectedId = SelectedTabId > 0 ? SelectedTabId : 1;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Tabs.Any())
+            {
+                _activeTabContent = Tabs.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent;
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    internal void AddTab(DnetTab tab)
+    {
+        tab.Id = tabIds.Any() ? tabIds.Max() + 1 : 1;
+
+        tabIds.Add(tab.Id);
+
+        Tabs.Add(tab);
+
+        StateHasChanged();
+    }
+
+    private RenderFragment CreateHeaderTemplateComponent(Type componeType) => builder =>
+    {
+        builder.OpenComponent(0, componeType);
+        builder.CloseComponent();
+    };
+
+    public void TabClicked(DnetTab tab)
+    {
+        _selectedId = tab.Id;
+
+        _activeTabContent = Tabs.FirstOrDefault(p => p.Id == tab.Id)?.ChildContent;
+
+        OnTabClicked.InvokeAsync(new TabClikedEventData { TabId = tab.Id });
+    }
+
+}

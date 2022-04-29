@@ -1,0 +1,19 @@
+.dnet-desktop-left-column {
+    height: 100%;
+    flex: 0 1 auto;
+    z-index: 100;
+}
+
+.hidden-left-column {
+    .dnet-desktop-left-column {
+        display: none;
+    }
+}
+
+.fixed-left-column {
+    .dnet-desktop-left-column {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+    }
+}

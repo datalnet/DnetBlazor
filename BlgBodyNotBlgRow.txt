@@ -1,0 +1,211 @@
+@using Dnet.Blazor.Components.Grid.Infrastructure.Entities
+@using Dnet.Blazor.Components.Grid.Infrastructure.Enums
+@using Dnet.Blazor.Components.Grid.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Grid.Infrastructure.Models
+@using Dnet.Blazor.Components.Grid.Infrastructure.Services
+@using Dnet.Blazor.Components.Grid.BlgRow
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+
+@typeparam TItem
+
+@inject IBlGridMessageService<List<RowNode<TItem>>> BlGridMessageService
+
+@{
+    var rowId = 0;
+
+    @for (var i = 0; i < RowNodes.Count; ++i)
+    {
+        var rowNode = RowNodes[i];
+
+        rowId++;
+
+        <BlgRow RowNode="@rowNode"
+                RowId="@rowId"
+                GridColumns="@GridColumns"
+                GroupGridColumn="@GroupGridColumn"
+                GridOptions="@GridOptions"
+                GridApi="@GridApi"
+                HasGrouping="@HasGrouping"
+                Pinned="@Pinned"
+                CheckboxSelectionPinned="@CheckboxSelectionPinned"
+                OnChangeExpanded="ChangeExpanded"
+                OnCellClicked="CellClicked"
+                OnRowClicked="RowClicked"
+                OnRowDoubleClicked="RowDoubleClicked"
+                OnCheckboxClicked="CheckboxClicked"
+                ComponentName="@ComponentName"
+                OnMouseOver="MouseOver">
+        </BlgRow>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public List<RowNode<TItem>> RowNodes { get; set; }
+
+    [Parameter]
+    public List<GridColumn<TItem>> GridColumns { get; set; }
+
+    [Parameter]
+    public GridColumn<TItem> GroupGridColumn { get; set; }
+
+    [Parameter]
+    public GridOptions<TItem> GridOptions { get; set; }
+
+    [Parameter]
+    public GridApi<TItem> GridApi { get; set; }
+
+    [Parameter]
+    public bool HasGrouping { get; set; }
+
+    [Parameter]
+    public BlGridMessageEmitter ComponentName { get; set; }
+
+    [Parameter]
+    public EventCallback<long> OnChangeExpanded { get; set; }
+
+    //In Events OnCellClicked, OnRowClicked, OnRowDoubleClicked, OnSelectionChanged T should be
+    //the generic form of RowNode, GridColumn etc. See implementation in BlGrid
+    //It is a Bug in Blazor https://github.com/dotnet/aspnetcore/issues/17480
+    [Parameter]
+    public EventCallback<CellClikedEventData> OnCellClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<long> OnRowClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<long> OnRowDoubleClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<List<long>> OnSelectionChanged { get; set; }
+
+    [Parameter]
+    public Pinned Pinned { get; set; }
+
+    [Parameter]
+    public bool CheckboxSelectionPinned { get; set; }
+
+    public int RowId { get; set; }
+
+    private List<RowNode<TItem>> _selectedRowNodes;
+
+    private RowNode<TItem> _previousSelectedRowNode;
+
+    private bool _shouldRender;
+
+    protected override bool ShouldRender() => _shouldRender;
+
+    protected override void OnInitialized()
+    {
+        RowId = 0;
+
+        _selectedRowNodes = new List<RowNode<TItem>>();
+    }
+
+    protected override void OnAfterRender(bool first)
+    {
+        _shouldRender = false;
+    }
+
+    public void ActiveRender()
+    {
+        _shouldRender = true;
+    }
+
+    public async Task ChangeExpanded(long id)
+    {
+        await OnChangeExpanded.InvokeAsync(id);
+    }
+
+    public void CellClicked(CellClikedEventData cellClikedEventData)
+    {
+        OnCellClicked.InvokeAsync(new CellClikedEventData { RowNodeId = cellClikedEventData.RowNodeId, CellId = cellClikedEventData.CellId });
+    }
+
+    private void RowClicked(long rowNodeId)
+    {
+        if (GridOptions.SuppressRowClickSelection == false)
+        {
+            ManageSelections(rowNodeId);
+
+            var actionMessage = new BlGridActionMessage<List<RowNode<TItem>>>
+                {
+                    Emitter = ComponentName,
+                    Data = _selectedRowNodes,
+                    Type = 1
+                };
+
+            BlGridMessageService.SendMessage(actionMessage);
+
+            OnSelectionChanged.InvokeAsync(_selectedRowNodes.Select(p => p.RowNodeId).ToList());
+        }
+
+        OnRowClicked.InvokeAsync(rowNodeId);
+    }
+
+    private void RowDoubleClicked(long rowNodeId)
+    {
+        OnRowDoubleClicked.InvokeAsync(rowNodeId);
+    }
+
+    private void CheckboxClicked(long rowNodeId)
+    {
+        ManageSelections(rowNodeId);
+
+        var actionMessage = new BlGridActionMessage<List<RowNode<TItem>>>
+            {
+                Emitter = ComponentName,
+                Data = _selectedRowNodes,
+                Type = 1
+            };
+
+        BlGridMessageService.SendMessage(actionMessage);
+
+        OnSelectionChanged.InvokeAsync(_selectedRowNodes.Select(p => p.RowNodeId).ToList());
+    }
+
+    private void ManageSelections(long rowNodeId)
+    {
+        var rowNode = RowNodes.FirstOrDefault(p => p.RowNodeId == rowNodeId);
+
+        if (rowNode == null) return;
+
+        if (GridOptions.RowMultiSelectWithClick)
+        {
+            if (rowNode.IsSelected())
+            {
+                _selectedRowNodes.Add(rowNode);
+            }
+            else
+            {
+                _selectedRowNodes.Remove(rowNode);
+            }
+        }
+        else
+        {
+            if (_previousSelectedRowNode != null)
+            {
+                _selectedRowNodes.Remove(_previousSelectedRowNode);
+                _previousSelectedRowNode.SelectThisNode(false);
+            }
+
+            _selectedRowNodes.Add(rowNode);
+
+            _previousSelectedRowNode = rowNode;
+        }
+    }
+
+    private void MouseOver(long rowNodeId)
+    {
+        var actionMessage = new BlGridActionMessage<List<RowNode<TItem>>>
+            {
+                Emitter = ComponentName,
+                RowNodeId = rowNodeId,
+                Type = 2
+            };
+
+        BlGridMessageService.SendMessage(actionMessage);
+    }
+}

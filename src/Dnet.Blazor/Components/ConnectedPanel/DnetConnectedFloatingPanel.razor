@@ -1,0 +1,41 @@
+﻿@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="@_connectedPanelClasses">
+	<CascadingValue Value="OverlayReferenceId" IsFixed="true">
+		<DynamicComponent Type="@ComponentType" Parameters="@Parameters" />
+	</CascadingValue>
+</div>
+
+@code {
+
+	[CascadingParameter]
+	private int OverlayReferenceId { get; set; }
+
+	[Parameter]
+	public string ConnectedPanelClasses { get; set; }
+
+	[Parameter]
+	public Type ComponentType { get; set; }
+
+	[Parameter]
+	public IDictionary<string, object> Parameters { get; set; }
+
+	private  string _connectedPanelClasses { get; set; }
+
+
+	protected override void OnInitialized()
+	{
+		_connectedPanelClasses = GetCssClasses();
+	}
+
+	private string GetCssClasses()
+    {
+        var classes = new CssBuilder("dnet-connected-panel-container")
+            .AddClass(ConnectedPanelClasses, when: !string.IsNullOrEmpty(ConnectedPanelClasses))
+            .Build();
+
+        return classes;
+    }
+}

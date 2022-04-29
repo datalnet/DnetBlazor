@@ -1,0 +1,13 @@
+﻿@using Dnet.App.Shared.Infrastructure.Entities
+@using Microsoft.AspNetCore.Components.Web
+
+<div style="display: flex; width: 100%">
+	<span class="dnet-app-icon @(Item.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
+	@Item.Name
+</div>
+
+@code {
+
+	[Parameter]
+	public Person Item { get; set; }
+}

@@ -1,0 +1,10 @@
+@forward 'form-common.import';
+@forward 'typography-utils.import';
+@forward 'form-field-legacy-theme' hide $fill-dedupe, legacy-color, legacy-theme, legacy-typography, private-form-field-legacy-density;
+@forward 'form-field-legacy-theme' as mat-* hide $mat-fill-dedupe, mat-legacy-color, mat-legacy-label-floating, mat-legacy-theme, mat-legacy-typography;
+@forward 'form-field-legacy-theme' as mat-form-field-* hide mat-form-field-legacy-label-floating, mat-form-field-private-form-field-legacy-density;
+
+@import 'palette';
+@import 'theming';
+@import 'form-common';
+@import 'typography-utils';

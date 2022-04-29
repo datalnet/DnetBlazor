@@ -1,0 +1,62 @@
+﻿@using Dnet.Component.Shared.Services.CssBuilder
+@using Microsoft.AspNetCore.Components.Web
+
+<button @ref="_focusElement" @onclick="Click" class="@_cssClasses" @attributes=@AdditionalAttributes.Where(p => !p.Key.Equals("class"))>
+	<span class="dnet-button-wrapper">@ChildContent</span>
+	<span class="dnet-button-focus-overlay"></span>
+</button>
+
+@code {
+
+	[Parameter]
+	public bool InitialFocus { get; set; }
+
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IReadOnlyDictionary<string, object> AdditionalAttributes { get; set; }
+
+	[Parameter]
+	public EventCallback OnClick { get; set; }
+
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+
+	private ElementReference _focusElement;
+
+	private string _cssClasses { get; set; }
+
+	private IReadOnlyDictionary<string, object> _additionalAttributes { get; set; }
+
+
+	protected override void OnInitialized()
+	{
+		_cssClasses = GetCssClasses();
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender && InitialFocus)
+		{
+			await _focusElement.FocusAsync();
+			StateHasChanged();
+		}
+	}
+
+	private string GetCssClasses()
+	{
+		var classes = new CssBuilder("dnet-button");
+
+		foreach (var item in AdditionalAttributes.Where(p => p.Key == "class"))
+		{
+			classes.AddClass(item.Value.ToString());
+		}
+
+		var result = classes.Build();
+
+		return result;
+	}
+
+	private void Click()
+	{
+		OnClick.InvokeAsync();
+	}
+}

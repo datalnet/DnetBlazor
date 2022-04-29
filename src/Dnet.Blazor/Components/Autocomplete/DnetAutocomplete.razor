@@ -1,0 +1,530 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using System.Timers
+@using System.Diagnostics.CodeAnalysis
+@using Dnet.Blazor.Components.Autocomplete.Infrastructure.Services
+@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+
+@implements IDisposable
+
+@typeparam TItem
+
+@inherits Dnet.Blazor.Infrastructure.Forms.DnetInputBase<string>
+
+@inject IOverlayService OverlayService
+
+<DnetFormField CurrentValue="@CurrentValue"
+               Appearance="@Appearance"
+               PlaceHolder="@PlaceHolder"
+               FloatLabel="@FloatLabel"
+               HasFocus="@_hasFocus"
+               Disabled="@Disabled"
+               Label="@Label"
+               PrefixContent="@PrefixContent"
+               SufixContent="@SufixContent"
+               HintContent="@HintContent"
+               ErrorContent="@ErrorContent"
+               ClearButtonContent="@_clearButtonContent"
+               HasErrors="@_hasErrors"
+               @ref="_formField">
+    <input @ref="_menuTrigger"
+           @attributes="AdditionalAttributes"
+           class="@_inputTextClass"
+           value="@BindConverter.FormatValue(CurrentValue)"
+           @onfocus=@(() => Focus())
+           @onblur=@(() => Blur())
+           @oninput="@((ChangeEventArgs __e) => CurrentValue = __e.Value.ToString())"
+           @onfocusin=@(() => OpenMenu())
+           @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e))
+           @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
+           @onclick:stopPropagation="true"
+           @onclick:preventDefault="true"
+           placeholder="@_placeHolder"
+           disabled="@Disabled"
+           autocomplete="off" />
+</DnetFormField>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<TItem> OnItemSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnStopTyping { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> DisplayValueConverter { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> SearchValueConverter { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemPrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemSufixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ChildContent { get; set; }
+
+    [Parameter]
+    public List<TItem> Items { get; set; } = new();
+
+    [Parameter]
+    public RenderFragment PrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment SufixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment HintContent { get; set; }
+
+    [Parameter]
+    public RenderFragment ErrorContent { get; set; }
+
+    [Parameter]
+    public RenderFragment FormFieldChildContent { get; set; }
+
+    [Parameter]
+    public string Width { get; set; }
+
+    [Parameter]
+    public string Height { get; set; }
+
+    [Parameter]
+    public string MinWidth { get; set; }
+
+    [Parameter]
+    public string MinHeight { get; set; }
+
+    [Parameter]
+    public string MaxWidth { get; set; }
+
+    [Parameter]
+    public string MaxHeight { get; set; }
+
+    [Parameter]
+    public int ItemHeight { get; set; } = 40;
+
+    [Parameter]
+    public int DebounceTime { get; set; } = 250;
+
+    [Parameter]
+    public bool InputTextToUpper { get; set; }
+
+    [Parameter]
+    public bool ItemAutoSelection { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; } = "";
+
+    [Parameter]
+    public string Hint { get; set; }
+
+    [Parameter]
+    public Appearance Appearance { get; set; } = Appearance.Fill;
+
+    [Parameter]
+    public FloatLabel FloatLabel { get; set; } = FloatLabel.AsUserTypes;
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public bool DisabledClearButton { get; set; }
+
+    [Parameter]
+    public bool EnableServerSide { get; set; }
+
+
+    private ElementReference _menuTrigger;
+
+    private ElementReference _overlayOrigin;
+
+    private bool _isOpen;
+
+    private bool _isClosing;
+
+    private OverlayReference _menuReference;
+
+    private Timer _debounceTimer;
+
+    private AutoCompleteListService<TItem> _autoCompleteListService;
+
+    private bool _hasFocus { get; set; }
+
+    private bool _hasErrors { get; set; }
+
+    private string _placeHolder { get; set; }
+
+    private RenderFragment _clearButtonContent { get; set; }
+
+    private DnetFormField _formField { get; set; } = new();
+
+    private string _inputTextClass =>
+                new CssBuilder("mat-input-element")
+                    .AddClass("mat-form-field-autofill-control")
+                    .AddClass("cdk-text-field-autofill-monitored")
+                    .AddClass(CssClass)
+                .Build();
+
+
+    protected override void OnInitialized()
+    {
+        _debounceTimer = new Timer(DebounceTime);
+
+        _debounceTimer.Elapsed += OnUserFinishDiscard;
+
+        _debounceTimer.AutoReset = false;
+
+        if (!string.IsNullOrEmpty(CurrentValue)) _hasFocus = true;
+
+        EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+
+        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+        if (!DisabledClearButton) _clearButtonContent = CreateClearButtonContent();
+
+        if (DisplayValueConverter == null) DisplayValueConverter = SearchValueConverter;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        _autoCompleteListService = new AutoCompleteListService<TItem>();
+
+        _autoCompleteListService.OnItemSelected += ItemSelected;
+    }
+
+    private RenderFragment CreateClearButtonContent()
+    {
+        var inputContent = new RenderFragment(x =>
+        {
+            x.OpenElement(4, "div");
+            x.AddAttribute(5, "class", "dnet-app-icon-wrapper");
+            x.AddAttribute(3, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, _ => ClearInput()));
+            x.OpenElement(6, "span");
+            x.AddAttribute(7, "class", "dnet-app-icon dnet-autoc-reset-button");
+            x.CloseElement();
+            x.CloseElement();
+        });
+
+        return inputContent;
+    }
+
+    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        result = InputTextToUpper ? value?.ToUpper() : value;
+        validationErrorMessage = null;
+        return true;
+    }
+
+    private void HandleKeydown(KeyboardEventArgs data)
+    {
+        if (data.Key != "Tab") return;
+        _debounceTimer.Stop();
+        _isClosing = true;
+    }
+
+    private void HandleKeyUp(KeyboardEventArgs data)
+    {
+        if (data.Key == "Tab")
+        {
+            return;
+        }
+
+        _debounceTimer.Stop();
+
+        _debounceTimer.Start();
+    }
+
+    public void OnUserFinishDiscard(Object source, ElapsedEventArgs e)
+    {
+        _ = OnUserFinish();
+    }
+
+    private async Task OnUserFinish()
+    {
+        await InvokeAsync(() =>
+        {
+            try
+            {
+
+                if (EnableServerSide)
+                {
+                    OnStopTyping.InvokeAsync(CurrentValue);
+                }
+                else
+                {
+                    PrefixContent = null;
+                    SufixContent = null;
+
+                    var items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(CurrentValue?.ToUpper())).ToList();
+                    var item = items.FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(CurrentValue) && ItemAutoSelection) PreSelecteItem(item);
+
+                    _autoCompleteListService.UdateList(items);
+                }
+            }
+            catch (NullReferenceException)
+            {
+                throw new NullReferenceException($"SearchValueConverter could not be Null");
+            }
+
+            if (ItemPrefixContent == null && ItemSufixContent == null) return;
+
+            StateHasChanged();
+        });
+    }
+
+    private async Task OpenMenu()
+    {
+        if (Disabled) return;
+
+        if (_isOpen) return;
+
+        await _menuTrigger.FocusAsync();
+
+        AttachMenu();
+
+        _isOpen = true;
+    }
+
+    private void ClosenMenu(FocusEventArgs data)
+    {
+        if (_isOpen && _isClosing)
+        {
+            _isClosing = false;
+            DetachMenu();
+        }
+    }
+
+    public async void PreSelecteItem(TItem item)
+    {
+        var value = DisplayValueConverter(item);
+
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+
+        EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+        await OnItemSelected.InvokeAsync(item);
+
+        if (ItemPrefixContent != null && PrefixContent == null) PrefixContent = ItemPrefixContent(item);
+
+        if (ItemSufixContent != null && SufixContent == null) SufixContent = ItemSufixContent(item);
+
+        if (ChildContent != null && FormFieldChildContent == null) FormFieldChildContent = ChildContent(item);
+
+        StateHasChanged();
+    }
+
+    public async void ItemSelected(TItem item)
+    {
+        var value = DisplayValueConverter(item);
+
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+
+        EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+        if (!string.IsNullOrEmpty(CurrentValue)) _hasFocus = true;
+
+        await OnItemSelected.InvokeAsync(item);
+
+        if (ItemPrefixContent != null && PrefixContent == null) PrefixContent = ItemPrefixContent(item);
+
+        if (ItemSufixContent != null && SufixContent == null) SufixContent = ItemSufixContent(item);
+
+        if (ChildContent != null && FormFieldChildContent == null) FormFieldChildContent = ChildContent(item);
+
+        DetachMenu();
+
+        StateHasChanged();
+    }
+
+    private async void ClearInput()
+    {
+        CurrentValue = null;
+
+        PrefixContent = null;
+        SufixContent = null;
+
+        EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+        _hasErrors = EditContext?.GetValidationMessages(FieldIdentifier).Count() > 0;
+
+        _hasFocus = false;
+
+        await ValueChanged.InvokeAsync(Value);
+
+        DetachMenu();
+
+        StateHasChanged();
+    }
+
+    private void AttachMenu()
+    {
+        var positions = new List<ConnectedPosition>
+            {
+                new()
+                {
+                    OriginX = HorizontalConnectionPos.Start,
+                    OriginY = VerticalConnectionPos.Bottom,
+                    OverlayX = HorizontalConnectionPos.Start,
+                    OverlayY = VerticalConnectionPos.Top
+                },
+                new()
+                {
+                    OriginX = HorizontalConnectionPos.Start,
+                    OriginY = VerticalConnectionPos.Top,
+                    OverlayX = HorizontalConnectionPos.Start,
+                    OverlayY = VerticalConnectionPos.Bottom
+                },
+                new()
+                {
+                    OriginX = HorizontalConnectionPos.End,
+                    OriginY = VerticalConnectionPos.Bottom,
+                    OverlayX = HorizontalConnectionPos.End,
+                    OverlayY = VerticalConnectionPos.Top
+                },
+                new()
+                {
+                    OriginX = HorizontalConnectionPos.End,
+                    OriginY = VerticalConnectionPos.Top,
+                    OverlayX = HorizontalConnectionPos.End,
+                    OverlayY = VerticalConnectionPos.Bottom
+                }
+            };
+
+        var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
+            .WithLockedPosition()
+            .WithViewportMargin(8)
+            .SetOrigin(_formField.OverlayOrigin)
+            .WithFlexibleDimensions(false)
+            .WithPositions(positions);
+
+        var connectedPanelConfig = new OverlayConfig
+            {
+                HasBackdrop = true,
+                HasTransparentBackdrop = true,
+                PositionStrategy = PositionStrategy.FlexibleConnectedTo,
+                FlexibleConnectedPositionStrategyBuilder = flexibleConnectedPositionStrategyBuilder,
+                MinWidth = MinWidth,
+                MaxWidth = MaxWidth,
+                MinHeight = MinHeight,
+                MaxHeight = MaxHeight,
+            };
+
+        var items = new List<TItem>();
+
+        if (!string.IsNullOrEmpty(CurrentValue))
+        {
+            try
+            {
+                items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(CurrentValue.ToUpper())).ToList();
+                _autoCompleteListService.UdateList(items);
+            }
+            catch (NullReferenceException)
+            {
+                throw new NullReferenceException($"SearchValueConverter could not be Null");
+            }
+        }
+        else
+        {
+            items = Items;
+        }
+
+        var menuContent = new RenderFragment(x =>
+        {
+            x.OpenComponent(0, typeof(DnetAutocompletePanel<TItem>));
+            x.AddAttribute(1, "Items", items);
+            x.AddAttribute(2, "Width", Width ?? "100%");
+            x.AddAttribute(3, "Height", Height ?? "200px");
+            x.AddAttribute(4, "MinWidth", MinWidth);
+            x.AddAttribute(5, "MaxWidth", MaxWidth);
+            x.AddAttribute(6, "MinHeight", MinHeight);
+            x.AddAttribute(7, "MaxHeight", MaxHeight);
+            x.AddAttribute(7, "ItemHeight", ItemHeight);
+            x.AddAttribute(8, "AutoCompleteListService", _autoCompleteListService);
+            x.AddAttribute(9, "DisplayValueConverter", DisplayValueConverter);
+            x.AddAttribute(10, "ItemPrefixContent", ItemPrefixContent);
+            x.AddAttribute(10, "ItemSufixContent", ItemSufixContent);
+            x.AddAttribute(10, "ChildContent", ChildContent);
+            x.CloseComponent();
+        });
+
+        _menuReference = OverlayService.Attach(menuContent, connectedPanelConfig);
+
+        _menuReference.Close += CloseFilter;
+    }
+
+    private void DetachMenu()
+    {
+        _isOpen = false;
+
+        var result = new OverlayResult
+            {
+                OverlayReferenceId = _menuReference.GetOverlayReferenceId(),
+                CloseReason = CloseReason.Cancel
+            };
+
+        OverlayService.Detach(result);
+    }
+
+    void CloseFilter(OverlayResult overlayDataResult)
+    {
+        _isOpen = false;
+    }
+
+    private void Focus()
+    {
+        _hasFocus = true;
+        _placeHolder = PlaceHolder;
+        StateHasChanged();
+    }
+
+    private void Blur()
+    {
+        if (string.IsNullOrEmpty(CurrentValue))
+        {
+            _hasFocus = false;
+        }
+        _placeHolder = string.Empty;
+
+        StateHasChanged();
+    }
+
+    private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
+    {
+        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+    }
+
+    public void UpdateData(List<TItem> items)
+    {
+        _autoCompleteListService.UdateList(items);
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        if (_menuReference != null) _menuReference.Close -= CloseFilter;
+
+        if (_autoCompleteListService != null) _autoCompleteListService.OnItemSelected -= ItemSelected;
+
+        _debounceTimer.Elapsed -= OnUserFinishDiscard;
+    }
+}

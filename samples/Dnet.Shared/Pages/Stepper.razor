@@ -1,0 +1,152 @@
+﻿@page "/Stepper"
+@using Dnet.Blazor.Components.Stepper
+@using Dnet.Blazor.Components.Checkbox
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+		<span class="dnet-m-r-10 dnet-app-comp-name">Stepper</span>
+	</div>
+	<div class="dnet-m-l-30 dnet-m-t-30">
+		<div class="row" style="height: calc(100% - 10px)">
+			<div class="col-6" style="height: calc(100% - 0px); margin-bottom: 30px">
+				<div style="display:flex;align-items:center;justify-content:flex-start">
+					<span style="font-size:14px;">Horizontal Stepper:</span>
+				</div>
+				<div style="height: calc(100% - 0px); width: 700px; background-color: #FFFFFF">
+					<DnetStepper dnet-align-tabs="start" OnSelectionChange="StepClicked" Orientation="(int)StepperOrientation.Horizontal">
+						<DnetStep Label="Stepper 1">
+							<span>Stepper Content 1</span>
+						</DnetStep>
+						<DnetStep Label="Stepper 2">
+							<span>Stepper Content 2</span>
+						</DnetStep>
+						<DnetStep Label="Stepper 3">
+							<span>Stepper Content 3</span>
+						</DnetStep>
+						<DnetStep Label="Stepper 4">
+							<span>Stepper Content 4</span>
+						</DnetStep>
+					</DnetStepper>
+				</div>
+			</div>
+		</div>
+		<div class="row" style="height: calc(100% - 10px)">
+			<div class="col-3" style="height: calc(100% - 0px);">
+				<div style="display:flex;align-items:center;justify-content:flex-start">
+					<span style="font-size:14px;">Vertical Stepper:</span>
+				</div>
+				<div style="height: calc(100% - 0px); width: 700px; background-color: #FFFFFF">
+					<DnetStepper dnet-align-tabs="start" OnSelectionChange="StepClicked" Orientation="(int)StepperOrientation.Vertical">
+						<DnetStep Label="Stepper 1">
+							<span>Stepper Content 1</span>
+						</DnetStep>
+						<DnetStep Label="Stepper 2">
+							<span>Stepper Content 2</span>
+						</DnetStep>
+						<DnetStep Label="Stepper 3">
+							<span>Stepper Content 3</span>
+						</DnetStep>
+						<DnetStep Label="Stepper 4">
+							<span>Stepper Content 4</span>
+						</DnetStep>
+					</DnetStepper>
+				</div>
+			</div>
+			<div class="col-3" style="height: calc(100% - 0px);">
+				<div style="display:flex;align-items:center;justify-content:flex-start">
+					<span style="font-size:14px;">Vertical Stepper Custom Header Template:</span>
+				</div>
+				<div style="height: calc(100% - 0px); width: 700px; background-color: #FFFFFF">
+					<DnetStepper OnSelectionChange="StepClicked" Orientation="(int)StepperOrientation.Vertical" Linear="true">
+						<DnetStep Completed="_isCompletedStep1">
+							<StepHeaderTemplate>
+								<div class="dnet-step-icon dnet-step-icon-state-number">
+									<div class="dnet-app-stepper-icon-wrapper">
+										<span class="dnet-app-stepper-icon dnet-app-stepper-step1"></span>
+									</div>
+								</div>
+							</StepHeaderTemplate>
+							<ChildContent>
+								<div class="d-flex align-items-sm-center dnet-m-b-5">
+									<DnetInputCheckbox @bind-Value="_isCompletedStep1" class="dnet-m-r-5">Force Complete Step 1</DnetInputCheckbox>
+								</div>
+							</ChildContent>
+						</DnetStep>
+						<DnetStep Completed="_isCompletedStep2">
+							<StepHeaderTemplate>
+								<div class="dnet-step-icon dnet-step-icon-state-number">
+									<div class="dnet-app-stepper-icon-wrapper">
+										<span class="dnet-app-stepper-icon dnet-app-stepper-step2"></span>
+									</div>
+								</div>
+							</StepHeaderTemplate>
+							<ChildContent>
+								<div class="d-flex align-items-sm-center dnet-m-b-5">
+									<DnetInputCheckbox @bind-Value="_isCompletedStep2" class="dnet-m-r-5">Force Complete Step 2</DnetInputCheckbox>
+								</div>
+							</ChildContent>
+						</DnetStep>
+						<DnetStep Completed="_isCompletedStep3">
+							<StepHeaderTemplate>
+								<div class="dnet-step-icon dnet-step-icon-state-number">
+									<div class="dnet-app-stepper-icon-wrapper">
+										<span class="dnet-app-stepper-icon dnet-app-stepper-step3"></span>
+									</div>
+								</div>
+							</StepHeaderTemplate>
+							<ChildContent>
+								<div class="d-flex align-items-sm-center dnet-m-b-5">
+									<DnetInputCheckbox @bind-Value="_isCompletedStep3" class="dnet-m-r-5">Force Complete Step 3</DnetInputCheckbox>
+								</div>
+							</ChildContent>
+						</DnetStep>
+						<DnetStep Completed="_isCompletedStep4">
+							<StepHeaderTemplate>
+								<div class="dnet-step-icon dnet-step-icon-state-number">
+									<div class="dnet-app-stepper-icon-wrapper">
+										<span class="dnet-app-stepper-icon dnet-app-stepper-step4"></span>
+									</div>
+								</div>
+							</StepHeaderTemplate>
+							<ChildContent>
+								<div class="d-flex align-items-sm-center dnet-m-b-5">
+									<DnetInputCheckbox @bind-Value="_isCompletedStep4" class="dnet-m-r-5">Force Complete Step 4</DnetInputCheckbox>
+								</div>
+							</ChildContent>
+						</DnetStep>
+					</DnetStepper>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@code {
+
+	private int _selectedId;
+
+	private int _previousSelectedId;
+
+	private bool _isCompletedStep1 { get; set; }
+
+	private bool _isCompletedStep2 { get; set; }
+
+	private bool _isCompletedStep3 { get; set; }
+
+	private bool _isCompletedStep4 { get; set; }
+
+
+	public void StepClicked(Tuple<int, int> tabClikedEventData)
+	{
+		(_selectedId, _previousSelectedId) = tabClikedEventData;
+	}
+
+	RenderFragment CreateTemplate()
+	{
+		return @<span>Stepper 2 RF</span>;
+	}
+}
+
+
+

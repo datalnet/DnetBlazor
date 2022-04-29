@@ -1,0 +1,493 @@
+﻿@inherits LayoutComponentBase
+@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Enums
+@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay
+@using Dnet.Blazor.Components.AdminDashboard.DesktopLayout
+@using Dnet.Blazor.Components.AdminDashboard.DesktopLeftColumn
+@using Dnet.Blazor.Components.AdminDashboard.DesktopCenterColumn
+@using Dnet.Blazor.Components.AdminDashboard.DesktopLayoutCenterContainer
+@using Dnet.Blazor.Components.AdminDashboard.DesktopHeader
+@using Dnet.Blazor.Components.AdminDashboard.DesktopContent
+@using Dnet.Blazor.Components.AdminDashboard.DesktopFooter
+@using Dnet.Blazor.Components.AdminDashboard.DesktopNavigation
+@using Dnet.Blazor.Components.Spinner
+
+@inject IThemeMessageService<ThemeConfigData> ThemeMessageService
+
+<DnetOverlay BaseZindex="1100"></DnetOverlay>
+
+<DesktopLayout IsHiddenFooter="false">
+    <DesktopLeftColumn>
+        <DesktopNavigation>
+            <DesktopNavigationMenu Menus="@Menus"></DesktopNavigationMenu>
+            <DesktopMinifyMenu></DesktopMinifyMenu>
+        </DesktopNavigation>
+    </DesktopLeftColumn>
+    <DesktopCenterColumn>
+        <DesktopLayoutCenterContainer>
+            <DesktopHeader>
+                <DesktopHeaderContent AppName="@AppName" AppDescription="@AppDescription" AppVersion="@AppVersion" UserName="@UserName" PersonName="@PersonName">
+                </DesktopHeaderContent>
+            </DesktopHeader>
+            <DesktopContent>
+                <DnetSpinner CanRun="true" BindToView="true" ShowMask="true"></DnetSpinner>
+                @Body
+            </DesktopContent>
+            <DesktopFooter>
+                <div class="d-flex justify-content-between align-items-center" style="height:100%">
+                    <div class="d-flex align-items-center justify-content-start dnet-p-l-20">
+                        <span>2022 © Datalnet</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-start  dnet-p-r-20">
+                        <div class="widget">
+                            <a class="btn" href="https://github.com/datalnet/DnetBlazor" rel="noopener" target="_blank" aria-label="Star" style="display:flex;align-items:center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                                </svg>
+                                <span style="padding-bottom: 2px;margin-left: 5px; font-size:.875rem">Github</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </DesktopFooter>
+        </DesktopLayoutCenterContainer>
+    </DesktopCenterColumn>
+</DesktopLayout>
+
+@code {
+
+    private List<NavigationMenu> Menus { get; set; }
+
+    private string AppName { get; set; }
+
+    private string AppDescription { get; set; }
+
+    private string AppVersion { get; set; }
+
+    private string Title { get; set; }
+
+    private string UserName { get; set; }
+
+    private string PersonName { get; set; }
+
+    protected override void OnInitialized()
+    {
+        AppName = "Datalnet Blazor Components";
+        AppDescription = "";
+        AppVersion = "V.1.1.11";
+        Title = "Ready to eat";
+        UserName = "admin@datalnet.com";
+        PersonName = "Adrian Mustelier";
+
+        //SetupTheme();
+
+        BuildMenu();
+    }
+
+    private void SetupTheme()
+    {
+        var themeConfigData = new ThemeConfigData()
+            {
+                IsDesktopMode = true,
+                IsFooterHidden = false,
+                IsHeaderHidden = false,
+                IsLeftColumnHidden = false,
+                IsLeftColumnFixed = true,
+                IsHeaderFixed = true,
+                ShowMinifier = false
+            };
+
+        var actionMessage = new ActionMessage<ThemeConfigData>
+            {
+                Emitter = ThemeMessageEmitter.DefaultComponent,
+                Data = themeConfigData
+            };
+
+        ThemeMessageService.SendMessage(actionMessage);
+    }
+
+    private void BuildMenu()
+    {
+        Menus = new List<NavigationMenu> {
+            new NavigationMenu {
+                MenuId = 10,
+                Link = "/",
+                ParentId = 0,
+                Text = "Home",
+                IconClass = "blg-menu-img blg-icon-dashboard",
+                Children = new List<NavigationMenu>() {
+                },
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+                HasImage = true
+            },
+             new NavigationMenu {
+                MenuId = 10,
+                Link = "/BlGrid",
+                ParentId = 0,
+                Text = "BlGrid",
+                IconClass = "",
+                Children = new List<NavigationMenu>()
+                {
+                    new NavigationMenu {
+                        MenuId = 11,
+                        Link = "/BlGrid",
+                        ParentId = 0,
+                        Text = "Complex example",
+                        IconClass = "",
+                        Children = new List<NavigationMenu>(),
+                        IsNode = true,
+                        Rights = new List<string> {
+                            "CanReadDashboard"
+                        },
+                    },
+                    new NavigationMenu {
+                        MenuId = 11,
+                        Link = "/FilteringExample",
+                        ParentId = 0,
+                        Text = "Filtering Example",
+                        IconClass = "",
+                        Children = new List<NavigationMenu>(),
+                        IsNode = true,
+                        Rights = new List<string> {
+                            "CanReadDashboard"
+                        },
+                    },
+                    new NavigationMenu {
+                        MenuId = 11,
+                        Link = "/RowSelectionExample",
+                        ParentId = 0,
+                        Text = "Row Selection",
+                        IconClass = "",
+                        Children = new List<NavigationMenu>(),
+                        IsNode = true,
+                        Rights = new List<string> {
+                            "CanReadDashboard"
+                        },
+                    },
+                    new NavigationMenu {
+                        MenuId = 11,
+                        Link = "/MultipleRowSelectionExample",
+                        ParentId = 0,
+                        Text = "Multiple Row Selection",
+                        IconClass = "",
+                        Children = new List<NavigationMenu>(),
+                        IsNode = true,
+                        Rights = new List<string> {
+                            "CanReadDashboard"
+                        },
+                    },
+                    new NavigationMenu {
+                        MenuId = 11,
+                        Link = "/AdvancedFilteringExample",
+                        ParentId = 0,
+                        Text = "Advanced Filtering",
+                        IconClass = "",
+                        Children = new List<NavigationMenu>(),
+                        IsNode = true,
+                        Rights = new List<string> {
+                            "CanReadDashboard"
+                        },
+                    },
+                    new NavigationMenu {
+                        MenuId = 11,
+                        Link = "/GroupingExample",
+                        ParentId = 0,
+                        Text = "Grouping",
+                        IconClass = "",
+                        Children = new List<NavigationMenu>(),
+                        IsNode = true,
+                        Rights = new List<string> {
+                            "CanReadDashboard"
+                        },
+                    },
+                    new NavigationMenu {
+                        MenuId = 11,
+                        Link = "/CellTemplatesExample",
+                        ParentId = 0,
+                        Text = "Cell Templates",
+                        IconClass = "",
+                        Children = new List<NavigationMenu>(),
+                        IsNode = true,
+                        Rights = new List<string> {
+                            "CanReadDashboard"
+                        },
+                    },
+                    new NavigationMenu {
+                        MenuId = 11,
+                        Link = "/SortingExample",
+                        ParentId = 0,
+                        Text = "Sorting",
+                        IconClass = "",
+                        Children = new List<NavigationMenu>(),
+                        IsNode = true,
+                        Rights = new List<string> {
+                            "CanReadDashboard"
+                        },
+                    },
+                    //new NavigationMenu {
+                    //    MenuId = 11,
+                    //    Link = "/ServerSideOperationsExample",
+                    //    ParentId = 0,
+                    //    Text = "ServerSide operations",
+                    //    IconClass = "",
+                    //    Children = new List<NavigationMenu>(),
+                    //    IsNode = true,
+                    //    Rights = new List<string> {
+                    //        "CanReadDashboard"
+                    //    },
+                    //},
+                },
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+                HasImage = true
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Dialog",
+                ParentId = 0,
+                Text = "Dialog",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/InputText",
+                ParentId = 0,
+                Text = "Form Fields",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Autocomplete",
+                ParentId = 0,
+                Text = "Autocomplete",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Select",
+                ParentId = 0,
+                Text = "Select",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/ConnectedPanel",
+                ParentId = 0,
+                Text = "ConnectedPanel",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/FloatingPanel",
+                ParentId = 0,
+                Text = "FloatingPanel",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/DatePicker",
+                ParentId = 0,
+                Text = "DatePicker",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Tabs",
+                ParentId = 0,
+                Text = "Tabs",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+             new NavigationMenu {
+                MenuId = 11,
+                Link = "/Stepper",
+                ParentId = 0,
+                Text = "Stepper",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Toast",
+                ParentId = 0,
+                Text = "Toast",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Tooltip",
+                ParentId = 0,
+                Text = "Tooltip",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Spinner",
+                ParentId = 0,
+                Text = "Spinner",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/List",
+                ParentId = 0,
+                Text = "List",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/DoubleList",
+                ParentId = 0,
+                Text = "Double list",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Tree",
+                ParentId = 0,
+                Text = "Tree",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Expansion",
+                ParentId = 0,
+                Text = "Expansion Panel",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/RadioButton",
+                ParentId = 0,
+                Text = "Radio Button",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Checkbox",
+                ParentId = 0,
+                Text = "Checkbox",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/ImageEditor",
+                ParentId = 0,
+                Text = "Image Editor",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Chips",
+                ParentId = 0,
+                Text = "Chips",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+        };
+    }
+}
+

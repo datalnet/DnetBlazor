@@ -1,0 +1,37 @@
+.dnet-desktop-center-column {
+    width: calc(100% - var(--dnet-dash-asideWidth));
+}
+
+.hidden-left-column {
+    .dnet-desktop-center-column {
+        width: calc(100% - 0px);
+        padding: 0;
+    }
+}
+
+.fixed-left-column {
+    .dnet-desktop-center-column {
+        width: calc(100% - 0px);
+        padding: 0 0 0 calc(var(--dnet-dash-asideWidth));
+    }
+}
+
+.minified {
+    .dnet-desktop-center-column {
+        width: calc(100% - var(--dnet-dash-asideWidth-minified));
+    }
+
+    &.fixed-left-column {
+        .dnet-desktop-center-column {
+            width: calc(100% - 0px);
+            padding: 0 0 0 calc(var(--dnet-dash-asideWidth-minified));
+        }
+    }
+
+    &.hidden-left-column {
+        .dnet-desktop-center-column {
+            width: calc(100% - 0px);
+            padding: 0;
+        }
+    }
+}

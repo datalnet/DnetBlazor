@@ -1,0 +1,163 @@
+﻿@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Models.SearchModels.FilterModels
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+
+@implements IDisposable
+
+@inject IJSRuntime JSRuntime
+
+@inject IOverlayService OverlayService
+
+@inject DnetOverlayInterop DnetOverlayInterop
+
+<div @ref="_menuTrigger" @onclick="ToggleMenu">
+    <span class="@(IsFiltered ? "blg-adv-toggle-button-filtered-image" : "blg-adv-toggle-button-image")">
+    </span>
+</div>
+
+@code {
+
+    [Parameter]
+    public AdvancedFilterModel FilterData { get; set; }
+
+    [Parameter]
+    public bool IsFiltered { get; set; }
+
+    [Parameter]
+    public FilterOperator DefaultAdvancedFilterOperator { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnFilter { get; set; }
+
+    [Parameter]
+    public string DateFormat { get; set; }
+
+
+    private ElementReference _menuTrigger;
+
+    private bool _isOpen = false;
+
+    private OverlayReference _menuReference;
+
+
+    private async Task ToggleMenu()
+    {
+        if (!_isOpen)
+        {
+            await AttachMenu();
+            _isOpen = true;
+            StateHasChanged();
+        }
+        else
+        {
+            DetachMenu();
+        }
+    }
+
+    private async Task AttachMenu()
+    {
+
+        var origin = await DnetOverlayInterop.GetBoundingClientRect(_menuTrigger);
+
+        var positions = new List<ConnectedPosition>
+{
+            new ConnectedPosition
+            {
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new ConnectedPosition
+            {
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Bottom
+            },
+            new ConnectedPosition
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new ConnectedPosition
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Bottom
+            }
+        };
+
+        var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder().WithLockedPosition()
+            .WithViewportMargin(8)
+            .SetOrigin(_menuTrigger)
+            .WithFlexibleDimensions(false)
+            .WithPositions(positions);
+
+        var connectedPanelConfig = new OverlayConfig()
+        {
+            HasBackdrop = true,
+            HasTransparentBackdrop = true,
+            PositionStrategy = PositionStrategy.FlexibleConnectedTo,
+            FlexibleConnectedPositionStrategyBuilder = flexibleConnectedPositionStrategyBuilder
+        };
+
+        var menuContent = new RenderFragment(x =>
+        {
+            x.OpenComponent(0, typeof(BlgAdvancedFilterPanel));
+            x.AddAttribute(1, "FilterData", FilterData);
+            x.AddAttribute(2, "DateFormat", DateFormat);
+            x.CloseComponent();
+        });
+
+        _menuReference = OverlayService.Attach(menuContent, connectedPanelConfig);
+
+        _menuReference.Close += CloseFilter;
+    }
+
+    private void DetachMenu()
+    {
+        _isOpen = false;
+
+        var result = new OverlayResult
+        {
+            OverlayReferenceId = _menuReference.GetOverlayReferenceId(),
+            CloseReason = CloseReason.Cancel
+        };
+
+        OverlayService.Detach(result);
+    }
+
+    void CloseFilter(OverlayResult overlayDataResult)
+    {
+        _isOpen = false;
+
+        if (overlayDataResult.CloseReason == CloseReason.Ok)
+        {
+            OnFilter.InvokeAsync(true);
+        }
+        else if (!(overlayDataResult.ComponentData is null) && (bool)overlayDataResult.ComponentData == true)
+        {
+            FilterData.Operator = DefaultAdvancedFilterOperator;
+            FilterData.AdditionalOperator = FilterOperator.None;
+            FilterData.Value = FilterData.AdditionalValue = "";
+            FilterData.Condition = FilterCondition.None;
+            OnFilter.InvokeAsync(false);
+        }
+    }
+
+    public void Dispose()
+    {
+        _isOpen = false;
+
+        if (_menuReference != null) _menuReference.Close -= CloseFilter;
+    }
+
+}

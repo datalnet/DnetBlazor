@@ -1,0 +1,15 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+
+@inherits Microsoft.AspNetCore.Components.Forms.InputText
+
+<input @attributes="AdditionalAttributes"
+       class="@CssClass"
+       value="@CurrentValue"
+       @oninput="EventCallback.Factory.CreateBinder<string>(
+         this, __value => CurrentValueAsString = __value,
+         CurrentValueAsString)" />
+
+@code {
+
+}

@@ -1,0 +1,72 @@
+﻿@page "/Spinner"
+
+@using System.Timers
+@using Dnet.Blazor.Components.Button
+@using Dnet.Blazor.Components.Spinner.Infrastructure.Interfaces
+
+
+@inject ISpinnerService SpinnerService
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+		<span class="dnet-m-r-10 dnet-app-comp-name">Spinner</span>
+	</div>
+	<div class="dnet-m-l-30 dnet-m-t-30">
+		<DnetButton OnClick="RunSpinner" InitialFocus="true" class="dnet-m-r-10">RunSpinner</DnetButton>
+	</div>
+</div>
+
+
+@code {
+
+	private Timer _timer;
+
+	private Timer _timer1;
+
+	private Timer _timer2;
+
+	protected override void OnInitialized()
+	{
+		_timer = new Timer(400);
+
+		_timer.Elapsed += OnOperationFinish;
+
+		_timer.AutoReset = false;
+
+
+		_timer1 = new Timer(600);
+
+		_timer1.Elapsed += OnOperationFinish;
+
+		_timer1.AutoReset = false;
+
+
+		_timer2 = new Timer(800);
+
+		_timer2.Elapsed += OnOperationFinish;
+
+		_timer2.AutoReset = false;
+	}
+
+	private void RunSpinner()
+	{
+		_timer.Start();
+		SpinnerService.Show();
+
+		_timer1.Start();
+		SpinnerService.Show();
+
+		_timer2.Start();
+		SpinnerService.Show();
+	}
+
+	private void OnOperationFinish(Object source, ElapsedEventArgs e)
+	{
+		SpinnerService.Hide();
+	}
+
+
+}
+
+
+

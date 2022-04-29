@@ -1,0 +1,18 @@
+﻿@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.Grid.Infrastructure.Entities
+
+@if (RowNode.RowData.IsActive)
+{
+    <span style="color: green">@RowNode.RowData.IsActive</span>
+
+}
+else
+{
+    <span style="color: red">@RowNode.RowData.IsActive</span>
+}
+
+@code {
+
+    [Parameter]
+    public RowNode<Person> RowNode { get; set; }
+}

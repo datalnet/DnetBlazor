@@ -1,0 +1,62 @@
+﻿/*@import '../core/style/variables';
+@import '../../cdk/a11y/a11y';
+*/
+:root {
+    --dnet-tree-icon-height: 25px;
+    --dnet-tree-icon-width: 25px;
+    --dnet-tree-font-size: var(--dnet-component-sm-font-size);
+}
+
+li ul {
+    background-color: transparent;
+}
+
+.dnet-tree-parent-node {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.dnet-tree-node-selector {
+    margin-right: 5px;
+}
+
+.dnet-tree-content {
+    font-size: var(--dnet-tree-font-size);
+}
+
+.dnet-tree-node-outlet {
+    display: none;
+    padding-left: 40px;
+
+    &.open {
+        display: block;
+    }
+}
+
+.dnet-tree-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: var(--dnet-tree-icon-width);
+    height: var(--dnet-tree-icon-width);
+}
+
+.dnet-tree-icon {
+    display: block;
+    background-repeat: no-repeat;
+    background-size: 1em 1em;
+    height: 1em;
+    width: 1em;
+    cursor: pointer;
+    color: #5f6368;
+}
+
+.dnet-icon-node-close {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/></svg>");
+}
+
+.dnet-icon-node-open {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>");
+}

@@ -1,0 +1,62 @@
+﻿@using Dnet.Blazor.Components.Dialog.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using Microsoft.AspNetCore.Components.Web
+
+@inject IOverlayService OverlayService
+
+<div class="@DialogCssClasses">
+    <div class="dnet-dialog-header">
+        <h1 class="dnet-dialog-title">@Title</h1>
+        <span @onclick="CloseDialog" class="dnet-dialog-icon-wrapper">
+            <span class="dnet-dialog-icon dnet-dialog-close-icon" unselectable="on"></span>
+        </span>
+    </div>
+    <div class="dnet-dialog-content">
+        <CascadingValue Value="OverlayReferenceId" IsFixed="true">
+            <DynamicComponent Type="@ComponentType" Parameters="@Parameters" />
+        </CascadingValue>
+    </div>
+</div>
+
+@code {
+
+    [CascadingParameter] private int OverlayReferenceId { get; set; }
+
+    [Parameter]
+    public Type ComponentType { get; set; }
+
+    [Parameter]
+    public IDictionary<string, object> Parameters { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string DialogClass { get; set; }
+
+
+    public string DialogCssClasses { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        DialogCssClasses = GetCssClasses();
+    }
+
+    private string GetCssClasses()
+    {
+
+        var classes = new CssBuilder("dnet-dialog-container")
+            .AddClass(DialogClass, when: !string.IsNullOrEmpty(DialogClass))
+            .Build();
+
+        return classes;
+    }
+
+    public void CloseDialog()
+    {
+        OverlayService.Detach(new OverlayResult { OverlayReferenceId = OverlayReferenceId });
+    }
+}

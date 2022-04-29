@@ -1,0 +1,85 @@
+﻿@page "/Tabs"
+@using Dnet.Blazor.Components.Tabs
+@using Dnet.Blazor.Components.Tabs.Infrastructure.Models
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+		<span class="dnet-m-r-10 dnet-app-comp-name">Tabs</span>
+	</div>
+	<div class="dnet-m-l-30 dnet-m-t-30">
+		<div class="row" style="height: calc(100% - 10px)">
+			<div class="col-12" style="height: calc(100% - 0px);">
+				<div style="height: calc(100% - 0px); width: 800px; background-color: #FFFFFF">
+					<DnetTabGroup mat-align-tabs="start" OnTabClicked="TabClicked" TabHeaderBorder="false">
+						<DnetTab Label="Tab1">
+							<span>Tab 1</span>
+						</DnetTab>
+						<DnetTab Label="Tab2">
+							<span>Tab 2</span>
+						</DnetTab>
+						<DnetTab Label="Tab1">
+							<span>Tab 1</span>
+						</DnetTab>
+						<DnetTab Label="Tab2">
+							<span>Tab 2</span>
+						</DnetTab>
+						<DnetTab Label="Tab1">
+							<span>Tab 1</span>
+						</DnetTab>
+						<DnetTab Label="Tab2">
+							<span>Tab 2</span>
+						</DnetTab>
+						<DnetTab Label="Tab1">
+							<span>Tab 1</span>
+						</DnetTab>
+						<DnetTab Label="Tab2">
+							<span>Tab 2</span>
+						</DnetTab>
+						<DnetTab Label="Tab1">
+							<span>Tab 1</span>
+						</DnetTab>
+						<DnetTab Label="Tab2">
+							<span>Tab 2</span>
+						</DnetTab>
+						<DnetTab Label="Tab1">
+							<span>Tab 1</span>
+						</DnetTab>
+						<DnetTab Label="Tab2">
+							<span>Tab 2</span>
+						</DnetTab>
+						<DnetTab Label="Tab1">
+							<span>Tab 1</span>
+						</DnetTab>
+						<DnetTab Label="Tab2">
+							<span>Tab 2</span>
+						</DnetTab>
+						<DnetTab Label="Tab1">
+							<span>Tab 1</span>
+						</DnetTab>
+						<DnetTab Label="Tab2">
+							<span>Tab 2</span>
+						</DnetTab>
+						<DnetTab Label="Tab1">
+							<span>Tab 1</span>
+						</DnetTab>
+						<DnetTab Label="Tab2">
+							<span>Tab 2</span>
+						</DnetTab>
+					</DnetTabGroup>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@code {
+
+	public void TabClicked(TabClikedEventData tabClikedEventData)
+	{
+		var tt = tabClikedEventData.TabId;
+	}
+}
+
+
+

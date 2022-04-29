@@ -1,0 +1,71 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.FormField
+
+
+<div class="d-flex flex-column justify-content-between" style="height: 100%">
+	<div>
+		<EditForm Model="@Person" style="display: flex;flex-direction:column">
+			<DataAnnotationsValidator />
+			<DnetInputText @bind-Value="Person.Name" PlaceHolder="Ex. John" Label="Name" Appearance="Appearance" type="text" Disabled="true">
+				<HintContent>Required field</HintContent>
+				<ErrorContent>
+					<ValidationMessage For="@(() => Person.Name)" />
+				</ErrorContent>
+			</DnetInputText>
+			<DnetInputTextAhead @bind-Value="Person.LastName" PlaceHolder="Dnet TypeAhead" Label="LastName" Appearance="Appearance" type="text" OnStopTyping="StopTyping" FloatLabel="FloatLabel.Always">
+				<HintContent>On stop typing: @aheadTypeResult</HintContent>
+			</DnetInputTextAhead>
+			<DnetInputText @bind-Value="Person.Email" PlaceHolder="Ex. john.doe@mycompany.com" Label="Email" Appearance="Appearance" type="text">
+			</DnetInputText>
+			<div class="dnet-m-b-10" style="width:100%">
+				<DnetInputText @bind-Value="Person.Phone" PlaceHolder="Ex. +34 678 897 765" Label="Phone" Appearance="Appearance" type="text">
+					<HintContent>You can add the country prefix</HintContent>
+					<SufixContent>
+						<div class="dnet-app-icon-wrapper">
+							<span class="dnet-app-icon dnet-app-formfield-headphones"></span>
+						</div>
+					</SufixContent>
+				</DnetInputText>
+			</div>
+			<DnetInputNumber @bind-Value="Person.Age" PlaceHolder="Ex. Pizza" Label="Favorite food" Appearance="Appearance" type="text">
+			</DnetInputNumber>
+			<DnetInputText @bind-Value="Person.Company" PlaceHolder="Ex. MyCompany" Label="Company" Appearance="Appearance" type="text">
+			</DnetInputText>
+			<DnetInputText @bind-Value="Person.Balance" PlaceHolder="Ex. Current Balance" Label="Balance" Appearance="Appearance" type="text">
+				<SufixContent>
+					€
+				</SufixContent>
+			</DnetInputText>
+			<DnetInputDate @bind-Value="Person.Birthday" PlaceHolder="Ex. 2021/10/6" Label="Birthday" Appearance="Appearance">
+			</DnetInputDate>
+			<DnetInputTextArea @bind-Value="Person.Address"
+							   PlaceHolder="Ex. 4th Street, CP: 11901"
+							   Label="Address" Appearance="Appearance"
+							   type="text"
+							   rows="5">
+			</DnetInputTextArea>
+		</EditForm>
+	</div>
+</div>
+
+@code {
+
+	[Parameter]
+	public Person Person { get; set; } = new Person();
+
+	[Parameter]
+	public Appearance Appearance { get; set; } = Appearance.Fill;
+
+	private string aheadTypeResult { get; set; }
+
+
+	protected override void OnInitialized()
+	{
+	}
+
+	private void StopTyping(string value) {
+		aheadTypeResult = value; 
+	}
+
+}

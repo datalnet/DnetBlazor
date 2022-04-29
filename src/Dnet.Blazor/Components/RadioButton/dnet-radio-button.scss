@@ -1,0 +1,173 @@
+﻿:root {
+    --dnet-radio-button-border-color: rgba(0,0,0,.54);
+    --dnet-radio-button-border-width: 1px;
+    --dnet-radio-button-background: #42b0d5;
+    --dnet-radio-button-border-color: #b0b0b0;
+    --dnet-radio-button-size: 16px;
+    --dnet-radio-button-font-size: .875rem;
+    --dnet-radio-button-checkmark-path: #fafafa;
+}
+
+.dnet-radio-button {
+    display: inline-block;
+    -webkit-tap-highlight-color: transparent;
+    outline: 0;
+}
+
+.dnet-radio-disabled, .dnet-radio-disabled .dnet-radio-label {
+    cursor: default;
+}
+
+.dnet-radio-button.dnet-radio-disabled.dnet-radio-checked .dnet-radio-outer-circle, .dnet-radio-button.dnet-radio-disabled .dnet-radio-outer-circle {
+    border-color: rgba(0,0,0,.38);
+}
+
+.dnet-radio-label {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    width: 100%;
+    font-size: var(--dnet-radio-button-font-size);
+}
+
+.dnet-radio-button.dnet-radio-disabled .dnet-radio-label-content {
+    color: rgba(0,0,0,.38);
+}
+
+.dnet-radio-container {
+    box-sizing: border-box;
+    display: inline-block;
+    position: relative;
+    width: var(--dnet-radio-button-size);
+    height: var(--dnet-radio-button-size);
+    flex-shrink: 0;
+}
+
+.dnet-radio-button.dnet-accent.dnet-radio-checked .dnet-radio-outer-circle {
+    border-color: var(--dnet-radio-button-background);
+}
+
+.dnet-radio-outer-circle {
+    box-sizing: border-box;
+    display: block;
+    height: var(--dnet-radio-button-size);
+    left: 0;
+    position: absolute;
+    top: 0;
+    transition: border-color ease 280ms;
+    width: var(--dnet-radio-button-size);
+    border-width: var(--dnet-radio-button-border-width);
+    border-style: solid;
+    border-radius: 50%;
+}
+
+.dnet-radio-button.dnet-accent.dnet-radio-checked .dnet-radio-persistent-ripple, .dnet-radio-button.dnet-accent .dnet-radio-inner-circle, .dnet-radio-button.dnet-accent .dnet-radio-ripple .dnet-ripple-element:not(.dnet-radio-persistent-ripple), .dnet-radio-button.dnet-accent:active .dnet-radio-persistent-ripple {
+    background-color: var(--dnet-radio-button-background);
+}
+
+.dnet-radio-checked .dnet-radio-inner-circle {
+    transform: scale(0.5);
+    opacity: 1;
+    transition: transform ease 280ms,background-color ease 280ms;
+}
+
+.dnet-radio-button.dnet-accent.dnet-radio-checked .dnet-radio-outer-circle {
+    border-color: var(--dnet-radio-button-background);
+}
+
+.dnet-radio-inner-circle {
+    border-radius: 50%;
+    box-sizing: border-box;
+    display: block;
+    height: var(--dnet-radio-button-size);
+    left: 0;
+    position: absolute;
+    top: 0;
+    opacity: 0;
+    transition: transform ease 280ms,background-color ease 280ms,opacity linear 1ms 280ms;
+    width: var(--dnet-radio-button-size);
+    transform: scale(0.001);
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+}
+
+.dnet-radio-input {
+    bottom: 0;
+    left: 50%;
+}
+
+.cdk-visually-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    white-space: nowrap;
+    outline: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.dnet-radio-button .dnet-radio-ripple {
+    position: absolute;
+    left: calc(50% - var(--dnet-radio-button-size));
+    top: calc(50% - var(--dnet-radio-button-size));
+    height: 40px;
+    width: 40px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.dnet-focus-indicator, .dnet-mdc-focus-indicator {
+    position: relative;
+}
+
+.dnet-ripple:not(:empty) {
+    transform: translateZ(0);
+}
+
+.dnet-ripple {
+    overflow: hidden;
+    position: relative;
+}
+
+.dnet-radio-persistent-ripple, .dnet-radio-disabled .dnet-radio-container:hover .dnet-radio-persistent-ripple {
+    opacity: 0;
+}
+
+.dnet-radio-persistent-ripple {
+    width: 100%;
+    height: 100%;
+    transform: none;
+    top: 0;
+    left: 0;
+}
+
+.dnet-ripple-element {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: opacity,transform 0ms cubic-bezier(0,0,.2,1);
+    transform: scale(0);
+}
+
+.dnet-radio-label-content {
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+    display: inline-block;
+    order: 0;
+    line-height: inherit;
+    padding-left: 8px;
+    padding-right: 0;
+}

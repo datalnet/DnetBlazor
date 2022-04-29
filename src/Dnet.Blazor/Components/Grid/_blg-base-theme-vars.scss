@@ -1,0 +1,35 @@
+﻿:root {
+    // Colors
+    --blg-border-color: #eee;
+    --blg-background-color: #fff;
+    --blg-foreground-color: #5f6368;
+    --blg-header-background-color: var(--blg-background-color);
+    --blg-header-foreground-color: var(--blg-foreground-color);
+    --blg-cell-default-background-color: #ffffff;
+    --blg-headercell-default-background-color: #ffffff;
+    --blg-cell-border-bottom-color: var(--blg-border-color);
+    --blg-root-wrapper-border-color: transparent;
+    // Borders
+    --blg-cell-pinnedleft-border-bottom: 1px solid var(--blg-cell-border-bottom-color);
+    --blg-cell-pinnedright-border-bottom: 1px solid var(--blg-cell-border-bottom-color);
+    --blg-cell-border-bottom: 1px solid var(--blg-cell-border-bottom-color);
+    --blg-root-wrapper-border: 1px solid var(--blg-root-wrapper-border-color);
+    // Sizing
+    --blg-grid-size: 4px;
+    --blg-header-height: calc(var(--blg-grid-size) * 10);
+    --blg-row-height: calc(var(--blg-grid-size) * 10);
+    --blg-cell-horizontal-padding: calc(var(--blg-grid-size) * 3);
+    // Fonts
+    --blg-font-family: "Roboto";
+    --blg-font-size: 14px;
+    --blg-font-weight: 400;
+    --blg-secondary-font-family: var(--blg-font-family);
+    --blg-secondary-font-size: 14px;
+    --blg-secondary-font-weight: 400;
+    // Misc
+    --blg-row-border-width: 0;
+    // scrolls
+    --blg-grid-scroll-width: 6px;
+    --blg-grid-foreground-color: #BDBDBD;
+    --blg-grid-background-color: rgba(0, 0, 0, 0);
+}

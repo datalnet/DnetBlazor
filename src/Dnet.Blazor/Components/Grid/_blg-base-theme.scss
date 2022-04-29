@@ -1,0 +1,145 @@
+﻿@import "_blg-theme-mixins.scss";
+
+@mixin blg-base-theme() {
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--blg-background-color);
+    color: var(--foreground-color);
+    font-family: var(--blg-font-family);
+    font-weight: var(--blg-font-weight);
+    font-size: var(--blg-font-size);
+    line-height: normal;
+
+    .blg-root-wrapper {
+        border: var(--blg-root-wrapper-border);
+    }
+
+    .blg-cell {
+        -webkit-font-smoothing: subpixel-antialiased;
+
+        &.blg-hover-class {
+            background-color: var(--blg-hover-color);
+            cursor: pointer;
+        }
+    }
+
+    .blg-pinned-left-cols-container {
+        .blg-cell:nth-child(n) {
+            border: none;
+            border-right: 1px solid var(--blg-border-color);
+            border-bottom: var(--blg-cell-pinnedleft-border-bottom);
+        }
+    }
+
+    .blg-pinned-right-cols-container {
+        .blg-cell:nth-child(n) {
+            border: none;
+            border-left: 1px solid var(--blg-border-color);
+            border-bottom: var(--blg-cell-pinnedright-border-bottom);
+        }
+    }
+
+    .blg-header {
+        background-color: var(--blg-header-background-color);
+        color: var(--blg-header-foreground-color);
+        font-weight: var(--blg-secondary-font-weight);
+        font-size: var(--blg-secondary-font-size);
+        font-family: var(--blg-secondary-font-family);
+        border-bottom: 1px solid var(--blg-border-color);
+        padding-right: var(--blg-grid-scroll-width);
+    }
+
+    .blg-pinned-left-header {
+        .blg-header-cell:last-child {
+            border: none;
+            border-right: 1px solid var(--blg-border-color);
+        }
+    }
+
+    .blg-pinned-right-header {
+        .blg-header-cell:first-child {
+            border: none;
+            border-left: 1px solid var(--blg-border-color);
+        }
+    }
+
+    .blg-pinned-right-header {
+        .blg-header-cell:last-child {
+            border: none;
+            border-left: 1px solid var(--blg-border-color);
+        }
+    }
+
+    .blg-row-odd {
+        background-color: var(--blg-odd-row-background-color);
+    }
+
+    .blg-row-even {
+        background-color: var(--blg-background-color);
+    }
+
+    .blg-numeric-cell {
+        text-align: right;
+    }
+
+    .blg-header-cell {
+        @include row-border(var(--blg-border-color));
+        @include grid-header-cell(var(--blg-cell-horizontal-padding));
+        border-width: 0;
+        border-right: 1px solid var(--blg-border-color);
+        background-color: var(--blg-headercell-default-background-color);
+
+        &:last-child {
+            border-right: none;
+        }
+    }
+
+    .blg-header-row:first-child {
+        .blg-header-cell {
+            border-top-width: 0;
+        }
+    }
+
+    .blg-cell {
+        @include grid-cell(calc(var(--blg-row-height) - 2px), var(--blg-cell-horizontal-padding));
+        border: 1px solid transparent;
+        background-color: var(--blg-cell-default-background-color);
+        border-bottom: var(--blg-cell-border-bottom);
+        /*  padding-left: calc(var(--blg-cell-horizontal-padding) - 1px);
+        padding-right: calc(var(--blg-cell-horizontal-padding) - 1px);*/
+    }
+
+    .blg-row-selected {
+        background-color: var(--blg-selected-color);
+    }
+
+    .blg-row-clicked {
+        background-color: var(--blg-clicked-color);
+    }
+
+    .blg-row-disabled {
+        color: var(--blg-disabled-color);
+    }
+
+    .blg-cell-range-selected:not(.blg-cell-focus) {
+        background-color: var(--blg-range-selection-background-color);
+    }
+
+    ::-webkit-scrollbar {
+        width: var(--blg-grid-scroll-width);
+        height: var(--blg-grid-scroll-width);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--blg-grid-foreground-color);
+        cursor: pointer;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--blg-grid-background-color);
+    }
+    // For Internet Explorer
+    body {
+        scrollbar-face-color: var(--blg-grid-foreground-color);
+        scrollbar-track-color: var(--blg-grid-background-color);
+    }
+}

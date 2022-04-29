@@ -1,0 +1,45 @@
+﻿@page "/Checkbox"
+
+@using System.Drawing
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.Checkbox
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Web;
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+		<span class="dnet-m-r-10 dnet-app-comp-name">Checkbox</span>
+	</div>
+
+	<div class="dnet-m-l-30 dnet-m-t-30">
+		<div class="dnet-m-b-30">
+			<DnetInputCheckbox @bind-Value="_disable" Disabled="@_disable2">Caramelo</DnetInputCheckbox>
+		</div>
+		<div class="dnet-m-b-30">
+			<DnetInputCheckbox @bind-Value="_disable1">Vainilla</DnetInputCheckbox>
+		</div>
+		<div class="dnet-m-b-30">
+			<DnetInputCheckbox @bind-Value="_disable3">Chocolate</DnetInputCheckbox>
+		</div>
+	</div>
+</div>
+
+
+@code {
+
+	private bool _disable { get; set; }
+
+	private bool _disable1 { get; set; }
+
+	private bool _disable2 { get; set; }
+
+	private bool _disable3 { get; set; }
+
+	protected override void OnInitialized()
+	{
+		_disable2 = true;
+	}
+}
+
+
+

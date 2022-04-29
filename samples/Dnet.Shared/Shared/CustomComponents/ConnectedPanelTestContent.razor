@@ -1,0 +1,220 @@
+﻿@using Dnet.Blazor.Components.Button
+@using Dnet.Blazor.Components.ConnectedPanel.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.DatePicker
+@using Dnet.Blazor.Components.Grid.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Components.Select
+@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Infrastructure.Models.SearchModels
+@using Dnet.Blazor.Infrastructure.Models.SearchModels.FilterModels
+
+@inject IConnectedPanelService ConnectedPanelService
+
+<div class="" style="display:flex;flex-direction: column;justify-content:space-between; height: calc(100% - 0px); width: 100%;padding: 10px;">
+    <div class="dnet-panel-content" style="flex: 1 0 calc(100% - 50px); overflow:auto">
+        <EditForm EditContext="@_userEditContext" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            @{
+                var textValues = new List<FilterOperator>()
+            {
+            FilterOperator.None,
+            FilterOperator.Equals,
+            FilterOperator.NotEquals,
+            FilterOperator.StartsWith,
+            FilterOperator.EndsWith,
+            FilterOperator.Contains,
+            FilterOperator.NotContains
+            };
+
+                var numberValues = new List<FilterOperator>()
+            {
+            FilterOperator.None,
+            FilterOperator.Equals,
+            FilterOperator.NotEquals,
+            FilterOperator.GreaterThan,
+            FilterOperator.LessThan
+            };
+
+                var conditionValues = new List<FilterCondition>()
+            {
+            FilterCondition.And,
+            FilterCondition.None,
+            FilterCondition.Or,
+            };
+
+                var booleansValues = new List<string>()
+            {
+            "true",
+            "false",
+            };
+
+                if (FilterData.Type != CellDataType.Boolean)
+                {
+                    if (FilterData.Type == CellDataType.Text)
+                    {
+                        <DnetSelect @bind-Value="_operator"
+                        Items="@textValues"
+                        TItem="FilterOperator"
+                        DisplayValueConverter="(value) => (value.ToString())"
+                        InputTextToUpper="true"
+                        PlaceHolder="Operator"
+                        Label="Operator"
+                        Appearance="@_appearance">
+                        </DnetSelect>
+                    }
+                    else if (FilterData.Type == CellDataType.Number || FilterData.Type == CellDataType.Date)
+                    {
+                        <DnetSelect @bind-Value="_operator"
+                        Items="@numberValues"
+                        TItem="FilterOperator"
+                        DisplayValueConverter="(value) => (value.ToString())"
+                        InputTextToUpper="true"
+                        PlaceHolder="Operator"
+                        Label="Operator"
+                        Appearance="@_appearance">
+                        </DnetSelect>
+                    }
+                }
+                if (FilterData.Type == CellDataType.Boolean)
+                {
+                    <DnetSelect @bind-Value="_operator"
+                        Items="@booleansValues"
+                        TItem="string"
+                        DisplayValueConverter="(value) => (value.ToString())"
+                        InputTextToUpper="true"
+                        PlaceHolder="Operator"
+                        Label="Operator"
+                        Appearance="@_appearance">
+                    </DnetSelect>
+                }
+                else if (FilterData.Type == CellDataType.Date)
+                {
+                    <DnetDatePicker @bind-Value="@FilterData.Value"
+                            Disabled="false"
+                            Format="@DateFormat"
+                            Appearance="@_appearance"
+                            PlaceHolder="Value"
+                            Label="Value">
+                    </DnetDatePicker>
+                }
+                if (FilterData.Type != CellDataType.Boolean)
+                {
+                    <DnetSelect @bind-Value="_operator"
+                        Items="conditionValues"
+                        TItem="FilterCondition"
+                        DisplayValueConverter="(value) => (value.ToString())"
+                        InputTextToUpper="true"
+                        PlaceHolder="Operator"
+                        Label="Operator"
+                        Appearance="@_appearance">
+                    </DnetSelect>
+                    if (FilterData.Type != CellDataType.Boolean)
+                    {
+                        if (FilterData.Type == CellDataType.Text)
+                        {
+                            <DnetSelect @bind-Value="_operator"
+                        Items="@textValues"
+                        TItem="FilterOperator"
+                        DisplayValueConverter="(value) => (value.ToString())"
+                        InputTextToUpper="true"
+                        PlaceHolder="Operator"
+                        Label="Operator"
+                        Appearance="@_appearance">
+                            </DnetSelect>
+                        }
+                        if (FilterData.Type == CellDataType.Number || FilterData.Type == CellDataType.Date)
+                        {
+                            <DnetSelect @bind-Value="_operator"
+                        Items="@numberValues"
+                        TItem="FilterOperator"
+                        DisplayValueConverter="(value) => (value.ToString())"
+                        InputTextToUpper="true"
+                        PlaceHolder="Operator"
+                        Label="Operator"
+                        Appearance="@_appearance">
+                            </DnetSelect>
+                        }
+                    }
+                    if (FilterData.Type == CellDataType.Date)
+                    {
+                        <DnetDatePicker @bind-Value="@FilterData.AdditionalValue"
+                            Disabled="false"
+                            Format="@DateFormat"
+                            Appearance="@_appearance"
+                            PlaceHolder="Aditional value"
+                            Label="Aditional value">
+                        </DnetDatePicker>
+                    }
+                }
+            }
+
+        </EditForm>
+    </div>
+    <div class="dnet-panel-footer" style="height: 50px;display: flex;align-items: center;justify-content: flex-end;">
+        <DnetButton OnClick="CancelOverlay" class="dnet-m-r-10">Close</DnetButton>
+        <DnetButton OnClick="CancelOverlay" InitialFocus="true" class="">Ok</DnetButton>
+    </div>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private int OverlayReferenceId { get; set; }
+
+    [Parameter]
+    public string DateFormat { get; set; } = "yyyy/MM/dd";
+
+    [Parameter]
+    public AdvancedFilterModel FilterData { get; set; }
+
+    private bool _formInvalid = true;
+
+    private Appearance _appearance { get; set; } = Appearance.Standard;
+
+    private EditContext _userEditContext;
+
+    private string _operator { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        _userEditContext = new EditContext(FilterData);
+
+        _userEditContext.OnFieldChanged += (data, eventArgs) =>
+        {
+            _formInvalid = !_userEditContext.Validate();
+            StateHasChanged();
+        };
+    }
+
+    void CloseOverlay()
+    {
+        var dataResult = new OverlayResult()
+            {
+                CloseReason = CloseReason.Ok,
+                ComponentData = "" ?? "10",
+                OverlayReferenceId = OverlayReferenceId,
+            };
+
+        ConnectedPanelService.Close(dataResult);
+    }
+
+    void CancelOverlay()
+    {
+        var dataResult = new OverlayResult()
+            {
+                CloseReason = CloseReason.Cancel,
+                ComponentData = null,
+                OverlayReferenceId = OverlayReferenceId
+            };
+
+        ConnectedPanelService.Close(dataResult);
+    }
+
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine("All is OK");
+    }
+
+}

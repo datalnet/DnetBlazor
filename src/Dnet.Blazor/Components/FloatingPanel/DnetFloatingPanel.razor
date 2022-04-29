@@ -1,0 +1,44 @@
+﻿@using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Interfaces
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using Microsoft.AspNetCore.Components.Web
+
+@inject IFloatingPanelService FloatingPanelService
+
+<div class="@_toastCssClasses">
+	<CascadingValue Value="OverlayReferenceId" IsFixed="true">
+		<DynamicComponent Type="@ComponentType" Parameters="@Parameters" />
+	</CascadingValue>
+</div>
+
+@code {
+
+	[CascadingParameter]
+	private int OverlayReferenceId { get; set; }
+
+	[Parameter]
+	public Type ComponentType { get; set; } = null;
+
+	[Parameter]
+	public IDictionary<string, object> Parameters { get; set; }
+
+	[Parameter]
+	public string FloatingPanelClass { get; set; }
+
+	private string _toastCssClasses { get; set; }
+
+
+	protected override void OnInitialized()
+	{
+		_toastCssClasses = GetCssClasses();
+	}
+
+	private string GetCssClasses()
+	{
+
+		var classes = new CssBuilder("dnet-floating-panel-container")
+			.AddClass(FloatingPanelClass, when: !string.IsNullOrEmpty(FloatingPanelClass))
+			.Build();
+
+		return classes;
+	}
+}

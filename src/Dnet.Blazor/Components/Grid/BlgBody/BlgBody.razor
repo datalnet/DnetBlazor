@@ -1,0 +1,274 @@
+@using Dnet.Blazor.Components.Grid.Infrastructure.Entities
+@using Dnet.Blazor.Components.Grid.Infrastructure.Enums
+@using Dnet.Blazor.Components.Grid.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Grid.Infrastructure.Models
+@using Dnet.Blazor.Components.Grid.Infrastructure.Services
+@using Dnet.Blazor.Components.Grid.BlgRow
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.JSInterop
+
+@typeparam TItem
+
+@{
+    var rowId = 0;
+
+    @for (var i = 0; i < RowNodes.Count; ++i)
+    {
+        var rowNode = RowNodes[i];
+
+        rowId++;
+
+        <BlgRow RowNode="@rowNode"
+                RowId="@rowId"
+                GridColumns="@GridColumns"
+                GroupGridColumn="@GroupGridColumn"
+                GridOptions="@GridOptions"
+                GridApi="@GridApi"
+                HasGrouping="@HasGrouping"
+                Pinned="@Pinned"
+                CheckboxSelectionPinned="@CheckboxSelectionPinned"
+                OnChangeExpanded="ChangeExpanded"
+                OnCellClicked="CellClicked"
+                OnRowClicked="RowClicked"
+                OnRowDoubleClicked="RowDoubleClicked"
+                OnCheckboxClicked="CheckboxClicked"
+                ComponentName="@ComponentName"
+                OnMouseOver="MouseOver">
+        </BlgRow>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public List<RowNode<TItem>> RowNodes { get; set; }
+
+    [Parameter]
+    public List<GridColumn<TItem>> GridColumns { get; set; }
+
+    [Parameter]
+    public GridColumn<TItem> GroupGridColumn { get; set; }
+
+    [Parameter]
+    public GridOptions<TItem> GridOptions { get; set; }
+
+    [Parameter]
+    public GridApi<TItem> GridApi { get; set; }
+
+    [Parameter]
+    public bool HasGrouping { get; set; }
+
+    [Parameter]
+    public BlGridMessageEmitter ComponentName { get; set; }
+
+    [Parameter]
+    public EventCallback<long> OnChangeExpanded { get; set; }
+
+    //In Events OnCellClicked, OnRowClicked, OnRowDoubleClicked, OnSelectionChanged T should be
+    //the generic form of RowNode, GridColumn etc. See implementation in BlGrid
+    //It is a Bug in Blazor  https://github.com/dotnet/aspnetcore/issues/28410
+    [Parameter]
+    public EventCallback<CellClikedEventData> OnCellClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<long> OnRowClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<long> OnRowDoubleClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<List<long>> OnSelectionChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<long> OnMouseOver { get; set; }
+
+    [Parameter]
+    public Pinned Pinned { get; set; }
+
+    [Parameter]
+    public bool CheckboxSelectionPinned { get; set; }
+
+    public int RowId { get; set; }
+
+    private List<RowNode<TItem>>? _selectedRowNodes;
+
+    private RowNode<TItem>? _previousSelectedRowNode;
+
+    private RowNode<TItem>? _previousClickedRowNode;
+
+    private bool _shouldRender;
+
+    protected override bool ShouldRender() => _shouldRender;
+
+
+    protected override void OnInitialized()
+    {
+        RowId = 0;
+
+        _selectedRowNodes = new List<RowNode<TItem>>();
+    }
+
+    protected override void OnAfterRender(bool first)
+    {
+        _shouldRender = false;
+    }
+
+    public void ActiveRender()
+    {
+        _shouldRender = true;
+    }
+
+    public async Task ChangeExpanded(long id)
+    {
+        await OnChangeExpanded.InvokeAsync(id);
+    }
+
+    public void CellClicked(CellClikedEventData cellClikedEventData)
+    {
+        OnCellClicked.InvokeAsync(new CellClikedEventData { RowNodeId = cellClikedEventData.RowNodeId, CellId = cellClikedEventData.CellId });
+    }
+
+    private void RowClicked(long rowNodeId)
+    {
+        var rowNode = RowNodes.Where(p => p.RowNodeId == rowNodeId).Select(p => p).FirstOrDefault();
+
+        if (GridOptions.SuppressRowClickSelection == false)
+        {
+            ManageSelections(rowNode);
+
+            if (GridOptions.RowSelectionType == RowSelectionType.Single)
+            {
+                _previousClickedRowNode?.ClickThisNode(false);
+                _previousSelectedRowNode?.SelectThisNode(false);
+            }
+
+            _previousClickedRowNode = rowNode;
+            _previousSelectedRowNode = rowNode;
+
+            OnSelectionChanged.InvokeAsync(_selectedRowNodes.Select(p => p.RowNodeId).ToList());
+        }
+        else
+        {
+            if (_previousClickedRowNode != null && _previousClickedRowNode.RowNodeId != rowNode?.RowNodeId)
+            {
+                _previousClickedRowNode.ClickThisNode(false);
+            }
+
+            _previousClickedRowNode = rowNode;
+        }
+
+        OnRowClicked.InvokeAsync(rowNodeId);
+    }
+
+    private void RowDoubleClicked(long rowNodeId)
+    {
+        OnRowDoubleClicked.InvokeAsync(rowNodeId);
+    }
+
+    private void CheckboxClicked(long rowNodeId)
+    {
+        var rowNode = RowNodes.Where(p => p.RowNodeId == rowNodeId).Select(p => p).FirstOrDefault();
+
+        ManageSelections(rowNode);
+
+        if (GridOptions.RowSelectionType == RowSelectionType.Single)
+        {
+            _previousSelectedRowNode?.SelectThisNode(false);
+        }
+
+        _previousSelectedRowNode = rowNode;
+
+        OnSelectionChanged.InvokeAsync(_selectedRowNodes.Select(p => p.RowNodeId).ToList());
+    }
+
+    private void ManageSelections(RowNode<TItem> rowNode)
+    {
+        if (rowNode == null) return;
+
+        if (
+            GridOptions.RowSelectionType == RowSelectionType.Multiple ||
+            (GridOptions.RowMultiSelectWithClick && GridOptions.SuppressRowClickSelection == false && GridOptions.RowSelectionType == RowSelectionType.Multiple))
+        {
+            if (rowNode.IsGroup)
+            {
+                var tr = GridApi.GetTreeRowNodes();
+
+                var found = Find(tr, (n) => n.Data.RowNodeId == rowNode.RowNodeId);
+
+                var flat = FlattenTree(found, rowNode.IsSelected());
+
+                if (rowNode.IsSelected())
+                {
+                    _selectedRowNodes.AddRange(flat);
+                }
+                else
+                {
+                    foreach (var item in flat)
+                    {
+                        _selectedRowNodes.Remove(item);
+                    }
+                }
+            }
+            else
+            {
+                if (rowNode.IsSelected())
+                {
+                    _selectedRowNodes.Add(rowNode);
+                }
+                else
+                {
+                    _selectedRowNodes.Remove(rowNode);
+                }
+            }
+        }
+        else
+        {
+            if (_previousSelectedRowNode != null)
+            {
+                _selectedRowNodes.Remove(_previousSelectedRowNode);
+            }
+
+            _selectedRowNodes.Add(rowNode);
+        }
+    }
+
+    private TreeRowNode<TItem> Find(TreeRowNode<TItem> node, Func<TreeRowNode<TItem>, bool> predicate)
+    {
+        if (predicate(node))
+            return node;
+
+        foreach (var n in node.Children.AsParallel())
+        {
+            var found = Find(n, predicate);
+            if (found != default(TreeRowNode<TItem>))
+                return found;
+        }
+
+        return default!;
+    }
+
+    private List<RowNode<TItem>> FlattenTree(TreeRowNode<TItem> tree, bool isSelected)
+    {
+        var rowNodeList = new List<RowNode<TItem>>();
+
+        if (tree.Data != null)
+        {
+            tree.Data.SelectThisNode(isSelected);
+
+            rowNodeList.Add(tree.Data);
+        }
+
+        foreach (var child in tree.Children)
+        {
+            rowNodeList.AddRange(FlattenTree(child, isSelected));
+        }
+
+        return rowNodeList;
+    }
+
+    private void MouseOver(long rowNodeId)
+    {
+        OnMouseOver.InvokeAsync(rowNodeId);
+    }
+}

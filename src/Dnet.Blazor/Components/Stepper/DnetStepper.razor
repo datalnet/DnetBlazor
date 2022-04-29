@@ -1,0 +1,167 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+
+
+@if (Orientation == (int) StepperOrientation.Horizontal)
+{
+    <div class="dnet-stepper-horizontal" @attributes=AllOtherAttributes>
+        <div class="dnet-horizontal-stepper-header-container">
+            @foreach (var step in Steps.OrderBy(p => p.Order))
+            {
+                <div class="dnet-step-header dnet-horizontal-stepper-header @(_selectedId == step.Id ? "dnet-step-selected" : null)" @onclick="(() => StepClicked(step))">
+                    @if (step.StepHeaderTemplate != null)
+                    {
+                        @step.StepHeaderTemplate
+                    }
+                    else
+                    {
+                        <div class="dnet-step-icon dnet-step-icon-state-number">
+                            <div class="dnet-step-icon-content">
+                                @step.Id
+                            </div>
+                        </div>
+                        <div class="dnet-step-label dnet-step-label-active">
+                            <div class="dnet-step-text-label">
+                                <span>@step.Label</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @if (step.Id != _nextId)
+                {
+                    <div class="dnet-stepper-horizontal-line"></div>
+                }
+            }
+        </div>
+        <div class="dnet-horizontal-content-container">
+            <div class="dnet-horizontal-stepper-content">
+                @_activeStepContent
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="dnet-stepper-vertical" @attributes=AllOtherAttributes>
+        @foreach (var step in Steps.OrderBy(p => p.Order))
+        {
+            <div class="dnet-step">
+                <div class="dnet-step-header dnet-vertical-stepper-header @(_selectedId == step.Id ? "dnet-step-selected" : null)" @onclick="(() => StepClicked(step))">
+                    @if (step.StepHeaderTemplate != null)
+                    {
+                        @step.StepHeaderTemplate
+                    }
+                    else
+                    {
+                        <div class="dnet-step-icon dnet-step-icon-state-number">
+                            <div class="dnet-step-icon-content">
+                                @step.Id
+                            </div>
+                        </div>
+                        <div class="dnet-step-label dnet-step-label-active">
+                            <div class="dnet-step-text-label">
+                                <span>@step.Label</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="dnet-vertical-content-container @(step.Id != _nextId ? "dnet-stepper-vertical-line" : null)">
+                    <div class="dnet-vertical-stepper-content">
+                        <div class="dnet-vertical-content" style="visibility:@(step.Id == _selectedId ? "inherit" : "hidden")">
+                            @_activeStepContent
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<Tuple<int, int>> OnSelectionChange { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public int SelectedStepId { get; set; }
+
+    [Parameter]
+    public int Orientation { get; set; } = (int) StepperOrientation.Horizontal;
+
+    [Parameter]
+    public int LabelPosition { get; set; }
+
+    [Parameter]
+    public bool Linear { get; set; } = false;
+
+    [Parameter]
+    public bool Editable { get; set; } = true;
+
+    private List<DnetStep> Steps = new();
+
+    private int _selectedId;
+
+    private RenderFragment _activeStepContent;
+
+    private List<int> stepIds = new();
+
+    private int _nextId { get; set; } = 0;
+
+
+    protected override void OnInitialized()
+    {
+        _selectedId = SelectedStepId > 0 ? SelectedStepId : 1;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+        
+        if (Steps.Any())
+        {
+            _activeStepContent = Steps.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent!;
+        }
+
+        StateHasChanged();
+    }
+
+    internal void AddStep(DnetStep step)
+    {
+        step.Id = GetId();
+
+        stepIds.Add(step.Id);
+
+        Steps.Add(step);
+
+        StateHasChanged();
+    }
+
+    private void StepClicked(DnetStep step)
+    {
+        var previousStep = Steps.FirstOrDefault(p => p.Id == _selectedId);
+
+        if (Linear && (step.Id - _selectedId != 1) && step.Id > _selectedId || (Linear && previousStep != null && !(previousStep.Completed && step.Id > 1) && step.Id > _selectedId)) return;
+
+        _activeStepContent = Steps.FirstOrDefault(p => p.Id == step.Id)?.ChildContent!;
+
+        OnSelectionChange.InvokeAsync(new Tuple<int, int>(step.Id, _selectedId));
+
+        _selectedId = step.Id;
+    }
+
+    private int GetId()
+    {
+        _nextId++;
+        return _nextId;
+    }
+
+}

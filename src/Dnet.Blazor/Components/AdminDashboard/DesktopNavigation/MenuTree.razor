@@ -1,0 +1,79 @@
+@using System.Diagnostics
+@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Services
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JSRuntime
+
+<li @onmouseover="GetParentPosition" @ref="_parent">
+
+    <MenuTreeLink Menu="@Menu" OnLinkNodeClick="OnLinkNodeClicked"></MenuTreeLink>
+
+    <div class="positioning-helper @OpenCssClass" style="top: @_top; left: @_left">
+
+        @if (!IsOpen)
+        {
+            <MenuTreeLinkHelper Menu="@Menu"></MenuTreeLinkHelper>
+        }
+
+        @if (Menu.Children.Count > 0)
+        {
+            <ul>
+                @foreach (var item in Menu.Children)
+                {
+                    <MenuTree Menu="@item"></MenuTree>
+                }
+            </ul>
+        }
+    </div>
+
+</li>
+
+@code {
+
+    [Parameter]
+    public NavigationMenu Menu { get; set; }
+
+    string OpenCssClass => IsOpen ? "open" : null;
+
+    private bool IsOpen { get; set; } = false;
+
+    private ElementReference _parent;
+
+    private string _top;
+
+    private string _left;
+
+    private async Task GetParentPosition()
+    {
+        if (Menu.IsNode)
+        {
+            var clientRectValues = await DnetAdminDashboardInterop.GetBoundingClientRect(JSRuntime, _parent);
+
+            if (clientRectValues != null)
+            {
+                _top = $"{clientRectValues.Top}px";
+                _left = $"{clientRectValues.Left + clientRectValues.Width}px";
+            }
+        }
+        else
+        {
+            var clientRectValues = await DnetAdminDashboardInterop.GetElementOffsets(JSRuntime, _parent);
+
+            if (clientRectValues != null)
+            {
+                _top = $"{clientRectValues.OffsetTop}px";
+                _left = $"{clientRectValues.OffsetLeft + clientRectValues.OffsetWidth}px";
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnLinkNodeClicked(bool isNodeOpen)
+    {
+        IsOpen = isNodeOpen;
+    }
+
+
+}

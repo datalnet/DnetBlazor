@@ -1,0 +1,47 @@
+﻿@page "/RadioButton"
+
+@using System.Drawing
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.RadioButton
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Web;
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+		<span class="dnet-m-r-10 dnet-app-comp-name">Radio Button</span>
+	</div>
+
+	<div class="dnet-m-l-30 dnet-m-t-30">
+		<DnetInputRadioGroup Name="colors" @bind-Value="EngineC">
+			<div class="dnet-m-b-30">
+				<DnetInputRadioButton Name="colors" Value="Engine.Fusion" Disabled="@_disable2">Fusion</DnetInputRadioButton>
+			</div>
+			<div class="dnet-m-b-30">
+				<DnetInputRadioButton Name="colors" Value="Engine.Ion">Ion</DnetInputRadioButton>
+			</div>
+			<div class="dnet-m-b-30">
+				<DnetInputRadioButton Name="colors" Value="Engine.Plasma">Plasma</DnetInputRadioButton>
+			</div>
+		</DnetInputRadioGroup>
+	</div>
+</div>
+
+
+@code {
+
+	private string _color { get; set; }
+
+	private bool _disable2 { get; set; }
+
+	private Engine EngineC { get; set; }
+
+	protected override void OnInitialized()
+	{
+		_disable2 = true;
+	}
+
+	private enum Engine { Ion, Plasma, Fusion, Warp }
+}
+
+
+

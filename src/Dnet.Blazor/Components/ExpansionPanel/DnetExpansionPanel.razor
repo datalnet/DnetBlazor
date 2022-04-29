@@ -1,0 +1,89 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+
+<div class="dnet-accordion" @attributes=AllOtherAttributes>
+	<CascadingValue Value="this" IsFixed="true">
+		@ChildContent
+	</CascadingValue>
+</div>
+
+@code {
+
+	[Parameter]
+	public EventCallback<DnetExpansionPanelItem> OnExpandedChanged { get; set; }
+
+	[Parameter(CaptureUnmatchedValues = true)]
+	public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+
+	[Parameter]
+	public ExpansionPanelDisplayMode ExpansionPanelDisplayMode { get; set; } = ExpansionPanelDisplayMode.Flat;
+
+	[Parameter]
+	public bool Multi { get; set; } = true;
+
+	internal List<DnetExpansionPanelItem> expansionPanelItems = new();
+
+	internal DnetExpansionPanelItem lastOpenedPanel { get; set; } = new();
+
+	private int _selectedExpansionPanelItemId;
+
+	internal List<int> expansionPanelItemIds = new();
+
+	private int _nextId { get; set; } = 0;
+
+	internal void AddExpansionPanelItem(DnetExpansionPanelItem expansionPanelItem)
+	{
+		expansionPanelItem.Id = GetId();
+
+		expansionPanelItemIds.Add(expansionPanelItem.Id);
+
+		expansionPanelItems.Add(expansionPanelItem);
+
+		StateHasChanged();
+	}
+
+	private int GetId()
+	{
+		_nextId++;
+		return _nextId;
+	}
+
+	public void ExpandAll(bool expand)
+	{
+		if (!Multi && expand == true) return;
+
+		if (!Multi && !expand) lastOpenedPanel = new();
+
+		foreach (var expansionPanelItem in expansionPanelItems)
+		{
+			expansionPanelItem.Expand(expand);
+		}
+
+		StateHasChanged();
+	}
+
+	public void ExpandPanels(List<int> panelItemIds, bool expand)
+	{
+		if (!Multi && panelItemIds.Count > 0) return;
+
+		foreach (var expansionPanelItem in expansionPanelItems.Where(p => panelItemIds.Contains(p.Id)))
+		{
+			expansionPanelItem.Expand(expand);
+		}
+
+		StateHasChanged();
+	}
+
+	public void CloseLastOpenedPanel(DnetExpansionPanelItem expansionPanelItem)
+	{
+		if (!Multi && expansionPanelItem.IsExpanded() && lastOpenedPanel.Id > 0) lastOpenedPanel.Expand(false);
+
+		if (expansionPanelItem.IsExpanded()) lastOpenedPanel = expansionPanelItem;
+
+		OnExpandedChanged.InvokeAsync(expansionPanelItem);
+
+		StateHasChanged();
+	}	
+}

@@ -1,0 +1,241 @@
+@using System.Timers
+@using Microsoft.AspNetCore.Components.Web
+
+@implements IDisposable
+
+@inject IPaginator PaginatorService
+
+<div class="dnet-paginator">
+    <div class="dnet-paginator-container" style="grid-template-rows: repeat(@(OneRow ? 1 : 2), 1fr); grid-column-gap: @($"{GridGap}px");">
+        <div class="dnet-paginator-page-container @($"zone{PageNumberZone}")">
+            <span>Page</span>
+            <input class="dnet-paginator-page-input"
+                   type="text"
+                   @bind-value="@_currentPage"
+                   @bind-value:event="oninput"
+                   @onkeyup="Filter"
+                   @onkeyup:stopPropagation="true"
+                   @onkeyup:preventDefault="true">
+            <span>of @_numberOfPages</span>
+        </div>
+        <div class="control-container @($"zone{ControlsZone}")">
+            <button type="button"
+                    class="dnet-paginator-navigation-first dnet-paginator-icon-button"
+                    @onclick="(e => GoToFirstPage())">
+                <svg class="bi bi-chevron-bar-left" width="1em" height="1em" viewBox="0 0 16 16" fill="@(_showFirstButton ? "currentColor" : "grey" )" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M11.854 3.646a.5.5 0 010 .708L8.207 8l3.647 3.646a.5.5 0 01-.708.708l-4-4a.5.5 0 010-.708l4-4a.5.5 0 01.708 0zM4.5 1a.5.5 0 00-.5.5v13a.5.5 0 001 0v-13a.5.5 0 00-.5-.5z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <button type="button"
+                    class="dnet-paginator-navigation-previous dnet-paginator-icon-button"
+                    @onclick="(e => GoToPreviousPage())">
+                <svg class="bi bi-chevron-left" width="1em" height="1em" viewBox="0 0 16 16" fill="@(_hasPreviousPage ? "currentColor" : "grey" )" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 010 .708L5.707 8l5.647 5.646a.5.5 0 01-.708.708l-6-6a.5.5 0 010-.708l6-6a.5.5 0 01.708 0z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <button type="button"
+                    class="dnet-paginator-navigation-next dnet-paginator-icon-button"
+                    @onclick="(e => GoToNextPage())">
+                <svg class="bi bi-chevron-right" width="1em" height="1em" viewBox="0 0 16 16" fill="@(_hasNextPage ? "currentColor" : "grey" )" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 01.708 0l6 6a.5.5 0 010 .708l-6 6a.5.5 0 01-.708-.708L10.293 8 4.646 2.354a.5.5 0 010-.708z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <button type="button"
+                    class="dnet-paginator-navigation-last dnet-paginator-icon-button"
+                    @onclick="(e => GoToLastPage())">
+                <svg class="bi bi-chevron-bar-right" width="1em" height="1em" viewBox="0 0 16 16" fill="@(_showLastButton ? "currentColor" : "grey" )" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M4.146 3.646a.5.5 0 000 .708L7.793 8l-3.647 3.646a.5.5 0 00.708.708l4-4a.5.5 0 000-.708l-4-4a.5.5 0 00-.708 0zM11.5 1a.5.5 0 01.5.5v13a.5.5 0 01-1 0v-13a.5.5 0 01.5-.5z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="dnet-paginator-range-label @($"zone{RangeZone}")">
+            @PaginatorService.GetRangeLabel(CurrentPage, PageSize, TotalItems)
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<int> OnGoToFirstPage { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnGoToPreviousPage { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnGoToNextPage { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnGoToLastPage { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnGoToSpecificPage { get; set; }
+
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public int PageSize { get; set; }
+
+    [Parameter]
+    public int TotalItems { get; set; }
+
+    [Parameter]
+    public int PageNumberZone { get; set; } = 2;
+
+    [Parameter]
+    public int ControlsZone { get; set; } = 3;
+
+    [Parameter]
+    public int RangeZone { get; set; } = 4;
+
+    [Parameter]
+    public bool OneRow { get; set; } = false;
+
+    [Parameter]
+    public int GridGap { get; set; } = 20;
+
+
+    private bool _hasNextPage { get; set; }
+
+    private bool _hasPreviousPage { get; set; }
+
+    private bool _showFirstButton { get; set; }
+
+    private bool _showLastButton { get; set; }
+
+    private int _numberOfPages { get; set; }
+
+    private Timer _debounceTimer;
+
+    private int _currentPage;
+
+
+    protected override void OnInitialized()
+    {
+        _currentPage = CurrentPage;
+
+        _debounceTimer = new Timer(250);
+
+        _debounceTimer.Elapsed += FilterDiscard;
+
+        _debounceTimer.AutoReset = false;
+    }
+
+    protected override void OnParametersSet()
+    {
+        _numberOfPages = PageSize > 0 ? (int)Math.Ceiling((double)TotalItems / (double)PageSize) : 0;
+
+        _currentPage = CurrentPage;
+
+        UpdateButtons(CurrentPage, _numberOfPages);
+    }
+
+    public void FilterDiscard(Object source, ElapsedEventArgs e)
+    {
+        _ = Filter();
+    }
+
+    private async Task Filter()
+    {
+        await InvokeAsync(async () =>
+        {
+            GoToSpecificPage();
+        });
+    }
+
+    private void Filter(KeyboardEventArgs data)
+    {
+        _debounceTimer.Stop();
+
+        _debounceTimer.Start();
+    }
+
+    private void GoToFirstPage()
+    {
+        if (_currentPage == 1 || _currentPage == 0) return;
+
+        CurrentPage = _currentPage = 1;
+
+        UpdateButtons(1, _numberOfPages);
+
+        OnGoToFirstPage.InvokeAsync(1);
+    }
+
+    private void GoToPreviousPage()
+    {
+        if (_currentPage == 1 || _currentPage == 0) return;
+
+        CurrentPage = _currentPage -= 1;
+
+        UpdateButtons(_currentPage, _numberOfPages);
+
+        OnGoToPreviousPage.InvokeAsync(_currentPage);
+    }
+
+    private void GoToNextPage()
+    {
+        if (_currentPage == _numberOfPages || _currentPage == 0) return;
+
+        CurrentPage = _currentPage += 1;
+
+        UpdateButtons(_currentPage, _numberOfPages);
+
+        OnGoToNextPage.InvokeAsync(_currentPage);
+    }
+
+    private void GoToLastPage()
+    {
+        _numberOfPages = PageSize > 0 ? (int)Math.Ceiling((double)TotalItems / (double)PageSize) : 0;
+
+        if (_currentPage == _numberOfPages || _currentPage == 0) return;
+
+        CurrentPage = _currentPage = _numberOfPages;
+
+        UpdateButtons(_numberOfPages, _numberOfPages);
+
+        OnGoToLastPage.InvokeAsync(_numberOfPages);
+    }
+
+    private void UpdateButtons(int currentPage, int numberOfPages)
+    {
+        _hasNextPage = currentPage != numberOfPages;
+
+        _hasPreviousPage = (currentPage != 1 && currentPage != 0);
+
+        _showFirstButton = currentPage > 1;
+
+        _showLastButton = currentPage < numberOfPages;
+    }
+
+    public void UpdatePaginatorState(int currentPage, int totalItems)
+    {
+        _numberOfPages = PageSize > 0 ? (int)Math.Ceiling((double)totalItems / (double)PageSize) : 0;
+
+        _currentPage = currentPage;
+
+        UpdateButtons(currentPage, _numberOfPages);
+    }
+
+    private void GoToSpecificPage()
+    {
+        if (_currentPage <= 0 || _currentPage > _numberOfPages) _currentPage = 1;
+
+        CurrentPage = _currentPage;
+
+        if (1 <= _currentPage && _currentPage <= _numberOfPages)
+        {
+            UpdateButtons(_currentPage, _numberOfPages);
+
+            OnGoToSpecificPage.InvokeAsync(_currentPage);
+        }
+
+    }
+
+    public void Dispose()
+    {
+        _debounceTimer.Elapsed -= FilterDiscard;
+        _debounceTimer?.Dispose();
+    }
+}

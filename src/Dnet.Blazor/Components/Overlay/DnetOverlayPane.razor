@@ -1,0 +1,602 @@
+﻿@using System.Diagnostics
+@using Microsoft.JSInterop
+@using System.Globalization
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+
+@inject IViewportRuler ViewportRuler
+@inject DnetOverlayInterop DnetOverlayInterop
+
+@implements IDisposable
+
+<div @ref="_paneReference" id="cdk-overlay-pane-@OverlayConfig.OverlayReferenceId" class="@_cssClasses" style="@(Convert.ToString(_styles, CultureInfo.InvariantCulture))">
+    <CascadingValue Value="OverlayReferenceId" IsFixed="true">
+        @_contentChild
+    </CascadingValue>
+</div>
+
+@code {
+    [CascadingParameter] DnetOverlay dnetOverlay { get; set; }
+
+    [CascadingParameter] DnetOverlayHost dnetOverlayHost { get; set; }
+
+    [Parameter]
+    public RenderFragment ContentChild { get; set; }
+
+    [Parameter]
+    public OverlayConfig OverlayConfig { get; set; }
+
+    public int OverlayReferenceId { get; set; }
+
+    private ElementReference _pane;
+
+    private Point _previousPushAmount;
+
+    private bool _positionLocked;
+
+    private bool _isPushed = false;
+
+    private RenderFragment _contentChild { get; set; }
+
+    private string _styles { get; set; } = null;
+
+    private string _cssClasses { get; set; }
+
+    private ElementReference _paneReference;
+
+    private int _viewportMargin = 0;
+
+
+    protected override void OnInitialized()
+    {
+        _styles = new StyleBuilder("pointer-events", "auto")
+            .AddStyle("position", "absolute")
+            .AddStyle("visibility", "hidden")
+            .AddStyle("width", OverlayConfig.Width, when: !string.IsNullOrEmpty(OverlayConfig.Width))
+            .AddStyle("height", OverlayConfig.Height, when: !string.IsNullOrEmpty(OverlayConfig.Height))
+            .AddStyle("min-height", OverlayConfig.MinHeight, when: !string.IsNullOrEmpty(OverlayConfig.MinHeight))
+            .AddStyle("min-width", OverlayConfig.MinWidth, when: !string.IsNullOrEmpty(OverlayConfig.MinWidth))
+            .AddStyle("max-width", OverlayConfig.MaxWidth, when: !string.IsNullOrEmpty(OverlayConfig.MaxWidth))
+            .AddStyle("max-height", OverlayConfig.MaxHeight, when: !string.IsNullOrEmpty(OverlayConfig.MaxHeight))
+            .AddStyle("z-index", $"{OverlayConfig.PanelZindex}", when: OverlayConfig.PanelZindex != null)
+            .Build();
+
+        var tt = Convert.ToString(_styles, CultureInfo.InvariantCulture);
+
+        _contentChild = ContentChild;
+
+        OverlayReferenceId = OverlayConfig.OverlayReferenceId;
+
+        if (OverlayConfig.PositionStrategy != PositionStrategy.FlexibleConnectedTo) return;
+
+        var builder = OverlayConfig.FlexibleConnectedPositionStrategyBuilder;
+
+        _viewportMargin = builder.ViewportMargin();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (OverlayConfig.PositionStrategy == PositionStrategy.Global)
+            {
+                _styles = GetStyles();
+                _cssClasses = GetCssClasses();
+            }
+            else
+            {
+                var viewportRect = await ViewportRuler.GetViewportRectNoScroll(_viewportMargin);
+
+                _cssClasses = GetCssClasses();
+
+                _styles = await GetFlexibleStyles(viewportRect);
+                var tt = Convert.ToString(_styles, CultureInfo.InvariantCulture);
+            }
+
+            ViewportRuler.OnResized += ApplyFlexibleStyles;
+
+            StateHasChanged();
+        }
+    }
+
+    private string GetCssClasses()
+    {
+
+        var classes = new CssBuilder()
+            .AddClass("cdk-overlay-pane")
+            .AddClass(OverlayConfig.PanelClass, when: !string.IsNullOrEmpty(OverlayConfig.PanelClass))
+            .Build();
+
+        return classes;
+    }
+
+    private string GetStyles()
+    {
+
+        var globalPositionStrategy = OverlayConfig.GlobalPositionStrategy;
+
+        var shouldBeFlushHorizontally = (OverlayConfig.Width == "100%" || OverlayConfig.Width == "100vw") &&
+                                            (string.IsNullOrEmpty(OverlayConfig.MaxWidth) || OverlayConfig.MaxWidth == "100%" || OverlayConfig.MaxWidth == "100vw");
+
+        var shouldBeFlushVertically = (OverlayConfig.Height == "100%" || OverlayConfig.Height == "100vh") &&
+                                        (string.IsNullOrEmpty(OverlayConfig.MaxHeight) || OverlayConfig.MaxHeight == "100%" || OverlayConfig.MaxHeight == "100vh");
+
+        var marginLeft = shouldBeFlushHorizontally ? "0" : globalPositionStrategy.GetLeftOffset();
+        var marginTop = shouldBeFlushVertically ? "0" : globalPositionStrategy.GetTopOffset();
+        var marginBottom = globalPositionStrategy.GetBottomOffset();
+        var marginRight = globalPositionStrategy.GetRightOffset();
+
+        var styles = new StyleBuilder("pointer-events", "auto")
+            .AddStyle("position", "static")
+            .AddStyle("visibility", "visible")
+            .AddStyle("margin-left", marginLeft, when: !string.IsNullOrEmpty(marginLeft))
+            .AddStyle("margin-top", marginTop, when: !string.IsNullOrEmpty(marginTop))
+            .AddStyle("margin-bottom", marginBottom, when: !string.IsNullOrEmpty(marginBottom))
+            .AddStyle("margin-right", marginRight, when: !string.IsNullOrEmpty(marginRight))
+            .AddStyle("width", OverlayConfig.Width, when: !string.IsNullOrEmpty(OverlayConfig.Width))
+            .AddStyle("height", OverlayConfig.Height, when: !string.IsNullOrEmpty(OverlayConfig.Height))
+            .AddStyle("min-height", OverlayConfig.MinHeight, when: !string.IsNullOrEmpty(OverlayConfig.MinHeight))
+            .AddStyle("min-width", OverlayConfig.MinWidth, when: !string.IsNullOrEmpty(OverlayConfig.MinWidth))
+            .AddStyle("max-width", OverlayConfig.MaxWidth, when: !string.IsNullOrEmpty(OverlayConfig.MaxWidth))
+            .AddStyle("max-height", OverlayConfig.MaxHeight, when: !string.IsNullOrEmpty(OverlayConfig.MaxHeight))
+            .AddStyle("z-index", $"{OverlayConfig.PanelZindex}", when: OverlayConfig.PanelZindex != null)
+            .Build();
+
+        return styles;
+    }
+
+
+    private async void ApplyFlexibleStyles(object _, Size size)
+    {
+        if (OverlayConfig.PositionStrategy != PositionStrategy.FlexibleConnectedTo) return;
+
+        var viewportRect = await ViewportRuler.GetViewportRectNoScroll(_viewportMargin);
+
+        _styles = await GetFlexibleStyles(viewportRect);
+
+        var tt = Convert.ToString(_styles, CultureInfo.InvariantCulture);
+
+        StateHasChanged();
+    }
+
+
+    private async Task<string> GetFlexibleStyles(ClientRect viewportRect)
+    {
+
+        var builder = OverlayConfig.FlexibleConnectedPositionStrategyBuilder;
+
+        var preferredPositions = builder.Positions();
+
+        var originRect = await builder.GetOriginRect(DnetOverlayInterop);
+
+        var paneContainerClientRec = await DnetOverlayInterop.GetBoundingClientRect(_paneReference);
+
+        var overlayRect = new ClientRect
+            {
+                Width = paneContainerClientRec.Width,
+                Height = paneContainerClientRec.Height
+            };
+
+        var styles = "";
+
+        OverlayFit fallbackOverlayFit = null;
+        ConnectedPosition fallbackPosition = null;
+        Point fallbackOriginPoint = null;
+
+        foreach (var position in preferredPositions)
+        {
+            var originPoint = GetOriginPoint(originRect, position);
+
+            var overlayPoint = GetOverlayPoint(originPoint, overlayRect, position);
+
+            var overlayFit = builder.GetOverlayFit(overlayPoint, overlayRect, viewportRect, position);
+
+            // If the overlay, without any further work, fits into the viewport, use this position.
+            if (overlayFit.IsCompletelyWithinViewport)
+            {
+
+                _isPushed = false;
+
+                styles = await SetOverlayElementStyles(originPoint, position, viewportRect);
+
+                await dnetOverlayHost.SetBoundingBoxStyles(originPoint, position);
+
+                break;
+            }
+
+            var noFallback = fallbackOriginPoint == null && fallbackPosition == null && fallbackOverlayFit == null;
+
+            if (!noFallback && !(fallbackOverlayFit.VisibleArea < overlayFit.VisibleArea)) continue;
+
+            fallbackOriginPoint = originPoint;
+            fallbackOverlayFit = overlayFit;
+            fallbackPosition = position;
+        }
+
+        if (!string.IsNullOrEmpty(styles)) return styles;
+
+        // All options for getting the overlay within the viewport have been exhausted, so go with the
+        // position that went off-screen the least.
+        styles = await SetOverlayElementStyles(fallbackOriginPoint, fallbackPosition, viewportRect);
+
+        await dnetOverlayHost.SetBoundingBoxStyles(fallbackOriginPoint, fallbackPosition);
+
+        return styles;
+    }
+
+    private async Task<string> SetOverlayElementStyles(Point originPoint, ConnectedPosition position, ClientRect viewportRect)
+    {
+        var paneStyles = "";
+
+        var styles = new StyleBuilder();
+
+        var builder = OverlayConfig.FlexibleConnectedPositionStrategyBuilder;
+
+        var originRect = await builder.GetOriginRect(DnetOverlayInterop);
+
+        var hasExactPosition = builder.HasExactPosition();
+
+        if (hasExactPosition)
+        {
+
+            var scrollPosition = await ViewportRuler.GetViewportScrollPosition();
+
+            var exactOverlayYStyle = await GetExactOverlayY(position, originPoint, scrollPosition, viewportRect);
+
+            var getExactOverlayXStyle = await GetExactOverlayX(position, originPoint, scrollPosition, viewportRect);
+
+            paneStyles = string.Concat(exactOverlayYStyle, getExactOverlayXStyle);
+
+        }
+        else
+        {
+            styles.AddStyle("position", $"static").Build();
+        }
+
+        var offsetX = builder.GetOffsetX();
+        var offsetY = builder.GetOffsetY();
+
+        if (offsetX > 0)
+        {
+            styles.AddStyle("transform", $"translateX({offsetX}px)");
+        }
+
+        if (offsetY > 0)
+        {
+            styles.AddStyle("transform", $"translateY({offsetY}px)");
+        }
+
+        var minWidth = !string.IsNullOrEmpty(OverlayConfig.MinWidth) ? OverlayConfig.MinWidth : $"{Convert.ToString(originRect.Width, CultureInfo.InvariantCulture)}px";
+
+        var maxHeight = "";
+        var maxWidth = "";
+
+        // If a maxWidth or maxHeight is specified on the overlay, we remove them. We do this because
+        // we need these values to both be set to "100%" for the automatic flexible sizing to work.
+        // The maxHeight and maxWidth are set on the boundingBox in order to enforce the constraint.
+        // Note that this doesn't apply when we have an exact position, in which case we do want to
+        // apply them because they'll be cleared from the bounding box.
+        if (!string.IsNullOrEmpty(OverlayConfig.MaxHeight))
+        {
+            if (hasExactPosition)
+            {
+                maxHeight = OverlayConfig.MaxHeight;
+            }
+            else if (builder.HasFlexibleDimensions())
+            {
+                maxHeight = null;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(OverlayConfig.MaxWidth))
+        {
+            if (hasExactPosition)
+            {
+                maxWidth = OverlayConfig.MaxWidth;
+            }
+            else if (builder.HasFlexibleDimensions())
+            {
+                maxWidth = null;
+            }
+        }
+
+        var globalStyles = styles.AddStyle("pointer-events", "auto")
+                                       .AddStyle("visibility", "visible")
+                                       .AddStyle("width", OverlayConfig.Width, when: !string.IsNullOrEmpty(OverlayConfig.Width))
+                                       .AddStyle("height", OverlayConfig.Height, when: !string.IsNullOrEmpty(OverlayConfig.Height))
+                                       .AddStyle("min-height", OverlayConfig.MinHeight, when: !string.IsNullOrEmpty(OverlayConfig.MinHeight))
+                                       .AddStyle("min-width", minWidth, when: !string.IsNullOrEmpty(minWidth))
+                                       .AddStyle("max-width", OverlayConfig.MaxWidth, when: !string.IsNullOrEmpty(maxWidth))
+                                       .AddStyle("max-height", OverlayConfig.MaxHeight, when: !string.IsNullOrEmpty(maxHeight))
+                                       .AddStyle("z-index", $"{OverlayConfig.PanelZindex}", when: OverlayConfig.PanelZindex != null)
+                                       .Build();
+
+        paneStyles = string.Concat(paneStyles, globalStyles);
+
+        return paneStyles;
+    }
+
+    /** Gets the exact top/bottom for the overlay when not using flexible sizing or when pushing. */
+    private async Task<string> GetExactOverlayY(ConnectedPosition position, Point originPoint, ViewportScrollPosition scrollPosition, ClientRect viewportRect)
+    {
+
+        var paneStyles = "";
+
+        var styles = new StyleBuilder();
+
+        var paneContainerClientRec = await DnetOverlayInterop.GetBoundingClientRect(_paneReference);
+
+        var overlayRect = new ClientRect
+            {
+                Width = paneContainerClientRec.Width,
+                Height = paneContainerClientRec.Height
+            };
+
+        var overlayPoint = GetOverlayPoint(originPoint, overlayRect, position);
+
+        if (_isPushed)
+        {
+            overlayPoint = PushOverlayOnScreen(overlayPoint, overlayRect, scrollPosition, viewportRect);
+        }
+
+        var overlayContainerClientRec = await DnetOverlayInterop.GetBoundingClientRect(dnetOverlay.GeElementReference());
+        var virtualKeyboardOffset = overlayContainerClientRec.Top;
+
+        // Normally this would be zero, however when the overlay is attached to an input (e.g. in an
+        // autocomplete), mobile browsers will shift everything in order to put the input in the middle
+        // of the screen and to make space for the virtual keyboard. We need to account for this offset,
+        // otherwise our positioning will be thrown off.
+        overlayPoint.Y -= virtualKeyboardOffset;
+
+        // We want to set either `top` or `bottom` based on whether the overlay wants to appear
+        // above or below the origin and the direction in which the element will expand.
+        if (position.OverlayY == VerticalConnectionPos.Bottom)
+        {
+            // When using `bottom`, we adjust the y position such that it is the distanceu
+            // from the bottom of the viewport rather than the top.
+            var documentClientHeight = await DnetOverlayInterop.GetDocumentClientHeight();
+
+            paneStyles = styles.AddStyle("bottom", $"{documentClientHeight - (Math.Floor(overlayPoint.Y) + overlayRect.Height)}px").Build();
+        }
+        else
+        {
+            var style = styles.AddStyle("top", $"{Math.Floor(overlayPoint.Y)}px").Build();
+
+            paneStyles = string.Concat(paneStyles, style);
+        }
+
+        return paneStyles;
+    }
+
+    /** Gets the exact left/right for the overlay when not using flexible sizing or when pushing. */
+    private async Task<string> GetExactOverlayX(ConnectedPosition position, Point originPoint, ViewportScrollPosition scrollPosition, ClientRect viewportRect)
+    {
+        var paneStyles = "";
+
+        var styles = new StyleBuilder();
+
+        var builder = OverlayConfig.FlexibleConnectedPositionStrategyBuilder;
+
+        //var originRect = builder.GetOriginRect();
+
+        var paneContainerClientRec = await DnetOverlayInterop.GetBoundingClientRect(_paneReference);
+
+        var overlayRect = new ClientRect
+            {
+                Width = paneContainerClientRec.Width,
+                Height = paneContainerClientRec.Height
+            };
+
+        // Reset any existing styles. This is necessary in case the preferred position has
+        // changed since the last `apply`.
+        //var styles = { left: '', right: ''} as CSSStyleDeclaration;
+        var overlayPoint = GetOverlayPoint(originPoint, overlayRect, position);
+
+        if (_isPushed)
+        {
+            overlayPoint = PushOverlayOnScreen(overlayPoint, overlayRect, scrollPosition, viewportRect);
+        }
+
+        // We want to set either `left` or `right` based on whether the overlay wants to appear "before"
+        // or "after" the origin, which determines the direction in which the element will expand.
+        // For the horizontal axis, the meaning of "before" and "after" change based on whether the
+        // page is in RTL or LTR.
+        var horizontalStyleProperty = "";
+
+        if (builder.IsRtl())
+        {
+
+            horizontalStyleProperty = position.OverlayX == HorizontalConnectionPos.End ? "left" : "right";
+
+        }
+        else
+        {
+
+            horizontalStyleProperty = position.OverlayX == HorizontalConnectionPos.End ? "right" : "left";
+        }
+
+        // When we're setting `right`, we adjust the x position such that it is the distance
+        // from the right edge of the viewport rather than the left edge.
+        if (horizontalStyleProperty == "right")
+        {
+
+            var documentClientWidth = await DnetOverlayInterop.GetDocumentClientWidth();
+
+            //paneStyles = styles.AddStyle("right", $"{documentClientWidth - (Math.Floor(overlayPoint.X) + overlayRect.Width)}px").Build();
+            var paneRight = documentClientWidth - (overlayPoint.X + overlayRect.Width);
+            paneStyles = styles.AddStyle("right", $"{Convert.ToString(paneRight, CultureInfo.InvariantCulture)}px").Build();
+
+        }
+        else
+        {
+
+            //var style = styles.AddStyle("left", $"{Math.Floor(overlayPoint.X)}px").Build();
+            var style = styles.AddStyle("left", $"{Convert.ToString(overlayPoint.X, CultureInfo.InvariantCulture)}px").Build();
+
+            paneStyles = string.Concat(paneStyles, style);
+        }
+
+        return paneStyles;
+    }
+
+    private Point GetOverlayPoint(Point originPoint, ClientRect overlayRect, ConnectedPosition pos)
+    {
+        var isRtl = OverlayConfig.FlexibleConnectedPositionStrategyBuilder.IsRtl();
+
+        // Calculate the (overlayStartX, overlayStartY), the start of the
+        // potential overlay position relative to the origin point.
+        var overlayStartX = 0.0;
+
+        if (pos.OverlayX == HorizontalConnectionPos.Center)
+        {
+            overlayStartX = -overlayRect.Width / 2;
+        }
+        else if (pos.OverlayX == HorizontalConnectionPos.Start)
+        {
+            overlayStartX = isRtl ? -overlayRect.Width : 0;
+        }
+        else
+        {
+            overlayStartX = isRtl ? 0 : -overlayRect.Width;
+        }
+
+        var overlayStartY = 0.0;
+
+        if (pos.OverlayY == VerticalConnectionPos.Center)
+        {
+            overlayStartY = -overlayRect.Height / 2;
+        }
+        else
+        {
+            overlayStartY = pos.OverlayY == VerticalConnectionPos.Top ? 0 : -overlayRect.Height;
+        }
+
+        // The (x, y) coordinates of the overlay.
+
+        var x = originPoint.X + overlayStartX;
+        var y = originPoint.Y + overlayStartY;
+
+        return new Point()
+            {
+                X = originPoint.X + overlayStartX,
+                Y = originPoint.Y + overlayStartY
+            };
+    }
+
+    private Point GetOriginPoint(ClientRect originRect, ConnectedPosition pos)
+    {
+        var x = 0.0;
+
+        var isRtl = OverlayConfig.FlexibleConnectedPositionStrategyBuilder.IsRtl();
+
+        if (pos.OriginX == HorizontalConnectionPos.Center)
+        {
+            // Note: when centering we should always use the `left`
+            // offset, otherwise the position will be wrong in RTL.
+            x = originRect.Left + (originRect.Width / 2);
+        }
+        else
+        {
+            var startX = isRtl ? originRect.Right : originRect.Left;
+
+            var endX = isRtl ? originRect.Left : originRect.Right;
+
+            x = pos.OriginX == HorizontalConnectionPos.Start ? startX : endX;
+        }
+
+        var y = 0.0;
+
+        if (pos.OriginY == VerticalConnectionPos.Center)
+        {
+            y = originRect.Top + (originRect.Height / 2);
+        }
+        else
+        {
+            y = pos.OriginY == VerticalConnectionPos.Top ? originRect.Top : originRect.Bottom;
+        }
+
+        return new Point
+            {
+                X = x,
+                Y = y
+            };
+    }
+
+    private Point PushOverlayOnScreen(Point start, ClientRect overlay, ViewportScrollPosition scrollPosition, ClientRect viewportRect)
+    {
+        var builder = OverlayConfig.FlexibleConnectedPositionStrategyBuilder;
+
+        // If the position is locked and we've pushed the overlay already, reuse the previous push
+        // amount, rather than pushing it again. If we were to continue pushing, the element would
+        // remain in the viewport, which goes against the expectations when position locking is enabled.
+        if (_previousPushAmount != null && _positionLocked)
+        {
+            return new Point()
+                {
+                    X = start.X + this._previousPushAmount.X,
+                    Y = start.Y + this._previousPushAmount.Y
+                };
+        }
+
+        //var viewportRect = builder.ViewportRect();
+        //var viewportRect = await SetNarrowedViewportRect();
+
+        var viewport = viewportRect;
+
+        // Determine how much the overlay goes outside the viewport on each
+        // side, which we'll use to decide which direction to push it.
+        var overflowRight = Math.Max(start.X + overlay.Width - viewport.Right, 0);
+
+        var overflowBottom = Math.Max(start.Y + overlay.Height - viewport.Bottom, 0);
+
+        var overflowTop = Math.Max(viewport.Top - scrollPosition.Top - start.Y, 0);
+
+        var overflowLeft = Math.Max(viewport.Left - scrollPosition.Left - start.X, 0);
+
+        // Amount by which to push the overlay in each axis such that it remains on-screen.
+        var pushX = 0.0;
+        var pushY = 0.0;
+
+        // If the overlay fits completely within the bounds of the viewport, push it from whichever
+        // direction is goes off-screen. Otherwise, push the top-left corner such that its in the
+        // viewport and allow for the trailing end of the overlay to go out of bounds.
+        if (overlay.Width <= viewport.Width)
+        {
+            // Estaba esto pushX = overflowLeft || -overflowRight;
+            pushX = overflowLeft >= 0 ? overflowLeft : -overflowRight;
+        }
+        else
+        {
+            pushX = start.X < builder.ViewportMargin() ? (viewport.Left - scrollPosition.Left) - start.X : 0;
+        }
+
+        if (overlay.Height <= viewport.Height)
+        {
+            // Estaba esto pushY = overflowTop || -overflowBottom;
+            pushY = overflowTop >= 0 ? overflowTop : -overflowBottom;
+        }
+        else
+        {
+            pushY = start.Y < builder.ViewportMargin() ? (viewport.Top - scrollPosition.Top) - start.Y : 0;
+        }
+
+        _previousPushAmount = new Point { X = pushX, Y = pushY };
+
+        return new Point
+            {
+                X = start.X + pushX,
+                Y = start.Y + pushY,
+            };
+    }
+
+    public void Dispose()
+    {
+        if (ViewportRuler != null)
+        {
+            ViewportRuler.OnResized -= ApplyFlexibleStyles;
+        }
+    }
+}

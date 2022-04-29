@@ -1,0 +1,512 @@
+﻿@page "/BlGrid"
+
+@using System.Net.Http.Json
+@using System.Text
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.App.Shared.Infrastructure.Services
+@using Dnet.Blazor.Components.Grid.BlgGrid
+@using Dnet.Blazor.Components.Grid.Infrastructure.Entities
+@using Dnet.Blazor.Components.Grid.Infrastructure.Enums
+@using Dnet.Blazor.Components.Grid.Infrastructure.Models
+@using Dnet.Blazor.Infrastructure.Models.SearchModels
+@using Dnet.Blazor.Infrastructure.Models.SearchModels.FilterModels
+@using Newtonsoft.Json
+@using System.Net.Http
+
+@inject HttpClient HttpClient
+@inject IHttpClientFactory ClientFactory
+@inject IApplicationServiceService ApplicationServiceService
+
+<div class="container-fluid" style="padding-top: 10px;">
+    <div style="height: calc(100% - 40px)">
+        <div class="dnet-panel-header-wrapper dnet-m-t-15">
+            <div class="dnet-panel-header-text">
+                <div class="dnet-m-l-15">
+                    <span style="font-weight:700; font-size:.875rem;"> Grid (A.K.A BlGrid)</span>
+                </div>
+            </div>
+        </div>
+        <div style="height: calc(100% - 0px); width: 100%; background-color: #FFFFFF">
+            <BlgGrid @ref="_blGridReference" GridData="@_persons"
+                     GridColumns="@_gridColumns"
+                     GroupGridColumn="_groupGridColumn"
+                     TItem="Person"
+                     GridOptions="_gridOptions"
+                     OnRowClicked="RowClicked"
+                     OnFilterChanged="FilterChanged"
+                     OnGroupingChanged="GroupingChanged"
+                     OnSelectionChanged="SelectionChanged">
+            </BlgGrid>
+        </div>
+    </div>
+</div>
+
+@code {
+
+
+    private BlgGrid<Person> _blGridReference;
+
+    private List<Person> _persons { get; set; } = new();
+
+    private List<GridColumn<Person>> _gridColumns { get; set; } = new();
+
+    private GridColumn<Person> _groupGridColumn { get; set; } = new();
+
+    private GridOptions<Person> _gridOptions { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        _gridOptions = GetGridOptions();
+
+        _gridColumns = GetGridColumns();
+
+        _groupGridColumn = GetGroupGridColumn();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var persons = await GetPersons();
+
+        var personPlusDonations = new List<Person>();
+
+        Random r = new Random();
+        int range = 50;
+
+        foreach (var item in persons)
+        {
+            int rInt = r.Next(0, 6);
+
+            for (var i = 0; i < rInt; i++)
+            {
+                Random y = new Random();
+                item.Sales = Math.Round(y.NextDouble() * range);
+                personPlusDonations.Add(item);
+            }
+        }
+
+        _gridOptions.NumberOfRows = personPlusDonations.Count;
+
+        _persons = personPlusDonations.OrderBy(p => p.PersonId).ToList();
+    }
+
+    private async Task<List<Person>> GetPersons()
+    {
+        var dataPersons = await ApplicationServiceService.GetPersons();
+
+        return dataPersons;
+    }
+
+    public void RowClicked(RowNode<Person> rowNode)
+    {
+        var tt = rowNode;
+    }
+
+    public void FilterChanged(SearchModel searchModel)
+    {
+    }
+
+    public void GroupingChanged(GroupModel groupModel)
+    {
+        var gp = groupModel;
+    }
+
+    public void SelectionChanged(List<RowNode<Person>> rowNodes)
+    {
+        var tt = rowNodes;
+    }
+
+    private async Task ServerSideOperation(SearchModel searchModel)
+    {
+        if (_blGridReference is null) return;
+
+        if (searchModel.SortModel == null)
+        {
+            searchModel.SortModel = new SortModel
+                {
+                    Order = SortOrder.Ascending,
+                    ColumnName = "Name"
+                };
+        }
+
+        var response = await HttpClient.PostAsJsonAsync("api/person/searchpersons", searchModel);
+
+        var data = await response.Content.ReadFromJsonAsync<PersonSearchResult>();
+
+        await _blGridReference.SetRowDataAsync(data.Persons, data.TotalItems);
+    }
+
+    private GridOptions<Person> GetGridOptions()
+    {
+        return new GridOptions<Person>()
+            {
+                HeaderHeight = 60,
+                RowHeight = 40,
+                PaginationPageSize = 100,
+                SuppressRowClickSelection = false,
+                RowMultiSelectWithClick = true,
+                GridClass = "cvs-bl-grid",
+                GroupDefaultExpanded = true,
+                SuppressFilterRow = false,
+                SuppressPaginationPanel = false,
+                EnableAdvancedFilter = true,
+                EnableGrouping = true,
+                CheckboxSelectionColumn = true,
+                DefaultAdvancedFilterOperator = FilterOperator.Contains,
+                IsDebugMode = false,
+                NullValueSortedToEnd = true,
+                UseVirtualization = true,
+                DisableRow = (value) => value.IsActive,
+                RowSelectionType = RowSelectionType.Multiple
+            };
+    }
+
+    private GridColumn<Person> GetGroupGridColumn()
+    {
+        return new GridColumn<Person>
+            {
+                Height = 40,
+                Width = 200,
+                CanGrow = 0
+            };
+    }
+
+    private RenderFragment CreateCellTemplateComponent(RowNode<Person> data) => builder =>
+    {
+        builder.OpenComponent(0, typeof(CellTemplateComponent));
+        builder.AddAttribute(1, "RowNode", data);
+        builder.CloseComponent();
+    };
+
+    public uint ColumnSpanAge(CellParams<Person> cellParams)
+    {
+        if (cellParams.RowData.Age == 20) return 2;
+        if (cellParams.RowData.Age == 21) return 3;
+        return 1;
+    }
+
+    public uint RowSpanIsActive(CellParams<Person> cellParams)
+    {
+        var rowData = cellParams.RowData;
+
+        var renderedRows = cellParams.GridApi.GetRenderedRowNodes();
+
+        var spanRows = renderedRows.Where(p => p.RowData.PersonId == rowData.PersonId).Count();
+
+        return (uint)spanRows;
+    }
+
+    public string CellStyleIsActive(CellParams<Person> cellParams)
+    {
+        if (cellParams.RowData.IsActive) return "background-color:#1B5E20;color:#FFFFFF";
+        return "background-color:#B71C1C;color:#FFFFFF";
+    }
+
+    public string CellStyleAge(CellParams<Person> cellParams)
+    {
+        if (cellParams.RowData.Age == 20) return "background-color:#E8F5E9";
+        if (cellParams.RowData.Age == 21) return "background-color:#E1F5FE";
+        return "";
+    }
+
+    public uint RowSpanEyeColor(CellParams<Person> cellParams)
+    {
+        if (cellParams.RowData.EyeColor == "green") return 2;
+        return 1;
+    }
+
+    private List<GridColumn<Person>> GetGridColumns()
+    {
+        var height = 40;
+        var width = 200;
+        var canGrow = 1;
+
+        return new List<GridColumn<Person>> {
+                        new()
+                        {
+                            ColumnId = 10,
+                            ColumnOrder = 10,
+                            HeaderName = "Id",
+                            DataField = "Id",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.PersonId
+                        },
+                        new()
+                        {
+                            ColumnId = 8,
+                            ColumnOrder = 8,
+                            HeaderName = "Index",
+                            DataField = "Index",
+                            Width= 100,
+                            Height= height,
+                            CanGrow = canGrow,
+                            Sortable = true,
+                            CellDataFn = cellParam => cellParam.RowData.Index,
+                        },
+                        new()
+                        {
+                            ColumnId = 3,
+                            ColumnOrder = 3,
+                            HeaderName = "IsActive",
+                            DataField = "IsActive",
+                            Width= 150,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.IsActive,
+                            CellDataType = CellDataType.Boolean,
+                            RowGroup = true,
+                            AlingContent = AlingContent.Center,
+                            ShowGroupingButtons = true
+                        },
+                        new()
+                        {
+                            ColumnId = 3,
+                            ColumnOrder = 3,
+                            HeaderName = "Amount",
+                            DataField = "Amount",
+                            Width= 150,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => {
+                                  var rowData = cellParam.RowData;
+
+                                  var renderedRows = cellParam.GridApi.GetRenderedRowNodes();
+
+                                  var sum = renderedRows.Where(p => p.RowData.PersonId == rowData.PersonId).Select(p => p.RowData.Sales).Sum();
+
+                                  return $"${sum}";
+                            },
+                            CellDataType = CellDataType.Boolean,
+                            RowGroup = true,
+                            AlingContent = AlingContent.Center,
+                            Pinned = Pinned.Left,
+                            RowSpanFn = RowSpanIsActive,
+                            CellStyleFn = cellParam => {
+                                  var rowData = cellParam.RowData;
+
+                                  var renderedRows = cellParam.GridApi.GetRenderedRowNodes();
+
+                                  var sum = renderedRows.Where(p => p.RowData.PersonId == rowData.PersonId).Select(p => p.RowData.Sales).Sum();
+
+                                  if (sum <= 50) return "background-color:#d50000; color:#FFFFFF";
+
+                                  if (sum > 50 && sum < 100) return "background-color:orange; color:#FFFFFF";
+
+                                  if (sum >= 100) return "background-color:#004c40; color:#FFFFFF";
+
+                                  return "background-color:#FFFFFF";
+                            },
+                        },
+                        new()
+                        {
+                            ColumnId = 3,
+                            ColumnOrder = 3,
+                            HeaderName = "Sales",
+                            DataField = "Sales",
+                            Width= 150,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => $"${cellParam.RowData.Sales}",
+                            CellDataType = CellDataType.Boolean,
+                            RowGroup = true,
+                            AlingContent = AlingContent.Center,
+                            Pinned = Pinned.Left,
+                        },
+                        new()
+                        {
+                            ColumnId = 2,
+                            ColumnOrder = 2,
+                            HeaderName = "Balance",
+                            DataField = "Balance",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Balance,
+                            CellTemplate = typeof(CellPercentageComponent),
+                            Pinned = Pinned.Right
+                        },
+                         new()
+                         {
+                            ColumnId = 6,
+                            ColumnOrder = 6,
+                            HeaderName = "Picture",
+                            DataField = "Picture",
+                            Width= 150,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Picture,
+                            CellTemplate = typeof(CellPhotoComponent),
+                        },
+                        new()
+                        {
+                            ColumnId = 5,
+                            ColumnOrder = 5,
+                            HeaderName = "Age",
+                            DataField = "Age",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData?.Age,
+                            CellDataType = CellDataType.Number,
+                            SortStatus = SortOrder.None,
+                            Sortable = true,
+                            RowGroup = true,
+                            ShowGroupingButtons = true,
+                            AlingContent = AlingContent.Center,
+                            ColumnSpanFn = ColumnSpanAge,
+                        },
+                        new()
+                        {
+                            ColumnId = 9,
+                            ColumnOrder = 9,
+                            HeaderName = "EyeColor",
+                            DataField = "EyeColor",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.EyeColor == "green" ? "The cutest eye color" : cellParam.RowData.PersonId,
+                            CellDataType = CellDataType.Text,
+                            Sortable = true,
+                            RowGroup = true,
+                            ShowGroupingButtons = true,
+                            RowSpanFn = RowSpanEyeColor,
+                        },
+                        new()
+                        {
+                            ColumnId = 0,
+                            ColumnOrder = 0,
+                            HeaderName = "The text in the Name column is too long for a row",
+                            DataField = "Name",
+                            WrapHeaderText = true,
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Name,
+                            Sortable = true,
+                            CellDataType = CellDataType.Text,
+                            Hide = false,
+                            EnableSimpleFilter = true,
+                            EnableAdvancedFilter = true
+                        },
+                        new()
+                        {
+                            ColumnId = 1,
+                            ColumnOrder = 1,
+                            HeaderName = "Gender",
+                            DataField = "Gender",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Gender,
+                            CellDataType = CellDataType.Text
+                        },
+                        new()
+                        {
+                            ColumnId = 13,
+                            ColumnOrder = 13,
+                            HeaderName = "Company",
+                            DataField = "Company",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Company
+                        },
+                        new()
+                        {
+                            ColumnId = 7,
+                            ColumnOrder = 7,
+                            HeaderName = "Email",
+                            DataField = "Email",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Email
+                        },
+                          new()
+                          {
+                            ColumnId = 11,
+                            ColumnOrder = 11,
+                            HeaderName = "Phone",
+                            DataField = "Phone",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Phone
+                        },
+                           new()
+                           {
+                            ColumnId = 12,
+                            ColumnOrder = 12,
+                            HeaderName = "Address",
+                            DataField = "Address",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Address
+                        },
+                            new()
+                            {
+                            ColumnId = 4,
+                            ColumnOrder = 4,
+                            HeaderName = "Registered",
+                            DataField = "Registered",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Registered,
+                            CellDataType = CellDataType.Date,
+                            Sortable = true
+
+                        },
+                            new()
+                            {
+                            ColumnId = 14,
+                            ColumnOrder = 14,
+                            HeaderName = "Latitude",
+                            DataField = "Latitude",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Latitude
+                        },
+                            new()
+                            {
+                            ColumnId = 15,
+                            ColumnOrder = 15,
+                            HeaderName = "Longitude",
+                            DataField = "Longitude",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Longitude
+                        },
+                            new()
+                            {
+                            ColumnId = 16,
+                            ColumnOrder = 16,
+                            HeaderName = "Greeting",
+                            DataField = "Greeting",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.Greeting
+                        },
+                            new()
+                            {
+                            ColumnId = 17,
+                            ColumnOrder = 17,
+                            HeaderName = "FavoriteFruit",
+                            DataField = "FavoriteFruit",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = cellParam => cellParam.RowData.FavoriteFruit
+                        },
+
+        };
+    }
+}
+
+

@@ -1,0 +1,10 @@
+﻿@import "_blg-arcadia-theme-vars.scss";
+@import "_blg-base-theme.scss";
+
+.blg-arcadia-theme {
+    @include blg-base-theme();
+
+    %card {
+        border: 1px solid #ccc;
+    }
+}

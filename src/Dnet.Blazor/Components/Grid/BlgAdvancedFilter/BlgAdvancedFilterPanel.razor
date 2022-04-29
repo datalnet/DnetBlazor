@@ -1,0 +1,189 @@
+﻿@using Dnet.Blazor.Components.Grid.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Models.SearchModels
+@using Dnet.Blazor.Infrastructure.Models.SearchModels.FilterModels
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+
+@inject IOverlayService OverlayService
+
+<div class="blg-advanced-filter-container" style="height: auto; width: 250px;">
+    <div class="row dnet-p-10">
+        <div class="col-12">
+            <div class="d-flex">
+                <div class="blg-adv-filter-wrapper dnet-p-t-15">
+                    <EditForm EditContext="@_userEditContext" OnValidSubmit="HandleValidSubmit" class="coms-p-l-10 coms-p-r-10">
+                        <DataAnnotationsValidator />
+                        @if (FilterData.Type != CellDataType.Boolean)
+                        {
+                            <div class="form-group">
+                                <div class="blg-adv-filter-select">
+                                    <InputSelect @bind-Value="FilterData.Operator" class="form-control-sm">
+                                        @if (FilterData.Type == CellDataType.Text)
+                                            {
+                                            <option value="None"></option>
+                                            <option value="Equals">Equal</option>
+                                            <option value="NotEquals">Not equal</option>
+                                            <option value="StartsWith">Starts with</option>
+                                            <option value="EndsWith">Ends with</option>
+                                            <option value="Contains">Contains</option>
+                                            <option value="NotContains">Not Contains</option>
+                                            }
+                                        @if (FilterData.Type == CellDataType.Number || FilterData.Type == CellDataType.Date)
+                                            {
+                                            <option value="None"></option>
+                                            <option value="Equals">Equal</option>
+                                            <option value="NotEquals">Not equal</option>
+                                            <option value="GreaterThan">Greater than</option>
+                                            <option value="LessThan">Less than</option>
+                                            }
+                                    </InputSelect>
+                                </div>
+                            </div>
+                        }
+                        @if (FilterData.Type == CellDataType.Boolean)
+                        {
+                            <div class="form-group">
+                                <div class="blg-adv-filter-select">
+                                    <InputSelect @bind-Value="FilterData.Value" class="form-control-sm">
+                                        <option value="true">true</option>
+                                        <option value="false">false</option>
+                                    </InputSelect>
+                                </div>
+                            </div>
+                        }
+                        else if (FilterData.Type == CellDataType.Date)
+                        {
+                            <div class="form-group">
+                              @*  <DnetDatePicker @bind-Value="@FilterData.Value"
+                                                Disabled="false"
+                                                Format="@DateFormat">
+                                </DnetDatePicker>*@
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <CustomInputText @bind-Value="FilterData.Value" class="form-control-sm blg-adv-filter-input-search" />
+                            </div>
+                        }
+                        @if (FilterData.Type != CellDataType.Boolean)
+                        {
+                            <div class="form-group">
+                                <div class="blg-adv-filter-select">
+                                    <InputSelect @bind-Value="FilterData.Condition" class="form-control-sm">
+                                        <option value="None"></option>
+                                        <option value="And">And</option>
+                                        <option value="Or">Or</option>
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="blg-adv-filter-select">
+                                    <InputSelect @bind-Value="FilterData.AdditionalOperator" class="form-control-sm">
+                                        @if (FilterData.Type == CellDataType.Text)
+                                            {
+                                            <option value="None"></option>
+                                            <option value="Equals">Equal</option>
+                                            <option value="NotEquals">Not equal</option>
+                                            <option value="StartsWith">Starts with</option>
+                                            <option value="EndsWith">Ends with</option>
+                                            <option value="Contains">Contains</option>
+                                            <option value="NotContains">Not Contains</option>
+                                            }
+                                        @if (FilterData.Type == CellDataType.Number || FilterData.Type == CellDataType.Date)
+                                            {
+                                            <option value="None"></option>
+                                            <option value="Equals">Equal</option>
+                                            <option value="NotEquals">Not equal</option>
+                                            <option value="GreaterThan">Greater than</option>
+                                            <option value="LessThan">Less than</option>
+                                            }
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            @if (FilterData.Type == CellDataType.Date)
+                            {
+                                <div class="form-group">
+                                 @*   <DnetDatePicker @bind-Value="@FilterData.AdditionalValue"
+                                                    Disabled="false"
+                                                    Format="@DateFormat">
+                                    </DnetDatePicker>*@
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group">
+                                    <CustomInputText @bind-Value="FilterData.AdditionalValue" class="form-control-sm blg-adv-filter-input-search" />
+                                </div>
+                            }
+                        }
+                        <div class="row align-items-center justify-content-end dnet-p-r-15">
+                            <button class="btn btn-sm blg-adv-filter-buttom-reset dnet-m-r-10" type="button" @onclick="OnReset">Reset</button>
+                            <button class="btn btn-sm blg-adv-filter-buttom-ok" type="submit" disabled="@_formInvalid">Filter</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private int OverlayReferenceId { get; set; }
+
+
+    [Parameter]
+    public AdvancedFilterModel FilterData { get; set; }
+
+    [Parameter]
+    public string DateFormat { get; set; }
+
+
+    private bool _formInvalid = true;
+
+    private EditContext _userEditContext;
+
+
+    protected override void OnInitialized()
+    {
+        _userEditContext = new EditContext(FilterData);
+
+        _userEditContext.OnFieldChanged += (data, eventArgs) =>
+        {
+            _formInvalid = !_userEditContext.Validate();
+            StateHasChanged();
+        };
+    }
+
+    private void HandleValidSubmit()
+    {
+        var dataResult = new OverlayResult()
+        {
+            CloseReason = CloseReason.Ok,
+            ComponentData = FilterData,
+            OverlayReferenceId = OverlayReferenceId
+
+        };
+
+        OverlayService.Detach(dataResult);
+    }
+
+    private void OnReset()
+    {
+        var dataResult = new OverlayResult()
+        {
+            CloseReason = CloseReason.Cancel,
+            ComponentData = true,
+            OverlayReferenceId = OverlayReferenceId
+
+        };
+
+        OverlayService.Detach(dataResult);
+    }
+
+}

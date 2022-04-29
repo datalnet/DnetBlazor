@@ -1,0 +1,168 @@
+﻿@page "/FloatingPanel"
+
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.App.Shared.Infrastructure.Models
+@using Dnet.App.Shared.Shared.CustomComponents
+@using Dnet.Blazor.Components.Button
+@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Enums
+@using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Models
+@using Dnet.Blazor.Components.Select
+
+@inject IFloatingPanelService FloatingPanelService
+
+@implements IDisposable
+
+<div class="container-fluid" style="padding-top: 10px;">
+    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+        <span class="dnet-m-r-10 dnet-app-comp-name">Floating Panel</span>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-30">
+        <EditForm Model="@_formData1">
+            <DataAnnotationsValidator />
+            <div style="display: flex; flex-direction: column">
+                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 250px;">
+                    <DnetSelect Value="@_formData1.Value"
+                                ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                ValueExpression="@( () => _formData1.Value )"
+                                Items="_features"
+                                TItem="KeyValueModel<FloatingPanelPostion>"
+                                DisplayValueConverter="(value) => (value.Value)"
+                                OnItemSelected="ItemSelected"
+                                InputTextToUpper="true"
+                                PlaceHolder="Panel position"
+                                Label="Panel position"
+                                Appearance="Appearance.Fill">
+                        <ErrorContent>
+                            <ValidationMessage For="@(() => _formData1.Key)" />
+                        </ErrorContent>
+                    </DnetSelect>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-30">
+        <DnetButton OnClick="ShowFloatingPanel" InitialFocus="true" class="dnet-m-r-10">Show Panel</DnetButton>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-30">
+		<span>Dialog Ok result: </span>
+		<span>@_floatingPanelResultData</span>
+	</div>
+</div>
+
+
+@code {
+
+    string _floatingPanelResultData;
+
+    private OverlayReference _overlayReference;
+
+    private int? _width { get; set; } = 400;
+
+    private int? _height { get; set; } = null;
+
+    private KeyValueModel<FloatingPanelPostion> _formData1 = new();
+
+    private List<KeyValueModel<FloatingPanelPostion>> _features = new();
+
+
+    protected override void OnInitialized()
+    {
+        _features = GetKeyValueModels();
+
+        _formData1 = _features.FirstOrDefault();
+    }
+
+    void ShowFloatingPanel()
+    {
+        ChangePosition();
+
+        var floatingPanelConfig = new FloatingPanelConfig
+            {
+                HasBackdrop = true,
+                HasTransparentBackdrop = true,
+                Postion = _formData1.Key,
+                Width = _width,
+                Height = _height
+            };
+
+        var person = new Person()
+            {
+                Name = "John",
+                LastName = "Doe",
+                Email = "john.doe@datalnet.com",
+                Phone = "678 89 90 09",
+                Age = 34,
+                Company = "Datalnet",
+                Balance = "80000",
+                Address = "597 Frost Street, Brogan, Indiana, 8687",
+                Birthday = DateTime.Now
+            };
+
+        var parameters = new Dictionary<string, object>();
+
+        parameters.Add("Person", person);
+
+        _overlayReference = FloatingPanelService.Show(typeof(FloatingPanelTestContent), parameters, floatingPanelConfig);
+
+        _overlayReference.Close += CloseFloatingPanel;
+    }
+
+    private void ChangePosition()
+    {
+        switch (_formData1.Key)
+        {
+            case FloatingPanelPostion.TopRight:
+            case FloatingPanelPostion.TopLeft:
+                _width = 400;
+                _height = null;
+                break;
+            case FloatingPanelPostion.BottomCenter:
+            case FloatingPanelPostion.TopCenter:
+                _width = 500;
+                _height = 100;
+                break;
+        }
+    }
+
+    void CloseFloatingPanel(OverlayResult overlayDataResult)
+    {
+        _floatingPanelResultData = overlayDataResult.CloseReason == CloseReason.Ok ? overlayDataResult.ComponentData.ToString() : "";
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void MyValueChangeHandler(string item)
+    {
+        //_formData1.Value = item;
+    }
+
+    private void ItemSelected(KeyValueModel<FloatingPanelPostion> ItemSelected)
+    {
+        _formData1 = ItemSelected;
+    }
+
+    private List<KeyValueModel<FloatingPanelPostion>> GetKeyValueModels()
+    {
+        var keyValueModels = new List<KeyValueModel<FloatingPanelPostion>>
+        {
+            new KeyValueModel<FloatingPanelPostion> { Key = FloatingPanelPostion.TopRight, Value = "Right" },
+            new KeyValueModel<FloatingPanelPostion> { Key = FloatingPanelPostion.TopLeft, Value = "Left" },
+            new KeyValueModel<FloatingPanelPostion> { Key = FloatingPanelPostion.BottomCenter, Value = "BottomCenter" },
+            new KeyValueModel<FloatingPanelPostion> { Key = FloatingPanelPostion.TopCenter, Value = "TopCenter" },
+        };
+
+        return keyValueModels;
+    }
+
+    public void Dispose()
+    {
+        if (_overlayReference != null) _overlayReference.Close -= CloseFloatingPanel;
+    }
+
+}

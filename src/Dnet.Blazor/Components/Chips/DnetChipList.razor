@@ -1,0 +1,84 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using System.Timers
+
+<div class="dnet-chip-list">
+	<div class="dnet-chip-list-wrapper">
+		<CascadingValue Value="this" IsFixed="true">
+			@ChildContent
+		</CascadingValue>
+	</div>
+</div>
+
+
+@code {
+
+	[Parameter]
+	public EventCallback<List<DnetChip>> OnSelectionChange { get; set; }
+
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+
+	[Parameter]
+	public bool Multi { get; set; }
+
+	internal List<DnetChip> chipItems = new();
+
+	internal List<int> chipItemIds = new();
+
+	private int _nextId { get; set; } = 0;
+
+	private int _selectedId;
+
+	private List<DnetChip> _selectedChips = new();
+
+
+	internal void AddChip(DnetChip chip)
+	{
+		chip.Id = GetId();
+
+		chipItemIds.Add(chip.Id);
+
+		chipItems.Add(chip);
+
+		StateHasChanged();
+	}
+
+	internal void RemoveChip(DnetChip chip)
+	{
+		chipItemIds.Remove(chip.Id);
+
+		chipItems.Remove(chip);
+
+		StateHasChanged();
+	}
+
+	public void ChipClicked(DnetChip chip)
+	{
+		var previousSelectedChip = chipItems.FirstOrDefault(p => p.Id == _selectedId);
+
+		if (!Multi && chip.IsSelected() && _selectedChips.Count > 0 && previousSelectedChip != null)
+		{
+			_selectedChips.Remove(previousSelectedChip);
+
+			previousSelectedChip.SelectThisChip(false);
+		}
+
+		_selectedChips.Add(chip);
+
+		OnSelectionChange.InvokeAsync(_selectedChips);
+
+		_selectedId = chip.Id;
+	}
+
+	private int GetId()
+	{
+		_nextId++;
+		return _nextId;
+	}
+
+	public void Dispose()
+	{
+	}
+}

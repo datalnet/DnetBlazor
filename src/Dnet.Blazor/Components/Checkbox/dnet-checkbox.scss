@@ -1,0 +1,185 @@
+﻿:root {
+    --dnet-checkbox-border-radius: 0px;
+    --dnet-checkbox-border-color: rgba(0,0,0,.54);
+    --dnet-checkbox-border-width: 1px;
+    --dnet-checkbox-background: #42b0d5;
+    --dnet-checkbox-border-color: #b0b0b0;
+    --dnet-checkbox-size: 14px;
+    --dnet-checkbox-font-size: .875rem;
+    --dnet-checkbox-font-color: .875rem;
+    --dnet-checkbox-checkmark-path: #fafafa;
+}
+
+.dnet-checkbox {
+    display: inline-block;
+    transition: background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.dnet-checkbox-disabled {
+    cursor: default;
+}
+
+.dnet-checkbox-disabled .dnet-checkbox-label {
+    color: rgba(0,0,0,.54);
+}
+
+.dnet-checkbox-layout {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: inherit;
+    align-items: baseline;
+    vertical-align: middle;
+    display: inline-flex;
+    white-space: nowrap;
+}
+
+.dnet-checkbox-inner-container {
+    display: inline-block;
+    height: var(--dnet-checkbox-size);
+    width: var(--dnet-checkbox-size);
+    line-height: 0;
+    margin: auto;
+    margin-right: 8px;
+    order: 0;
+    position: relative;
+    vertical-align: middle;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.dnet-checkbox-input {
+    bottom: 0;
+    left: 50%;
+}
+
+.cdk-visually-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    white-space: nowrap;
+    outline: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.dnet-checkbox-frame {
+    border-color: var(--dnet-checkbox-border-color);
+    background-color: transparent;
+    transition: border-color 90ms cubic-bezier(0, 0, 0.2, 0.1);
+    border-width: var(--dnet-checkbox-border-width);
+    border-style: solid;
+}
+
+.dnet-checkbox-background {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    transition: background-color 90ms cubic-bezier(0, 0, 0.2, 0.1),opacity 90ms cubic-bezier(0, 0, 0.2, 0.1);
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+}
+
+.dnet-checkbox-background, .dnet-checkbox-frame {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    border-radius: var(--dnet-checkbox-border-radius);
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+.dnet-checkbox-disabled:not(.dnet-checkbox-checked) .dnet-checkbox-frame {
+    border-color: var(--dnet-checkbox-border-color);
+}
+
+.dnet-checkbox-checked.dnet-accent .dnet-checkbox-background, .dnet-checkbox-indeterminate.dnet-accent .dnet-checkbox-background {
+    background-color: var(--dnet-checkbox-background);
+}
+
+.dnet-checkbox-checked:not(.dnet-checkbox-disabled).dnet-accent .dnet-ripple-element, .dnet-checkbox:active:not(.dnet-checkbox-disabled).dnet-accent .dnet-ripple-element {
+    background: var(--dnet-checkbox-background);
+}
+
+.dnet-checkbox-checkmark {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+}
+
+.dnet-checkbox-checked .dnet-checkbox-checkmark {
+    opacity: 1;
+}
+
+.dnet-checkbox-checked .dnet-checkbox-checkmark-path {
+    stroke-dashoffset: 0;
+}
+
+.dnet-checkbox-checkmark {
+    fill: #fafafa;
+}
+
+.dnet-checkbox-checkmark-path {
+    stroke-dashoffset: 22.910259;
+    stroke-dasharray: 22.910259;
+    stroke-width: 2.1333333333px;
+}
+
+.dnet-checkbox-checkmark-path {
+    stroke: var(--dnet-checkbox-checkmark-path) !important;
+}
+
+.dnet-checkbox-mixedmark {
+    width: calc(100% - 6px);
+    height: 2px;
+    opacity: 0;
+    transform: scaleX(0) rotate( 0deg);
+    border-radius: 2px;
+}
+
+.dnet-checkbox-mixedmark {
+    background-color: #fafafa;
+}
+
+.dnet-checkbox-layout .dnet-checkbox-label {
+    line-height: 24px;
+}
+
+.dnet-checkbox-label {
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+    font-size: var(--dnet-checkbox-font-size);
+}
+
+.dnet-checkbox .dnet-checkbox-ripple {
+    position: absolute;
+    left: calc(50% - 20px);
+    top: calc(50% - 20px);
+    height: 40px;
+    width: 40px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.dnet-ripple:not(:empty) {
+    transform: translateZ(0);
+}
+
+.dnet-focus-indicator, .dnet-mdc-focus-indicator {
+    position: relative;
+}

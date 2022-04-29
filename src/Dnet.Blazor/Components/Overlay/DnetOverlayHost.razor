@@ -1,0 +1,328 @@
+﻿@using System.Globalization
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@inject IViewportRuler ViewportRuler
+@inject DnetOverlayInterop DnetOverlayInterop
+
+<div id="cdk-overlay-host-@OverlayConfig.OverlayReferenceId" class="@_cssClasses" style="@(Convert.ToString(_styles, CultureInfo.InvariantCulture))">
+    <CascadingValue Value="this" IsFixed="true">
+        @_contentChild
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment ContentChild { get; set; }
+
+    [Parameter]
+    public OverlayConfig OverlayConfig { get; set; }
+
+    private Size _lastBoundingBoxSize = new Size();
+
+    private bool _isInitialRender = true;
+
+    private bool _isPushed = false;
+
+    private string _styles { get; set; } = null;
+
+    private string _cssClasses { get; set; }
+
+    private RenderFragment _contentChild { get; set; }
+
+    private int _viewportMargin = 0;
+
+
+    protected override void OnInitialized()
+    {
+        _contentChild = ContentChild;
+
+        if (OverlayConfig.PositionStrategy == PositionStrategy.Global)
+        {
+            _cssClasses = GetOverlayCssClasses();
+            _styles = GetStyles();
+        }
+        else
+        {
+            _cssClasses = GetOverlayCssClasses();
+        }
+
+        var builder = OverlayConfig.FlexibleConnectedPositionStrategyBuilder;
+
+        _viewportMargin = builder.ViewportMargin();
+    }
+
+    private string GetOverlayCssClasses()
+    {
+
+        var classes = new CssBuilder()
+            .AddClass("cdk-global-overlay-wrapper", when: OverlayConfig.PositionStrategy == PositionStrategy.Global)
+            .AddClass("cdk-overlay-connected-position-bounding-box", when: OverlayConfig.PositionStrategy == PositionStrategy.FlexibleConnectedTo)
+            .Build();
+
+        return classes;
+    }
+
+    private string GetStyles()
+    {
+
+        var globalPositionStrategy = OverlayConfig.GlobalPositionStrategy;
+
+        var shouldBeFlushHorizontally = (OverlayConfig.Width == "100%" || OverlayConfig.Width == "100vw") &&
+                                        (string.IsNullOrEmpty(OverlayConfig.MaxWidth) || OverlayConfig.MaxWidth == "100%" || OverlayConfig.MaxWidth == "100vw");
+
+        var shouldBeFlushVertically = (OverlayConfig.Height == "100%" || OverlayConfig.Height == "100vh") &&
+                                        (string.IsNullOrEmpty(OverlayConfig.MaxHeight) || OverlayConfig.MaxHeight == "100%" || OverlayConfig.MaxHeight == "100vh");
+
+        var justifyContent = globalPositionStrategy.GetJustifyContent();
+
+        if (shouldBeFlushHorizontally)
+        {
+
+            justifyContent = "flex-start";
+
+        }
+        else if (globalPositionStrategy.GetJustifyContent() == "center")
+        {
+
+            justifyContent = "center";
+
+        }
+        else
+        {
+
+            justifyContent = globalPositionStrategy.GetJustifyContent();
+
+        }
+
+        var alignItems = shouldBeFlushVertically ? "flex-start" : globalPositionStrategy.GetAlignItems();
+
+        var styles = new StyleBuilder()
+            .AddStyle("justify-content", justifyContent)
+            .AddStyle("align-items", alignItems)
+            .AddStyle("z-index", $"{OverlayConfig.HostZindex}")
+            .Build();
+
+        return styles;
+    }
+
+    public async Task SetBoundingBoxStyles(Point originPoint, ConnectedPosition position)
+    {
+        var hostStyles = "";
+
+        var boundingBoxRect = await CalculateBoundingBoxRect(originPoint, position);
+
+        var growAfterOpen = OverlayConfig.FlexibleConnectedPositionStrategyBuilder.GrowAfterOpen();
+
+        var hasExactPosition = OverlayConfig.FlexibleConnectedPositionStrategyBuilder.HasExactPosition();
+
+        // It's weird if the overlay *grows* while scrolling, so we take the last size into account
+        // when applying a new size.
+        if (!_isInitialRender && !growAfterOpen)
+        {
+
+            boundingBoxRect.Height = Math.Min(boundingBoxRect.Height, this._lastBoundingBoxSize.Height);
+
+            boundingBoxRect.Width = Math.Min(boundingBoxRect.Width, this._lastBoundingBoxSize.Width);
+        }
+
+        var styles = new StyleBuilder();
+
+        if (hasExactPosition)
+        {
+
+            hostStyles = styles.AddStyle("top", "0px")
+                               .AddStyle("left", "0px")
+                               .AddStyle("width", "100%")
+                               .AddStyle("height", "100%")
+                               .AddStyle("z-index", $"{OverlayConfig.HostZindex}")
+                               .Build();
+
+        }
+        else
+        {
+            var maxHeight = OverlayConfig.MaxHeight;
+            var maxWidth = OverlayConfig.MaxWidth;
+
+            hostStyles = styles.AddStyle("height", $"{boundingBoxRect.Height}px")
+                               .AddStyle("top", $"{boundingBoxRect.Top}px")
+                               .AddStyle("bottom", $"{boundingBoxRect.Bottom}px")
+                               .AddStyle("width", $"{boundingBoxRect.Width}px")
+                               .AddStyle("left", $"{boundingBoxRect.Left}px")
+                               .AddStyle("right", $"{boundingBoxRect.Right}px")
+                               .AddStyle("z-index", $"{OverlayConfig.HostZindex}")
+                               .Build();
+
+            // Push the pane content towards the proper direction.
+            if (position.OverlayX == HorizontalConnectionPos.Center)
+            {
+                var style = styles.AddStyle("align-items", "center").Build();
+
+                hostStyles = string.Concat(hostStyles, style);
+            }
+            else
+            {
+                var style = styles.AddStyle("align-items", "flex-end", when: position.OverlayX == HorizontalConnectionPos.End)
+                                        .AddStyle("align-items", "flex-start", when: position.OverlayX != HorizontalConnectionPos.End)
+                                        .Build();
+
+                hostStyles = string.Concat(hostStyles, style);
+            }
+
+            if (position.OverlayY == VerticalConnectionPos.Center)
+            {
+                var style = styles.AddStyle("justify-content", "center");
+
+                hostStyles = string.Concat(hostStyles, style);
+            }
+            else
+            {
+                var style = styles.AddStyle("justify-content", "flex-end", when: position.OverlayY == VerticalConnectionPos.Bottom)
+                                        .AddStyle("justify-content", "flex-start", when: position.OverlayY != VerticalConnectionPos.Bottom)
+                                        .Build();
+
+                hostStyles = string.Concat(hostStyles, style);
+
+            }
+
+            var style1 = styles.AddStyle("max-height", maxHeight, when: !string.IsNullOrEmpty(maxHeight))
+                                     .AddStyle("max-width", maxWidth, when: !string.IsNullOrEmpty(maxWidth))
+                                     .Build();
+
+            hostStyles = string.Concat(hostStyles, style1);
+
+        }
+
+        _styles = hostStyles;
+        StateHasChanged();
+    }
+
+    private async Task<ClientRect> CalculateBoundingBoxRect(Point origin, ConnectedPosition position)
+    {
+        var viewportRect = await ViewportRuler.GetViewportRectNoScroll(_viewportMargin);
+
+        var viewportMargin = OverlayConfig.FlexibleConnectedPositionStrategyBuilder.ViewportMargin();
+
+        var growAfterOpen = OverlayConfig.FlexibleConnectedPositionStrategyBuilder.GrowAfterOpen();
+
+        var isRtl = OverlayConfig.FlexibleConnectedPositionStrategyBuilder.IsRtl();
+
+        var height = 0.0;
+        var top = 0.0;
+        var bottom = 0.0;
+
+        if (position.OverlayY == VerticalConnectionPos.Top)
+        {
+            // Overlay is opening "downward" and thus is bound by the bottom viewport edge.
+            top = origin.Y;
+            height = viewportRect.Height - top + viewportMargin;
+        }
+        else if (position.OverlayY == VerticalConnectionPos.Bottom)
+        {
+            // Overlay is opening "upward" and thus is bound by the top viewport edge. We need to add
+            // the viewport margin back in, because the viewport rect is narrowed down to remove the
+            // margin, whereas the `origin` position is calculated based on its `ClientRect`.
+            bottom = viewportRect.Height - origin.Y + viewportMargin * 2;
+            height = viewportRect.Height - bottom + viewportMargin;
+        }
+        else
+        {
+            // If neither top nor bottom, it means that the overlay is vertically centered on the
+            // origin point. Note that we want the position relative to the viewport, rather than
+            // the page, which is why we don't use something like `viewport.bottom - origin.y` and
+            // `origin.y - viewport.top`.
+            var smallestDistanceToViewportEdge = Math.Min(viewportRect.Bottom - origin.Y + viewportRect.Top, origin.Y);
+
+            var previousHeight = this._lastBoundingBoxSize.Width;
+
+            height = smallestDistanceToViewportEdge * 2;
+
+            top = origin.Y - smallestDistanceToViewportEdge;
+
+            if (height > previousHeight && !_isInitialRender && !growAfterOpen)
+            {
+                top = origin.Y - (previousHeight / 2);
+            }
+        }
+
+        // The overlay is opening 'right-ward' (the content flows to the right).
+        var isBoundedByRightViewportEdge = (position.OverlayX == HorizontalConnectionPos.Start && !isRtl) || (position.OverlayX == HorizontalConnectionPos.End && isRtl);
+
+        // The overlay is opening 'left-ward' (the content flows to the left).
+        var isBoundedByLeftViewportEdge = (position.OverlayX == HorizontalConnectionPos.End && !isRtl) || (position.OverlayX == HorizontalConnectionPos.Start && isRtl);
+
+        var width = 0.0;
+        var left = 0.0;
+        var right = 0.0;
+
+        if (isBoundedByLeftViewportEdge)
+        {
+
+            right = viewportRect.Width - origin.X + viewportMargin;
+            width = origin.X - viewportMargin;
+
+        }
+        else if (isBoundedByRightViewportEdge)
+        {
+
+            left = origin.X;
+            width = viewportRect.Right - origin.X;
+
+        }
+        else
+        {
+
+            // If neither start nor end, it means that the overlay is horizontally centered on the
+            // origin point. Note that we want the position relative to the viewport, rather than
+            // the page, which is why we don't use something like `viewport.right - origin.x` and
+            // `origin.x - viewport.left`.
+            var smallestDistanceToViewportEdge = Math.Min(viewportRect.Right - origin.X + viewportRect.Left, origin.X);
+
+            var previousWidth = this._lastBoundingBoxSize.Width;
+
+            width = smallestDistanceToViewportEdge * 2;
+
+            left = origin.X - smallestDistanceToViewportEdge;
+
+            if (width > previousWidth && !_isInitialRender && !growAfterOpen)
+            {
+                left = origin.X - (previousWidth / 2);
+            }
+        }
+
+        return new ClientRect
+        {
+            Top = top,
+            Left = left,
+            Bottom = bottom,
+            Right = right,
+            Width = width,
+            Height = height
+        };
+    }
+
+    //private async Task<ClientRect> SetNarrowedViewportRect()
+    //{
+    //    var viewportSizeNoScroll = await DnetOverlayInterop.GetViewportSizeNoScroll();
+
+    //    var scrollPosition = await DnetOverlayInterop.GetViewportScrollPosition();
+
+    //    var builder = OverlayConfig.FlexibleConnectedPositionStrategyBuilder;
+
+    //    var viewportMargin = builder.ViewportMargin();
+
+    //    var viewportRect = new ClientRect
+    //    {
+    //        Top = scrollPosition.Top + viewportMargin,
+    //        Left = scrollPosition.Left + viewportMargin,
+    //        Right = scrollPosition.Left + viewportSizeNoScroll.Width - viewportMargin,
+    //        Bottom = scrollPosition.Top + viewportSizeNoScroll.Height - viewportMargin,
+    //        Width = viewportSizeNoScroll.Width - (2 * viewportMargin),
+    //        Height = viewportSizeNoScroll.Height - (2 * viewportMargin)
+    //    };
+
+    //    return viewportRect;
+    //}
+}

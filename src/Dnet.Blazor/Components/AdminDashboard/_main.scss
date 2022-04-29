@@ -1,0 +1,126 @@
+html {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--dnet-dash-html-background-color);
+    position: relative;
+    font-size: var(--dnet-dash-font-rem-reference);
+    font-family: var(--dnet-dash-font-family-text);
+    color: var(--dnet-dash-default-font-color);
+    direction: ltr;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background-color: var(--dnet-dash-body-background-color);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+.container-fluid {
+    height: 100%;
+}
+
+h1, h2, h3, h4, p {
+    margin: 0;
+}
+
+p {
+    margin-bottom: 0.85em;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+a:active,
+a:focus,
+a:hover,
+button,
+button:active,
+button:focus,
+embed,
+input::-moz-focus-inner,
+object {
+    outline: 0;
+}
+
+.page-title {
+    margin: 12px 0 28px;
+
+    span {
+        font-size: 1rem;
+        color: var(--dnet-dash-gray-dark);
+        display: inline-block;
+        vertical-align: 1px;
+    }
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+*:focus {
+    outline: 0 !important;
+}
+
+
+/*
+ * IE FIX for tap delay
+ */
+a,
+button,
+input {
+    -ms-touch-action: none !important;
+}
+
+
+/*
+ * Center Canvas
+ */
+.center-canvas,
+.center-child-canvas > canvas {
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+/* 
+ * WEBKIT IOS HIGHLIGHT COLOR
+ * 
+ */
+.btn,
+a:link,
+button {
+    -webkit-tap-highlight-color: fade(var(--dnet-dash-red), 50%);
+}
+
+
+/***Scrollbars*/
+::-webkit-scrollbar {
+    width: var(--dnet-dash-scrollbar-size);
+    height: var(--dnet-dash-scrollbar-size);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dnet-dash-scrollbar-foreground-color);
+    cursor: pointer;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dnet-dash-scrollbar-background-color);
+}
+// For Internet Explorer
+body {
+    scrollbar-face-color: var(--dnet-dash-scrollbar-foreground-color);
+    scrollbar-track-color: var(--dnet-dash-scrollbar-background-color);
+}
+/***Scrollbars*/

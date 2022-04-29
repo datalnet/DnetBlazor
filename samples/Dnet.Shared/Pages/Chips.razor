@@ -1,0 +1,146 @@
+﻿@page "/Chips"
+
+@using System.Drawing
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.Chips
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+		<span class="dnet-m-r-10 dnet-app-comp-name">Chips</span>
+	</div>
+
+	<div class="dnet-m-l-30 dnet-m-t-30">
+		<div class="dnet-m-b-30">
+			<span class="dnet-m-b-10" style="font-size:0.875rem">Large:</span>
+			<DnetChipList @ref="_listComponent" OnSelectionChange="SelectionChanged" Multi="true">
+				@foreach (var item in _items1)
+				{
+					<DnetChip ChipSize="ChipSize.Large" Value="@item.Name" OnRemoved="Removed">
+					</DnetChip>
+				}
+			</DnetChipList>
+		</div>
+		<div class="dnet-m-b-30">
+			<span class="dnet-m-b-10" style="font-size:0.875rem">Medium:</span>
+			<DnetChipList @ref="_listComponent" OnSelectionChange="SelectionChanged">
+				@foreach (var item in _items2)
+				{
+					<DnetChip ChipSize="ChipSize.Medium" Value="@item.Name">
+					</DnetChip>
+				}
+			</DnetChipList>
+		</div>
+		<div class="dnet-m-b-30">
+			<span class="dnet-m-b-10" style="font-size:0.875rem">Small:</span>
+			<DnetChipList @ref="_listComponent" OnSelectionChange="SelectionChanged">
+				@foreach (var item in _items2)
+				{
+					<DnetChip ChipSize="ChipSize.Small" Value="@item.Name">
+					</DnetChip>
+				}
+			</DnetChipList>
+		</div>
+		<div class="dnet-m-b-30">
+			<span class="dnet-m-b-10" style="font-size:0.875rem;">Extra Small:</span>
+			<DnetChipList @ref="_listComponent" OnSelectionChange="SelectionChanged">
+				@foreach (var item in _items2)
+				{
+					<DnetChip ChipSize="ChipSize.ExtraSmall" Value="@item.Name">
+					</DnetChip>
+				}
+			</DnetChipList>
+		</div>
+		<div class="dnet-m-b-30">
+			<span class="dnet-m-b-10" style="font-size:0.875rem">Custom remove icon:</span>
+			<DnetChipList @ref="_listComponent" OnSelectionChange="SelectionChanged">
+				@foreach (var item in _items2)
+				{
+					<DnetChip ChipSize="ChipSize.Small" Value="@item.Name" RemoveIcon="dnet-app-chips-remove">
+					</DnetChip>
+				}
+			</DnetChipList>
+		</div>
+		<div class="dnet-m-b-30">
+			<span class="dnet-m-b-10" style="font-size:0.875rem">Custom color:</span>
+			<DnetChipList @ref="_listComponent" OnSelectionChange="SelectionChanged">
+				@foreach (var item in _items2)
+				{
+					<DnetChip ChipSize="ChipSize.Small" Value="@item.Name" BackgroungColor="#42b0d5" Color="#FFFFFF" BackgroungColorSelected="red">
+					</DnetChip>
+				}
+			</DnetChipList>
+		</div>
+		<div class="dnet-m-b-30">
+			<span class="dnet-m-b-10" style="font-size:0.875rem">Custom color:</span>
+			<DnetChipList @ref="_listComponent" OnSelectionChange="SelectionChanged">
+				@foreach (var item in _items2)
+				{
+					<DnetChip ChipSize="ChipSize.Small" Value="@item.Name" BackgroungColor="#42b0d5" Color="#FFFFFF" AvatarIcon="dnet-app-chips-avatar">
+					</DnetChip>
+				}
+			</DnetChipList>
+		</div>
+	</div>
+</div>
+
+
+@code {
+
+	private bool _enablePagingination { get; set; } = false;
+
+	private bool _enableSearching { get; set; } = false;
+
+	private bool _checkboxSelectionColumn { get; set; } = false;
+
+	private bool _enableSorting { get; set; } = false;
+
+	private List<MarineOperator> _items1 = new List<MarineOperator>();
+
+	private List<MarineOperator> _items2 = new List<MarineOperator>();
+
+	private DnetChipList _listComponent { get; set; }
+
+	protected override void OnInitialized()
+	{
+		_items1 = GetVirtualScrollData();
+		_items2 = GetVirtualScrollData();
+	}
+
+	private List<MarineOperator> GetVirtualScrollData()
+	{
+		var items = new List<MarineOperator>();
+
+		var rnd = new Random();
+
+		for (int i = 1; i < 5; i++)
+		{
+			var item = new MarineOperator
+				{
+					MarineOperatorId = i,
+					Name = $"MarineOperator {i}",
+					Color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256))
+				};
+
+			items.Add(item);
+		}
+
+		return items;
+	}
+
+	private void SelectionChanged(List<DnetChip> selectedItems)
+	{
+		var tt = selectedItems;
+	}
+
+	private void Removed(DnetChip chip)
+	{
+		var removedItem = _items1.FirstOrDefault(p => p.Name == chip.Value);
+
+		_items1.Remove(removedItem);
+
+		StateHasChanged();
+	}
+}
+
+
+

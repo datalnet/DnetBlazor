@@ -1,0 +1,100 @@
+﻿.dnet-menu-container {
+  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0.1);
+  background: #fff;
+  color: rgba(0, 0, 0, 0.87); }
+
+.blg-adv-filter-select {
+  position: relative;
+  display: block;
+  line-height: 2rem;
+  overflow: hidden;
+  border: 1px solid #eee !important;
+  flex: 1 1 auto;
+  border-radius: 0px;
+  font-size: 0.875rem;
+  padding-right: 2px;
+  color: #5f6368;
+  /*Arrow*/ }
+  .blg-adv-filter-select input::-webkit-input-placeholder {
+    font-size: 0.875rem; }
+  .blg-adv-filter-select::after {
+    color: #1c313a;
+    /*font-family: "Font Awesome 5 Free";
+        content: '\f0d7';*/
+    font-weight: 300;
+    font-size: 0.875rem;
+    position: absolute;
+    top: 8px;
+    right: 2px;
+    bottom: 0;
+    padding: 0 .7rem;
+    background: #FFFFFF;
+    pointer-events: none;
+    -webkit-transition: .25s all ease;
+    -o-transition: .25s all ease;
+    transition: .25s all ease;
+    height: auto;
+    display: inline-block;
+    content: "";
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23333' stroke-linecap='square' shape-rendering='crispEdges' stroke-linejoin='round' stroke-width='1px' d='M1.646 4.646a.5.5 0 01.708 0L8 10.293l5.646-5.647a.5.5 0 01.708.708l-6 6a.5.5 0 01-.708 0l-6-6a.5.5 0 010-.708z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 0.875rem 0.875rem; }
+  .blg-adv-filter-select select {
+    outline: 0;
+    box-shadow: none;
+    border: 0 !important;
+    background-image: none;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    color: #5f6368;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    /*height: 30px;*/ }
+    .blg-adv-filter-select select:hover::after {
+      color: #f39c12; }
+    .blg-adv-filter-select select::-ms-expand {
+      display: none; }
+    .blg-adv-filter-select select option.placeholder {
+      color: #ccc; }
+
+.blg-adv-filter-input-search {
+  width: 100%;
+  border-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  background-color: #FFFFFF;
+  -webkit-transition: none;
+  transition: none;
+  box-shadow: none;
+  font-size: 0.875rem;
+  color: #5f6368;
+  border: 1px solid #eee !important;
+  height: 30px;
+  /*padding: 2px 5px;*/ }
+
+.blg-adv-filter-validation-message {
+  padding-top: 3px;
+  color: #ff0000;
+  font-size: 0.825rem; }
+
+.blg-adv-filter-wrapper {
+  width: 100%; }
+
+.blg-adv-filter-buttom-ok {
+  border: none;
+  border-radius: 0px;
+  background-color: #ced4da;
+  width: auto;
+  padding: .25rem 1.0rem; }
+
+.blg-adv-filter-buttom-reset {
+  width: 100%;
+  border-radius: 0px;
+  width: auto;
+  padding: .25rem 1.0rem; }

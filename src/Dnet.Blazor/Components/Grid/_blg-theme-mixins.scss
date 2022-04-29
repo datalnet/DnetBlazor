@@ -1,0 +1,14 @@
+﻿@mixin row-border($color) {
+    border-style: solid;
+    border-color: $color;
+}
+
+@mixin grid-header-cell($padding) {
+    padding-left: $padding;
+    padding-right: $padding;
+}
+
+@mixin grid-cell($height, $padding) {
+    line-height: $height;
+    @include grid-header-cell($padding);
+}

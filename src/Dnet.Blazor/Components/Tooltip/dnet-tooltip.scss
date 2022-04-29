@@ -1,0 +1,40 @@
+﻿/*@import '../core/style/variables';
+@import '../../cdk/a11y/a11y';
+*/
+:root {
+    --dnet-tooltip-horizontal-padding: 8px;
+    --dnet-tooltip-max-width: 250px;
+    --dnet-tooltip-margin: 14px;
+    --dnet-tooltip-handset-horizontal-padding: 16px;
+    --dnet-tooltip-handset-margin: 24px;
+    --dnet-tooltip-border-radius: 0px;
+}
+
+.dnet-tooltip-panel {
+    // The overlay reference updates the pointer-events style property directly on the HTMLElement
+    // depending on the state of the overlay. For tooltips the overlay panel should never enable
+    // pointer events. To overwrite the inline CSS from the overlay reference `!important` is needed.
+    pointer-events: none !important;
+}
+
+.dnet-tooltip {
+    color: white;
+    border-radius: var(--dnet-tooltip-border-radius);
+    /*    margin: var(--dnet-tooltip-margin);*/
+    margin: 0;
+    max-width: var(--dnet-tooltip-max-width);
+    padding-left: var(--dnet-tooltip-horizontal-padding);
+    padding-right: var(--dnet-tooltip-horizontal-padding);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background: rgba(97,97,97,.9);
+}
+
+.dnet-tooltip-handset {
+    margin: var(--dnet-tooltip-handset-margin);
+    padding-left: var(--dnet-tooltip-handset-horizontal-padding);
+    padding-right: var(--dnet-tooltip-handset-horizontal-padding);
+}

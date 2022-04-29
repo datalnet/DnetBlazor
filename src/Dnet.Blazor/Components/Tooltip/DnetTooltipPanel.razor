@@ -1,0 +1,74 @@
+﻿@using Dnet.Blazor.Components.Tooltip.Infrastructure.Interfaces
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using Microsoft.AspNetCore.Components.Web
+@inject ITooltipService TooltipPanelService
+
+<div>
+    <div class="@_cssClasses" style="@_styles">
+        @Text
+        <CascadingValue Value="OverlayReferenceId" IsFixed="true">
+            @ContentChild
+        </CascadingValue>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] private int OverlayReferenceId { get; set; }
+
+    [Parameter]
+    public RenderFragment ContentChild { get; set; }
+
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public string TooltipColor { get; set; }
+
+    [Parameter]
+    public string TooltipClass { get; set; }
+
+    [Parameter]
+    public string MaxWidth { get; set; }
+
+    [Parameter]
+    public string MaxHeight { get; set; }
+
+
+    private string _cssClasses { get; set; }
+
+    private string _styles { get; set; } = null;
+
+    private string _backgroundColor { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(TooltipColor))
+        {
+            _backgroundColor = TooltipColor;
+        }
+
+        _cssClasses = GetCssClasses();
+
+        _styles = GetStyles();
+    }
+
+    private string GetCssClasses()
+    {
+        var classes = new CssBuilder("dnet-tooltip")
+            .Build();
+
+        return classes;
+    }
+
+    private string GetStyles()
+    {
+        var styles = new StyleBuilder()
+            .AddStyle("max-height", MaxHeight)
+            .AddStyle("max-width", MaxWidth)
+            .AddStyle("background", _backgroundColor)
+            .Build();
+
+        return styles;
+    }
+}

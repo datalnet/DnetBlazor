@@ -1,0 +1,57 @@
+﻿@page "/Tooltip"
+
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Components.Tooltip.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Tooltip.Infrastructure.Models
+
+@inject ITooltipService TooltipService
+
+
+<div class="container-fluid" style="padding-top: 10px;">
+    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+        <span class="dnet-m-r-10 dnet-app-comp-name">Tooltip</span>
+    </div>
+
+    <div class="dnet-m-l-30 dnet-m-t-30">
+        <div @ref="_tooltipTarget" style="width: 100px; height: 100px; background-color: #4fc3f7; position: absolute; top: 50%; left: 50%; display: flex; align-items: center; justify-content:center"
+             @onmouseover="ShowTooltip"
+             @onmouseout="HideTooltip">
+            <span style="color: #FFFFFF">Show tooltip</span>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    private ElementReference _tooltipTarget;
+
+    private OverlayReference _tooltipReference;
+
+    public void ShowTooltip()
+    {
+        var tooltipConfig = new TooltipConfig()
+            {
+                Text = "Tooltip base on Blazor Overlay Library",
+                MaxHeight = "50px",
+                MaxWidth = "400px",
+                MinWidth = "100px",
+                Height = "50px",
+                TooltipColor = "rgba(97,97,97,1)"
+            };
+
+        _tooltipReference = TooltipService.Show(tooltipConfig, _tooltipTarget);
+    }
+
+    public void HideTooltip()
+    {
+        TooltipService.Close(new OverlayResult { OverlayReferenceId = _tooltipReference.GetOverlayReferenceId() });
+    }
+}
+
+
+

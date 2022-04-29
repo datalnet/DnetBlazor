@@ -1,0 +1,29 @@
+﻿@code {
+
+	[CascadingParameter]
+	private DnetStepper Parent { get; set; }
+
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+
+	[Parameter]
+	public RenderFragment? StepHeaderTemplate { get; set; }
+
+	[Parameter]
+	public string Label { get; set; }
+
+	[Parameter]
+	public int Order { get; set; } = 0;
+
+	[Parameter]
+	public bool Completed { get; set; }
+
+	internal int Id { get; set; } = 0;
+
+
+	protected override void OnInitialized()
+	{
+		Parent.AddStep(this);
+	}
+
+}

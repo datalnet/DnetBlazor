@@ -1,0 +1,4 @@
+/**
+  @license
+  Apache License 2.0 https://github.com/ReactiveX/RxJS/blob/master/LICENSE.txt
+ **/

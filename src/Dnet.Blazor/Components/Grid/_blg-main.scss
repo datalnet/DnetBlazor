@@ -1,0 +1,295 @@
+﻿.blg-theme-bootstrap {
+    display: flex;
+    width: 100%;
+}
+
+.blg-root-wrapper {
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.blg-body-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.blg-header {
+    display: flex;
+    flex: 1 1 auto;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.blg-header-viewport {
+    min-width: 0px;
+    overflow: hidden;
+    flex: 1 1 100%;
+}
+
+.blg-header-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 100%;
+}
+
+.blg-header-row {
+    display: flex;
+    width: 100%;
+}
+
+.blg-header-cell {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+    overflow: hidden;
+    flex: 1 0 0;
+    border: 1px solid #eee;
+}
+
+.blg-header-cell-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    white-space: nowrap;
+}
+
+.blg-header-cell-label {
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    text-overflow: ellipsis;
+    align-self: stretch;
+    height: 100%;
+    cursor: pointer;
+    width: 100%
+}
+
+.blg-header-cell-text {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 10px;
+    height: 100%;
+}
+
+.blg-pinned-left-header {
+    flex: 1 0 auto;
+    position: relative;
+    z-index: 101;
+}
+
+.blg-pinned-right-header {
+    flex: 1 0 auto;
+    position: relative;
+    z-index: 101;
+}
+
+.blg-viewport {
+    /*display: flex;*/
+    position: relative;
+    height: calc(100% - 40px);
+    min-width: 0px;
+    /*flex: 1 1 auto;*/
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.blg-center-cols-clipper {
+    min-height: 100%;
+    display: flex;
+    /*flex-direction: column;*/
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.blg-center-cols-viewport {
+    display: flex;
+    position: relative;
+    height: auto;
+    min-width: 0px;
+    /*overflow-x: hidden;*/
+    flex: 1 1 auto;
+    width: calc(100%);
+    z-index: 100;
+    /*overflow-y: scroll;*/
+}
+
+.blg-center-cols-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    width: auto;
+}
+
+.blg-pinned-left-cols-container {
+    flex: 1 0 auto;
+    z-index: 101;
+}
+
+.blg-pinned-right-cols-container {
+    flex: 1 0 auto;
+    z-index: 101;
+}
+
+.blg-cell {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1 0 0;
+
+    span {
+        align-items: center;
+    }
+}
+
+.blg-cell-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.blg-body-horizontal-scroll {
+    height: 15px;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    display: flex;
+}
+
+.blg-horizontal-left-spacer, .ag-horizontal-right-spacer {
+    height: 100%;
+    min-width: 0;
+    flex-grow: 1000;
+    overflow-x: scroll;
+
+    &.blg-scroller-corner {
+        overflow-x: hidden;
+    }
+}
+
+.blg-body-horizontal-scroll-viewport {
+    height: 100%;
+    min-width: 0px;
+    overflow: hidden;
+    flex: 1 1 auto;
+    overflow-x: scroll;
+}
+
+.blg-body-horizontal-scroll-container {
+    height: 100%;
+}
+
+/* Base for label styling */
+[type="checkbox"],
+[type="checkbox"] {
+    &.blg-checkbox-no-label {
+        &:checked,
+        &:not(:checked) {
+            position: relative;
+            padding-left: 1.95em;
+            cursor: pointer;
+        }
+    }
+}
+
+
+$color-reset: #000000;
+
+/* checkbox aspect */
+[type="checkbox"],
+[type="checkbox"] {
+    &.blg-checkbox-no-label {
+        &:checked,
+        &:not(:checked) {
+            &:before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: .90rem;
+                height: .90rem;
+                border: 1px solid #ccc;
+                background: #fff;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+
+        &.negative {
+            &:checked,
+            &:not(:checked) {
+                &:before {
+                    content: '';
+                    border: 1px solid $color-reset;
+                    background: #FFFFFF;
+                }
+            }
+        }
+    }
+}
+
+/* checked mark aspect */
+[type="checkbox"],
+[type="checkbox"] {
+    &.blg-checkbox-no-label {
+        &:checked,
+        &:not(:checked) {
+            &::after {
+                font-weight: 900;
+                position: absolute;
+                top: .18rem;
+                left: .15rem;
+                font-size: .625rem;
+                line-height: .8;
+                color: $color-reset;
+                transition: all .2s;
+                content: "";
+                background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z'/></svg>");
+                background-repeat: no-repeat;
+                background-size: 0.625rem 0.625rem;
+                width: 12px;
+                height: 12px;
+            }
+        }
+
+        &.negative {
+            &:checked,
+            &:not(:checked) {
+                &:after {
+                    color: $color-reset;
+                }
+            }
+        }
+    }
+}
+
+/* checked mark aspect changes */
+[type="checkbox"] {
+    &.blg-checkbox-no-label {
+        &:not(:checked) {
+            &:after {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+    }
+}
+
+[type="checkbox"].blg-checkbox-no-label:checked:after {
+    &.blg-checkbox-no-label {
+        &:checked {
+            &:after {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    }
+}

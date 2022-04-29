@@ -1,0 +1,171 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using System.Timers
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+
+<div class="dnet-chip dnet-standard-chip dnet-chip-with-trailing-icon" style="@_dnetChipStyle" @onclick="(() => Toggle())">
+	@if (ChildContent != null)
+	{
+		@ChildContent
+	}
+	else
+	{
+		<div style="display:flex;align-items:center;">
+			@if (!string.IsNullOrEmpty(AvatarIcon))
+			{
+				<div class="dnet-chips-icon-wrapper dnet-m-r-5">
+					<span style="background-size:@_valuesBySize.BackGroundSize" class="dnet-chips-icon @AvatarIcon"></span>
+				</div>
+			}
+			<span>@Value</span>
+		</div>
+	}
+	@if (Removable)
+	{
+		<button @onclick="RemoveChip" @onclick:stopPropagation="true" class="dnet-chip-remove dnet-chip-trailing-icon">
+			<div class="dnet-chips-icon-wrapper">
+				<span style="background-size:@_valuesBySize.BackGroundSize" class="dnet-chips-icon @(string.IsNullOrEmpty(RemoveIcon) ? "dnet-chips-icon-remove" : @RemoveIcon)"></span>
+			</div>
+		</button>
+	}
+</div>
+
+@code {
+
+	[CascadingParameter]
+	private DnetChipList Parent { get; set; }
+
+	[Parameter]
+	public EventCallback<string> OnSelectionChange { get; set; }
+
+	[Parameter]
+	public EventCallback<DnetChip> OnRemoved { get; set; }
+
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+
+	[Parameter]
+	public string BackgroungColor { get; set; } = "#e0e0e0";
+
+	[Parameter]
+	public string Color { get; set; } = "rgba(0,0,0,.87)";
+
+	[Parameter]
+	public string BackgroungColorSelected { get; set; } = "#3f51b5";
+
+	[Parameter]
+	public string ColorSelected { get; set; } = "white";
+
+	[Parameter]
+	public bool Selectable { get; set; } = true;
+
+	[Parameter]
+	public bool Removable { get; set; } = true;
+
+	[Parameter]
+	public string Value { get; set; }
+
+	[Parameter]
+	public ChipSize ChipSize { get; set; } = ChipSize.Small;
+
+	[Parameter]
+	public bool Disabled { get; set; }
+
+	[Parameter]
+	public string RemoveIcon { get; set; }
+
+	[Parameter]
+	public string AvatarIcon { get; set; }
+
+	internal int Id { get; set; }
+
+	private bool _selected { get; set; } = false;
+
+	private ValuesBySize _valuesBySize { get; set; } = new();
+
+	private string _dnetChipStyle =>
+		new StyleBuilder("font-size", _valuesBySize.FontSize)
+			.AddStyle("padding", _valuesBySize.Pading)
+			.AddStyle("min-height", _valuesBySize.MinHeight)
+			.AddStyle("background-color", BackgroungColor, when: !IsSelected())
+			.AddStyle("color", Color,  when: !IsSelected())
+			.AddStyle("background-color", BackgroungColorSelected, when: IsSelected())
+			.AddStyle("color", ColorSelected,  when: IsSelected())
+		.Build();
+
+
+	protected override void OnInitialized()
+	{
+		_valuesBySize = GetValuesBySize();
+
+		Parent.AddChip(this);
+	}
+
+	private ValuesBySize GetValuesBySize()
+	{
+		var valuesBySize = new ValuesBySize();
+
+		switch (ChipSize)
+		{
+			case ChipSize.Large:
+				valuesBySize.FontSize = "1.125rem";
+				valuesBySize.BackGroundSize = "1em";
+				valuesBySize.Pading = "7px 7px 8px 12px";
+				valuesBySize.MinHeight = "32px";
+				break;
+
+			case ChipSize.Medium:
+				valuesBySize.FontSize = "1em";
+				valuesBySize.BackGroundSize = "1rem";
+				valuesBySize.Pading = "7px 7px 8px 12px";
+				valuesBySize.MinHeight = "30px";
+				break;
+
+			case ChipSize.ExtraSmall:
+				valuesBySize.FontSize = "0.75rem";
+				valuesBySize.BackGroundSize = "0.8em";
+				valuesBySize.Pading = "0px 7px 0px 12px";
+				valuesBySize.MinHeight = "20px";
+				break;
+
+			default:
+				valuesBySize.FontSize = "0.875rem";
+				valuesBySize.BackGroundSize = "0.875em";
+				valuesBySize.Pading = "7px 7px 8px 12px";
+				valuesBySize.MinHeight = "28px";
+				break;
+		}
+
+		return valuesBySize;
+	}
+
+	private void Toggle()
+	{
+		SelectThisChip(!IsSelected());
+		Parent.ChipClicked(this);
+	}
+
+	public bool IsSelected()
+	{
+		return _selected;
+	}
+
+	public bool SelectThisChip(bool newValue)
+	{
+		if (!Selectable || _selected == newValue) { return false; }
+
+		_selected = newValue;
+
+		return true;
+	}
+
+	public void RemoveChip()
+	{
+		if (!Removable) { return; }
+
+		Parent.RemoveChip(this);
+
+		OnRemoved.InvokeAsync(this);
+	}
+}

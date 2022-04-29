@@ -1,0 +1,11 @@
+@forward 'form-common.import';
+@forward 'typography-utils.import';
+@forward 'form-field-standard-theme' as mat-* hide mat-standard-color, mat-standard-theme,
+mat-standard-typography;
+@forward 'form-field-standard-theme' as mat-form-field-* hide
+mat-form-field-private-form-field-standard-density;
+
+@import 'palette';
+@import 'theming';
+@import 'form-common';
+@import 'typography-utils';

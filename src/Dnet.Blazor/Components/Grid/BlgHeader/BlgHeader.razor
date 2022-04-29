@@ -1,0 +1,410 @@
+@using System.Timers
+@using Dnet.Blazor.Components.Grid.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Enums
+@using Dnet.Blazor.Infrastructure.Models.SearchModels
+@using Dnet.Blazor.Infrastructure.Models.SearchModels.FilterModels
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Dnet.Blazor.Components.DatePicker
+@using Dnet.Blazor.Components.DatePicker.Infrastructure.Models
+@using Dnet.Blazor.Components.Grid.Infrastructure.Entities
+@using Dnet.Blazor.Components.Grid.Infrastructure.Enums
+@using Dnet.Blazor.Components.Grid.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Grid.BlgAdvancedFilter
+@using Dnet.Blazor.Components.Grid.BlgGrid
+@using Microsoft.JSInterop
+
+@inject IAdvancedFiltering<TItem> AdvancedFilteringService
+@implements IDisposable
+
+@inject IJSRuntime JSRuntime
+
+@typeparam TItem
+
+
+@if (GridOptions.CheckboxSelectionColumn && CheckboxSelectionPinned)
+{
+    var height = GridOptions.HeaderHeight + "px";
+
+    <div class="blg-header-cell @(Pinned == Pinned.None ? "blg-header-cell-notpinned" : null)" style="flex: 1 0 40px; height: @height; border: none">
+        <div class="blg-header-cell-container">
+            <div class="blg-header-cell-label">
+                <input type="checkbox" @onclick="()=>ChangeSelectAllNodes()" class="blg-checkbox-no-label">
+            </div>
+        </div>
+    </div>
+}
+
+@if (HasGrouping && GridColumns.Any() && Pinned == Pinned.None && GridOptions.EnableGrouping)
+{
+    var width = GroupGridColumn.Width + "px";
+    var height = GridOptions.HeaderHeight + "px";
+
+    <div class="blg-header-cell @(Pinned == Pinned.None ? "blg-header-cell-notpinned" : null)" style="flex: @GroupGridColumn.CanGrow @GroupGridColumn.CanShrink auto; height: @height;">
+        <div class="blg-header-cell-container">
+            <div class="blg-header-cell-label">
+                <span class="blg-header-cell-text">Group</span>
+                @if (GridOptions.ShowExpandCollapseButtons)
+                {
+                    <span class="blg-icon @(_isExpanded == true ? "blg-icon-collapse" : "blg-icon-expand")" unselectable="on" @onclick="(() => Expand())"></span>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (GridOptions.IsDebugMode && GridColumns.Any())
+{
+    <div class="blg-header-cell @(Pinned == Pinned.None ? "blg-header-cell-notpinned" : null)" style="flex: 0 0 120px; height: 40px;">
+        <div class="blg-header-cell-container">
+            <div class="blg-header-cell-label">
+                <span class="blg-header-cell-text">RowNodeId</span>
+            </div>
+        </div>
+    </div>
+}
+
+@foreach (var header in GridColumns.FindAll(p => !p.Hide))
+{
+    var height = GridOptions.HeaderHeight + "px";
+
+    if (header.IsSortAscending()) { SortIconClass = "blg-icon-asc"; }
+    if (header.IsSortDescending()) { SortIconClass = "blg-icon-desc"; }
+    if (header.IsSortNone()) { SortIconClass = ""; }
+
+    var cellTextStyle = header.WrapHeaderText ? "white-space: normal; line-height: 15px;" : "overflow: hidden;text-overflow: ellipsis;";
+
+    <div class="blg-header-cell @(Pinned == Pinned.None ? "blg-header-cell-notpinned" : null)" style="position: relative;" title="@header.HeaderName">
+        <div class="blg-header-cell-container">
+            @if (header.Sortable)
+            {
+                <div class="blg-header-cell-label" @onclick="(() => Sort(header))">
+                    <span class="blg-header-cell-text" style="@cellTextStyle">@header.HeaderName</span>
+                    <span class="blg-icon @SortIconClass" unselectable="on"></span>
+                </div>
+            }
+            else
+            {
+                <div class="blg-header-cell-label">
+                    <span class="blg-header-cell-text" style="@cellTextStyle">@header.HeaderName</span>
+                </div>
+            }
+            <div style="display: flex; align-items: center;">
+                @if (header.CellDataType != CellDataType.None && GridOptions.EnableAdvancedFilter && header.EnableAdvancedFilter)
+                {
+                    <BlgAdvancedFilterToggle FilterData="header.AdvancedFilterModel"
+                                     OnFilter="AdvancedFilter"
+                                     IsFiltered="IsFiltered(header.AdvancedFilterModel)"
+                                     DefaultAdvancedFilterOperator="@GridOptions.DefaultAdvancedFilterOperator"
+                                     DateFormat="@header.DateFormat">
+                    </BlgAdvancedFilterToggle>
+                }
+                @if (GridOptions.EnableGrouping && header.ShowGroupingButtons)
+                {
+                    @if (GroupByColumns.Contains(header.DataField))
+                    {
+                        <span class="blg-icon blg-icon-radio-button-on" unselectable="on" @onclick="(() => DeleteGroup(header.DataField))" style="cursor: pointer;"></span>
+                    }
+                    else
+                    {
+                        <span class="blg-icon blg-icon-radio-button-off" unselectable="on" @onclick="(() => AddGroup(header.DataField))" style="cursor: pointer;"></span>
+                    }
+                }
+            </div>
+        </div>
+        @if (header.Pinned == Pinned.None && header.CanGrow == 1)
+        {
+            <div style="cursor:col-resize; position:absolute; height:@height; user-select:none; width:7px; background-color:transparent; color: transparent; right: 0px; margin-right: -4px"
+         @onmousedown="(e)=>MouseDown(header, e.ClientX)">
+                |
+            </div>
+        }
+    </div>
+}
+
+@if (!GridOptions.SuppressFilterRow)
+{
+    @if (GridOptions.CheckboxSelectionColumn && CheckboxSelectionPinned)
+    {
+        <div class="blg-header-cell" style="flex:0 0 40px; height: 40px; border: none">
+            <div class="blg-header-cell-container">
+                <div class="blg-header-cell-label">
+                    <span class="blg-header-cell-text"></span>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (HasGrouping && GridColumns.Any() && Pinned == Pinned.None)
+    {
+
+        var width = GroupGridColumn.Width + "px";
+        var height = GroupGridColumn.Height + "px";
+
+        <div class="blg-header-cell" style="flex: @GroupGridColumn.CanGrow @GroupGridColumn.CanShrink auto; height: @height; width: @width;">
+            <div class="blg-header-cell-container">
+                <div class="blg-header-cell-label">
+                    <span class="blg-header-cell-text"></span>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (GridOptions.IsDebugMode && GridColumns.Any())
+    {
+        <div class="blg-header-cell" style="flex: 0 0 120px;height: 40px;">
+            <div class="blg-header-cell-container">
+                <div class="blg-header-cell-label">
+                    <span class="blg-header-cell-text"></span>
+                </div>
+            </div>
+        </div>
+    }
+
+    @foreach (var header in GridColumns.FindAll(p => !p.Hide))
+    {
+        <div class="blg-header-cell">
+            <div class="blg-header-cell-container">
+                @switch (header.CellDataType)
+                {
+                    case CellDataType.Number:
+                    case CellDataType.Boolean:
+                    case CellDataType.Text:
+                        <input class="coms-input-search"
+               type="text"
+               style="height: 30px;"
+               @bind-value="@header.Filter"
+               @bind-value:event="oninput"
+               @onkeyup="Filter"
+               @onkeyup:stopPropagation="true"
+               @onkeyup:preventDefault="true">
+                        break;
+                    case CellDataType.Date:
+                        <EditForm Model="@header" style="width:100%">
+                            <DnetDatePicker @bind-Value="@header.Filter"
+                            Disabled="false"
+                            OnDaySelected="@((day) => DaySelected(day, header))"
+                            Format="@header.DateFormat"
+                            ComponentTheme="ComponentTheme.Raw">
+                            </DnetDatePicker>
+                        </EditForm>
+                        break;
+                }
+
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+
+    [CascadingParameter]
+    BlgGrid<TItem> BlgGrid { get; set; }
+
+    [Parameter]
+    public List<GridColumn<TItem>> GridColumns { get; set; }
+
+    [Parameter]
+    public GridColumn<TItem> GroupGridColumn { get; set; }
+
+    [Parameter]
+    public List<string> GroupByColumns { get; set; }
+
+    [Parameter]
+    public bool HasGrouping { get; set; }
+
+    [Parameter]
+    public bool IsExpanded { get; set; }
+
+    [Parameter]
+    public bool CheckboxSelectionPinned { get; set; }
+
+    [Parameter]
+    public Pinned Pinned { get; set; }
+
+    [Parameter]
+    public GridOptions<TItem> GridOptions { get; set; }
+
+
+    [Parameter]
+    public EventCallback OnFilter { get; set; }
+
+    [Parameter]
+    public EventCallback OnAdvancedFilter { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSort { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnAddGroup { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnDeleteGroup { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnChangeSelectAllNodes { get; set; }
+
+    [Parameter]
+    public EventCallback<Tuple<string, int>> OnMouseDown { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnHeaderWithChange { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnExpandCollapse { get; set; }
+
+
+    private Timer _debounceTimer;
+
+    private bool _shouldRender;
+
+    private GridColumn<TItem> _formData = new();
+
+    private int _headerWith;
+
+    private bool _isExpanded = false;
+
+
+    public string SortIconClass { get; set; }
+
+    public bool AllNodesSelected { get; set; }
+
+
+    protected override bool ShouldRender() => _shouldRender;
+
+    protected override void OnInitialized()
+    {
+        _debounceTimer = new Timer(250);
+
+        _debounceTimer.Elapsed += FilterDiscard;
+
+        _debounceTimer.AutoReset = false;
+
+        AllNodesSelected = false;
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (HasGrouping && GridColumns.Any() && Pinned == Pinned.None && GridOptions.EnableGrouping)
+        {
+            _isExpanded = IsExpanded;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _shouldRender = false;
+
+        if (Pinned == Pinned.None)
+        {
+            var headerWith = await BlGridInterop<TItem>.getHeaderWidth(JSRuntime, "blgHeaderConatiner");
+
+            if (_headerWith != headerWith)
+            {
+                _headerWith = headerWith;
+
+                await OnHeaderWithChange.InvokeAsync(headerWith);
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        _debounceTimer.Elapsed -= FilterDiscard;
+        _debounceTimer?.Dispose();
+    }
+
+    private void AdvancedFilter(bool filter)
+    {
+        OnAdvancedFilter.InvokeAsync(filter);
+        _shouldRender = true;
+    }
+
+    public void FilterDiscard(Object source, ElapsedEventArgs e)
+    {
+        _ = Filter(e);
+    }
+
+    private async Task Filter(ElapsedEventArgs e)
+    {
+        await InvokeAsync(async () =>
+        {
+            await OnFilter.InvokeAsync(e);
+            _shouldRender = true;
+        });
+
+    }
+
+    private void Filter(KeyboardEventArgs data)
+    {
+        _debounceTimer.Stop();
+
+        _debounceTimer.Start();
+    }
+
+    private bool IsFiltered(AdvancedFilterModel filterData)
+    {
+        return !string.IsNullOrEmpty(filterData.Value);
+    }
+
+    private void Sort(GridColumn<TItem> header)
+    {
+        OnSort.InvokeAsync(header.DataField);
+        _shouldRender = true;
+    }
+
+    private void AddGroup(string dataField)
+    {
+        OnAddGroup.InvokeAsync(dataField);
+        _shouldRender = true;
+    }
+
+    private void DeleteGroup(string dataField)
+    {
+        OnDeleteGroup.InvokeAsync(dataField);
+        _shouldRender = true;
+    }
+
+    private void ChangeSelectAllNodes()
+    {
+        AllNodesSelected = !AllNodesSelected;
+
+        OnChangeSelectAllNodes.InvokeAsync(AllNodesSelected);
+    }
+
+    private void MouseDown(GridColumn<TItem> header, double clientX)
+    {
+        OnMouseDown.InvokeAsync(new Tuple<string, int>(header.DataField, (int)clientX));
+        _shouldRender = true;
+    }
+
+    private void Expand()
+    {
+        _isExpanded = !_isExpanded;
+
+        OnExpandCollapse.InvokeAsync(_isExpanded);
+    }
+
+    public void ActiveRender()
+    {
+        _shouldRender = true;
+    }
+
+    private async void DaySelected(CalendarDay daySelected, GridColumn<TItem> header)
+    {
+        var value = "";
+
+        if (daySelected.DayNumber != 0 && daySelected.Month != 0 && daySelected.Year != 0)
+        {
+            value = new DateTime(daySelected.Year, daySelected.Month, daySelected.DayNumber).ToString(header.DateFormat);
+        }
+
+        await InvokeAsync(async () =>
+        {
+            await OnFilter.InvokeAsync(value);
+            _shouldRender = true;
+        });
+    }
+}
+

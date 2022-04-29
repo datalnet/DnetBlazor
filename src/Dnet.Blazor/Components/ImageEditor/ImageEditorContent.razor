@@ -1,0 +1,360 @@
+﻿@using System.IO
+@using Dnet.Blazor.Components.Dialog.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.ImageEditor.Infrastructure.Enums
+@using Dnet.Blazor.Components.ImageEditor.Infrastructure.Models
+@using Dnet.Blazor.Components.ImageEditor.Infrastructure.Services
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Microsoft.JSInterop
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Formats.Jpeg
+@using SixLabors.ImageSharp.Processing
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Dnet.Blazor.Components.Button
+
+@inject IJSRuntime JSRuntime
+@inject IDialogService DialogService
+@inject IStyleService StyleService
+@inject IImageEditorService ImageEditorService
+
+@implements IDragAndDropJsCallbacks
+
+<div class="dnet-image-editor-wrapper" style="height: 100%">
+    <div>
+        <div class="dnet-image-editor-controls">
+            <span @onclick="OnCropImage" class="dnet-icon-wrapper">
+                <span class="dnet-icon dnet-icon-crop" unselectable="on"></span>
+                <span class="dnet-icon-text" unselectable="on">Crop</span>
+            </span>
+            @* <span @onclick="OnResize" class="dnet-icon-wrapper">
+                <span class="dnet-icon dnet-icon-resize" unselectable="on"></span>
+                <span class="dnet-icon-text" unselectable="on">Resize</span>
+                </span>
+                <span @onclick="OnRotateLeft" class="dnet-icon-wrapper">
+                <span class="dnet-icon dnet-icon-rotate-left" unselectable="on"></span>
+                <span class="dnet-icon-text" unselectable="on">Rotate Left</span>
+                </span>
+                <span @onclick="OnRotateRight" class="dnet-icon-wrapper">
+                <span class="dnet-icon dnet-icon-rotate-right" unselectable="on"></span>
+                <span class="dnet-icon-text" unselectable="on">Rotate right</span>
+                </span>*@
+        </div>
+        <div class="dnet-editor-container">
+            <div class="dnet-image-container">
+                <div class="dnet-image-original-text">
+                    <span style="margin-right: 10px">Original Image</span>
+                    <span style="color: #4fc3f7">@Convert.ToInt32(_imgWidth) x @Convert.ToInt32(_imgHeight) </span>
+                </div>
+                <div @ref="_dragAndDropArea" class="dnet-editing-image">
+                    @if (!string.IsNullOrEmpty(_imageUrl))
+                    {
+                        <img @ref="_image" src="@_imageUrl" />
+                        @if (_isImageEditorReady)
+                        {
+                            <div style="@StyleService.GetCropContainerStyles(_imageContainerHeight, _imageContainerWidth)">
+                                <div @ref="_cropbox" class="dnet-crop-box" draggable="true" style="@_styles">
+                                </div>
+                                <div class="dnet-crop-box-dummy" style="@_styles">
+                                </div>
+                                @foreach (var resizer in _resizerData)
+                                {
+                                    <div @ref="resizer.Reference" class="dnet-crop-box-resizer" style="@StyleService.GetResizerStyles(resizer)">
+                                    </div>
+                                }
+                                @foreach (var mask in _maskData)
+                                {
+                                    <div class="@mask.Class" style="@StyleService.GetMaskStyles(mask)">
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="dnet-image-preview">
+                <div class="dnet-image-preview-text">
+                    <span style="margin-right: 10px">Previsualizacion</span>
+                    <span style="color: #4fc3f7">@Convert.ToInt32(_imgPreviewWidth) x @Convert.ToInt32(_imgPreviewHeight) </span>
+                </div>
+                <img src="@_imagePreviewUrl" style="@StyleService.GetImagePreviewStyles(_imgPreviewHeight, _imgPreviewWidth)" />
+            </div>
+        </div>
+    </div>
+    <div class="dnet-img-dialog-controls">
+        <DnetButton OnClick="CancelOverlay" class="dnet-m-r-10">Close</DnetButton>
+        <DnetButton OnClick="CloseOverlay" class="dnet-m-r-10" disabled="@(_workingImageStream == null)" InitialFocus="true">Ok</DnetButton>
+    </div>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private int OverlayReferenceId { get; set; }
+
+    [Parameter]
+    public DialogData DialogData { get; set; }
+
+    private ElementReference _cropbox;
+
+    private ElementReference _dragAndDropArea;
+
+    private ElementReference _resizerTopCenter;
+
+    private ElementReference _resizerBottomCenter;
+
+    private ElementReference _image;
+
+    private MemoryStream _fullSizeImageStream { get; set; }
+
+    private MemoryStream _workingImageStream { get; set; }
+
+    private MemoryStream _resulImageStream { get; set; }
+
+    private string _styles { get; set; }
+
+    private DnetImageEditorInterop _jsInterop;
+
+    private List<ResizerData> _resizerData { get; set; }
+
+    private List<MaskData> _maskData { get; set; }
+
+    private double _imgHeight { get; set; } = 480;
+
+    private double _imgWidth { get; set; } = 640;
+
+    private int _imageContainerHeight { get; set; }
+
+    private int _imageContainerWidth { get; set; }
+
+    private int _imgPreviewHeight { get; set; }
+
+    private int _imgPreviewWidth { get; set; }
+
+    private double _cropBoxHeight { get; set; } = 100;
+
+    private double _cropBoxWidth { get; set; } = 100;
+
+    private long _maxFileSizes { get; set; }
+
+    private string _imageUrl { get; set; }
+
+    private string _imagePreviewUrl { get; set; }
+
+    private List<string> _allowedFormats { get; set; }
+
+    private List<ImageEditorControlType> _imageEditingControls { get; set; }
+
+    private DraggedData _draggedData { get; set; }
+
+    private bool _isImageEditorReady { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        var dialogData = DialogData;
+
+        _fullSizeImageStream = dialogData.imageFile;
+        _imageContainerHeight = dialogData.ImageContainerHeight;
+        _imageContainerWidth = dialogData.ImageContainerWidth;
+        _imgPreviewHeight = dialogData.ImagePreviewHeight;
+        _imgPreviewWidth = dialogData.ImagePreviewWidth;
+        _maxFileSizes = dialogData.MaxFileSizes;
+        _allowedFormats = dialogData.AllowedFormats;
+        _imageEditingControls = dialogData.ImageEditingControls;
+        _workingImageStream = dialogData.WorkingImageStream;
+        _imageUrl = dialogData.ImageUrl;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitializeEditor();
+        }
+    }
+
+    private async Task InitializeEditor()
+    {
+        _jsInterop = new DnetImageEditorInterop(this, JSRuntime);
+
+        await _jsInterop.GetBoundingClientRect(_image);
+
+        var _imageSizeData = await _jsInterop.GetBoundingClientRect(_image);
+
+        _imgHeight = _imageSizeData.Height;
+        _imgWidth = _imageSizeData.Width;
+
+        var cropBoxTop = _imgHeight / 2 - _cropBoxHeight / 2;
+        var cropBoxLeft = _imgWidth / 2 - _cropBoxWidth / 2;
+
+        _styles = StyleService.GetStyles(cropBoxLeft, cropBoxTop, _cropBoxHeight, _cropBoxWidth);
+
+        _resizerData = ImageEditorService.InitializeResizers();
+
+        _maskData = ImageEditorService.PlaceMasks(_imgWidth, _imgHeight, cropBoxTop, cropBoxLeft, _cropBoxWidth, _cropBoxHeight);
+
+        foreach (var resizer in _resizerData)
+        {
+            ImageEditorService.UpdateResizersData(resizer, cropBoxTop, cropBoxLeft, _cropBoxWidth, _cropBoxHeight);
+        }
+
+        _isImageEditorReady = true;
+
+        StateHasChanged();
+
+        _draggedData = new DraggedData
+            {
+                Left = cropBoxLeft,
+                Top = cropBoxTop,
+                Height = _cropBoxHeight,
+                Width = _cropBoxWidth
+            };
+
+        _jsInterop.InitializeDragAndDrop(_cropbox, _dragAndDropArea, cropBoxLeft, cropBoxTop);
+
+        _jsInterop.InitializeResize(_resizerData, cropBoxLeft, cropBoxTop, _cropBoxHeight, _cropBoxWidth, _imgWidth, _imgHeight, "TopCenter", 50, 50);
+    }
+
+    private MemoryStream CropImage(MemoryStream fullSizeImageStream, DraggedData draggedData)
+    {
+        using var outStream = new MemoryStream();
+
+        using var image = Image.Load(fullSizeImageStream.ToArray());
+
+        var clone = image.Clone(i => i.Crop(new Rectangle(Convert.ToInt32(draggedData.Left), Convert.ToInt32(draggedData.Top), Convert.ToInt32(draggedData.Width), Convert.ToInt32(draggedData.Height)))
+                                                                  .Resize(Convert.ToInt32(_imgPreviewWidth), Convert.ToInt32(_imgPreviewHeight)));
+
+        var jpegEncoder = new JpegEncoder { Quality = 100 };
+
+        clone.Save(outStream, jpegEncoder);
+
+        return outStream;
+    }
+
+    private void OnCropImage()
+    {
+        _resulImageStream = CropImage(_workingImageStream, _draggedData);
+
+        _imagePreviewUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(_resulImageStream.ToArray())}";
+    }
+
+    private void OnResize()
+    {
+        using var outStream = new MemoryStream();
+
+        using var image = Image.Load(_workingImageStream.ToArray());
+
+        var clone = image.Clone(i => i.Resize(Convert.ToInt32(_imgWidth), Convert.ToInt32(_imgHeight)));
+
+        var jpegEncoder = new JpegEncoder { Quality = 75 };
+
+        clone.Save(outStream, jpegEncoder);
+
+        _imagePreviewUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(outStream.ToArray())}";
+    }
+
+    private void OnRotateRight()
+    {
+        _workingImageStream = Rotate(90);
+
+        _imagePreviewUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(_workingImageStream.ToArray())}";
+
+        StateHasChanged();
+    }
+
+    private void OnRotateLeft()
+    {
+        _workingImageStream = Rotate(-90);
+
+        _imagePreviewUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(_workingImageStream.ToArray())}";
+
+        StateHasChanged();
+    }
+
+    private MemoryStream Rotate(int degree)
+    {
+        using var outStream = new MemoryStream();
+
+        using var image = Image.Load(_workingImageStream.ToArray());
+
+        var clone = image.Clone(i => i.Rotate(degree));
+
+        var jpegEncoder = new JpegEncoder { Quality = 75 };
+
+        clone.Save(outStream, jpegEncoder);
+
+        return outStream;
+    }
+
+    void IDragAndDropJsCallbacks.OnDragStart()
+    {
+    }
+
+    void IDragAndDropJsCallbacks.OnDrag(DraggedData draggedData)
+    {
+        UpdateEditorLayout(draggedData);
+    }
+
+    void IDragAndDropJsCallbacks.OnDragEnd(DraggedData draggedData)
+    {
+        UpdateEditorLayout(draggedData);
+    }
+
+    void IDragAndDropJsCallbacks.OnResizeStart()
+    {
+    }
+
+    void IDragAndDropJsCallbacks.OnResize(DraggedData draggedData)
+    {
+        UpdateEditorLayout(draggedData);
+    }
+
+    void IDragAndDropJsCallbacks.OnResizeEnd(DraggedData draggedData)
+    {
+        UpdateEditorLayout(draggedData);
+    }
+
+    void UpdateEditorLayout(DraggedData draggedData)
+    {
+        _styles = StyleService.GetStyles(draggedData.Left, draggedData.Top, draggedData.Height, draggedData.Width);
+
+        _maskData = ImageEditorService.PlaceMasks(_imgWidth, _imgHeight, draggedData.Top, draggedData.Left, draggedData.Width, draggedData.Height);
+
+        foreach (var resizer in _resizerData)
+        {
+            ImageEditorService.UpdateResizersData(resizer, draggedData.Top, draggedData.Left, draggedData.Width, draggedData.Height);
+        }
+
+        _draggedData = draggedData;
+
+        StateHasChanged();
+    }
+
+    void CloseOverlay()
+    {
+        var dataResult = new OverlayResult()
+            {
+                CloseReason = CloseReason.Ok,
+                ComponentData = _resulImageStream,
+                OverlayReferenceId = OverlayReferenceId
+
+            };
+
+        DialogService.Close(dataResult);
+    }
+
+    void CancelOverlay()
+    {
+        var dataResult = new OverlayResult()
+            {
+                CloseReason = CloseReason.Cancel,
+                ComponentData = null,
+                OverlayReferenceId = OverlayReferenceId
+
+            };
+
+        DialogService.Close(dataResult);
+    }
+}
+

@@ -1,0 +1,74 @@
+﻿@page "/DatePicker"
+
+@using System.ComponentModel.DataAnnotations
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.DatePicker.Infrastructure.Models
+@using Dnet.Blazor.Components.DatePicker
+@using Dnet.Blazor.Components.FormField
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+        <span class="dnet-m-r-10 dnet-app-comp-name">DatePicker</span>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-30" style="width: 297px;flex-direction: column">
+        <DnetInputText @bind-Value="_datepickerFormat" PlaceHolder="Date Format" Label="Date Format" type="text" Appearance="@_appearance">
+        </DnetInputText>
+        <EditForm Model="@_formData">
+            <DataAnnotationsValidator/>
+            <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
+                <DnetDatePicker @bind-Value="@_formData1.DepartureDay"
+                                Disabled="false"
+                                OnDaySelected="DaySelected"
+                                PlaceHolder="Departure day"
+                                Label="Departure day"
+                                Format="@_datepickerFormat"
+                                MaxDayValue="DateTime.Now"
+                                MinDayValue="DateTime.Now.AddDays(-10)"
+                                FirstDayToShow="DateTime.Now"
+                                DatepickerFilter="(p) => { return p.DayIndex == 0; }">
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _formData1.DepartureDay)"/>
+                    </ErrorContent>
+                </DnetDatePicker>
+            </div>
+        </EditForm>
+        <div>
+            <span>@_dateSelected</span>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    private FormData _formData = new FormData();
+
+    private FormData _formData1 = new FormData();
+
+    private string _datepickerFormat { get; set; }
+
+    private string _dateSelected { get; set; }
+
+    private Appearance _appearance { get; set; } = Appearance.Fill;
+
+
+    private void MyValueChangeHandler(string item)
+    {
+        _formData.FilterValue = item;
+    }
+
+    private void DaySelected(CalendarDay selecteDay)
+    {
+        _dateSelected = selecteDay.FormattedDate;
+    }
+
+    protected class FormData
+    {
+        [Required]
+        public string FilterValue { get; set; } = string.Empty;
+
+        [Required]
+        public string DepartureDay { get; set; } = string.Empty;
+    }
+
+}

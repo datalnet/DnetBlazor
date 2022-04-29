@@ -1,0 +1,6 @@
+By accessing the Datalnet Blazor Components code here, you are agreeing to the following licensing terms:
+
+https://datalnet.com/licenses/en-us/LSA_20211220.pdf
+https://datalnet.com/licenses/es-es/LSA_20211220.pdf
+
+If you do not agree to these terms, do not access the Datalnet Blazor Components.

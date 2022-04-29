@@ -1,0 +1,122 @@
+:root {
+    --dnet-toast-bg-success: #40AB35;
+    --dnet-toast-bg-info: #42B0D5;
+    --dnet-toast-bg-warning: #FFD029;
+    --dnet-toast-bg-danger: #B80012;
+    --dnet-toast-margin: 5px 5px 5px 5px;
+}
+
+.dnet-toast-container {
+    display: flex;
+    flex-direction: row;
+    border-radius: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    color: #FFFFFF;
+    margin: var(--dnet-toast-margin);
+
+    &.success {
+        background-color: var(--dnet-toast-bg-success);
+        color: #FFFFFF;
+    }
+
+    &.info {
+        background-color: var(--dnet-toast-bg-info);
+        color: #FFFFFF;
+    }
+
+    &.warning {
+        background-color: var(--dnet-toast-bg-warning);
+        color: #000000;
+
+        .dnet-toast-close-icon {
+            background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M12 11.291l5.646-5.646.708.707-5.647 5.646 5.647 5.647-.707.707L12 12.705l-5.646 5.647-.708-.707 5.647-5.647-5.647-5.646.708-.707L12 11.29z'/></svg>");
+        }
+    }
+
+    &.danger {
+        background-color: var(--dnet-toast-bg-danger);
+        color: #FFFFFF;
+    }
+}
+
+.dnet-toast-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin: 5px 0 0 0;
+}
+
+.dnet-toast-text {
+    font-size: 0.75rem;
+}
+
+.dnet-toast-center-column {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    padding: 5px 0 10px 0;
+}
+
+/*.dnet-toast-container {
+    box-shadow: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12);
+    background: #fff;
+    color: rgba(0,0,0,.87);
+}*/
+
+.dnet-toast-right-column {
+    padding: 5px 0 5px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 30px;
+}
+
+.dnet-toast-counter {
+    font-weight: 300;
+    font-size: 0.75rem
+}
+
+.dnet-toast-left-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px
+}
+
+.dnet-toast-icon-wrapper {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dnet-toast-icon {
+    display: block;
+    background-repeat: no-repeat;
+    background-size: 24px 24px;
+    height: 24px;
+    width: 24px;
+    cursor: pointer;
+    color: #5f6368;
+}
+
+.dnet-toast-close-icon {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path fill-rule='evenodd' clip-rule='evenodd' d='M12 11.291l5.646-5.646.708.707-5.647 5.646 5.647 5.647-.707.707L12 12.705l-5.646 5.647-.708-.707 5.647-5.647-5.647-5.646.708-.707L12 11.29z'/></svg>");
+}
+
+.dnet-toast-success-icon {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path fill-rule='evenodd' clip-rule='evenodd' d='M11.5 4a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17zM2 12.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0zm14.882-3.177l-5.35 6.323a1 1 0 0 1-.764.354h-.538a1 1 0 0 1-.76-.35l-2.85-3.325.76-.65L10.23 15h.538l5.35-6.323.764.646z'/></svg>");
+}
+
+.dnet-toast-info-icon {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path fill-rule='evenodd' clip-rule='evenodd' d='M11.5 4a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17zM2 12.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0zM11 9V7.5h1V9h-1zm0 8.5v-7h1v7h-1z'/></svg>");
+}
+
+.dnet-toast-danger-icon {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path fill-rule='evenodd' clip-rule='evenodd' d='M7 3.293A1 1 0 0 1 7.707 3h7.586a1 1 0 0 1 .707.293L20.707 8a1 1 0 0 1 .293.707v7.586a1 1 0 0 1-.293.707L16 21.707a1 1 0 0 1-.707.293H7.707A1 1 0 0 1 7 21.707l.354-.353-.354.353L2.293 17A1 1 0 0 1 2 16.293V8.707A1 1 0 0 1 2.293 8L7 3.293zM15.293 4H7.707L3 8.707v7.586L7.707 21h7.586L20 16.293V8.707L15.293 4zM11 14.5v-7h1v7h-1zm0 3V16h1v1.5h-1z'/></svg>");
+}
+
+.dnet-toast-warning-icon {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M9.919 2.523A1 1 0 0 1 10.798 2h1.405a1 1 0 0 1 .879.523l9.214 16.973a1 1 0 0 1-.047 1.032l-.684 1.027a1 1 0 0 1-.832.445H2.268a1 1 0 0 1-.832-.445l.416-.278-.416.278-.685-1.027a1 1 0 0 1-.046-1.032L9.919 2.523zM12.203 3h-1.405L1.583 19.974 2.268 21h18.465l.684-1.026L12.203 3zM11 15V8h1v7h-1zm0 3v-1.5h1V18h-1z'/></svg>");
+}

@@ -1,0 +1,96 @@
+﻿@page "/ImageEditor"
+
+@using System.Drawing
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.ImageEditor
+@using Dnet.Blazor.Components.ImageEditor.Infrastructure.Constants
+@using Dnet.Blazor.Components.ImageEditor.Infrastructure.Enums
+@using System.IO
+@using Dnet.Blazor.Components.Spinner.Infrastructure.Interfaces
+
+@inject ISpinnerService SpinnerService
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+        <span class="dnet-m-r-10 dnet-app-comp-name">Image Editor - Experimental</span>
+    </div>
+    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+        <span class="dnet-m-r-10">Thanks to SixLabors and the amazing ImageSharp library</span>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-30">
+        <div class="upload-file-container-add">
+            <div class="upload-file d-flex justify-content-center align-items-center">
+                @if (!string.IsNullOrEmpty(_imageUrl))
+                {
+                    <img class="image-preview" src="@_imageUrl" />
+                }
+                <InputFile OnChange="@LoadFiles" multiple class="inputfile" />
+                @if (string.IsNullOrEmpty(_imageUrl))
+                {
+                    <div class="d-flex flex-column justify-content-center align-items-center upload-file-zone">
+                        <span class="lla-no-pic-grey lla-no-pic">
+                        </span>
+                        <span class="upload-text coms-m-t-5">Add Picture</span>
+                    </div>
+                }
+            </div>
+        </div>
+        <DnetImageEditor ImageContainerHeight="480"
+                         ImageContainerWidth="640"
+                         ImagePreviewHeight="170"
+                         ImagePreviewWidth="170"
+                         ModalDialogHeight="668"
+                         ModalDialogWidth="1024"
+                         MaxFileSizes="@_maxFileSizes"
+                         ImageEditingControls="@(new List<ImageEditorControlType>{
+                                               ImageEditorControlType.Crop
+                                           })"
+                         AllowedFormats="@(new List<string>{ ImageFormat.JPEG, ImageFormat.PNG })"
+                         OnImageSelected="OnImageSelected"
+                         OnEndLoadingImage="EndLoadingImage"
+                         OnStarLoadingImage="StarLoadingImage"
+                         @ref="_imageEditor">
+        </DnetImageEditor>
+    </div>
+</div>
+
+@code {
+
+    private string _imageUrl { get; set; }
+
+    private DnetImageEditor _imageEditor { get; set; }
+
+    private long _maxFileSizes { get; set; } = 1024 * 1024 * 15;
+
+
+    private async Task LoadFiles(InputFileChangeEventArgs eventArgs)
+    {
+        var imageFile = await eventArgs.GetMultipleFiles()[0].RequestImageFileAsync("image/jpeg", 640, 480);
+
+        await using var fileStream = imageFile.OpenReadStream(_maxFileSizes);
+
+        await using var ms = new MemoryStream();
+
+        await fileStream.CopyToAsync(ms);
+
+        await _imageEditor.ShowDialog(ms);
+    }
+
+    private void OnImageSelected(MemoryStream image)
+    {
+        if (image != null) _imageUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(image.ToArray())}";
+    }
+
+    private void StarLoadingImage()
+    {
+        SpinnerService.Show();
+    }
+
+    private void EndLoadingImage()
+    {
+        SpinnerService.Hide();
+    }
+}
+
+
+

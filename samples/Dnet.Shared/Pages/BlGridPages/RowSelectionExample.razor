@@ -1,0 +1,219 @@
+﻿@page "/RowSelectionExample"
+
+@using System.Net.Http.Json
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.App.Shared.Infrastructure.Services
+@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Enums
+@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Models
+@using Dnet.Blazor.Components.Grid.BlgGrid
+@using Dnet.Blazor.Components.Grid.Infrastructure.Entities
+@using Dnet.Blazor.Components.Grid.Infrastructure.Enums
+@using Dnet.Blazor.Infrastructure.Models.SearchModels
+
+@inject IThemeMessageService<ThemeConfigData> ThemeMessageService
+@inject HttpClient HttpClient
+@inject IHttpClientFactory ClientFactory
+@inject IApplicationServiceService ApplicationServiceService
+
+<div class="container-fluid" style="padding-top: 10px;">
+    <div class="row" style="height: calc(100% - 40px)">
+        <div class="col-12" style="height: calc(100% - 0px);">
+            <div class="dnet-panel-header-wrapper dnet-m-t-15">
+                <div class="dnet-panel-header-text">
+                    <div class="dnet-m-l-15">
+                        <span style="font-weight:700; font-size:.875rem;"> Grid (A.K.A BlGrid)</span>
+                    </div>
+                </div>
+            </div>
+            <div style="height: calc(100% - 0px); width: 100%; background-color: #FFFFFF">
+                <BlgGrid @ref="_blGridReference"
+                         GridData="@Persons"
+                         GridColumns="@GridColumns"
+                         TItem="Person"
+                         GridOptions="GridOptions"
+                         OnRowClicked="OnRowClicked"
+                         OnSelectionChanged="SelectionChanged">
+                </BlgGrid>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private BlgGrid<Person> _blGridReference;
+
+    public List<Person> Persons { get; set; }
+
+    public List<GridColumn<Person>> GridColumns { get; set; }
+
+    public GridColumn<Person> GroupGridColumn { get; set; }
+
+    public GridOptions<Person> GridOptions { get; set; }
+
+    private List<Person> _selectedPerson { get; set; } = new List<Person>();
+
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        GridOptions = GetGridOptions();
+
+        var persons = await GetPersons();
+
+        GridOptions.NumberOfRows = persons.Count;
+
+        Persons = persons;
+
+        GridColumns = GetGridColumns();
+
+        StateHasChanged();
+    }
+
+    private async Task<List<Person>> GetPersons()
+    {
+        var client = ClientFactory.CreateClient("WebHostURL");
+
+        var dataPersons = await client.GetFromJsonAsync<List<Person>>("/sample-data/person_500.json");
+
+        return dataPersons;
+    }
+
+    private GridOptions<Person> GetGridOptions()
+    {
+        return new GridOptions<Person>()
+            {
+                HeaderHeight = 60,
+                RowHeight = 40,
+                GridClass = "cvs-bl-grid",
+                CheckboxSelectionColumn = true,
+                SuppressRowClickSelection = true,
+                RowMultiSelectWithClick = false,
+                SuppressRowDeselection = false,
+                RowSelectionType = RowSelectionType.Multiple,
+                EnableGrouping = true,
+                EnableAdvancedFilter = true,
+                GroupDefaultExpanded = false
+            };
+    }
+
+    public async Task OnRowClicked(RowNode<Person> rowNode)
+    {
+        var clickedRowNode = rowNode;
+    }
+
+    public void SelectionChanged(List<RowNode<Person>> rowNodes)
+    {
+        _selectedPerson = rowNodes.Select(p => p.RowData).ToList();
+    }
+
+    public void SelectAll()
+    {
+        _blGridReference.SelectAll();
+    }
+
+    public void DeselectAll()
+    {
+        _blGridReference.DeselectAll();
+    }
+
+    private bool _showChecks = true;
+    public async Task ToggleChecks()
+    {
+        _showChecks = !_showChecks;
+
+        GridOptions.CheckboxSelectionColumn = _showChecks;
+
+        await _blGridReference.SetColumnDefsAsync(GridColumns);
+    }
+
+    private List<GridColumn<Person>> GetGridColumns()
+    {
+        var height = 40;
+        var width = 100;
+        var canGrow = 1;
+
+        return new List<GridColumn<Person>> {
+                        new GridColumn<Person> {
+                            ColumnId = 3,
+                            ColumnOrder = 1,
+                            HeaderName = "IsActive",
+                            DataField = "IsActive",
+                            Width= 150,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = (x) => x.RowData.IsActive,
+                            AlingContent = AlingContent.Center
+                        },
+                        new GridColumn<Person> {
+                            ColumnId = 5,
+                            ColumnOrder = 2,
+                            HeaderName = "Age",
+                            DataField = "Age",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = (x) => x.RowData.Age,
+                            AlingContent = AlingContent.Center,
+                            CellDataType = CellDataType.Number,
+                        },
+                        new GridColumn<Person> {
+                            ColumnId = 0,
+                            ColumnOrder = 3,
+                            HeaderName = "Name",
+                            DataField = "Name",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = (x) => x.RowData.Name,
+                            EnableAdvancedFilter = true,
+                            CellDataType = CellDataType.Text,
+                        },
+                        new GridColumn<Person> {
+                            ColumnId = 1,
+                            HeaderName = "Gender",
+                            DataField = "Gender",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = (x) => x.RowData.Gender
+                        },
+                        new GridColumn<Person> {
+                            ColumnId = 6,
+                            HeaderName = "Company",
+                            DataField = "Company",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = (x) => x.RowData.Company,
+                        },
+                        new GridColumn<Person> {
+                            ColumnId = 7,
+                            HeaderName = "Email",
+                            DataField = "Email",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = (x) => x.RowData.Email,
+                        },
+                          new GridColumn<Person> {
+                            ColumnId = 11,
+                            HeaderName = "Phone",
+                            DataField = "Phone",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = (x) => x.RowData.Phone
+                        },
+                           new GridColumn<Person> {
+                            ColumnId = 12,
+                            HeaderName = "Address",
+                            DataField = "Address",
+                            Width= width,
+                            Height= height,
+                            CanGrow = canGrow,
+                            CellDataFn = (x) => x.RowData.Address
+                        }
+        };
+    }
+}

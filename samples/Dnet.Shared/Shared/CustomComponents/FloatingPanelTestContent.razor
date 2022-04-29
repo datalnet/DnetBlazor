@@ -1,0 +1,62 @@
+﻿@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.Button
+@using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+
+@inject IFloatingPanelService FloatingPanelService
+
+<div class="" style="display:flex;flex-direction: column;justify-content:space-between; height: calc(100% - 0px); width: 100%; padding: 0 15px 15px 15px">
+    <div class="dnet-panel-header" style="height: 50px">
+        <div style="display: flex;align-items: center;height: 100%">
+            <span style="font-size: 0.875rem;font-weight: 700">Edit user profile</span>
+        </div>
+    </div>
+    <div class="dnet-panel-content" style="flex: 1 0 calc(100% - 100px); overflow:scroll">
+        <FormFieldTest Person="@Person"></FormFieldTest>
+    </div>
+    <div class="dnet-panel-footer" style="height: 50px;display: flex;align-items: center;justify-content: flex-end;">
+        <DnetButton OnClick="CancelOverlay" class="dnet-m-r-10">Close</DnetButton>
+        <DnetButton OnClick="CloseOverlay" InitialFocus="true" class="dnet-m-r-10">Ok</DnetButton>
+    </div>
+</div>
+
+
+@code {
+
+    [CascadingParameter]
+    private int OverlayReferenceId { get; set; }
+
+    [Parameter]
+    public Person Person { get; set; } = new Person();
+
+    private Appearance _appearance { get; set; }
+
+    private bool _formInvalid = true;
+
+
+    void CloseOverlay()
+    {
+        var dataResult = new OverlayResult()
+        {
+            CloseReason = CloseReason.Ok,
+            ComponentData = $"Overlay ReferenceId => {OverlayReferenceId}",
+            OverlayReferenceId = OverlayReferenceId
+        };
+
+        FloatingPanelService.Close(dataResult);
+    }
+
+    void CancelOverlay()
+    {
+        var dataResult = new OverlayResult()
+        {
+            CloseReason = CloseReason.Cancel,
+            ComponentData = null,
+            OverlayReferenceId = OverlayReferenceId
+        };
+
+        FloatingPanelService.Close(dataResult);
+    }
+}

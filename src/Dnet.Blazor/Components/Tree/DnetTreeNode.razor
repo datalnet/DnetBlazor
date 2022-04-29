@@ -1,0 +1,159 @@
+@using Dnet.Blazor.Components.Checkbox
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Web
+
+@typeparam TNode
+
+<li>
+	<div class="dnet-tree-parent-node">
+		@if (Node.Children != null && Node.Children.Count > 0)
+		{
+			<div class="dnet-tree-icon-wrapper" @onclick="@Toggle">
+				<span class="dnet-tree-icon @(Node.IsExpanded() ? "dnet-icon-node-open" : "dnet-icon-node-close")"></span>
+			</div>
+		}
+		@if (CheckboxSelection)
+		{
+			var isSelected = Node.IsSelected();
+			<DnetInputCheckbox Value ="@isSelected" ValueChanged ="CheckboxClicked" ValueExpression="() => isSelected" class="dnet-m-r-5"></DnetInputCheckbox>
+		}
+		<div class="dnet-tree-content @(Node.IsActive() ? "active" : null)" @onclick="TreeNodeClicked">
+			@if (NodeContent != null)
+			{
+				@NodeContent(Node.TreeNodeData)
+			}
+			else
+			{
+				@DisplayValueConverter(Node.TreeNodeData)
+			}
+		</div>
+	</div>
+	@if (Node.Children != null && Node.Children.Count > 0 && Node.IsExpanded())
+	{
+		<div class="dnet-tree-node-outlet @OpenCssClass">
+
+			<ul>
+				@foreach (var treeNodeModel in Node.Children)
+				{
+					<DnetTreeNode Node="@treeNodeModel"
+						  DisplayValueConverter="DisplayValueConverter"
+						  ChildNodes="ChildNodes"
+						  CheckboxSelection="CheckboxSelection"
+						  OnTreeNodeClicked="OnTreeNodeClicked"
+						  OnCheckboxClicked="OnCheckboxClicked"
+						  NodeContent="NodeContent">
+					</DnetTreeNode>
+				}
+			</ul>
+
+		</div>
+	}
+</li>
+
+@code {
+
+	[CascadingParameter]
+	public DnetTree<TNode> DnetTreeComponent { get; set; }
+
+	[Parameter]
+	public RenderFragment<TNode> NodeContent { get; set; }
+
+	[Parameter]
+	public EventCallback<bool> OnTreeNodeParentToggle { get; set; }
+
+	[Parameter]
+	public EventCallback<TNode> OnTreeNodeClicked { get; set; }
+
+	[Parameter]
+	public EventCallback<TNode> OnCheckboxClicked { get; set; }
+
+	[Parameter]
+	public EventCallback<List<TNode>> OnSelectionChange { get; set; }
+
+	[Parameter]
+	public TreeNodeModel<TNode> Node { get; set; }
+
+	[Parameter]
+	public Func<TNode, List<TNode>> ChildNodes { get; set; }
+
+	[Parameter]
+	public IDictionary<string, object> Parameters { get; set; }
+
+	[Parameter]
+	public Func<TNode, string> DisplayValueConverter { get; set; }
+
+	[Parameter]
+	public bool CheckboxSelection { get; set; }
+
+	string OpenCssClass => (Node.IsExpanded() ? "open" : null) ?? string.Empty;
+
+	private List<TreeNodeModel<TNode>> _selectedNodes { get; set; } = new();
+
+
+	protected override void OnInitialized()
+	{
+	}
+
+	private async void Toggle()
+	{
+		Node.ExpandNode(!Node.IsExpanded());
+		await OnTreeNodeParentToggle.InvokeAsync(Node.IsExpanded());
+	}
+
+	private async void TreeNodeClicked()
+	{
+		Node.ActiveThisNode(!Node.IsActive());
+
+		if (Node.RowNodeId != DnetTreeComponent._selectedNode.RowNodeId) DnetTreeComponent._selectedNode.ActiveThisNode(false);
+
+		DnetTreeComponent._selectedNode = Node;
+
+		await OnTreeNodeClicked.InvokeAsync(Node.TreeNodeData);
+	}
+
+	private async void CheckboxClicked()
+	{
+		//Order matter
+
+		Node.SelectThisNode(!Node.IsSelected());
+
+		ManageSelection(Node.Children);
+
+		_selectedNodes = new List<TreeNodeModel<TNode>>();
+
+		GetSelectedNodes(DnetTreeComponent._treeNodeModels);
+
+		var rowData = _selectedNodes.Select(p => p.TreeNodeData).ToList();
+
+		await OnCheckboxClicked.InvokeAsync(Node.TreeNodeData);
+
+		await OnSelectionChange.InvokeAsync(rowData);
+	}
+
+	private void ManageSelection(List<TreeNodeModel<TNode>> nodes)
+	{
+		foreach (var node in nodes)
+		{
+			node.SelectThisNode(Node.IsSelected());
+
+			if (node.Children != null && node.Children.Count > 0)
+			{
+				ManageSelection(node.Children);
+			}
+		}
+	}
+
+	private void GetSelectedNodes(List<TreeNodeModel<TNode>> nodes)
+	{
+		foreach (var node in nodes)
+		{
+			if (node.IsSelected()) _selectedNodes.Add(node);
+
+			if (node.Children != null && node.Children.Count > 0)
+			{
+				GetSelectedNodes(node.Children);
+			}
+		}
+	}
+
+}

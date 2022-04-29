@@ -1,0 +1,82 @@
+﻿@page "/Dialog"
+
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.App.Shared.Shared.CustomComponents
+@using Dnet.Blazor.Components.Button
+@using Dnet.Blazor.Components.Dialog.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Dialog.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+
+@inject IOverlayService OverlayService
+@inject IDialogService DialogService
+
+@implements IDisposable
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+		<span class="dnet-m-r-10 dnet-app-comp-name">Dialog</span>
+	</div>
+	<div class="dnet-m-l-30 dnet-m-t-30">
+		<DnetButton OnClick="ShowDialog" InitialFocus="true" class="dnet-m-r-10">Show Dialog</DnetButton>
+	</div>
+	<div class="dnet-m-l-30 dnet-m-t-30">
+		<span>Dialog Ok result: </span>
+		<span>@_dialogData</span>
+	</div>
+</div>
+
+
+@code {
+
+	string _dialogData;
+
+	private OverlayReference _dialogReference;
+
+	void ShowDialog()
+	{
+		var dialogConfig = new DialogConfig()
+		{
+			Title = "Datalnet Modal component",
+			HasBackdrop = true,
+			HasTransparentBackdrop = false,
+			Width = "600px",
+			Height = "400px"
+		};
+
+		var person = new Person()
+		{
+			Name = "Adrián",
+			LastName = "Mustelier"
+		};
+
+		var parameters = new Dictionary<string, object>();
+
+		parameters.Add("Person", person);
+		parameters.Add("SecuenceNumber", 0);
+
+		_dialogReference = DialogService.Open(typeof(DialogTestContent), parameters, dialogConfig);
+
+		_dialogReference.Close += CloseDialog;
+	}
+
+	void CloseDialog(OverlayResult overlayDataResult)
+	{
+		_dialogData = overlayDataResult.CloseReason == CloseReason.Ok ? overlayDataResult.ComponentData.ToString() : "";
+
+		InvokeAsync(StateHasChanged);
+	}
+
+	public void Dispose()
+	{
+		if (_dialogReference != null)
+		{
+			_dialogReference.Close -= CloseDialog;
+		}
+	}
+}
+
+
+

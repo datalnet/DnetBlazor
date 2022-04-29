@@ -1,0 +1,160 @@
+﻿@use 'sass:math';
+
+$blg-paginator-height: 56px;
+$blg-paginator-padding: 0 8px;
+
+$blg-paginator-page-size-margin-right: 0px;
+
+$blg-paginator-items-per-page-label-margin: 0 0px;
+$blg-paginator-selector-margin: 6px 4px 0 4px;
+$blg-paginator-selector-trigger-width: 56px;
+$blg-paginator-selector-trigger-outline-width: 64px;
+$blg-paginator-selector-trigger-fill-width: 64px;
+
+$blg-paginator-range-label-margin: 0 24px 0 24px;
+
+$blg-paginator-button-margin: 8px;
+$blg-paginator-button-icon-height: 8px;
+$blg-paginator-button-icon-width: 8px;
+
+$blg-paginator-button-increment-icon-margin: 12px;
+$blg-paginator-button-decrement-icon-margin: 16px;
+
+$blg-paginator-button-first-last-icon-width: 14px;
+
+$blg-paginator-button-first-icon-margin: 3px;
+$blg-paginator-button-last-icon-margin: 15px;
+
+
+$blg-paginator-button-first-decrement-icon-margin: 21px;
+$blg-paginator-button-last-increment-icon-margin: 9px;
+
+// Icon Button standards
+$blg-icon-button-size: 40px !default;
+$blg-icon-button-border-radius: 50% !default;
+$blg-icon-button-line-height: 24px !default;
+
+.blg-paginator {
+    display: block;
+}
+
+// Note: this wrapper element is only used to get the flexbox vertical centering to work
+// with the `min-height` on IE11. It can be removed if we drop support for IE.
+.blg-paginator-outer-container {
+    display: flex;
+}
+
+.blg-paginator-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: $blg-paginator-height;
+    padding: $blg-paginator-padding;
+    flex-wrap: wrap-reverse;
+    width: 100%;
+    color: rgba(0,0,0,.54);
+    font-size: .75rem;
+}
+
+.blg-paginator-page-size {
+    display: flex;
+    align-items: baseline;
+    margin-right: $blg-paginator-page-size-margin-right;
+
+    [dir='rtl'] & {
+        margin-right: 0;
+        margin-left: $blg-paginator-page-size-margin-right;
+    }
+}
+
+.blg-paginator-page-size-label {
+    margin: $blg-paginator-items-per-page-label-margin;
+}
+
+.blg-paginator-page-size-select {
+    margin: $blg-paginator-selector-margin;
+    width: $blg-paginator-selector-trigger-width;
+
+    &.blg-form-field-appearance-outline {
+        width: $blg-paginator-selector-trigger-outline-width;
+    }
+
+    &.blg-form-field-appearance-fill {
+        width: $blg-paginator-selector-trigger-fill-width;
+    }
+}
+
+.blg-paginator-range-label {
+    margin: $blg-paginator-range-label-margin;
+}
+
+.blg-paginator-range-actions {
+    display: flex;
+    align-items: center;
+}
+
+.blg-paginator-icon {
+    width: math.div($blg-paginator-height, 2);
+    fill: currentColor;
+
+    [dir='rtl'] & {
+        transform: rotate(180deg);
+    }
+}
+
+.blg-icon-button {
+    padding: 0;
+    min-width: 0;
+    width: $blg-icon-button-size;
+    height: $blg-icon-button-size;
+    flex-shrink: 0;
+    line-height: $blg-icon-button-size;
+    border-radius: $blg-icon-button-border-radius;
+    background-color: transparent;
+    color: #000000;
+    background: 0 0;
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+    outline: 0;
+    border: none;
+    display: inline-block;
+    white-space: nowrap;
+    text-decoration: none;
+    vertical-align: baseline;
+    text-align: center;
+    margin: 0;
+}
+
+.blg-paginator-page-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 10px
+}
+
+.blg-paginator-page-input {
+    width: 40px;
+    border-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: transparent;
+    -webkit-transition: none;
+    transition: none;
+    box-shadow: none;
+    font-size: 0.75rem;
+    color: #5f6368;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15) !important;
+    height: 20px;
+    outline: none;
+    margin: 0 5px 2px 5px;
+    text-align: center;
+    font-size: .75rem;
+
+    &:focus {
+        box-shadow: 0 0 0 0rem rgba(0,123,255,.25);
+    }
+}

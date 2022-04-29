@@ -1,0 +1,23 @@
+﻿@page "/"
+@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Enums
+@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Models
+
+@inject NavigationManager NavigationManager
+@inject IThemeMessageService<ThemeConfigData> ThemeMessageService
+
+<div class="dnet-m-l-40 dnet-m-t-40">
+</div>
+
+@code {
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        NavigationManager.NavigateTo("/BlGrid");
+    }
+
+   
+}
+
+
+

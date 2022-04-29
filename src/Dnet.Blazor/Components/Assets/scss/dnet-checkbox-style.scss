@@ -1,0 +1,89 @@
+﻿[type="checkbox"],
+[type="checkbox"] {
+    &.dnet-checkbox-no-label {
+        &:checked,
+        &:not(:checked) {
+            &:before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: .90rem;
+                height: .90rem;
+                border: 1px solid #ccc;
+                background: #fff;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+
+        &.negative {
+            &:checked,
+            &:not(:checked) {
+                &:before {
+                    content: '';
+                    border: 1px solid var(--dnet-color-reset);
+                    background: #FFFFFF;
+                }
+            }
+        }
+    }
+}
+
+/* checked mark aspect */
+[type="checkbox"],
+[type="checkbox"] {
+    &.dnet-checkbox-no-label {
+        &:checked,
+        &:not(:checked) {
+            &::after {
+                font-weight: 900;
+                position: absolute;
+                top: .18rem;
+                left: .15rem;
+                font-size: .625rem;
+                line-height: .8;
+                color: var(--dnet-color-reset);
+                transition: all .2s;
+                content: "";
+                background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z'/></svg>");
+                background-repeat: no-repeat;
+                background-size: 0.625rem 0.625rem;
+                width: 12px;
+                height: 12px;
+            }
+        }
+
+        &.negative {
+            &:checked,
+            &:not(:checked) {
+                &:after {
+                    color: var(--dnet-color-reset);
+                }
+            }
+        }
+    }
+}
+
+/* checked mark aspect changes */
+[type="checkbox"] {
+    &.dnet-checkbox-no-label {
+        &:not(:checked) {
+            &:after {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+    }
+}
+
+[type="checkbox"].dnet-checkbox-no-label:checked:after {
+    &.dnet-checkbox-no-label {
+        &:checked {
+            &:after {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    }
+}

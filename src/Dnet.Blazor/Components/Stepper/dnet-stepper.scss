@@ -1,0 +1,201 @@
+﻿/*@import '../core/style/variables';
+@import '../../cdk/a11y/a11y';
+*/
+:root {
+    --dnet-step-icon-height: 25px;
+    --dnet-step-icon-width: 25px;
+    --dnet-step-font-size: var(--dnet-component-sm-font-size);
+}
+
+.dnet-stepper-vertical, .dnet-stepper-horizontal {
+    display: block;
+}
+
+.dnet-stepper-horizontal, .dnet-stepper-vertical {
+    background-color: #fff;
+}
+
+.dnet-horizontal-stepper-header-container {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+}
+
+.dnet-step-header {
+    overflow: hidden;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    box-sizing: content-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.dnet-horizontal-stepper-header {
+    display: flex;
+    height: 72px;
+    overflow: hidden;
+    align-items: center;
+    padding: 0 24px;
+}
+
+.dnet-step-header .dnet-step-icon {
+    background-color: rgba(0,0,0,.54);
+    color: #fff;
+}
+
+.dnet-horizontal-stepper-header .dnet-step-icon {
+    margin-right: 8px;
+    flex: none;
+}
+
+/*.dnet-step-header .dnet-step-icon-selected, .dnet-step-header .dnet-step-icon-state-done, .dnet-step-header .dnet-step-icon-state-edit {
+    background-color: #3f51b5;
+    color: #fff;
+}*/
+
+.dnet-step-header {
+    &.dnet-step-selected {
+        .dnet-step-icon {
+            background-color: #3f51b5;
+            color: #fff;
+        }
+    }
+}
+
+.dnet-step-icon {
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.dnet-step-icon-content, .dnet-step-icon .dnet-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.dnet-step-header .dnet-step-label.dnet-step-label-active {
+    color: rgba(0,0,0,.87);
+}
+
+.dnet-step-label {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px;
+    vertical-align: middle;
+    font-size: var(--dnet-step-font-size);
+}
+
+/*.dnet-step-label-selected {
+    font-size: var(--dnet-step-font-size);
+}*/
+
+.dnet-step-header {
+    &.dnet-step-selected {
+        .dnet-step-label {
+            font-size: var(--dnet-step-font-size);
+        }
+    }
+}
+
+.dnet-step-text-label {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.dnet-step-header .dnet-step-label.dnet-step-label-active {
+    color: rgba(0,0,0,.87);
+}
+
+.dnet-stepper-horizontal-line {
+    border-top-width: 1px;
+    border-top-style: solid;
+    flex: auto;
+    height: 0;
+    margin: 0 -16px;
+    min-width: 32px;
+}
+
+.dnet-horizontal-stepper-header:after, .dnet-horizontal-stepper-header:before, .dnet-stepper-horizontal-line {
+    border-top-color: rgba(0,0,0,.12);
+}
+
+.dnet-horizontal-content-container {
+    overflow: hidden;
+    padding: 0 24px 24px 24px;
+}
+
+.dnet-horizontal-stepper-content {
+    outline: 0;
+}
+
+//Vetical Stepper
+.dnet-vertical-stepper-header {
+    display: flex;
+    align-items: center;
+    height: 24px;
+}
+
+.dnet-stepper-label-position-bottom .dnet-horizontal-stepper-header, .dnet-vertical-stepper-header {
+    padding: 24px;
+}
+
+.dnet-vertical-stepper-header .dnet-step-icon {
+    margin-right: 12px;
+}
+
+.dnet-vertical-content-container {
+    margin-left: 36px;
+    border: 0;
+    position: relative;
+}
+
+.dnet-vertical-stepper-content {
+    overflow: hidden;
+    outline: 0;
+}
+
+.dnet-vertical-content {
+    padding: 0 24px 24px 24px;
+}
+
+.dnet-stepper-vertical-line::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    border-left-width: 1px;
+    border-left-style: solid;
+    top: -16px;
+    bottom: -16px;
+    border-left-color: rgba(0,0,0,.12);
+}
+
+.dnet-app-stepper-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: var(--dnet-tree-icon-width);
+    height: var(--dnet-tree-icon-width);
+}
+
+.dnet-app-stepper-icon {
+    display: block;
+    background-repeat: no-repeat;
+    background-size: 1em 1em;
+    height: 1em;
+    width: 1em;
+    cursor: pointer;
+    color: #5f6368;
+}
+
+.dnet-app-stepper-step1 {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path fill-rule='evenodd' clip-rule='evenodd' d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z'/></svg>");
+}
+
+

@@ -1,0 +1,83 @@
+﻿@using System.Timers
+@using Dnet.Blazor.Components.Spinner.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Spinner.Infrastructure.Services
+
+@inject ISpinnerService SpinnerService
+
+@implements IDisposable;
+
+@if (_counter > 0 && CanRun)
+{
+    @if (ShowMask)
+    {
+        <input @ref="_spinnermask" style="position: absolute; left:-1000px;height:0px;top:50%;" />
+        <div class="mask-spinner" style="width: @_width; height: @_height; position: @_position"></div>
+    }
+    
+    <div class="spinner" style="top:@_top; left: @_left; position: @_position">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public bool CanRun { get; set; }
+
+    [Parameter]
+    public bool BindToView { get; set; }
+
+    [Parameter]
+    public bool ShowMask { get; set; }
+
+
+    private int _counter { get; set; } = 0;
+
+    private ElementReference _spinnermask;
+
+    private string _top = "50%";
+
+    private string _left = "50%";
+
+    private string _width = "100vw";
+
+    private string _height = "100vh";
+
+    private string _position = "absolute";
+
+
+    protected override void OnInitialized()
+    {
+        _position = BindToView ? "fixed" : "absolute";
+
+        _top = BindToView ? "50%" : "50%";
+
+        _left = BindToView ? "50%" : "50%";
+
+        _width = BindToView ? "100vw" : "50%";
+
+        _height = BindToView ? "100vh" : "50%";
+
+        ((SpinnerService)SpinnerService).OnCounterReceived += CounterUpdated;
+    }
+
+    private async void CounterUpdated(int counter)
+    {
+        await InvokeAsync(() =>
+        {
+            if ((_counter >= 0 && counter == 1) || (_counter > 0 && counter == -1)) _counter = _counter + counter;
+
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        ((SpinnerService)SpinnerService).OnCounterReceived -= CounterUpdated;
+    }
+
+}

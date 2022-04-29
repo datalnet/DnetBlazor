@@ -1,0 +1,158 @@
+﻿.blg-adv-toggle-button-image {
+    display: block;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='5f6368'><path fill-rule='evenodd' clip-rule='evenodd' d='M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 1em 1em;
+    height: 1em;
+    width: 1em;
+    cursor: pointer;
+    color: #5f6368;
+}
+
+.blg-adv-toggle-button-filtered-image {
+    display: block;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='5f6368'><path fill-rule='evenodd' clip-rule='evenodd' d='M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 1em 1em;
+    height: 1em;
+    width: 1em;
+    cursor: pointer;
+    color: #5f6368;
+}
+
+.blg-advanced-filter-container {
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0.1);
+    background: #fff;
+    color: rgba(0,0,0,.87);
+}
+
+.blg-adv-filter-select {
+    position: relative;
+    display: block;
+    line-height: 2rem;
+    overflow: hidden;
+    border: 1px solid #eee;
+    flex: 1 1 auto;
+    border-radius: 0px;
+    font-size: 0.875rem;
+    color: #5f6368;
+    height: 30px;
+
+    & input::-webkit-input-placeholder {
+        font-size: 0.875rem;
+    }
+    /*Arrow*/
+    &::after {
+        color: #5f6368;
+        font-weight: 300;
+        font-size: 0.875rem;
+        position: absolute;
+        top: 8px;
+        right: 2px;
+        bottom: 0;
+        padding: 0 .7rem;
+        background: #FFFFFF;
+        pointer-events: none;
+        -webkit-transition: .25s all ease;
+        -o-transition: .25s all ease;
+        transition: .25s all ease;
+        height: auto;
+        display: inline-block;
+        content: "";
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M1.646 4.646a.5.5 0 01.708 0L8 10.293l5.646-5.647a.5.5 0 01.708.708l-6 6a.5.5 0 01-.708 0l-6-6a.5.5 0 010-.708z'/></svg>");
+        background-repeat: no-repeat;
+        background-size: 0.875rem 0.875rem;
+        height: 1em;
+        width: 1em;
+    }
+
+    & select {
+        background-color: transparent;
+        outline: 0;
+        box-shadow: none;
+        border: 0 !important;
+        background-image: none;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        color: #5f6368;
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        -ms-appearance: none;
+        appearance: none;
+        /*height: 30px;*/
+        &:hover {
+            &::after {
+                color: #f39c12;
+            }
+        }
+
+        &::-ms-expand {
+            display: none;
+        }
+
+        option.placeholder {
+            color: #ccc;
+        }
+
+        &:focus {
+            background-color: transparent;
+        }
+    }
+}
+
+.blg-adv-filter-input-search {
+    width: 100%;
+    border-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: #FFFFFF;
+    -webkit-transition: none;
+    transition: none;
+    box-shadow: none;
+    font-size: 0.875rem;
+    color: #5f6368;
+    border: 1px solid #eee;
+    height: 30px;
+
+    &:focus {
+        box-shadow: none;
+    }
+}
+
+.blg-adv-filter-validation-message {
+    padding-top: 3px;
+    color: #ff0000;
+    font-size: 0.825rem;
+}
+
+.blg-adv-filter-wrapper {
+    width: 100%
+}
+
+.blg-adv-filter-buttom-ok {
+    border: none;
+    border-radius: 0px;
+    background-color: #ced4da;
+    width: auto;
+    padding: .25rem 1.0rem;
+}
+
+.blg-adv-filter-buttom-reset {
+    width: 100%;
+    border-radius: 0px;
+    width: auto;
+    padding: .25rem 1.0rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-control-sm {
+    padding: .25rem .5rem;
+    line-height: 1.5;
+}
