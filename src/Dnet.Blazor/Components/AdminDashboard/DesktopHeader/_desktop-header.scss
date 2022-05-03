@@ -8,7 +8,7 @@
 
 .minified {
     .dnet-desktop-header {
-        margin: 0 0 0 calc(var(--dnet-dash-navbar-height) * -1);
+        margin: 0 0 0 calc((var(--dnet-dash-navbar-height) + 10px) * -1);
     }
 }
 

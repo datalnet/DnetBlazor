@@ -99,7 +99,7 @@
         {
             var localStorageData = await DnetAdminDashboardInterop.GetAsync<LocalStorageData>(JSRuntime, "BlazorTestApp");
 
-            if (localStorageData != null)
+            if (localStorageData != null && _showMinifier == true)
             {
                 _isMinified = localStorageData.IsMinified;
 
@@ -109,7 +109,7 @@
             }
             else
             {
-                _isMinified = IsMinified;
+                if (IsMinified != null) _isMinified = IsMinified;
 
                 LocalStorageData.IsMinified = _isMinified;
 
