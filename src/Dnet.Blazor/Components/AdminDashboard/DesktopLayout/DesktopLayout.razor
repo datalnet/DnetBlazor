@@ -84,9 +84,11 @@
 
         _showMinifier = ShowMinifier;
 
-         CssClasses = GetCssClasses();
+        if (_showMinifier == false) _isMinified = IsMinified;
 
-          StateHasChanged();
+        CssClasses = GetCssClasses();
+
+        StateHasChanged();
 
         ((ThemeMessageService<ThemeConfigData>)ThemeMessageService).OnMessage += MessageReceived;
     }
@@ -99,9 +101,22 @@
 
             if (localStorageData != null)
             {
-                IsMinified = localStorageData.IsMinified;
+                _isMinified = localStorageData.IsMinified;
 
                 CssClasses = GetCssClasses();
+
+                StateHasChanged();
+            }
+            else
+            {
+                _isMinified = IsMinified;
+
+                LocalStorageData.IsMinified = _isMinified;
+
+                CssClasses = GetCssClasses();
+
+                await DnetAdminDashboardInterop.SetAsync(JSRuntime, "BlazorTestApp", LocalStorageData);
+
                 StateHasChanged();
             }
         }
@@ -127,7 +142,7 @@
     {
         if (themeConfigData.Emitter == ThemeMessageEmitter.DesktopMinifyMenu)
         {
-            IsMinified = themeConfigData.Data.IsMinified;
+            _isMinified = themeConfigData.Data.IsMinified;
 
             CssClasses = GetCssClasses();
 
@@ -151,6 +166,13 @@
             _isLeftColumnFixed = themeConfigData.Data.IsLeftColumnFixed && !themeConfigData.Data.IsLeftColumnHidden;
 
             _showMinifier = themeConfigData.Data.ShowMinifier;
+
+            var localStorageData = await DnetAdminDashboardInterop.GetAsync<LocalStorageData>(JSRuntime, "BlazorTestApp");
+
+            if (localStorageData != null)
+            {
+                _isMinified = localStorageData.IsMinified;
+            }
 
             if (IsLeftColumnHidden)
             {

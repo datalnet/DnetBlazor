@@ -10,8 +10,18 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>1.2.5</PackageVersion>
+		<PackageVersion>1.2.6</PackageVersion>
+		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />

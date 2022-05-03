@@ -80,9 +80,17 @@
         UserName = "admin@datalnet.com";
         PersonName = "Adrian Mustelier";
 
-        //SetupTheme();
-
         BuildMenu();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            SetupTheme();
+
+            StateHasChanged();
+        }
     }
 
     private void SetupTheme()
