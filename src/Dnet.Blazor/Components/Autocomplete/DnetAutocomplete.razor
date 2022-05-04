@@ -47,7 +47,7 @@
            @onclick:preventDefault="true"
            placeholder="@_placeHolder"
            disabled="@Disabled"
-           autocomplete="off" />
+           autocomplete="none" />
 </DnetFormField>
 
 
@@ -60,10 +60,19 @@
     public EventCallback<string> OnStopTyping { get; set; }
 
     [Parameter]
+    public EventCallback<bool> OnClearInput { get; set; }
+
+    [Parameter]
     public Func<TItem, string> DisplayValueConverter { get; set; }
 
     [Parameter]
     public Func<TItem, string> SearchValueConverter { get; set; }
+
+    [Parameter]
+    public Func<TItem, (string, string)> SearchTupleValueConverter { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> SortValueConverter { get; set; }
 
     [Parameter]
     public RenderFragment<TItem> ItemPrefixContent { get; set; }
@@ -76,6 +85,9 @@
 
     [Parameter]
     public List<TItem> Items { get; set; } = new();
+
+    [Parameter]
+    public string OrderBy { get; set; } = "ASC";
 
     [Parameter]
     public RenderFragment PrefixContent { get; set; }
@@ -195,7 +207,7 @@
 
         if (!DisabledClearButton) _clearButtonContent = CreateClearButtonContent();
 
-        if (DisplayValueConverter == null) DisplayValueConverter = SearchValueConverter;
+        ValidateComponentInputs();
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -223,6 +235,18 @@
         return inputContent;
     }
 
+    private void ValidateComponentInputs()
+    {
+        if (DisplayValueConverter == null) throw new NullReferenceException($"DisplayValueConverter could not be Null");
+
+        if (SortValueConverter == null) throw new NullReferenceException($"SortValueConverter could not be Null");
+
+        if (SearchValueConverter == null && SearchTupleValueConverter == null) throw new NullReferenceException($"SearchValueConverter or SearchTupleValueConverter has to be defined");
+
+        if (SearchValueConverter != null && SearchTupleValueConverter != null) throw new Exception($"Only one can be used between SearchValueConverter and SearchTupleValueConverter");
+
+    }
+
     protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
         result = InputTextToUpper ? value?.ToUpper() : value;
@@ -241,6 +265,7 @@
     {
         if (data.Key == "Tab")
         {
+            ClosenMenu();
             return;
         }
 
@@ -270,12 +295,71 @@
                     PrefixContent = null;
                     SufixContent = null;
 
-                    var items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(CurrentValue?.ToUpper())).ToList();
-                    var item = items.FirstOrDefault();
+                    if (SearchValueConverter != null)
+                    {
+                        var items = new List<TItem>();
 
-                    if (!string.IsNullOrEmpty(CurrentValue) && ItemAutoSelection) PreSelecteItem(item);
+                        if (!string.IsNullOrEmpty(CurrentValue))
+                        {
+                            items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(CurrentValue.ToUpper())).ToList();
 
-                    _autoCompleteListService.UdateList(items);
+                            // order by
+                            if (OrderBy != null && OrderBy.ToUpper() == "ASC")
+                            {
+                                items = items.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                            }
+                            else if (OrderBy != null && OrderBy.ToUpper() == "DES")
+                            {
+                                items = items.OrderByDescending(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                            }
+                        }
+                        else
+                        {
+                            items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(CurrentValue.ToUpper())).ToList();
+                        }
+
+
+                        var item = items.FirstOrDefault();
+
+                        if (!string.IsNullOrEmpty(CurrentValue) && ItemAutoSelection && item != null) PreSelecteItem(item);
+
+                        _autoCompleteListService.UdateList(items);
+
+                    }
+                    else if (SearchTupleValueConverter != null)
+                    {
+
+                        var items1 = Items.Where(p => SearchTupleValueConverter(p).Item1.ToUpper().Equals(CurrentValue.ToUpper()) || SearchTupleValueConverter(p).Item1.ToUpper().Contains(CurrentValue.ToUpper())).ToList();
+                        var items2 = Items.Where(p => (!String.IsNullOrEmpty(SearchTupleValueConverter(p).Item2) && SearchTupleValueConverter(p).Item2.ToUpper().Contains(CurrentValue.ToUpper()))).ToList();
+
+                        // order by
+                        if (OrderBy != null && OrderBy.ToUpper() == "ASC")
+                        {
+                            items1 = items1.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                            items2 = items2.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                        }
+                        else if (OrderBy != null && OrderBy.ToUpper() == "DES")
+                        {
+                            items1 = items1.OrderByDescending(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                            items2 = items2.OrderByDescending(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                        }
+
+                        if (items1.Count > 0)
+                        {
+                            var item = items1.First();
+                            if (!string.IsNullOrEmpty(CurrentValue) && ItemAutoSelection) PreSelecteItem(item);
+
+                        }
+                        else if (items2.Count > 0)
+                        {
+                            var item = items2.First();
+                            if (!string.IsNullOrEmpty(CurrentValue) && ItemAutoSelection) PreSelecteItem(item);
+                        }
+
+                        var items = items1.Concat(items2).Distinct().ToList();
+                        _autoCompleteListService.UdateList(items);
+                    }
+
                 }
             }
             catch (NullReferenceException)
@@ -302,7 +386,7 @@
         _isOpen = true;
     }
 
-    private void ClosenMenu(FocusEventArgs data)
+    private void ClosenMenu()
     {
         if (_isOpen && _isClosing)
         {
@@ -369,6 +453,7 @@
         _hasFocus = false;
 
         await ValueChanged.InvokeAsync(Value);
+        await OnClearInput.InvokeAsync(true);
 
         DetachMenu();
 
@@ -434,12 +519,32 @@
         {
             try
             {
-                items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(CurrentValue.ToUpper())).ToList();
+                if (SearchValueConverter != null)
+                {
+                    items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(CurrentValue.ToUpper())).ToList();
+
+                }
+                else if (SearchTupleValueConverter != null)
+                {
+                    items = Items.Where(p => SearchTupleValueConverter(p).Item1.ToUpper().Contains(CurrentValue.ToUpper()) || SearchTupleValueConverter(p).Item2.ToUpper().Contains(CurrentValue.ToUpper())).ToList();
+
+                }
+
+                if (OrderBy != null && OrderBy.ToUpper() == "ASC")
+                {
+                    items = items.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                }
+                else if (OrderBy != null && OrderBy.ToUpper() == "DES")
+                {
+                    items = items.OrderByDescending(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                }
+
                 _autoCompleteListService.UdateList(items);
+
             }
             catch (NullReferenceException)
             {
-                throw new NullReferenceException($"SearchValueConverter could not be Null");
+                throw new NullReferenceException($"SearchValueConverter or SearchTupleValueConverter could not be Null");
             }
         }
         else
@@ -502,7 +607,26 @@
         {
             _hasFocus = false;
         }
+        else
+        {
+            var items = new List<TItem>();
+            if (SearchValueConverter != null)
+            {
+                items = Items.Where(p => SearchValueConverter(p).ToUpper().Equals(CurrentValue.ToUpper())).ToList();
+
+            }
+            else if (SearchTupleValueConverter != null)
+            {
+                items = Items.Where(p => SearchTupleValueConverter(p).Item1.ToUpper().Equals(CurrentValue.ToUpper()) || SearchTupleValueConverter(p).Item2.ToUpper().Equals(CurrentValue.ToUpper())).ToList();
+
+            }
+
+            if (items.Count() == 0) ClearInput();
+        }
+
         _placeHolder = string.Empty;
+
+        ClosenMenu();
 
         StateHasChanged();
     }
