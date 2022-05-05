@@ -141,6 +141,9 @@
     public string PlaceHolder { get; set; } = "";
 
     [Parameter]
+    public string AutoSelectIdItem { get; set; } = "";
+
+    [Parameter]
     public string Hint { get; set; }
 
     [Parameter]
@@ -158,6 +161,7 @@
     [Parameter]
     public bool EnableServerSide { get; set; }
 
+    private string _oldValue;
 
     private ElementReference _menuTrigger;
 
@@ -201,6 +205,8 @@
 
         if (!string.IsNullOrEmpty(CurrentValue)) _hasFocus = true;
 
+        _oldValue = AutoSelectIdItem;
+
         EditContext.OnFieldChanged += HandleOnValidationStateChanged;
 
         _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
@@ -217,6 +223,17 @@
         _autoCompleteListService = new AutoCompleteListService<TItem>();
 
         _autoCompleteListService.OnItemSelected += ItemSelected;
+
+        if (!String.IsNullOrEmpty(AutoSelectIdItem)) OnAutoSelectedId();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!_oldValue.Equals(AutoSelectIdItem))
+        {
+            _oldValue = AutoSelectIdItem;
+            OnAutoSelectedId();
+        }
     }
 
     private RenderFragment CreateClearButtonContent()
@@ -373,6 +390,45 @@
         });
     }
 
+    private async void OnAutoSelectedId()
+    {
+        await InvokeAsync(() =>
+        {
+            try
+            {
+                CurrentValue = null;
+                PrefixContent = null;
+                SufixContent = null;
+
+                var items = new List<TItem>();
+                if (!string.IsNullOrEmpty(AutoSelectIdItem))
+                {
+                    items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(AutoSelectIdItem.ToUpper())).ToList();
+                    items = items.OrderBy(p => SearchValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                }
+                else
+                {
+                    items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(AutoSelectIdItem.ToUpper())).ToList();
+                }
+
+                var item = items.FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(AutoSelectIdItem)) PreSelecteItem(item);
+
+                _autoCompleteListService.UdateList(items);
+            }
+            catch (NullReferenceException)
+            {
+                throw new NullReferenceException($"SearchValueConverter could not be Null");
+            }
+
+            if (ItemPrefixContent == null && ItemSufixContent == null && ChildContent == null) return;
+
+
+            StateHasChanged();
+        });
+    }
+
     private async Task OpenMenu()
     {
         if (Disabled) return;
@@ -400,6 +456,7 @@
         var value = DisplayValueConverter(item);
 
         Value = value;
+        _oldValue = Value;
         await ValueChanged.InvokeAsync(value);
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
@@ -420,6 +477,7 @@
         var value = DisplayValueConverter(item);
 
         Value = value;
+        _oldValue = Value;
         await ValueChanged.InvokeAsync(value);
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
