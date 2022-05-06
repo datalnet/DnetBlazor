@@ -1598,6 +1598,8 @@
 
         if (GridOptions.EnableServerSidePagination && currentPage != null) _searchModel.PaginationModel.CurrentPage = (int)currentPage;
 
+        _searchModel.PaginationModel.PageSize = GridOptions.PaginationPageSize;
+
         if (_gridData.Any()) OperationsByDefault();
 
         if (_blgHeader != null) _blgHeader.ActiveRender();
