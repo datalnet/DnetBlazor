@@ -10,6 +10,7 @@
 @using Dnet.Blazor.Components.FormField
 @using System.Net.Http
 @using System.Net.Http.Json
+@using Dnet.Blazor.Infrastructure.Enums;
 
 @inject HttpClient HttpClient
 @inject IHttpClientFactory ClientFactory
@@ -33,6 +34,7 @@
                                       SearchValueConverter="(value) => (value.Name)"
                                       SortValueConverter="(value) => value.Name"
                                       OnItemSelected="OnAutocompleteFilter"
+                                      ComponentTheme="ComponentTheme.Raw"
                                       InputTextToUpper="true"
                                       PlaceHolder="Name"
                                       Label="Name"

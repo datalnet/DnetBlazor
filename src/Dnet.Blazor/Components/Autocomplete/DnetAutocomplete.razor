@@ -10,6 +10,7 @@
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Models
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Services
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using Dnet.Blazor.Infrastructure.Enums;
 
 @implements IDisposable
 
@@ -19,7 +20,9 @@
 
 @inject IOverlayService OverlayService
 
-<DnetFormField CurrentValue="@CurrentValue"
+@if (ComponentTheme == ComponentTheme.Material)
+{
+    <DnetFormField CurrentValue="@CurrentValue"
                Appearance="@Appearance"
                PlaceHolder="@PlaceHolder"
                FloatLabel="@FloatLabel"
@@ -33,7 +36,7 @@
                ClearButtonContent="@_clearButtonContent"
                HasErrors="@_hasErrors"
                @ref="_formField">
-    <input @ref="_menuTrigger"
+        <input @ref="_menuTrigger"
            @attributes="AdditionalAttributes"
            class="@_inputTextClass"
            value="@BindConverter.FormatValue(CurrentValue)"
@@ -48,8 +51,45 @@
            placeholder="@_placeHolder"
            disabled="@Disabled"
            autocomplete="none" />
-</DnetFormField>
+    </DnetFormField>
+}
+else
+{
 
+    <div @ref="_menuTrigger" class="dnet-autoc-container">
+
+        <input @attributes="AdditionalAttributes"
+           class="@_inputTextClassRaw"
+           value="@BindConverter.FormatValue(CurrentValue)"
+           @onfocus=@(() => Focus())
+           @onblur=@(() => Blur())
+           @oninput="@((ChangeEventArgs __e) => CurrentValue = __e.Value.ToString())"
+           @onfocusin=@(() => OpenMenu())
+           @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e))
+           @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
+           @onclick:stopPropagation="true"
+           @onclick:preventDefault="true"
+           placeholder="@_placeHolder"
+           disabled="@Disabled"
+           autocomplete="none" />
+
+        <div class="dnet-autoc-clear-input" @onclick="ClearInput">
+            <div class="dnet-autoc-reset-image-wrapper">
+                <span class="dnet-autoc-icon dnet-autoc-reset-button"></span>
+            </div>
+        </div><div class="dnet-autoc-input-content-wrapper">
+            @if (ItemPrefixContent != null && _itemSelected != null)
+            {
+                <div class="dnet-autoc-prefix-content">
+
+                    @ItemPrefixContent(_itemSelected)
+                </div>
+            }
+        </div>
+
+    </div>
+
+}
 
 @code {
 
@@ -88,6 +128,9 @@
 
     [Parameter]
     public string OrderBy { get; set; } = "ASC";
+
+    [Parameter]
+    public ComponentTheme ComponentTheme { get; set; } = ComponentTheme.Material;
 
     [Parameter]
     public RenderFragment PrefixContent { get; set; }
@@ -187,10 +230,20 @@
 
     private DnetFormField _formField { get; set; } = new();
 
+    private ElementReference _formField1 { get; set; } = new();
+
+    private TItem _itemSelected { get; set; }
+
     private string _inputTextClass =>
                 new CssBuilder("mat-input-element")
                     .AddClass("mat-form-field-autofill-control")
                     .AddClass("cdk-text-field-autofill-monitored")
+                    .AddClass(CssClass)
+                .Build();
+
+    private string _inputTextClassRaw =>
+                new CssBuilder("dnet-input-search")
+                    .AddClass("dnet-autoc-input-autocomplete")
                     .AddClass(CssClass)
                 .Build();
 
@@ -229,7 +282,7 @@
 
     protected override void OnParametersSet()
     {
-        if (!_oldValue.Equals(AutoSelectIdItem))
+        if (!_oldValue.Equals(AutoSelectIdItem) && string.IsNullOrEmpty(_oldValue))
         {
             _oldValue = AutoSelectIdItem;
             OnAutoSelectedId();
@@ -457,6 +510,8 @@
 
         Value = value;
         _oldValue = Value;
+        _itemSelected = item;
+
         await ValueChanged.InvokeAsync(value);
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
@@ -478,6 +533,7 @@
 
         Value = value;
         _oldValue = Value;
+        _itemSelected = item;
         await ValueChanged.InvokeAsync(value);
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
@@ -520,6 +576,8 @@
 
     private void AttachMenu()
     {
+        var overlayOrigin = _formField.OverlayOrigin;
+
         var positions = new List<ConnectedPosition>
             {
                 new()
@@ -552,12 +610,15 @@
                 }
             };
 
+
+        if (ComponentTheme == ComponentTheme.Raw) overlayOrigin = _menuTrigger;
+
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
-            .WithLockedPosition()
-            .WithViewportMargin(8)
-            .SetOrigin(_formField.OverlayOrigin)
-            .WithFlexibleDimensions(false)
-            .WithPositions(positions);
+           .WithLockedPosition()
+           .WithViewportMargin(8)
+           .SetOrigin(overlayOrigin)
+           .WithFlexibleDimensions(false)
+           .WithPositions(positions);
 
         var connectedPanelConfig = new OverlayConfig
             {
