@@ -10,6 +10,7 @@
 @using Dnet.Blazor.Components.FormField
 @using System.Net.Http
 @using System.Net.Http.Json
+@using Dnet.Blazor.Infrastructure.Enums;
 
 @inject HttpClient HttpClient
 @inject IHttpClientFactory ClientFactory
@@ -29,8 +30,11 @@
                                       ValueExpression="@( () => _formData.Name )"
                                       Items="_items"
                                       TItem="Person"
+                                      DisplayValueConverter="(value) => value.Name"
                                       SearchValueConverter="(value) => (value.Name)"
+                                      SortValueConverter="(value) => value.Name"
                                       OnItemSelected="OnAutocompleteFilter"
+                                      ComponentTheme="ComponentTheme.Raw"
                                       InputTextToUpper="true"
                                       PlaceHolder="Name"
                                       Label="Name"
@@ -59,7 +63,9 @@
                     <DnetAutocomplete @bind-Value="@_formData1.Name"
                                       Items="_items"
                                       TItem="Person"
+                                      DisplayValueConverter="(value) => value.Name"
                                       SearchValueConverter="(value) => value.Name"
+                                      SortValueConverter="(value) => value.Name"
                                       OnItemSelected="OnAutocompleteFilter"
                                       HasContent="true"
                                       ItemAutoSelection="_itemAutoSelection"
@@ -84,7 +90,9 @@
                     <DnetAutocomplete @bind-Value="@_formData2.Name"
                                       Items="_items"
                                       TItem="Person"
+                                      DisplayValueConverter="(value) => value.Name"
                                       SearchValueConverter="(value) => value.Name"
+                                      SortValueConverter="(value) => value.Name"
                                       OnItemSelected="OnAutocompleteFilter"
                                       HasContent="true"
                                       ItemAutoSelection="_itemAutoSelection"
@@ -112,7 +120,9 @@
                     <DnetAutocomplete @bind-Value="@_formData3.Name"
                                       Items="_items"
                                       TItem="Person"
+                                      DisplayValueConverter="(value) => value.Name"
                                       SearchValueConverter="(value) => value.Name"
+                                      SortValueConverter="(value) => value.Name"
                                       OnItemSelected="OnAutocompleteFilter"
                                       ItemAutoSelection="_itemAutoSelection"
                                       Disabled="false"
@@ -140,7 +150,9 @@
                                       ValueExpression="@( () => _formData.Name )"
                                       Items="_items"
                                       TItem="Person"
-                                      SearchValueConverter="(value) => (value.Name)"
+                                      DisplayValueConverter="(value) => value.Name"
+                                      SearchValueConverter="(value) => value.Name"
+                                      SortValueConverter="(value) => value.Name"
                                       OnItemSelected="OnAutocompleteFilter"
                                       InputTextToUpper="true"
                                       PlaceHolder="Name"
