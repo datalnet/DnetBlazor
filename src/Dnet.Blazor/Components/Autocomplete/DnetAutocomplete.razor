@@ -69,15 +69,18 @@ else
            @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
            @onclick:stopPropagation="true"
            @onclick:preventDefault="true"
-           placeholder="@_placeHolder"
+           placeholder="@PlaceHolder"
            disabled="@Disabled"
            autocomplete="none" />
-
-        <div class="dnet-autoc-clear-input" @onclick="ClearInput">
-            <div class="dnet-autoc-reset-image-wrapper">
-                <span class="dnet-autoc-icon dnet-autoc-reset-button"></span>
+        @if (!String.IsNullOrEmpty(CurrentValue))
+        {
+            <div class="dnet-autoc-clear-input" @onclick="ClearInput">
+                <div class="dnet-autoc-reset-image-wrapper">
+                    <span class="dnet-autoc-icon dnet-autoc-reset-button"></span>
+                </div>
             </div>
-        </div><div class="dnet-autoc-input-content-wrapper">
+        }
+        <div class="dnet-autoc-input-content-wrapper">
             @if (ItemPrefixContent != null && _itemSelected != null)
             {
                 <div class="dnet-autoc-prefix-content">
@@ -373,8 +376,8 @@ else
                         {
                             items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(CurrentValue.ToUpper())).ToList();
 
-                            // order by
-                            if (OrderBy != null && OrderBy.ToUpper() == "ASC")
+                        // order by
+                        if (OrderBy != null && OrderBy.ToUpper() == "ASC")
                             {
                                 items = items.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
                             }
@@ -402,8 +405,8 @@ else
                         var items1 = Items.Where(p => SearchTupleValueConverter(p).Item1.ToUpper().Equals(CurrentValue.ToUpper()) || SearchTupleValueConverter(p).Item1.ToUpper().Contains(CurrentValue.ToUpper())).ToList();
                         var items2 = Items.Where(p => (!String.IsNullOrEmpty(SearchTupleValueConverter(p).Item2) && SearchTupleValueConverter(p).Item2.ToUpper().Contains(CurrentValue.ToUpper()))).ToList();
 
-                        // order by
-                        if (OrderBy != null && OrderBy.ToUpper() == "ASC")
+                    // order by
+                    if (OrderBy != null && OrderBy.ToUpper() == "ASC")
                         {
                             items1 = items1.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
                             items2 = items2.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
@@ -457,7 +460,7 @@ else
                 if (!string.IsNullOrEmpty(AutoSelectIdItem))
                 {
                     items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(AutoSelectIdItem.ToUpper())).ToList();
-                    items = items.OrderBy(p => SearchValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                    items = items.OrderBy(p => SearchValueConverter(p).ToUpper().IndexOf(AutoSelectIdItem.ToUpper()).ToString()).ToList();
                 }
                 else
                 {
@@ -559,6 +562,9 @@ else
 
         PrefixContent = null;
         SufixContent = null;
+
+        _oldValue = "";
+        AutoSelectIdItem = "";
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
@@ -742,9 +748,9 @@ else
 
             if (items.Count() == 0) ClearInput();
         }
-
+   
         _placeHolder = string.Empty;
-
+        
         ClosenMenu();
 
         StateHasChanged();
