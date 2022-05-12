@@ -34,6 +34,8 @@ namespace Dnet.Blazor.Components.Dialog.Infrastructure.Services
                 HasTransparentBackdrop = dialogConfig.HasTransparentBackdrop,
                 Width = dialogConfig.Width,
                 Height = dialogConfig.Height,
+                MaxHeight = dialogConfig.MaxHeight,
+                MaxWidth = dialogConfig.MaxWidth,
                 GlobalPositionStrategy = globalPositionStrategy
             };
 
