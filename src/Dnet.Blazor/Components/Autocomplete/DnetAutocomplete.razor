@@ -732,22 +732,6 @@ else
         {
             _hasFocus = false;
         }
-        else
-        {
-            var items = new List<TItem>();
-            if (SearchValueConverter != null)
-            {
-                items = Items.Where(p => SearchValueConverter(p).ToUpper().Equals(CurrentValue.ToUpper())).ToList();
-
-            }
-            else if (SearchTupleValueConverter != null)
-            {
-                items = Items.Where(p => SearchTupleValueConverter(p).Item1.ToUpper().Equals(CurrentValue.ToUpper()) || SearchTupleValueConverter(p).Item2.ToUpper().Equals(CurrentValue.ToUpper())).ToList();
-
-            }
-
-            if (items.Count() == 0) ClearInput();
-        }
    
         _placeHolder = string.Empty;
         
