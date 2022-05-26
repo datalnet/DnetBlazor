@@ -80,16 +80,17 @@ else
                 </div>
             </div>
         }
-        <div class="dnet-autoc-input-content-wrapper">
-            @if (PrefixContent != null && ItemPrefixContent != null && _itemSelected != null)
-            {
+        @if (PrefixContent != null && ItemPrefixContent != null && _itemSelected != null)
+        {
+            <div class="dnet-autoc-input-content-wrapper">
+
                 <div class="dnet-autoc-prefix-content">
 
                     @ItemPrefixContent(_itemSelected)
                 </div>
-            }
-        </div>
 
+            </div>
+        }
     </div>
 
 }
@@ -376,8 +377,8 @@ else
                         {
                             items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(CurrentValue.ToUpper())).ToList();
 
-                        // order by
-                        if (OrderBy != null && OrderBy.ToUpper() == "ASC")
+                            // order by
+                            if (OrderBy != null && OrderBy.ToUpper() == "ASC")
                             {
                                 items = items.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
                             }
@@ -405,8 +406,8 @@ else
                         var items1 = Items.Where(p => SearchTupleValueConverter(p).Item1.ToUpper().Equals(CurrentValue.ToUpper()) || SearchTupleValueConverter(p).Item1.ToUpper().Contains(CurrentValue.ToUpper())).ToList();
                         var items2 = Items.Where(p => (!String.IsNullOrEmpty(SearchTupleValueConverter(p).Item2) && SearchTupleValueConverter(p).Item2.ToUpper().Contains(CurrentValue.ToUpper()))).ToList();
 
-                    // order by
-                    if (OrderBy != null && OrderBy.ToUpper() == "ASC")
+                        // order by
+                        if (OrderBy != null && OrderBy.ToUpper() == "ASC")
                         {
                             items1 = items1.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
                             items2 = items2.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
@@ -732,9 +733,9 @@ else
         {
             _hasFocus = false;
         }
-   
+
         _placeHolder = string.Empty;
-        
+
         ClosenMenu();
 
         StateHasChanged();
