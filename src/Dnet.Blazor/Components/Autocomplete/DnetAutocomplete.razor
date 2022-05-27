@@ -72,7 +72,7 @@ else
            placeholder="@PlaceHolder"
            disabled="@Disabled"
            autocomplete="none" />
-        @if (!String.IsNullOrEmpty(CurrentValue))
+        @if (!String.IsNullOrEmpty(CurrentValue) && Disabled == false)
         {
             <div class="dnet-autoc-clear-input" @onclick="ClearInput">
                 <div class="dnet-autoc-reset-image-wrapper">
