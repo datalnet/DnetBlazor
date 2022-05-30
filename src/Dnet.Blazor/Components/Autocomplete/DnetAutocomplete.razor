@@ -63,7 +63,7 @@ else
            value="@BindConverter.FormatValue(CurrentValue)"
            @onfocus=@(() => Focus())
            @onblur=@(() => Blur())
-           @oninput="@((ChangeEventArgs __e) => CurrentValue = __e.Value.ToString())"
+           @oninput="@((ChangeEventArgs __e) => CurrentValue = __e.Value.ToString().ToUpper())"
            @onfocusin=@(() => OpenMenu())
            @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e))
            @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
