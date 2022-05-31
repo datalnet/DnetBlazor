@@ -49,14 +49,26 @@
 
     private void AttachOverlay(RenderFragment content, OverlayConfig overlayConfig)
     {
-        //await InvokeAsync(() =>
-        //{
-        var backdropZindex = _baseZindex + (_overlays.Count() * 3);
+        //var backdropZindex = _baseZindex + (_overlays.Count() * 3);
+
+        //if (overlayConfig.HasBackdrop) AttachBackdrop(overlayConfig, backdropZindex);
+
+        //overlayConfig.HostZindex = backdropZindex + 1;
+        //overlayConfig.PanelZindex = backdropZindex + 2;
+        var lastIndex = _overlays.Any() ? _overlays.Max(p => p.Value.Item2.LastZindex) : 0;
+
+        lastIndex++;
+        var backdropZindex = _baseZindex + (int)lastIndex;
 
         if (overlayConfig.HasBackdrop) AttachBackdrop(overlayConfig, backdropZindex);
 
-        overlayConfig.HostZindex = backdropZindex + 1;
-        overlayConfig.PanelZindex = backdropZindex + 2;
+        lastIndex++;
+        overlayConfig.HostZindex = backdropZindex + lastIndex;
+
+        lastIndex++;
+        overlayConfig.PanelZindex = backdropZindex + lastIndex;
+
+        overlayConfig.LastZindex = lastIndex;
 
         var pane = CreatePaneElement(content, overlayConfig);
         var host = CreateHostElement(pane, overlayConfig);
@@ -68,13 +80,10 @@
         _contenHost = AddHostConent(_overlays);
 
         StateHasChanged();
-        //});
     }
 
     private void DetachOverlay(OverlayResult overlayDataResult)
     {
-        //await InvokeAsync(() =>
-        //{
         var overlay = _overlays.GetValueOrDefault(overlayDataResult.OverlayReferenceId);
 
         if (overlay == null) return;
@@ -86,7 +95,6 @@
         _contenHost = AddHostConent(_overlays);
 
         StateHasChanged();
-        //});
     }
 
     private void AttachBackdrop(OverlayConfig overlayConfig, int zIndex)

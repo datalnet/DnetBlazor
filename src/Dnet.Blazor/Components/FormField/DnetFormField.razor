@@ -114,12 +114,36 @@
 
     internal ElementReference OverlayOrigin;
 
-    private string _placeHolder { get; set; }
-
     private string _appearanceClass { get; set; }
 
-    private string _formFieldClass =>
-                new CssBuilder("mat-form-field")
+    public string _formFieldClass { get; set; }
+
+    public string _formFieldLabelClass { get; set; }
+
+    private bool _isDataInitialized { get; set; }
+
+    public string _oldValue { get; set; } = "";
+
+
+    protected override void OnInitialized()
+    {
+        _isDataInitialized = true;
+
+        _formFieldClass = GetCssClasses();
+
+        _formFieldLabelClass = GetFormFieldLabelClass();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _formFieldClass = GetCssClasses();
+
+        _formFieldLabelClass = GetFormFieldLabelClass();
+    }
+
+    private string GetCssClasses()
+    {
+        var classes = new CssBuilder("mat-form-field")
                     .AddClass("mat-form-field-type-mat-input", true)
                     .AddClass("mat-form-field-appearance-fill", Appearance == Appearance.Fill)
                     .AddClass("mat-form-field-appearance-standard", Appearance == Appearance.Standard)
@@ -132,10 +156,17 @@
                     .AddClass("mat-focused", HasFocus == true)
                 .Build();
 
-    private string _formFieldLabelClass =>
-                new CssBuilder("mat-form-field-label")
+        return classes;
+    }
+
+    private string GetFormFieldLabelClass()
+    {
+        var classes = new CssBuilder("mat-form-field-label")
                     .AddClass("mat-form-field-empty", string.IsNullOrEmpty(CurrentValue))
                 .Build();
+
+        return classes;
+    }
 
     private bool CanLabelFloat()
     {
@@ -144,6 +175,8 @@
 
     private bool ShouldLabelFloat()
     {
-        return (HasFocus == true && FloatLabel == FloatLabel.AsUserTypes) || FloatLabel == FloatLabel.Always;
+        var shouldLabelFloat = (HasFocus == true && FloatLabel == FloatLabel.AsUserTypes) || FloatLabel == FloatLabel.Always || (!string.IsNullOrEmpty(CurrentValue) && FloatLabel == FloatLabel.AsUserTypes);
+
+        return shouldLabelFloat;
     }
 }

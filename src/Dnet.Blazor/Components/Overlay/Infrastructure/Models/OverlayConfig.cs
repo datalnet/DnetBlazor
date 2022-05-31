@@ -30,6 +30,8 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Models
 
         public string MaxHeight { get; set; }
 
+        internal int? LastZindex { get; set; } = 0;
+
         public PositionStrategy PositionStrategy { get; set; } = PositionStrategy.Global;
 
         public GlobalPositionStrategyBuilder GlobalPositionStrategy { get; set; }
