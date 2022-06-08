@@ -29,7 +29,7 @@
     <div class="blg-header-cell @(Pinned == Pinned.None ? "blg-header-cell-notpinned" : null)" style="flex: 1 0 40px; height: @height; border: none">
         <div class="blg-header-cell-container">
             <div class="blg-header-cell-label">
-                <input type="checkbox" @onclick="()=>ChangeSelectAllNodes()" class="blg-checkbox-no-label">
+                <input type="checkbox" @onclick="() => ChangeSelectAllNodes()" class="blg-checkbox-no-label">
             </div>
         </div>
     </div>
@@ -68,9 +68,18 @@
 {
     var height = GridOptions.HeaderHeight + "px";
 
-    if (header.IsSortAscending()) { SortIconClass = "blg-icon-asc"; }
-    if (header.IsSortDescending()) { SortIconClass = "blg-icon-desc"; }
-    if (header.IsSortNone()) { SortIconClass = ""; }
+    if (header.IsSortAscending())
+    {
+        SortIconClass = "blg-icon-asc";
+    }
+    if (header.IsSortDescending())
+    {
+        SortIconClass = "blg-icon-desc";
+    }
+    if (header.IsSortNone())
+    {
+        SortIconClass = "";
+    }
 
     var cellTextStyle = header.WrapHeaderText ? "white-space: normal; line-height: 15px;" : "overflow: hidden;text-overflow: ellipsis;";
 
@@ -78,9 +87,8 @@
         <div class="blg-header-cell-container">
             @if (header.Sortable)
             {
-                <div class="blg-header-cell-label" @onclick="(() => Sort(header))">
+                <div class="blg-header-cell-label" @onclick="() => Sort(header)">
                     <span class="blg-header-cell-text" style="@cellTextStyle">@header.HeaderName</span>
-                    <span class="blg-icon @SortIconClass" unselectable="on"></span>
                 </div>
             }
             else
@@ -90,13 +98,19 @@
                 </div>
             }
             <div style="display: flex; align-items: center;">
+                @if (header.Sortable)
+                {
+                    <div class="" @onclick="() => Sort(header)">
+                        <span class="blg-icon @SortIconClass" unselectable="on"></span>
+                    </div>
+                }
                 @if (header.CellDataType != CellDataType.None && GridOptions.EnableAdvancedFilter && header.EnableAdvancedFilter)
                 {
                     <BlgAdvancedFilterToggle FilterData="header.AdvancedFilterModel"
-                                     OnFilter="AdvancedFilter"
-                                     IsFiltered="IsFiltered(header.AdvancedFilterModel)"
-                                     DefaultAdvancedFilterOperator="@GridOptions.DefaultAdvancedFilterOperator"
-                                     DateFormat="@header.DateFormat">
+                                             OnFilter="AdvancedFilter"
+                                             IsFiltered="IsFiltered(header.AdvancedFilterModel)"
+                                             DefaultAdvancedFilterOperator="@GridOptions.DefaultAdvancedFilterOperator"
+                                             DateFormat="@header.DateFormat">
                     </BlgAdvancedFilterToggle>
                 }
                 @if (GridOptions.EnableGrouping && header.ShowGroupingButtons)
@@ -115,7 +129,7 @@
         @if (header.Pinned == Pinned.None && header.CanGrow == 1)
         {
             <div style="cursor:col-resize; position:absolute; height:@height; user-select:none; width:7px; background-color:transparent; color: transparent; right: 0px; margin-right: -4px"
-         @onmousedown="(e)=>MouseDown(header, e.ClientX)">
+                 @onmousedown="(e) => MouseDown(header, e.ClientX)">
                 |
             </div>
         }
@@ -137,7 +151,6 @@
 
     @if (HasGrouping && GridColumns.Any() && Pinned == Pinned.None)
     {
-
         var width = GroupGridColumn.Width + "px";
         var height = GroupGridColumn.Height + "px";
 
@@ -171,21 +184,21 @@
                     case CellDataType.Boolean:
                     case CellDataType.Text:
                         <input class="coms-input-search"
-               type="text"
-               style="height: 30px;"
-               @bind-value="@header.Filter"
-               @bind-value:event="oninput"
-               @onkeyup="Filter"
-               @onkeyup:stopPropagation="true"
-               @onkeyup:preventDefault="true">
+                               type="text"
+                               style="height: 30px;"
+                               @bind-value="@header.Filter"
+                               @bind-value:event="oninput"
+                               @onkeyup="Filter"
+                               @onkeyup:stopPropagation="true"
+                               @onkeyup:preventDefault="true">
                         break;
                     case CellDataType.Date:
                         <EditForm Model="@header" style="width:100%">
                             <DnetDatePicker @bind-Value="@header.Filter"
-                            Disabled="false"
-                            OnDaySelected="@((day) => DaySelected(day, header))"
-                            Format="@header.DateFormat"
-                            ComponentTheme="ComponentTheme.Raw">
+                                            Disabled="false"
+                                            OnDaySelected="@((day) => DaySelected(day, header))"
+                                            Format="@header.DateFormat"
+                                            ComponentTheme="ComponentTheme.Raw">
                             </DnetDatePicker>
                         </EditForm>
                         break;
@@ -333,7 +346,6 @@
             await OnFilter.InvokeAsync(e);
             _shouldRender = true;
         });
-
     }
 
     private void Filter(KeyboardEventArgs data)
@@ -375,7 +387,7 @@
 
     private void MouseDown(GridColumn<TItem> header, double clientX)
     {
-        OnMouseDown.InvokeAsync(new Tuple<string, int>(header.DataField, (int)clientX));
+        OnMouseDown.InvokeAsync(new Tuple<string, int>(header.DataField, (int) clientX));
         _shouldRender = true;
     }
 
@@ -406,5 +418,5 @@
             _shouldRender = true;
         });
     }
-}
 
+}
