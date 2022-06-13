@@ -1211,6 +1211,8 @@
 
         var itemsCount = _searchModel.PaginationModel.ItemsCount;
 
+        if (currentPage <= 0) currentPage = 1;
+
         var (startIndex, count) = PaginatorService.GetRangePage(currentPage, pageSize, itemsCount);
 
         _renderedRowNodes = _rowNodes.GetRange(startIndex, count);
