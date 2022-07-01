@@ -60,7 +60,7 @@
 
 .blg-header-cell-label {
     display: flex;
-    overflow: hidden;
+    overflow: unset;
     align-items: center;
     text-overflow: ellipsis;
     align-self: stretch;

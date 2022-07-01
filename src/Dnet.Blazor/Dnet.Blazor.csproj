@@ -10,14 +10,12 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>1.3.0</PackageVersion>
+		<PackageVersion>1.3.2</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Fix Overlay Bug when open a component that use the overlay service inside another component that also use the overlay service
-			- Fix Grid Bug on initialization
-			- Added new form theme. Legacy
+			- Fix header text hidden
         </PackageReleaseNotes>
 	</PropertyGroup>
 
