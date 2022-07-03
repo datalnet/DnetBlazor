@@ -8,9 +8,10 @@
 
 <div class="mat-tab-group" @attributes=AllOtherAttributes>
     <div class="mat-tab-header @(_showPaginationControls ? "mat-tab-header-pagination-controls-enabled" : null)" style="border-bottom:@_borderBottom">
-        <div class="mat-tab-header-pagination mat-tab-header-pagination-before" @onclick="() => HandlePaginatorClick(ScrollDirection.Before)">
+        <button disabled="@_disableScrollBefore" class="mat-tab-header-pagination mat-tab-header-pagination-before @(_disableScrollBefore ? "mat-tab-header-pagination-disabled" : null)" 
+             @onclick="() => HandlePaginatorClick(ScrollDirection.Before)">
             <div class="mat-tab-header-pagination-chevron"></div>
-        </div>
+        </button>
         <div @ref="_tabLabelContainer" class="mat-tab-label-container">
             <div @ref="_tabList" class="mat-tab-list" style="transform: translateX(@_transformX)">
                 <div class="mat-tab-labels">
@@ -35,9 +36,10 @@
             </div>
         </div>
 
-        <div class="mat-tab-header-pagination mat-tab-header-pagination-after" @onclick="() => HandlePaginatorClick(ScrollDirection.After)">
+        <button disabled="@_disableScrollAfter" class="mat-tab-header-pagination mat-tab-header-pagination-after @(_disableScrollAfter ? "mat-tab-header-pagination-disabled" : null)" 
+             @onclick="() => HandlePaginatorClick(ScrollDirection.After)">
             <div class="mat-tab-header-pagination-chevron"></div>
-        </div>
+        </button>
     </div>
     <div class="mat-tab-body-wrapper">
         <DnetTabBody>
@@ -94,6 +96,10 @@
 
     private string _transformX { get; set; } = "0px";
 
+    private bool _disableScrollAfter { get; set; } = true;
+
+    private bool _disableScrollBefore { get; set; } = true;
+
 
     protected override void OnInitialized()
     {
@@ -116,6 +122,8 @@
             _tabLabelContainerBoundingClientRect = await DnetInterop.GetBoundingClientRect(JSRuntime, _tabLabelContainer);
 
             _showPaginationControls = _tabListScrollWidth > _tabLabelContainerBoundingClientRect.Width;
+
+            await CheckScrollingControls();
 
             StateHasChanged();
         }
@@ -154,6 +162,8 @@
     private async Task HandlePaginatorClick(ScrollDirection direction)
     {
         await ScrollHeader(direction);
+
+        await CheckScrollingControls();
     }
 
     private async Task ScrollHeader(ScrollDirection direction)
@@ -219,6 +229,15 @@
         }
 
         _transformX = $"-{Convert.ToInt32(_scrollDistance)}px";
+
+        await CheckScrollingControls();
+    }
+
+    private async Task CheckScrollingControls()
+    {
+        // Check if the pagination arrows should be activated.
+        _disableScrollBefore = _scrollDistance == 0;
+        _disableScrollAfter = _scrollDistance == await GetMaxScrollDistance();
     }
 
     enum ScrollDirection

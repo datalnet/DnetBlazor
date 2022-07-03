@@ -111,6 +111,10 @@ $ease-in-out-curve-function: cubic-bezier(0.35, 0, 0.25, 1) !default;
         z-index: 2;
         -webkit-tap-highlight-color: transparent;
         touch-action: none;
+        border: none;
+        background: none;
+        padding: 0;
+        padding-bottom: 2px;
 
         .mat-tab-header-pagination-controls-enabled & {
             display: flex;
@@ -135,7 +139,7 @@ $ease-in-out-curve-function: cubic-bezier(0.35, 0, 0.25, 1) !default;
 
     .mat-tab-header-pagination-chevron {
         border-style: solid;
-        border-width: 2px 2px 0 0;
+        border-width: 1px 1px 0 0;
         content: '';
         height: 8px;
         width: 8px;
