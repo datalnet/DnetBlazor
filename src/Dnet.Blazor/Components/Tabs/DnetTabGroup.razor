@@ -2,10 +2,10 @@
 @using Microsoft.AspNetCore.Components.Web
 
 <div class="mat-tab-group" @attributes=AllOtherAttributes>
-    <DnetTabHeader TabHeaderBorder="@TabHeaderBorder">
+    <DnetTabHeader TabHeaderBorder="@TabHeaderBorder" SelectedTab="@_selectedTab">
         @foreach (var tab in Tabs.OrderBy(p => p.Order))
         {
-            <div class="mat-tab-label mat-focus-indicator @(_selectedId == tab.Id ? "mat-tab-label-active" : null)" @onclick="(() => TabClicked(tab))">
+            <div @ref="@tab.TabElementReference" class="mat-tab-label mat-focus-indicator @(_selectedId == tab.Id ? "mat-tab-label-active" : null)" @onclick="(() => TabClicked(tab))">
                 <div class="mat-tab-label-content">
 
                     @if (tab.HeaderTemplate != null && typeof(ComponentBase).IsAssignableFrom(tab.HeaderTemplate))
@@ -50,6 +50,8 @@
 
 
     private int _selectedId;
+
+    private DnetTab _selectedTab;
 
     public List<DnetTab> Tabs = new List<DnetTab>();
 
@@ -96,6 +98,8 @@
     public void TabClicked(DnetTab tab)
     {
         _selectedId = tab.Id;
+
+        _selectedTab = tab;
 
         _activeTabContent = Tabs.FirstOrDefault(p => p.Id == tab.Id)?.ChildContent;
 
