@@ -1,25 +1,49 @@
-﻿@using Dnet.Blazor.Components.Tabs.Infrastructure.Models
+﻿@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Services
+@using Dnet.Blazor.Components.Tabs.Infrastructure.Models
+@using Dnet.Blazor.Infrastructure.Models
 @using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JSRuntime
 
 <div class="mat-tab-group" @attributes=AllOtherAttributes>
-    <DnetTabHeader TabHeaderBorder="@TabHeaderBorder">
-        @foreach (var tab in Tabs.OrderBy(p => p.Order))
-        {
-            <div class="mat-tab-label mat-focus-indicator @(_selectedId == tab.Id ? "mat-tab-label-active" : null)" @onclick="(() => TabClicked(tab))">
-                <div class="mat-tab-label-content">
+    <div class="mat-tab-header @(_showPaginationControls ? "mat-tab-header-pagination-controls-enabled" : null)" style="border-bottom:@_borderBottom">
+        <button disabled="@_disableScrollBefore" class="mat-tab-header-pagination mat-tab-header-pagination-before @(_disableScrollBefore ? "mat-tab-header-pagination-disabled" : null)" 
+             @onclick="() => HandlePaginatorClick(ScrollDirection.Before)">
+            <div class="mat-tab-header-pagination-chevron"></div>
+        </button>
+        <div @ref="_tabLabelContainer" class="mat-tab-label-container">
+            <div @ref="_tabList" class="mat-tab-list" style="transform: translateX(@_transformX)">
+                <div class="mat-tab-labels">
+                    @foreach (var tab in Tabs.OrderBy(p => p.Order))
+                    {
+                        <div @ref="@tab.TabElementReference" 
+                             class="mat-tab-label mat-focus-indicator @(_selectedId == tab.Id ? "mat-tab-label-active" : null) @(tab.Disabled ? "mat-tab-disabled" : null)" 
+                             @onclick="(() => TabClicked(tab))"
+                             >
+                            <div class="mat-tab-label-content">
 
-                    @if (tab.HeaderTemplate != null && typeof(ComponentBase).IsAssignableFrom(tab.HeaderTemplate))
-                    {
-                        @CreateHeaderTemplateComponent(tab.HeaderTemplate)
-                    }
-                    else
-                    {
-                        <span>@tab.Label</span>
+                                @if (tab.HeaderTemplate != null && typeof(ComponentBase).IsAssignableFrom(tab.HeaderTemplate))
+                                {
+                                    @CreateHeaderTemplateComponent(tab.HeaderTemplate)
+                                }
+                                else
+                                {
+                                    <span>@tab.Label</span>
+                                }
+                            </div>
+                        </div>
                     }
                 </div>
+                <mat-ink-bar></mat-ink-bar>
             </div>
-        }
-    </DnetTabHeader>
+        </div>
+
+        <button disabled="@_disableScrollAfter" class="mat-tab-header-pagination mat-tab-header-pagination-after @(_disableScrollAfter ? "mat-tab-header-pagination-disabled" : null)" 
+             @onclick="() => HandlePaginatorClick(ScrollDirection.After)">
+            <div class="mat-tab-header-pagination-chevron"></div>
+        </button>
+    </div>
     <div class="mat-tab-body-wrapper">
         <DnetTabBody>
             @_activeTabContent
@@ -51,19 +75,43 @@
 
     private int _selectedId;
 
+    private DnetTab _selectedTab;
+
     public List<DnetTab> Tabs = new List<DnetTab>();
 
     private RenderFragment _activeTabContent;
 
     private List<int> tabIds = new List<int>();
 
+    private string _borderBottom { get; set; }
+
+    private ElementReference _tabLabelContainer { get; set; }
+
+    private ElementReference _tabList { get; set; }
+
+    private bool _showPaginationControls { get; set; }
+
+    private double _tabListScrollWidth { get; set; }
+
+    private ClientRectValues _tabLabelContainerBoundingClientRect { get; set; }
+
+    private double _scrollDistance { get; set; } = 0;
+
+    private string _transformX { get; set; } = "0px";
+
+    private bool _disableScrollAfter { get; set; } = true;
+
+    private bool _disableScrollBefore { get; set; } = true;
+
 
     protected override void OnInitialized()
     {
         _selectedId = SelectedTabId > 0 ? SelectedTabId : 1;
+
+        _borderBottom = TabHeaderBorder ? "1px solid rgba(0,0,0,.12)" : "none";
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
@@ -71,6 +119,14 @@
             {
                 _activeTabContent = Tabs.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent;
             }
+
+            _tabListScrollWidth = await DnetInterop.GetElementScrollWidth(JSRuntime, _tabList);
+
+            _tabLabelContainerBoundingClientRect = await DnetInterop.GetBoundingClientRect(JSRuntime, _tabLabelContainer);
+
+            _showPaginationControls = _tabListScrollWidth > _tabLabelContainerBoundingClientRect.Width;
+
+            await CheckScrollingControls();
 
             StateHasChanged();
         }
@@ -93,13 +149,106 @@
         builder.CloseComponent();
     };
 
-    public void TabClicked(DnetTab tab)
+    public async Task TabClicked(DnetTab tab)
     {
+        if (tab.Disabled) return;
+
         _selectedId = tab.Id;
+
+        _selectedTab = tab;
 
         _activeTabContent = Tabs.FirstOrDefault(p => p.Id == tab.Id)?.ChildContent;
 
-        OnTabClicked.InvokeAsync(new TabClikedEventData { TabId = tab.Id });
+        await ScrollToLabel();
+
+        await OnTabClicked.InvokeAsync(new TabClikedEventData { TabId = tab.Id });
+    }
+
+    private async Task HandlePaginatorClick(ScrollDirection direction)
+    {
+        await ScrollHeader(direction);
+
+        await CheckScrollingControls();
+    }
+
+    private async Task ScrollHeader(ScrollDirection direction)
+    {
+        var viewLength = await DnetInterop.GetBoundingClientRect(JSRuntime, _tabLabelContainer);
+
+        // Move the scroll distance one-third the length of the tab list's viewport.
+        var scrollAmount = (direction == ScrollDirection.Before ? -1 : 1) * viewLength.Width / 3;
+
+        await ScrollTo(_scrollDistance + scrollAmount);
+    }
+
+    private async Task ScrollTo(double position)
+    {
+        var maxScrollDistance = await GetMaxScrollDistance();
+
+        _scrollDistance = Math.Max(0, Math.Min(maxScrollDistance, position));
+
+        _transformX = $"-{Convert.ToInt32(_scrollDistance)}px";
+
+        StateHasChanged();
+    }
+
+    private async Task<double> GetMaxScrollDistance()
+    {
+        var lengthOfTabList = await DnetInterop.GetElementScrollWidth(JSRuntime, _tabList);
+
+        var viewLength = await DnetInterop.GetBoundingClientRect(JSRuntime, _tabLabelContainer);
+
+        return lengthOfTabList - Convert.ToInt32(viewLength.Width);
+    }
+
+    private async Task ScrollToLabel()
+    {
+        if (_selectedTab == null) return;
+
+        // The view length is the visible width of the tab labels.
+        var viewLength = await DnetInterop.GetBoundingClientRect(JSRuntime, _tabLabelContainer);
+
+        var tabLength = await DnetInterop.GetElementOffsets(JSRuntime, _selectedTab.TabElementReference);
+
+        var offsetLeft = Convert.ToInt32(tabLength.OffsetLeft);
+        var offsetWidth = Convert.ToInt32(tabLength.OffsetWidth);
+
+        int labelBeforePos;
+        int labelAfterPos;
+
+        labelBeforePos = offsetLeft;
+        labelAfterPos = labelBeforePos + offsetWidth;
+
+        var beforeVisiblePos = _scrollDistance;
+        var afterVisiblePos = _scrollDistance + viewLength.Width;
+
+        if (labelBeforePos < beforeVisiblePos)
+        {
+            // Scroll header to move label to the before direction
+            _scrollDistance -= beforeVisiblePos - labelBeforePos + 60;
+        }
+        else if (labelAfterPos > afterVisiblePos)
+        {
+            // Scroll header to move label to the after direction
+            _scrollDistance += labelAfterPos - afterVisiblePos + 60;
+        }
+
+        _transformX = $"-{Convert.ToInt32(_scrollDistance)}px";
+
+        await CheckScrollingControls();
+    }
+
+    private async Task CheckScrollingControls()
+    {
+        // Check if the pagination arrows should be activated.
+        _disableScrollBefore = _scrollDistance == 0;
+        _disableScrollAfter = _scrollDistance == await GetMaxScrollDistance();
+    }
+
+    enum ScrollDirection
+    {
+        Before = 1,
+        After
     }
 
 }
