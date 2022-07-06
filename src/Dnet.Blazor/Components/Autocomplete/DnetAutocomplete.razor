@@ -118,6 +118,8 @@ else
     [Parameter]
     public Func<TItem, string> SortValueConverter { get; set; }
 
+    [Parameter] public AutoCompleteSort<TItem>? SortBy { get; set; }
+
     [Parameter]
     public RenderFragment<TItem> ItemPrefixContent { get; set; }
 
@@ -360,6 +362,8 @@ else
             try
             {
 
+
+
                 if (EnableServerSide)
                 {
                     OnStopTyping.InvokeAsync(CurrentValue);
@@ -377,15 +381,19 @@ else
                         {
                             items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(CurrentValue.ToUpper())).ToList();
 
+                            var qItems = items.AsQueryable();
+
+                            items = SortBy?.Apply(qItems).ToList();
+
                             // order by
-                            if (OrderBy != null && OrderBy.ToUpper() == "ASC")
-                            {
-                                items = items.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
-                            }
-                            else if (OrderBy != null && OrderBy.ToUpper() == "DES")
-                            {
-                                items = items.OrderByDescending(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
-                            }
+                            //if (OrderBy != null && OrderBy.ToUpper() == "ASC")
+                            //{
+                            //    items = items.OrderBy(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                            //}
+                            //else if (OrderBy != null && OrderBy.ToUpper() == "DES")
+                            //{
+                            //    items = items.OrderByDescending(p => SortValueConverter(p).ToUpper().IndexOf(CurrentValue.ToUpper()).ToString()).ToList();
+                            //}
                         }
                         else
                         {

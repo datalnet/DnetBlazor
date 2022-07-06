@@ -5,6 +5,7 @@
 @using Dnet.App.Shared.Infrastructure.Services
 @using Dnet.App.Shared.Shared.CustomComponents
 @using Dnet.Blazor.Components.Autocomplete
+@using Dnet.Blazor.Components.Autocomplete.Infrastructure.Services
 @using Dnet.Blazor.Components.Checkbox
 @using System.Drawing
 @using Dnet.Blazor.Components.FormField
@@ -72,7 +73,8 @@
                                       Disabled="false"
                                       PlaceHolder="Name"
                                       Label="Name"
-                                      Appearance="_appearance">
+                                      Appearance="_appearance"
+                                      SortBy="@rankSort">
                         <ItemPrefixContent Context="Person">
                             <div class="dnet-app-icon-wrapper">
                                 <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
@@ -205,6 +207,9 @@
 
     private DnetAutocomplete<Person> _dnetAutocomplete { get; set; }
 
+    AutoCompleteSort<Person> rankSort = AutoCompleteSort<Person>
+       .ByDescending(x => x.Name)
+       .ThenDescending(x => x.LastName);
 
     protected override async Task OnInitializedAsync()
     {
