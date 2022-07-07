@@ -39,7 +39,9 @@
                                       InputTextToUpper="true"
                                       PlaceHolder="Name"
                                       Label="Name"
-                                      Appearance="_appearance">
+                                      Appearance="_appearance"
+                                      SortBy="@sortBy"
+                                      FilterBy="@filterBy">
                         <HintContent>You can add the country prefix</HintContent>
                         <ErrorContent>
                             <ValidationMessage For="@(() => _formData.Name)" />
@@ -74,7 +76,8 @@
                                       PlaceHolder="Name"
                                       Label="Name"
                                       Appearance="_appearance"
-                                      SortBy="@rankSort">
+                                      SortBy="@sortBy"
+                                      FilterBy="@filterBy">
                         <ItemPrefixContent Context="Person">
                             <div class="dnet-app-icon-wrapper">
                                 <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
@@ -101,7 +104,10 @@
                                       Disabled="false"
                                       PlaceHolder="Name"
                                       Label="Name"
-                                      Appearance="_appearance">
+                                      Appearance="_appearance"
+                                      SortBy="@sortBy"
+                                      FilterBy="@filterBy">
+
                         <ItemSufixContent Context="Person">
                             <span style="width: 20px; height: 20px; display: block; background-color: @Person.EyeColor; margin-right:10px"></span>
                         </ItemSufixContent>
@@ -132,7 +138,9 @@
                                       Label="Name"
                                       Appearance="_appearance"
                                       Context="Person"
-                                      ItemHeight="40">
+                                      ItemHeight="40"
+                                      SortBy="@sortBy"
+                                      FilterBy="@filterBy">
                         <div style="width:100%;display:flex;justify-content:center;flex-direction:column">
                             <div style="font-size:.875rem;height:20px;display:flex;align-items:center">@Person.Name</div>
                             <div style="font-size:.625rem;height:15px;display:flex;align-items:center;color:#757575">@Person.Address</div>
@@ -161,7 +169,9 @@
                                       Label="Name"
                                       Appearance="_appearance"
                                       EnableServerSide="true"
-                                      OnStopTyping="StopTyping">
+                                      OnStopTyping="StopTyping"
+                                      SortBy="@sortBy"
+                                      FilterBy="@filterBy">
                         <HintContent>You can add the country prefix</HintContent>
                         <ErrorContent>
                             <ValidationMessage For="@(() => _formData.Name)" />
@@ -207,9 +217,13 @@
 
     private DnetAutocomplete<Person> _dnetAutocomplete { get; set; }
 
-    AutoCompleteSort<Person> rankSort = AutoCompleteSort<Person>
+    AutoCompleteSort<Person> sortBy = AutoCompleteSort<Person>
        .ByDescending(x => x.Name)
        .ThenDescending(x => x.LastName);
+
+    AutoCompleteFilter<Person> filterBy = AutoCompleteFilter<Person>
+       .FilterBy(x => x.Name)
+       .ThenFilterBy(x => x.LastName);
 
     protected override async Task OnInitializedAsync()
     {
