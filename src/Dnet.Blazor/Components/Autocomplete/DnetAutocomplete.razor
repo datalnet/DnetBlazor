@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Components.Forms
+﻿@using Dnet.Blazor.Infrastructure.Services
+@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using System.Timers
@@ -110,19 +111,10 @@ else
     public Func<TItem, string> DisplayValueConverter { get; set; }
 
     [Parameter]
-    public Func<TItem, string> SearchValueConverter { get; set; }
+    public CustomSort<TItem> SortBy { get; set; }
 
     [Parameter]
-    public Func<TItem, (string, string)> SearchTupleValueConverter { get; set; }
-
-    [Parameter]
-    public Func<TItem, string> SortValueConverter { get; set; }
-
-    [Parameter]
-    public AutoCompleteSort<TItem> SortBy { get; set; }
-
-    [Parameter]
-    public AutoCompleteFilter<TItem> FilterBy { get; set; }
+    public CustomFilter<TItem> FilterBy { get; set; }
 
     [Parameter]
     public RenderFragment<TItem> ItemPrefixContent { get; set; }
@@ -290,8 +282,6 @@ else
 
     protected override void OnParametersSet()
     {
-        ValidateComponentInputs();
-
         if (!_oldValue.Equals(AutoSelectIdItem) && string.IsNullOrEmpty(_oldValue))
         {
             _oldValue = AutoSelectIdItem;
@@ -358,38 +348,24 @@ else
     {
         await InvokeAsync(() =>
         {
-            try
+            if (EnableServerSide)
             {
-                if (EnableServerSide)
-                {
-                    OnStopTyping.InvokeAsync(CurrentValue);
-                }
-                else
-                {
-                    PrefixContent = null;
-                    SufixContent = null;
-
-                    var items = new List<TItem>();
-
-                    var qItems = Items.AsQueryable();
-
-                    items = FilterBy.Apply(qItems, CurrentValue).ToList();
-
-                    var qfItems = items.AsQueryable();
-
-                    items = SortBy.Apply(qfItems).ToList();
-
-                    var item = items.FirstOrDefault();
-
-                    if (!string.IsNullOrEmpty(CurrentValue) && ItemAutoSelection && item != null) PreSelecteItem(item);
-
-                    _autoCompleteListService.UdateList(items);
-                }
+                OnStopTyping.InvokeAsync(CurrentValue);
             }
-            catch (NullReferenceException ex)
+            else
             {
-                Console.WriteLine(ex);
-                throw new NullReferenceException($"SearchValueConverter could not be Null");
+                PrefixContent = null;
+                SufixContent = null;
+
+                var items = new List<TItem>();
+
+                items = FilterAndSort();
+
+                var item = items.FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(CurrentValue) && ItemAutoSelection && item != null) PreSelecteItem(item);
+
+                _autoCompleteListService.UdateList(items);
             }
 
             if (ItemPrefixContent == null && ItemSufixContent == null) return;
@@ -402,36 +378,40 @@ else
     {
         await InvokeAsync(() =>
         {
-            try
-            {
-                CurrentValue = null;
-                PrefixContent = null;
-                SufixContent = null;
+            CurrentValue = null;
+            PrefixContent = null;
+            SufixContent = null;
 
-                var items = new List<TItem>();
-                if (!string.IsNullOrEmpty(AutoSelectIdItem))
+            var items = new List<TItem>();
+
+            if (!string.IsNullOrEmpty(AutoSelectIdItem))
+            {
+                items = FilterAndSort();
+
+                //items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(AutoSelectIdItem.ToUpper())).ToList();
+                //items = items.OrderBy(p => SearchValueConverter(p).ToUpper().IndexOf(AutoSelectIdItem.ToUpper()).ToString()).ToList();
+            }
+            else
+            {
+                if (FilterBy != null)
                 {
-                    items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(AutoSelectIdItem.ToUpper())).ToList();
-                    items = items.OrderBy(p => SearchValueConverter(p).ToUpper().IndexOf(AutoSelectIdItem.ToUpper()).ToString()).ToList();
+                    var qItems = Items.AsQueryable();
+
+                    items = FilterBy.Apply(qItems, CurrentValue ?? "").ToList();
                 }
                 else
                 {
-                    items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(AutoSelectIdItem.ToUpper())).ToList();
+                    items = Items;
                 }
-
-                var item = items.FirstOrDefault();
-
-                if (!string.IsNullOrEmpty(AutoSelectIdItem)) PreSelecteItem(item);
-
-                _autoCompleteListService.UdateList(items);
             }
-            catch (NullReferenceException)
-            {
-                throw new NullReferenceException($"SearchValueConverter could not be Null");
-            }
+
+            var item = items.FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(AutoSelectIdItem)) PreSelecteItem(item);
+
+            _autoCompleteListService.UdateList(items);
 
             if (ItemPrefixContent == null && ItemSufixContent == null && ChildContent == null) return;
-
 
             StateHasChanged();
         });
@@ -594,13 +574,7 @@ else
 
         if (!string.IsNullOrEmpty(CurrentValue))
         {
-            var qItems = Items.AsQueryable();
-
-            items = FilterBy.Apply(qItems, CurrentValue ?? "").ToList();
-
-            var qfItems = items.AsQueryable();
-
-            items = SortBy.Apply(qfItems).ToList();
+            items = FilterAndSort();
         }
         else
         {
@@ -680,6 +654,31 @@ else
         _autoCompleteListService.UdateList(items);
 
         StateHasChanged();
+    }
+
+    private List<TItem> FilterAndSort()
+    {
+        var items = new List<TItem>();
+
+        if (FilterBy != null)
+        {
+            var qItems = Items.AsQueryable();
+
+            items = FilterBy.Apply(qItems, CurrentValue ?? "").ToList();
+        }
+        else
+        {
+            items = Items;
+        }
+
+        if (SortBy != null)
+        {
+            var qfItems = items.AsQueryable();
+
+            items = SortBy.Apply(qfItems).ToList();
+        }
+
+        return items;
     }
 
     public void Dispose()
