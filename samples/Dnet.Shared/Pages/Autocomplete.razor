@@ -39,7 +39,8 @@
                                       PlaceHolder="Name"
                                       Label="Name"
                                       Appearance="_appearance"
-                                     >
+                                      SortBy="@sortBy"
+                                      FilterBy="@filterBy">
                         <HintContent>You can add the country prefix</HintContent>
                         <ErrorContent>
                             <ValidationMessage For="@(() => _formData.Name)" />
