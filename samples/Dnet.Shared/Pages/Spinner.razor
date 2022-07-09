@@ -27,7 +27,7 @@
 
 	protected override void OnInitialized()
 	{
-		_timer = new Timer(400);
+		_timer = new Timer(350);
 
 		_timer.Elapsed += OnOperationFinish;
 
@@ -36,14 +36,14 @@
 
 		_timer1 = new Timer(600);
 
-		_timer1.Elapsed += OnOperationFinish;
+		_timer1.Elapsed += OnOperationFinish1;
 
 		_timer1.AutoReset = false;
 
 
 		_timer2 = new Timer(800);
 
-		_timer2.Elapsed += OnOperationFinish;
+		_timer2.Elapsed += OnOperationFinish2;
 
 		_timer2.AutoReset = false;
 	}
@@ -62,6 +62,19 @@
 
 	private void OnOperationFinish(Object source, ElapsedEventArgs e)
 	{
+		_timer.Stop();
+		SpinnerService.Hide();
+	}
+
+	private void OnOperationFinish1(Object source, ElapsedEventArgs e)
+	{
+		_timer.Stop();
+		SpinnerService.Hide();
+	}
+
+	private void OnOperationFinish2(Object source, ElapsedEventArgs e)
+	{
+		_timer.Stop();
 		SpinnerService.Hide();
 	}
 

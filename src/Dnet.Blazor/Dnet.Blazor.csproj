@@ -10,13 +10,14 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>1.4.0</PackageVersion>
+		<PackageVersion>1.5.0</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Added Tabs scrolling
-			- Added disabled tabs
+			- Added debounce time to spinner component
+			- Custom Sort and Filter in Autocomplete component
+			- Breaking change for Autocomplete. See Autocomplete example for more details
         </PackageReleaseNotes>
 	</PropertyGroup>
 

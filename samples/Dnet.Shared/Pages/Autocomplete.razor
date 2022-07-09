@@ -211,8 +211,8 @@
        .ThenDescending(x => x.LastName);
 
     CustomFilter<Person> filterBy = CustomFilter<Person>
-       .FilterBy(x => x.Name)
-       .ThenFilterBy(x => x.Company);
+       .FilterBy(x => x.Name, CustomFilterOperator.Contains)
+       .ThenFilterBy(x => x.LastName, CustomFilterOperator.Contains);
 
     protected override async Task OnInitializedAsync()
     {
