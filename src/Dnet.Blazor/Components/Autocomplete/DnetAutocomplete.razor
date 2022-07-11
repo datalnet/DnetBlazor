@@ -254,7 +254,7 @@ else
     {
         _debounceTimer = new Timer(DebounceTime);
 
-        _debounceTimer.Elapsed += OnUserFinishDiscard;
+        _debounceTimer.Elapsed += OnUserFinish;
 
         _debounceTimer.AutoReset = false;
 
@@ -262,9 +262,12 @@ else
 
         _oldValue = AutoSelectIdItem;
 
-        EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+        if (EditContext != null)
+        {
+            EditContext.OnFieldChanged += HandleOnValidationStateChanged;
 
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        }
 
         if (!DisabledClearButton) _clearButtonContent = CreateClearButtonContent();
     }
@@ -339,12 +342,7 @@ else
         _debounceTimer.Start();
     }
 
-    public void OnUserFinishDiscard(Object source, ElapsedEventArgs e)
-    {
-        _ = OnUserFinish();
-    }
-
-    private async Task OnUserFinish()
+    private async void OnUserFinish(Object? source, ElapsedEventArgs e)
     {
         await InvokeAsync(() =>
         {
@@ -388,8 +386,8 @@ else
             {
                 items = FilterAndSort();
 
-                //items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(AutoSelectIdItem.ToUpper())).ToList();
-                //items = items.OrderBy(p => SearchValueConverter(p).ToUpper().IndexOf(AutoSelectIdItem.ToUpper()).ToString()).ToList();
+            //items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(AutoSelectIdItem.ToUpper())).ToList();
+            //items = items.OrderBy(p => SearchValueConverter(p).ToUpper().IndexOf(AutoSelectIdItem.ToUpper()).ToString()).ToList();
             }
             else
             {
@@ -644,9 +642,9 @@ else
         StateHasChanged();
     }
 
-    private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
+    private void HandleOnValidationStateChanged(object? sender, FieldChangedEventArgs? args)
     {
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+        _hasErrors = EditContext?.GetValidationMessages(FieldIdentifier).Count() > 0;
     }
 
     public void UpdateData(List<TItem> items)
@@ -664,7 +662,14 @@ else
         {
             var qItems = Items.AsQueryable();
 
-            items = FilterBy.Apply(qItems, CurrentValue ?? "").ToList();
+            try
+            {
+                items = FilterBy.Apply(qItems, CurrentValue ?? "").ToList();
+            }
+            catch (NullReferenceException)
+            {
+                throw new InvalidOperationException("Filter properties should not be null for the FilterBy Autocomplete parameter.");
+            }
         }
         else
         {
@@ -687,6 +692,6 @@ else
 
         if (_autoCompleteListService != null) _autoCompleteListService.OnItemSelected -= ItemSelected;
 
-        _debounceTimer.Elapsed -= OnUserFinishDiscard;
+        _debounceTimer.Elapsed -= OnUserFinish;
     }
 }

@@ -27,7 +27,7 @@ public class CustomFilter<TItem>
         _thenExpressions.Add(new FilterPredicate<TItem>
         {
             Predicate = expression,
-            CustomFilterOperator=filterOperator
+            CustomFilterOperator = filterOperator
         });
         return this;
     }

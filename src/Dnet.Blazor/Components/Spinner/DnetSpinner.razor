@@ -71,7 +71,7 @@
 
         _debounceTimer = new Timer(DebounceTime);
 
-        _debounceTimer.Elapsed += OnUserFinishDiscard;
+        _debounceTimer.Elapsed += OnUserFinish;
 
         _debounceTimer.AutoReset = true;
 
@@ -108,12 +108,7 @@
         });
     }
 
-    public void OnUserFinishDiscard(Object? source, ElapsedEventArgs e)
-    {
-        _ = OnUserFinish();
-    }
-
-    private async Task OnUserFinish()
+    private async void OnUserFinish(object? source, ElapsedEventArgs e)
     {
         await InvokeAsync(() =>
         {
@@ -127,7 +122,7 @@
     {
         ((SpinnerService)SpinnerService).OnCounterReceived -= CounterUpdated;
 
-       _debounceTimer.Elapsed -= OnUserFinishDiscard;
+       _debounceTimer.Elapsed -= OnUserFinish;
     }
 
 }
