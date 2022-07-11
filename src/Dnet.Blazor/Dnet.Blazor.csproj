@@ -10,14 +10,15 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>1.4.0</PackageVersion>
+		<PackageVersion>1.5.2</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Added Tabs scrolling
-			- Added disabled tabs
-        </PackageReleaseNotes>
+			- Fix AutoComplete crash when has a selected value.
+			- Fix Autocomplete crash when used without form
+			- Added filter exception when FilterBy property is null.
+		</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
