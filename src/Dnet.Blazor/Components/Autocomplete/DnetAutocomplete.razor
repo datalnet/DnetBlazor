@@ -357,7 +357,7 @@ else
 
                 var items = new List<TItem>();
 
-                items = FilterAndSort();
+                items = FilterAndSort(CurrentValue);
 
                 var item = items.FirstOrDefault();
 
@@ -384,7 +384,7 @@ else
 
             if (!string.IsNullOrEmpty(AutoSelectIdItem))
             {
-                items = FilterAndSort();
+                items = FilterAndSort(AutoSelectIdItem);
 
             //items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(AutoSelectIdItem.ToUpper())).ToList();
             //items = items.OrderBy(p => SearchValueConverter(p).ToUpper().IndexOf(AutoSelectIdItem.ToUpper()).ToString()).ToList();
@@ -572,7 +572,7 @@ else
 
         if (!string.IsNullOrEmpty(CurrentValue))
         {
-            items = FilterAndSort();
+            items = FilterAndSort(CurrentValue);
         }
         else
         {
@@ -654,7 +654,7 @@ else
         StateHasChanged();
     }
 
-    private List<TItem> FilterAndSort()
+    private List<TItem> FilterAndSort(string filterValue)
     {
         var items = new List<TItem>();
 
@@ -664,7 +664,7 @@ else
 
             try
             {
-                items = FilterBy.Apply(qItems, CurrentValue ?? "").ToList();
+                items = FilterBy.Apply(qItems, filterValue ?? "").ToList();
             }
             catch (NullReferenceException)
             {
