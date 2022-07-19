@@ -206,6 +206,9 @@ else
     [Parameter]
     public bool EnableServerSide { get; set; }
 
+    [Parameter]
+    public bool OrderStartingBySearchedString { get; set; } = false;
+
     private string _oldValue;
 
     private ElementReference _menuTrigger;
@@ -385,9 +388,6 @@ else
             if (!string.IsNullOrEmpty(AutoSelectIdItem))
             {
                 items = FilterAndSort(AutoSelectIdItem);
-
-            //items = Items.Where(p => SearchValueConverter(p).ToUpper().Contains(AutoSelectIdItem.ToUpper())).ToList();
-            //items = items.OrderBy(p => SearchValueConverter(p).ToUpper().IndexOf(AutoSelectIdItem.ToUpper()).ToString()).ToList();
             }
             else
             {
@@ -680,7 +680,7 @@ else
         {
             var qfItems = items.AsQueryable();
 
-            items = SortBy.Apply(qfItems).ToList();
+            items = SortBy.Apply(qfItems, filterValue, OrderStartingBySearchedString).ToList();
         }
 
         return items;

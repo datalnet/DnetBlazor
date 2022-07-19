@@ -28,36 +28,36 @@
         <DnetButton OnClick="AddOperator" class="dnet-m-r-10">AddOperator</DnetButton>
     </div>
     <div class="dnet-m-l-30 dnet-m-t-30">
-      @*  @foreach (var item in _operators)
+        @*  @foreach (var item in _operators)
         {
-            <div style="display: flex; flex-direction: row" @key="item">
-                <div>
-                    <span>@item.OperatorId</span>
-                </div>
-                <div style="width: 250px">
-                    <DnetAutocomplete @bind-Value="item.Name"
-                                  Items="_items"
-                                  TItem="Person"
-                                  DisplayValueConverter="(value) => value.Name"
-                                  OnItemSelected="OnAutocompleteFilter"
-                                  ItemAutoSelection="_itemAutoSelection"
-                                  Disabled="false"
-                                  PlaceHolder="Name"
-                                  Label="Name"
-                                  Appearance="_appearance"
-                                  SortBy="@sortBy"
-                                  FilterBy="@filterBy">
-                        <ItemPrefixContent Context="Person">
-                            <div class="dnet-app-icon-wrapper">
-                                <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
-                            </div>
-                        </ItemPrefixContent>
-                    </DnetAutocomplete>
-                </div>
-                <div>
-                    <DnetButton OnClick="() => DeleteOperator(item)" class="dnet-m-r-10">DeleteOperator</DnetButton>
-                </div>
-            </div>
+        <div style="display: flex; flex-direction: row" @key="item">
+        <div>
+        <span>@item.OperatorId</span>
+        </div>
+        <div style="width: 250px">
+        <DnetAutocomplete @bind-Value="item.Name"
+        Items="_items"
+        TItem="Person"
+        DisplayValueConverter="(value) => value.Name"
+        OnItemSelected="OnAutocompleteFilter"
+        ItemAutoSelection="_itemAutoSelection"
+        Disabled="false"
+        PlaceHolder="Name"
+        Label="Name"
+        Appearance="_appearance"
+        SortBy="@sortBy"
+        FilterBy="@filterBy">
+        <ItemPrefixContent Context="Person">
+        <div class="dnet-app-icon-wrapper">
+        <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
+        </div>
+        </ItemPrefixContent>
+        </DnetAutocomplete>
+        </div>
+        <div>
+        <DnetButton OnClick="() => DeleteOperator(item)" class="dnet-m-r-10">DeleteOperator</DnetButton>
+        </div>
+        </div>
         }*@
 
         <EditForm Model="@_formData">
@@ -110,7 +110,9 @@
                                       Label="Name"
                                       Appearance="_appearance"
                                       SortBy="@sortBy"
-                                      FilterBy="@filterBy">
+                                      FilterBy="@filterBy"
+                                      OrderStartingBySearchedString="false"
+                                      >
                         <ItemPrefixContent Context="Person">
                             <div class="dnet-app-icon-wrapper">
                                 <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
@@ -247,17 +249,17 @@
 
     private int operatorCount = 0;
 
-    CustomSort<Person> sortBy = CustomSort<Person>
-       .ByDescending(x => x.Name)
-       .ThenDescending(x => x.LastName);
-
     CustomFilter<Person> filterBy = CustomFilter<Person>
        .FilterBy(x => x.Name, CustomFilterOperator.Contains)
        .ThenFilterBy(x => x.Company, CustomFilterOperator.Contains);
 
+    CustomSort<Person> sortBy = CustomSort<Person>
+       .ByAscending<string>(x => x.Name)
+       .ThenDescending<string>(x => x.LastName);
+
     protected override void OnInitialized()
     {
-
+       
     }
 
     protected override async Task OnInitializedAsync()
