@@ -10,7 +10,7 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>1.5.3</PackageVersion>
+		<PackageVersion>1.6.0</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
@@ -18,6 +18,7 @@
 			- Fix AutoComplete crash when has a selected value.
 			- Fix Autocomplete crash when used without form
 			- Added filter exception when FilterBy property is null.
+			- Added order by search string firts in Autocomplete
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
