@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Dnet.ServerSide' " />
   <ItemGroup>
     <ProjectReference Include="..\Dnet.Shared\Dnet.App.Shared.csproj" />
   </ItemGroup>
