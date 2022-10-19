@@ -93,3 +93,5 @@ datalnet_com.key
 .vscode/settings.json
 
 .vscode/tasks.json
+
+src/.DS_Store
