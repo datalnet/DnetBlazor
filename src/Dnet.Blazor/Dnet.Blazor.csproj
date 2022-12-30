@@ -10,12 +10,14 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>2.0.0</PackageVersion>
+		<PackageVersion>2.1.0</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Update to .Net 7 RC1.
+			- Update to .Net 7.0.0.
+			- Change CellClicked event data(Breaking Change)
+			- Fix List Component pagination Bug
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
@@ -31,8 +33,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0-rc.1.22427.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0-rc.1.22427.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
 	</ItemGroup>
 
