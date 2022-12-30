@@ -544,7 +544,6 @@
 
         if (ListOptions.EnableServerSide)
         {
-            _searchModel.PaginationModel.CurrentPage = 1;
             await OnPaginationChanged.InvokeAsync(_searchModel);
         }
         else

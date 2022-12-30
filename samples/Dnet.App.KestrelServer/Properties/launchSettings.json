@@ -11,7 +11,7 @@
     "Dnet.App.KestrelServer": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5001",
+      "applicationUrl": "http://localhost:62297",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

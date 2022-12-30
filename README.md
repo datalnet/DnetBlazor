@@ -5,6 +5,7 @@ Blazor component library. All components are written in C#.
 https://www.datalnet.com
 
 ### Compatibility
+_ .Net 7.0.0
 - .Net 6.0. Updated to 6.0.4
 
 - Server-side Blazor and Blazor WASM

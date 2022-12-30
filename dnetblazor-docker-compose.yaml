@@ -1,0 +1,19 @@
+version: '3'
+services:
+  blazorclient:
+    image: copycatam/dnetblazor:1.0.0
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      datalnet:
+       ipv4_address: 192.168.0.3
+    ports:
+      - "5001:80"
+networks:
+  datalnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
+          gateway: 192.168.0.1
