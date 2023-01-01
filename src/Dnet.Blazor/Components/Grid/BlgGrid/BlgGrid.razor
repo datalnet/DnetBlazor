@@ -93,21 +93,21 @@
                             }
 
                             <div class="blg-pinned-left-header"
-                             role="presentation"
-                             style="display: grid; grid-template-rows:@gridTemplateRowsLeft1; grid-template-columns:@gridTemplateColumnsLeft1">
+                                 role="presentation"
+                                 style="display: grid; grid-template-rows:@gridTemplateRowsLeft1; grid-template-columns:@gridTemplateColumnsLeft1">
                                 <BlgHeader GridColumns="pinnedColumnsLeft"
-                                   GroupGridColumn="GroupGridColumn"
-                                   GroupByColumns="_groupByColumns"
-                                   OnAddGroup="AddGroup"
-                                   OnDeleteGroup="DeleteGroup"
-                                   OnFilter="OnFilter"
-                                   OnAdvancedFilter="OnAdvancedFilter"
-                                   OnSort="OnSortBy"
-                                   HasGrouping="_groupByColumns.Count >= 1"
-                                   GridOptions="GridOptions"
-                                   OnMouseDown="OnMouseDown"
-                                   Pinned="Pinned.Left"
-                                   CheckboxSelectionPinned="@GridOptions.CheckboxSelectionPinned">
+                                           GroupGridColumn="GroupGridColumn"
+                                           GroupByColumns="_groupByColumns"
+                                           OnAddGroup="AddGroup"
+                                           OnDeleteGroup="DeleteGroup"
+                                           OnFilter="OnFilter"
+                                           OnAdvancedFilter="OnAdvancedFilter"
+                                           OnSort="OnSortBy"
+                                           HasGrouping="_groupByColumns.Count >= 1"
+                                           GridOptions="GridOptions"
+                                           OnMouseDown="OnMouseDown"
+                                           Pinned="Pinned.Left"
+                                           CheckboxSelectionPinned="@GridOptions.CheckboxSelectionPinned">
                                 </BlgHeader>
                             </div>
                         }
@@ -146,27 +146,27 @@
 
                                 <div @ref="_eHeaderContainer" id="blgHeaderConatiner"
                                      @onmousemove="MouseMove"
-                             class="blg-header-container"
-                             role="rowgroup"
-                             style="display: grid; grid-template-rows:@gridTemplateRowsLeft2; grid-template-columns: @gridTemplateColumns1; transform: translateX(@_transformX)">
+                                     class="blg-header-container"
+                                     role="rowgroup"
+                                     style="display: grid; grid-template-rows:@gridTemplateRowsLeft2; grid-template-columns: @gridTemplateColumns1; transform: translateX(@_transformX)">
                                     <BlgHeader @ref="_blgHeader"
-                                       GridColumns="notPinnedColumns"
-                                       GroupGridColumn="GroupGridColumn"
-                                       GroupByColumns="_groupByColumns"
-                                       OnAddGroup="AddGroup"
-                                       OnDeleteGroup="DeleteGroup"
-                                       OnFilter="OnFilter"
-                                       OnAdvancedFilter="OnAdvancedFilter"
-                                       OnSort="OnSortBy"
-                                       HasGrouping="_groupByColumns.Count >= 1"
-                                       GridOptions="GridOptions"
-                                       OnChangeSelectAllNodes="ChangeSelectAllNodes"
-                                       OnExpandCollapse="ExpandCollapse"
-                                       IsExpanded="_isExpanded"
-                                       OnMouseDown="OnMouseDown"
-                                       Pinned="Pinned.None"
-                                       CheckboxSelectionPinned="@(!GridOptions.CheckboxSelectionPinned)"
-                                       OnHeaderWithChange="HeaderWithChange">
+                                               GridColumns="notPinnedColumns"
+                                               GroupGridColumn="GroupGridColumn"
+                                               GroupByColumns="_groupByColumns"
+                                               OnAddGroup="AddGroup"
+                                               OnDeleteGroup="DeleteGroup"
+                                               OnFilter="OnFilter"
+                                               OnAdvancedFilter="OnAdvancedFilter"
+                                               OnSort="OnSortBy"
+                                               HasGrouping="_groupByColumns.Count >= 1"
+                                               GridOptions="GridOptions"
+                                               OnChangeSelectAllNodes="ChangeSelectAllNodes"
+                                               OnExpandCollapse="ExpandCollapse"
+                                               IsExpanded="_isExpanded"
+                                               OnMouseDown="OnMouseDown"
+                                               Pinned="Pinned.None"
+                                               CheckboxSelectionPinned="@(!GridOptions.CheckboxSelectionPinned)"
+                                               OnHeaderWithChange="HeaderWithChange">
                                     </BlgHeader>
                                 </div>
                             }
@@ -190,22 +190,22 @@
                             }
 
                             <div class="blg-pinned-right-header"
-                             role="presentation"
-                             style="display: grid; grid-template-rows:@gridTemplateRowsLeft3; grid-template-columns: @gridTemplateColumnsRight1">
+                                 role="presentation"
+                                 style="display: grid; grid-template-rows:@gridTemplateRowsLeft3; grid-template-columns: @gridTemplateColumnsRight1">
                                 <BlgHeader @ref="_blgHeader"
-                                   GridColumns="pinnedColumnsRight"
-                                   GroupGridColumn="GroupGridColumn"
-                                   GroupByColumns="_groupByColumns"
-                                   OnAddGroup="AddGroup"
-                                   OnDeleteGroup="DeleteGroup"
-                                   OnFilter="OnFilter"
-                                   OnAdvancedFilter="OnAdvancedFilter"
-                                   OnSort="OnSortBy"
-                                   HasGrouping="_groupByColumns.Count >= 1"
-                                   GridOptions="GridOptions"
-                                   OnMouseDown="OnMouseDown"
-                                   Pinned="Pinned.Right"
-                                   CheckboxSelectionPinned="false">
+                                           GridColumns="pinnedColumnsRight"
+                                           GroupGridColumn="GroupGridColumn"
+                                           GroupByColumns="_groupByColumns"
+                                           OnAddGroup="AddGroup"
+                                           OnDeleteGroup="DeleteGroup"
+                                           OnFilter="OnFilter"
+                                           OnAdvancedFilter="OnAdvancedFilter"
+                                           OnSort="OnSortBy"
+                                           HasGrouping="_groupByColumns.Count >= 1"
+                                           GridOptions="GridOptions"
+                                           OnMouseDown="OnMouseDown"
+                                           Pinned="Pinned.Right"
+                                           CheckboxSelectionPinned="false">
                                 </BlgHeader>
                             </div>
                         }
@@ -240,24 +240,24 @@
                                 var gridTemplateRowsLeft = $"repeat({numberOfRows},{GridOptions.RowHeight}px)";
 
                                 <div class="blg-pinned-left-cols-container"
-                                 role="presentation"
-                                 style="display: grid; grid-template-rows:@gridTemplateRowsLeft; grid-template-columns: @gridTemplateColumnsLeft">
+                                     role="presentation"
+                                     style="display: grid; grid-template-rows:@gridTemplateRowsLeft; grid-template-columns: @gridTemplateColumnsLeft">
                                     <BlgBody @ref="_blgPinnedLeft"
-                                     GridColumns="pinnedColumnsLeft"
-                                     GroupGridColumn="GroupGridColumn"
-                                     RowNodes="_itemsToShow"
-                                     HasGrouping="_groupByColumns.Count >= 1"
-                                     OnChangeExpanded="ChangeExpanded"
-                                     OnCellClicked="CellClicked"
-                                     OnRowClicked="RowClicked"
-                                     OnRowDoubleClicked="RowDoubleClicked"
-                                     OnSelectionChanged="SelectionChanged"
-                                     OnMouseOver="MouseOverLeft"
-                                     GridOptions="GridOptions"
-                                     GridApi="@_gridApi"
-                                     Pinned="Pinned.Left"
-                                     CheckboxSelectionPinned="@GridOptions.CheckboxSelectionPinned"
-                                     ComponentName="@BlGridMessageEmitter.BlgBodyLeft">
+                                             GridColumns="pinnedColumnsLeft"
+                                             GroupGridColumn="GroupGridColumn"
+                                             RowNodes="_itemsToShow"
+                                             HasGrouping="_groupByColumns.Count >= 1"
+                                             OnChangeExpanded="ChangeExpanded"
+                                             OnCellClicked="CellClicked"
+                                             OnRowClicked="RowClicked"
+                                             OnRowDoubleClicked="RowDoubleClicked"
+                                             OnSelectionChanged="SelectionChanged"
+                                             OnMouseOver="MouseOverLeft"
+                                             GridOptions="GridOptions"
+                                             GridApi="@_gridApi"
+                                             Pinned="Pinned.Left"
+                                             CheckboxSelectionPinned="@GridOptions.CheckboxSelectionPinned"
+                                             ComponentName="@BlGridMessageEmitter.BlgBodyLeft">
                                     </BlgBody>
                                 </div>
                             }
@@ -291,25 +291,25 @@
                                         var gridTemplateRows = $"repeat({numberOfRows},{GridOptions.RowHeight}px)";
 
                                         <div @ref="_eCenterContainer"
-                                     class="blg-center-cols-container"
-                                     role="grid"
-                                     style="transform: translateX(@_transformX); display: grid; grid-template-rows:@gridTemplateRows; grid-template-columns: @gridTemplateColumns">
+                                             class="blg-center-cols-container"
+                                             role="grid"
+                                             style="transform: translateX(@_transformX); display: grid; grid-template-rows:@gridTemplateRows; grid-template-columns: @gridTemplateColumns">
                                             <BlgBody @ref="_blgCenter"
-                                             GridColumns="notPinnedColumns"
-                                             GroupGridColumn="GroupGridColumn"
-                                             RowNodes="_itemsToShow"
-                                             HasGrouping="_groupByColumns.Count >= 1"
-                                             OnChangeExpanded="ChangeExpanded"
-                                             OnCellClicked="CellClicked"
-                                             OnRowClicked="RowClicked"
-                                             OnRowDoubleClicked="RowDoubleClicked"
-                                             OnSelectionChanged="SelectionChanged"
-                                             OnMouseOver="MouseOverCenter"
-                                             GridOptions="GridOptions"
-                                             GridApi="@_gridApi"
-                                             Pinned="Pinned.None"
-                                             CheckboxSelectionPinned="@(!GridOptions.CheckboxSelectionPinned)"
-                                             ComponentName="@BlGridMessageEmitter.BlgBodyCenter">
+                                                     GridColumns="notPinnedColumns"
+                                                     GroupGridColumn="GroupGridColumn"
+                                                     RowNodes="_itemsToShow"
+                                                     HasGrouping="_groupByColumns.Count >= 1"
+                                                     OnChangeExpanded="ChangeExpanded"
+                                                     OnCellClicked="CellClicked"
+                                                     OnRowClicked="RowClicked"
+                                                     OnRowDoubleClicked="RowDoubleClicked"
+                                                     OnSelectionChanged="SelectionChanged"
+                                                     OnMouseOver="MouseOverCenter"
+                                                     GridOptions="GridOptions"
+                                                     GridApi="@_gridApi"
+                                                     Pinned="Pinned.None"
+                                                     CheckboxSelectionPinned="@(!GridOptions.CheckboxSelectionPinned)"
+                                                     ComponentName="@BlGridMessageEmitter.BlgBodyCenter">
                                             </BlgBody>
                                         </div>
                                     }
@@ -334,24 +334,24 @@
                                 var gridTemplateRowsRight = $"repeat({numberOfRows},{GridOptions.RowHeight}px)";
 
                                 <div class="blg-pinned-right-cols-container"
-                                 role="presentation"
-                                 style="display: grid; grid-template-rows:@gridTemplateRowsRight; grid-template-columns: @gridTemplateColumnsRight">
+                                     role="presentation"
+                                     style="display: grid; grid-template-rows:@gridTemplateRowsRight; grid-template-columns: @gridTemplateColumnsRight">
                                     <BlgBody @ref="_blgPinnedRight"
-                                     GridColumns="pinnedColumnsRight"
-                                     GroupGridColumn="GroupGridColumn"
-                                     RowNodes="_itemsToShow"
-                                     HasGrouping="_groupByColumns.Count >= 1"
-                                     OnChangeExpanded="ChangeExpanded"
-                                     OnCellClicked="CellClicked"
-                                     OnRowClicked="RowClicked"
-                                     OnRowDoubleClicked="RowDoubleClicked"
-                                     OnSelectionChanged="SelectionChanged"
-                                     OnMouseOver="MouseOverRight"
-                                     GridOptions="GridOptions"
-                                     GridApi="@_gridApi"
-                                     Pinned="Pinned.Right"
-                                     CheckboxSelectionPinned="false"
-                                     ComponentName="@BlGridMessageEmitter.BlgBodyRight">
+                                             GridColumns="pinnedColumnsRight"
+                                             GroupGridColumn="GroupGridColumn"
+                                             RowNodes="_itemsToShow"
+                                             HasGrouping="_groupByColumns.Count >= 1"
+                                             OnChangeExpanded="ChangeExpanded"
+                                             OnCellClicked="CellClicked"
+                                             OnRowClicked="RowClicked"
+                                             OnRowDoubleClicked="RowDoubleClicked"
+                                             OnSelectionChanged="SelectionChanged"
+                                             OnMouseOver="MouseOverRight"
+                                             GridOptions="GridOptions"
+                                             GridApi="@_gridApi"
+                                             Pinned="Pinned.Right"
+                                             CheckboxSelectionPinned="false"
+                                             ComponentName="@BlGridMessageEmitter.BlgBodyRight">
                                     </BlgBody>
                                 </div>
                             }
@@ -368,8 +368,8 @@
                             <div class="blg-horizontal-left-spacer" style="width: @(leftSpacerWith + "px"); min-width: @(leftSpacerWith + "px"); max-width: @(leftSpacerWith + "px");"></div>
                             <div @ref="_eBodyHorizontalScrollViewport" class="blg-body-horizontal-scroll-viewport" @onscroll="() => OnScroll()">
                                 <div @ref="_eBodyHorizontalScrollContainer"
-                             class="blg-body-horizontal-scroll-container"
-                             style="width:@(eBodyHorizontalScrollContainerWidth + "px")">
+                                     class="blg-body-horizontal-scroll-container"
+                                     style="width:@(eBodyHorizontalScrollContainerWidth + "px")">
                                 </div>
                             </div>
                             <div class="blg-horizontal-right-spacer" style="width: @(rightSpacerWith + "px"); min-width: @(rightSpacerWith + "px"); max-width: @(rightSpacerWith + "px");"></div>
@@ -381,14 +381,14 @@
             {
                 <div style="height:@($"{PaginatorHeight}px")">
                     <DnetPaginator @ref="_paginator"
-                           OnGoToFirstPage="GoToFirstPage"
-                           OnGoToPreviousPage="GoToPreviousPage"
-                           OnGoToNextPage="GoToNextPage"
-                           OnGoToLastPage="GoToLastPage"
-                           OnGoToSpecificPage="GoToSpecificPage"
-                           CurrentPage="_searchModel.PaginationModel.CurrentPage"
-                           PageSize="_searchModel.PaginationModel.PageSize"
-                           TotalItems="_searchModel.PaginationModel.ItemsCount">
+                                   OnGoToFirstPage="GoToFirstPage"
+                                   OnGoToPreviousPage="GoToPreviousPage"
+                                   OnGoToNextPage="GoToNextPage"
+                                   OnGoToLastPage="GoToLastPage"
+                                   OnGoToSpecificPage="GoToSpecificPage"
+                                   CurrentPage="_searchModel.PaginationModel.CurrentPage"
+                                   PageSize="_searchModel.PaginationModel.PageSize"
+                                   TotalItems="_searchModel.PaginationModel.ItemsCount">
                     </DnetPaginator>
                 </div>
 
@@ -475,8 +475,6 @@
     private string _transformX { get; set; } = "0px";
 
     private TreeRowNode<TItem> _treeRn { get; set; }
-
-    private int _pageSize { get; set; }
 
     private List<RowNode<TItem>> _rowNodes { get; set; } = new();
 
@@ -587,12 +585,6 @@
 
         _itemsProvider = DefaultItemsProvider;
 
-        //if (GridColumns != null && GridColumns.Any()) _gridColumns = AdvancedFilteringService.InitAdvancedFilterModels(GridColumns, GridOptions.DefaultAdvancedFilterOperator);
-
-        //_pinnedRight = _gridColumns.Where(e => e.Pinned == Pinned.Right && !e.Hide).Any();
-
-        //_pinnedLeft = _gridColumns.Where(e => e.Pinned == Pinned.Left && !e.Hide).Any();
-
         _isDataInitialized = true;
 
         _isColumnsInitialized = true;
@@ -648,10 +640,6 @@
 
             var result = await BlGridInterop<TItem>.AddWindowEventListeners(JSRuntime, _eGridContainer, DotNetObjectReference.Create(this));
 
-            //var width = await BlGridInterop<TItem>.GetElementScrollWidth(JSRuntime, _eHeaderContainer);
-
-            //eBodyHorizontalScrollContainerWidth = width;
-
             if (GridOptions.UseVirtualization)
             {
                 await _jsInterop.InitializeAsync(_spacerBefore, _spacerAfter, GridOptions.RowHeight);
@@ -668,8 +656,6 @@
     private void InitializeGridWorkingData()
     {
         if (!string.IsNullOrEmpty(GridOptions.GridClass)) _gridClasses += " " + GridOptions.GridClass;
-
-        _pageSize = GridOptions.PaginationPageSize;
 
         _mouseDown = false;
 
@@ -1118,6 +1104,8 @@
 
         AuxAddGroup(columnName);
 
+        if (GridOptions.GroupDefaultExpanded && _treeRn != null) _treeRn = ExpandCollapseTreeRowNode(_treeRn, true);
+
         FilterBy();
 
         AdvancedFilterBy();
@@ -1205,17 +1193,24 @@
 
     private async Task AssignRangeRenderedRows()
     {
-        var currentPage = _searchModel.PaginationModel.CurrentPage;
+        if (GridOptions.Pagination)
+        {
+            var currentPage = _searchModel.PaginationModel.CurrentPage;
 
-        var pageSize = _searchModel.PaginationModel.PageSize;
+            var pageSize = _searchModel.PaginationModel.PageSize;
 
-        var itemsCount = _searchModel.PaginationModel.ItemsCount;
+            var itemsCount = _searchModel.PaginationModel.ItemsCount;
 
-        if (currentPage <= 0) currentPage = 1;
+            if (currentPage <= 0) currentPage = 1;
 
-        var (startIndex, count) = PaginatorService.GetRangePage(currentPage, pageSize, itemsCount);
+            var (startIndex, count) = PaginatorService.GetRangePage(currentPage, pageSize, itemsCount);
 
-        _renderedRowNodes = _rowNodes.GetRange(startIndex, count);
+            _renderedRowNodes = _rowNodes.GetRange(startIndex, count);
+        }
+        else
+        {
+            _renderedRowNodes = _rowNodes;
+        }
 
         ManageGridCellSpanning();
 
