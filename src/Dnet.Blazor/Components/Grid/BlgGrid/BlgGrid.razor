@@ -504,9 +504,9 @@
 
     private GridApi<TItem> _gridApi { get; set; }
 
-    private bool _isDataInitialized { get; set; }
+    private bool _isDataNoInitialized { get; set; }
 
-    private bool _isColumnsInitialized { get; set; }
+    private bool _isColumnsNoInitialized { get; set; }
 
     private bool _shouldRender;
 
@@ -575,8 +575,6 @@
 
         _searchModel.AdvancedFilterModels = new();
 
-        _searchModel.FilterModels = new();
-
         _searchModel.PaginationModel = new();
 
         _searchModel.SortModel = new();
@@ -585,9 +583,9 @@
 
         _itemsProvider = DefaultItemsProvider;
 
-        _isDataInitialized = true;
+        _isDataNoInitialized = true;
 
-        _isColumnsInitialized = true;
+        _isColumnsNoInitialized = true;
     }
 
     private void HeaderWithChange(int headerWidth)
@@ -604,7 +602,7 @@
 
         if (GridData != null && GridColumns != null)
         {
-            if (_isDataInitialized && GridData.Any())
+            if (_isDataNoInitialized && GridData.Any())
             {
                 _gridData = GridData;
 
@@ -612,10 +610,10 @@
 
                 await InitializeGrid();
 
-                _isDataInitialized = false;
+                _isDataNoInitialized = false;
             }
 
-            if (_isColumnsInitialized & GridColumns.Any())
+            if (_isColumnsNoInitialized & GridColumns.Any())
             {
                 _gridColumns = AdvancedFilteringService.InitAdvancedFilterModels(GridColumns, GridOptions.DefaultAdvancedFilterOperator);
 
@@ -627,7 +625,7 @@
 
                 await InitializeGrid();
 
-                _isColumnsInitialized = false;
+                _isColumnsNoInitialized = false;
             }
         }
     }
