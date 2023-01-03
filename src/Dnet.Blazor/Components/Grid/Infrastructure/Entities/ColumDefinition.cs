@@ -13,6 +13,8 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Entities
 
         public CellDataType CellDataType { get; set; }
 
+        public bool IsDecimalCellDataType { get; set; } = false;
+
         public string HeaderName { get; set; }
 
         public bool WrapHeaderText { get; set; }

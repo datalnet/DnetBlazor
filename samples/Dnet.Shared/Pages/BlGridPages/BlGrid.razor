@@ -325,7 +325,10 @@
                             CanGrow = canGrow,
                             CellDataFn = cellParam => cellParam.RowData.Balance,
                             CellTemplate = typeof(CellPercentageComponent),
-                            Pinned = Pinned.Right
+                            Pinned = Pinned.Right,
+                            CellDataType = CellDataType.Text,
+                            IsDecimalCellDataType = true,
+                            Sortable = true
                         },
                          new()
                          {
@@ -469,7 +472,10 @@
                             Width= width,
                             Height= height,
                             CanGrow = canGrow,
-                            CellDataFn = cellParam => cellParam.RowData.Latitude
+                            CellDataFn = cellParam => cellParam.RowData.Latitude,
+                            CellDataType = CellDataType.Number,
+                            IsDecimalCellDataType = true,
+                            Sortable = true
                         },
                             new()
                             {
@@ -480,7 +486,10 @@
                             Width= width,
                             Height= height,
                             CanGrow = canGrow,
-                            CellDataFn = cellParam => cellParam.RowData.Longitude
+                            CellDataFn = cellParam => cellParam.RowData.Longitude,
+                            CellDataType = CellDataType.Number,
+                            IsDecimalCellDataType = true,
+                            Sortable = true
                         },
                             new()
                             {
@@ -491,7 +500,7 @@
                             Width= width,
                             Height= height,
                             CanGrow = canGrow,
-                            CellDataFn = cellParam => cellParam.RowData.Greeting
+                            CellDataFn = cellParam => cellParam.RowData.Greeting,
                         },
                             new()
                             {

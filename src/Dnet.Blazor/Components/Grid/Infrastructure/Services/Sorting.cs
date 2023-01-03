@@ -35,36 +35,91 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
             return a.Value.CompareTo(b.Value) * a.SortOrder;
         }
 
+        private class DecimalNumberCell
+        {
+            public decimal Value { get; set; }
+
+            public int SortOrder { get; set; }
+
+            public int Position { get; set; }
+        }
+
+        private int DecimalNumberCellComparer(DecimalNumberCell a, DecimalNumberCell b)
+        {
+            return a.Value.CompareTo(b.Value) * a.SortOrder;
+        }
+
         private List<TreeRowNode<TItem>> SortNumbers(List<TreeRowNode<TItem>> nodes, GridColumn<TItem> gridColumn, bool isGroup, CellParams<TItem> cellParams)
         {
-            List<NumberCell> numberCells = new();
-            
-            cellParams.GridColumn = gridColumn;
-
-            for (var i = 0; i < nodes.Count; ++i)
+            if (gridColumn.IsDecimalCellDataType)
             {
-                cellParams.RowData = nodes[i].Data.RowData;
-                
-                var data = isGroup ? nodes[i].Value : gridColumn.CellDataFn(cellParams);
+                List<DecimalNumberCell> numberCells = new();
 
-                var numberCell = new NumberCell
+                cellParams.GridColumn = gridColumn;
+
+                for (var i = 0; i < nodes.Count; ++i)
                 {
-                    Position = i, 
-                    SortOrder = gridColumn.SortStatus == SortOrder.Descending ? -1 : 1,
-                    Value = data is null ? long.MinValue : long.Parse(data.ToString())
-                };
+                    cellParams.RowData = nodes[i].Data.RowData;
 
-                numberCells.Add(numberCell);
+                    var data = isGroup ? nodes[i].Value : gridColumn.CellDataFn(cellParams);
+
+                    var dataString = "";
+
+                    if (data != null)
+                    {
+                        dataString = data.ToString().Replace(',', '.');
+                    }
+
+                    var numberCell = new DecimalNumberCell
+                    {
+                        Position = i,
+                        SortOrder = gridColumn.SortStatus == SortOrder.Descending ? -1 : 1,
+                        Value = data is null ? decimal.MinValue : decimal.Parse(dataString)
+                    };
+
+                    numberCells.Add(numberCell);
+                }
+
+                numberCells.Sort(DecimalNumberCellComparer);
+
+                List<TreeRowNode<TItem>> sortedChildren = new();
+
+                foreach (var numberCell in numberCells)
+                    sortedChildren.Add(nodes[numberCell.Position]);
+
+                return sortedChildren;
             }
+            else
+            {
+                List<NumberCell> numberCells = new();
 
-            numberCells.Sort(NumberCellComparer);
+                cellParams.GridColumn = gridColumn;
 
-            List<TreeRowNode<TItem>> sortedChildren = new();
+                for (var i = 0; i < nodes.Count; ++i)
+                {
+                    cellParams.RowData = nodes[i].Data.RowData;
 
-            foreach (var numberCell in numberCells)
-                sortedChildren.Add(nodes[numberCell.Position]);
+                    var data = isGroup ? nodes[i].Value : gridColumn.CellDataFn(cellParams);
 
-            return sortedChildren;
+                    var numberCell = new NumberCell
+                    {
+                        Position = i,
+                        SortOrder = gridColumn.SortStatus == SortOrder.Descending ? -1 : 1,
+                        Value = data is null ? long.MinValue : long.Parse(data.ToString())
+                    };
+
+                    numberCells.Add(numberCell);
+                }
+
+                numberCells.Sort(NumberCellComparer);
+
+                List<TreeRowNode<TItem>> sortedChildren = new();
+
+                foreach (var numberCell in numberCells)
+                    sortedChildren.Add(nodes[numberCell.Position]);
+
+                return sortedChildren;
+            }
         }
 
         private class TextCell
