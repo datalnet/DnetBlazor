@@ -10,14 +10,14 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>2.1.0</PackageVersion>
+		<PackageVersion>2.1.1</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Update to .Net 7.0.0.
-			- Change CellClicked event data(Breaking Change)
-			- Fix List Component pagination Bug
+			- Fix decimal sorting bug.
+			- Fix Pagination enable bug
+			- Fix Expand all by default when grouping
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
