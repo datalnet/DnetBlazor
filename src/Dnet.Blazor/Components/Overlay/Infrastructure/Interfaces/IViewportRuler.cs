@@ -6,7 +6,7 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
 {
     public interface IViewportRuler
     {
-        Task<Size> GetViewportSize();
+        Task<Models.Size> GetViewportSize();
 
         Task<ClientRect> GetViewportRect();
 
@@ -14,9 +14,9 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
 
         Task<ClientRect> GetViewportRectNoScroll(int viewportMargin);
 
-        void OnWindowResized(Size size);
+        void OnWindowResized(Models.Size size);
 
-        event EventHandler<Size> OnResized;
+        event EventHandler<Models.Size> OnResized;
 
         ValueTask<bool> AddWindowEventListeners();
 

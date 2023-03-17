@@ -24,14 +24,14 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Services
             return _jsRuntime.InvokeAsync<ViewportScrollPosition>("dnetoverlay.getViewportScrollPosition");
         }
 
-        public ValueTask<Size> GetViewportSize()
+        public ValueTask<Models.Size> GetViewportSize()
         {
-            return _jsRuntime.InvokeAsync<Size>("dnetoverlay.getViewportSize");
+            return _jsRuntime.InvokeAsync<Models.Size>("dnetoverlay.getViewportSize");
         }
 
-        public ValueTask<Size> GetViewportSizeNoScroll()
+        public ValueTask<Models.Size> GetViewportSizeNoScroll()
         {
-            return _jsRuntime.InvokeAsync<Size>("dnetoverlay.getViewportSizeNoScroll");
+            return _jsRuntime.InvokeAsync<Models.Size>("dnetoverlay.getViewportSizeNoScroll");
         }
 
         public ValueTask<FlexibleConnectedPositionStrategyOrigin> GetBoundingClientRect(ElementReference element)

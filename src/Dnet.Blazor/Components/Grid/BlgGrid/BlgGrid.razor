@@ -1021,11 +1021,13 @@
             {
                 cellParams.GridColumn = cell;
 
-                var rowSpan = cell.RowSpanFn == null ? _ => 1 : cell.RowSpanFn;
+                //var rowSpan = cell.RowSpanFn == null ? _ => 1 : cell.RowSpanFn;
+                var rowSpanFn = cell.RowSpanFn ?? (_ => 1);
 
-                var skip = rowSpan(cellParams) - 1;
+                var skip = rowSpanFn(cellParams) - 1;
 
-                if (rowNode.RowSpanSkippedCells.ContainsKey(cell) || skip <= 0) continue;
+                //if (rowNode.RowSpanSkippedCells.ContainsKey(cell) || skip <= 0) continue;
+                if (rowNode.RowSpanSkippedCells.TryGetValue(cell, out bool skipped) || skip <= 0) continue;
 
                 int j;
                 for (j = 1; j <= skip && (i + j < _renderedRowNodes.Count) && !_renderedRowNodes[i + j].IsGroup; ++j)
@@ -1036,7 +1038,6 @@
                 for (var k = 1; k < j; ++k)
                 {
                     _renderedRowNodes[i + k].FirstSpanRow.Add(cell, (uint)(j - k));
-                    //_renderedRowNodes[i + k].FirstSpanRowData.Add(cell, cell.CellDataFn(cellParams));
                 }
 
                 rowNode.RowSpanTargetCells.Add(cell, (uint)j);

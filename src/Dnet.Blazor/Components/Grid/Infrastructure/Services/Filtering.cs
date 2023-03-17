@@ -37,7 +37,7 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
                         case CellDataType.Number:
                         case CellDataType.Boolean:
                         case CellDataType.Text:
-                            if (gridColumn.CellDataFn(cellParams) is null || !gridColumn.CellDataFn(cellParams).ToString().ToLower().Contains(filter.Filter.ToLower()))
+                            if (gridColumn.CellDataFn(cellParams)?.ToString().IndexOf(filter.Filter, StringComparison.OrdinalIgnoreCase) < 0)
                             {
                                 tree.Data.Show = false;
                                 break;
@@ -49,10 +49,6 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
                             if (!DateTime.TryParse(gridColumn.CellDataFn(cellParams).ToString(), out _) ||
                                 !DateTime.TryParse(filter.Filter, out _))
                                 return false;
-
-                            //if (!BindConverter.TryConvertTo<DateTime>(gridColumn.CellDataFn(cellParams), CultureInfo.InvariantCulture, out _) ||
-                            //    !DateTime.TryParse(filter.Filter, out _))
-                            //    return false;
 
                             var columnData = Convert.ToDateTime(gridColumn.CellDataFn(cellParams)).ToString(gridColumn.DateFormat);
 

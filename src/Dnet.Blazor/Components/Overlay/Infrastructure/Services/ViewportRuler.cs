@@ -8,17 +8,17 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Services
     {
         private readonly DnetOverlayInterop _dnetOverlayInterop;
         private readonly IJSRuntime _jsRuntime;
-        private EventHandler<Size> _onResized;
+        private EventHandler<Models.Size> _onResized;
 
         private bool _disposed;
 
-        public event EventHandler<Size> OnResized
+        public event EventHandler<Models.Size> OnResized
         {
             add => Subscribe(value);
             remove => Unsubscribe(value);
         }
 
-        private Size _viewportSize;
+        private Models.Size _viewportSize;
 
         public ViewportRuler(DnetOverlayInterop dnetOverlayInterop, IJSRuntime jsRuntime)
         {
@@ -26,7 +26,7 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Services
             _jsRuntime = jsRuntime;
         }
 
-        public async Task<Size> GetViewportSize()
+        public async Task<Models.Size> GetViewportSize()
         {
 
             if (_viewportSize != null)
@@ -104,7 +104,7 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Services
             return position;
         }
 
-        private async Task<Size> ViewportSizeNoScroll()
+        private async Task<Models.Size> ViewportSizeNoScroll()
         {
            return await _dnetOverlayInterop.GetViewportSizeNoScroll();
         }
@@ -117,9 +117,9 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Services
         }
 
         [JSInvokable]
-        public void OnWindowResized(Size size) => _onResized?.Invoke(this, size);
+        public void OnWindowResized(Models.Size size) => _onResized?.Invoke(this, size);
 
-        private void Unsubscribe(EventHandler<Size> value)
+        private void Unsubscribe(EventHandler<Models.Size> value)
         {
             _onResized -= value;
 
@@ -129,7 +129,7 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Services
             }
         }
 
-        private void Subscribe(EventHandler<Size> value)
+        private void Subscribe(EventHandler<Models.Size> value)
         {
             if (_onResized == null)
             {
