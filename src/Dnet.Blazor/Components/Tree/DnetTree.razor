@@ -69,14 +69,14 @@
 				Children = new List<TreeNodeModel<TNode>>()
 			};
 
-		_treeNodeModels = TrasverseTreeNodes(treeNodeModel, Nodes).Children;
+		_treeNodeModels = TraverseTreeNodes(treeNodeModel, Nodes).Children;
 
 		_selectedNode = new TreeNodeModel<TNode>();
 
 		Nodes = new List<TNode>();
 	}
 
-	private TreeNodeModel<TNode> TrasverseTreeNodes(TreeNodeModel<TNode> treeNodeModel, ICollection<TNode> nodes)
+	private TreeNodeModel<TNode> TraverseTreeNodes(TreeNodeModel<TNode> treeNodeModel, ICollection<TNode> nodes)
 	{
 		foreach (var node in nodes)
 		{
@@ -90,7 +90,7 @@
 
 			if (ChildNodes(node) != null && ChildNodes(node).Count > 0)
 			{
-				TrasverseTreeNodes(nodeModel, ChildNodes(node));
+				TraverseTreeNodes(nodeModel, ChildNodes(node));
 			}
 
 			treeNodeModel.Children.Add(nodeModel);
@@ -121,5 +121,21 @@
 				ToggleExpand(node.Children, expand);
 			}
 		}
+	}
+
+	public void UpdateNodes(ICollection<TNode> newNodes)
+	{
+		Nodes = newNodes;
+
+		var treeNodeModel = new TreeNodeModel<TNode>
+			{
+				RowNodeId = GetId(),
+				Show = true,
+				Children = new List<TreeNodeModel<TNode>>()
+			};
+
+		_treeNodeModels = TraverseTreeNodes(treeNodeModel, Nodes).Children;
+
+		StateHasChanged();
 	}
 }

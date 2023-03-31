@@ -12,6 +12,11 @@
 				<span class="dnet-tree-icon @(Node.IsExpanded() ? "dnet-icon-node-open" : "dnet-icon-node-close")"></span>
 			</div>
 		}
+		else
+		{
+			<div class="dnet-tree-icon-dummy">
+			</div>
+		}
 		@if (CheckboxSelection)
 		{
 			var isSelected = Node.IsSelected();
@@ -41,6 +46,7 @@
 						  CheckboxSelection="CheckboxSelection"
 						  OnTreeNodeClicked="OnTreeNodeClicked"
 						  OnCheckboxClicked="OnCheckboxClicked"
+						  OnSelectionChange="OnSelectionChange"
 						  NodeContent="NodeContent">
 					</DnetTreeNode>
 				}
