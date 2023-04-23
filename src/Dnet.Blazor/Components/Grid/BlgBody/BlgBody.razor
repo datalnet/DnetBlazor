@@ -20,21 +20,21 @@
         rowId++;
 
         <BlgRow RowNode="@rowNode"
-                RowId="@rowId"
-                GridColumns="@GridColumns"
-                GroupGridColumn="@GroupGridColumn"
-                GridOptions="@GridOptions"
-                GridApi="@GridApi"
-                HasGrouping="@HasGrouping"
-                Pinned="@Pinned"
-                CheckboxSelectionPinned="@CheckboxSelectionPinned"
-                OnChangeExpanded="ChangeExpanded"
-                OnCellClicked="CellClicked"
-                OnRowClicked="RowClicked"
-                OnRowDoubleClicked="RowDoubleClicked"
-                OnCheckboxClicked="CheckboxClicked"
-                ComponentName="@ComponentName"
-                OnMouseOver="MouseOver">
+        RowId="@rowId"
+        GridColumns="@GridColumns"
+        GroupGridColumn="@GroupGridColumn"
+        GridOptions="@GridOptions"
+        GridApi="@GridApi"
+        HasGrouping="@HasGrouping"
+        Pinned="@Pinned"
+        CheckboxSelectionPinned="@CheckboxSelectionPinned"
+        OnChangeExpanded="ChangeExpanded"
+        OnCellClicked="CellClicked"
+        OnRowClicked="RowClicked"
+        OnRowDoubleClicked="RowDoubleClicked"
+        OnCheckboxClicked="CheckboxClicked"
+        ComponentName="@ComponentName"
+        OnMouseOver="MouseOver">
         </BlgRow>
     }
 }
@@ -91,7 +91,7 @@
 
     public int RowId { get; set; }
 
-    private List<RowNode<TItem>>? _selectedRowNodes;
+    private Dictionary<long, RowNode<TItem>> _selectedRowNodes;
 
     private RowNode<TItem>? _previousSelectedRowNode;
 
@@ -106,7 +106,7 @@
     {
         RowId = 0;
 
-        _selectedRowNodes = new List<RowNode<TItem>>();
+        _selectedRowNodes = new Dictionary<long, RowNode<TItem>>();
     }
 
     protected override void OnAfterRender(bool first)
@@ -146,7 +146,7 @@
             _previousClickedRowNode = rowNode;
             _previousSelectedRowNode = rowNode;
 
-            OnSelectionChanged.InvokeAsync(_selectedRowNodes.Select(p => p.RowNodeId).ToList());
+            OnSelectionChanged.InvokeAsync(_selectedRowNodes.Keys.ToList());
         }
         else
         {
@@ -179,59 +179,84 @@
 
         _previousSelectedRowNode = rowNode;
 
-        OnSelectionChanged.InvokeAsync(_selectedRowNodes.Select(p => p.RowNodeId).ToList());
+        OnSelectionChanged.InvokeAsync(_selectedRowNodes.Keys.ToList());
     }
 
     private void ManageSelections(RowNode<TItem> rowNode)
     {
         if (rowNode == null) return;
 
-        if (
-            GridOptions.RowSelectionType == RowSelectionType.Multiple ||
-            (GridOptions.RowMultiSelectWithClick && GridOptions.SuppressRowClickSelection == false && GridOptions.RowSelectionType == RowSelectionType.Multiple))
+        bool isMultiSelect = GridOptions.RowSelectionType == RowSelectionType.Multiple ||
+                             (GridOptions.RowMultiSelectWithClick && !GridOptions.SuppressRowClickSelection &&
+                              GridOptions.RowSelectionType == RowSelectionType.Multiple);
+
+        if (isMultiSelect)
         {
+            var tr = GridApi.GetTreeRowNodes();
+
+            void HandleParentNode(long rowNodeId, bool isSelected)
+            {
+                var parentNode = FindParent(tr, rowNodeId);
+                if (parentNode != null && AreAllChildrenInDesiredState(parentNode, isSelected))
+                {
+                    parentNode.Data.SelectThisNode(isSelected);
+
+                    if (isSelected)
+                    {
+                        _selectedRowNodes.TryAdd(parentNode.Data.RowNodeId, parentNode.Data);
+                    }
+                    else
+                    {
+                        _selectedRowNodes.Remove(parentNode.Data.RowNodeId);
+                    }
+                }
+            }
+
             if (rowNode.IsGroup)
             {
-                var tr = GridApi.GetTreeRowNodes();
-
                 var found = Find(tr, (n) => n.Data.RowNodeId == rowNode.RowNodeId);
 
                 var flat = FlattenTree(found, rowNode.IsSelected());
 
-                if (rowNode.IsSelected())
+                foreach (var item in flat)
                 {
-                    _selectedRowNodes.AddRange(flat);
-                }
-                else
-                {
-                    foreach (var item in flat)
+                    if (rowNode.IsSelected())
                     {
-                        _selectedRowNodes.Remove(item);
+                        _selectedRowNodes.TryAdd(item.RowNodeId, item);
+                    }
+                    else
+                    {
+                        _selectedRowNodes.Remove(item.RowNodeId);
                     }
                 }
+
+                HandleParentNode(rowNode.RowNodeId, rowNode.IsSelected());
             }
             else
             {
                 if (rowNode.IsSelected())
                 {
-                    _selectedRowNodes.Add(rowNode);
+                    _selectedRowNodes.TryAdd(rowNode.RowNodeId, rowNode);
                 }
                 else
                 {
-                    _selectedRowNodes.Remove(rowNode);
+                    _selectedRowNodes.Remove(rowNode.RowNodeId);
                 }
+
+                HandleParentNode(rowNode.RowNodeId, rowNode.IsSelected());
             }
         }
         else
         {
             if (_previousSelectedRowNode != null)
             {
-                _selectedRowNodes.Remove(_previousSelectedRowNode);
+                _selectedRowNodes.Remove(_previousSelectedRowNode.RowNodeId);
             }
 
-            _selectedRowNodes.Add(rowNode);
+            _selectedRowNodes.TryAdd(rowNode.RowNodeId, rowNode);
         }
     }
+
 
     private TreeRowNode<TItem> Find(TreeRowNode<TItem> node, Func<TreeRowNode<TItem>, bool> predicate)
     {
@@ -270,5 +295,38 @@
     private void MouseOver(long rowNodeId)
     {
         OnMouseOver.InvokeAsync(rowNodeId);
+    }
+
+    private bool AreAllChildrenInDesiredState(TreeRowNode<TItem> parentNode, bool desiredState)
+    {
+        foreach (var child in parentNode.Children)
+        {
+            if (child.Data != null && child.Data.IsSelected() != desiredState)
+            {
+                return false;
+            }
+            if (!AreAllChildrenInDesiredState(child, desiredState))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private TreeRowNode<TItem> FindParent(TreeRowNode<TItem> currentNode, long childRowNodeId)
+    {
+        foreach (var child in currentNode.Children)
+        {
+            if (child.Data != null && child.Data.RowNodeId == childRowNodeId)
+            {
+                return currentNode;
+            }
+            var foundParent = FindParent(child, childRowNodeId);
+            if (foundParent != null)
+            {
+                return foundParent;
+            }
+        }
+        return null;
     }
 }

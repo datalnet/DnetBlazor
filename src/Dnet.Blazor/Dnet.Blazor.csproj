@@ -10,14 +10,13 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>2.1.8</PackageVersion>
+		<PackageVersion>2.1.9</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Added Update method to the tree component for refreshing the tree when needed.
-			- Improved layout for tree nodes without children by ensuring proper spacing and alignment.
-			- Fixed the issue where OnSelectionChange event was only firing for nodes without parents, now it triggers for all nodes.
+			- The performance of row selection has been improved.
+			- The bug where the parent was not selected when all child rows were selected, and the parent was not deselected when all child rows were deselected, has been fixed.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
