@@ -36,7 +36,6 @@
 	@if (Node.Children != null && Node.Children.Count > 0 && Node.IsExpanded())
 	{
 		<div class="dnet-tree-node-outlet @OpenCssClass">
-
 			<ul>
 				@foreach (var treeNodeModel in Node.Children)
 				{
@@ -51,7 +50,6 @@
 					</DnetTreeNode>
 				}
 			</ul>
-
 		</div>
 	}
 </li>

@@ -128,6 +128,68 @@
             </DnetSelect>
         </EditForm>
     </div>
+    <div class="dnet-m-l-30 dnet-m-t-30" style="width: 350px;">
+        <div class="dnet-m-b-10"><span style="color: red;">New!!!. Include all the functionalities of DnetSelect.</span></div>
+        <div class="dnet-m-b-10"><span style="color: red;">Value can be now string or number</span></div>
+        <div class="dnet-m-b-10">Generic select number key</div>
+        <EditForm EditContext="@_editContext1" style="display: flex;flex-direction:column">
+            <DataAnnotationsValidator />
+            <DnetGenericSelect TValue="int"
+                              @bind-Value="_right1.ApiResourceId"
+                               Items="_apiResources"
+                               TItem="ApiResourceDto"
+                               DisplayValueConverter="(value) => (value.Name)"
+                               ValueConverter="(value) => (value.ApiResourceId)"
+                               OnItemSelected="ApiResource1ItemSelected"
+                               PlaceHolder="Api Resource"
+                               Label="Api Resource"
+                               Appearance="Appearance.Fill">
+                <ErrorContent>
+                    <ValidationMessage For="@(() => _right1.ApiResourceId)" />
+                </ErrorContent>
+            </DnetGenericSelect>
+        </EditForm>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-10" style="width: 350px;">
+        <div class="dnet-m-b-10">Generic select string key</div>
+        <EditForm EditContext="@_editContext2" style="display: flex;flex-direction:column">
+            <DataAnnotationsValidator />
+            <DnetGenericSelect TValue="string"
+                               @bind-Value="_right2.ApiResourceName"
+                               Items="_apiResources"
+                               TItem="ApiResourceDto"
+                               DisplayValueConverter="(value) => (value.Name)"
+                               ValueConverter="(value) => (value.Name)"
+                               OnItemSelected="ApiResource1ItemSelected"
+                               PlaceHolder="Api Resource"
+                               Label="Api Resource"
+                               Appearance="Appearance.Fill">
+                <ErrorContent>
+                    <ValidationMessage For="@(() => _right2.ApiResourceName)" />
+                </ErrorContent>
+            </DnetGenericSelect>
+        </EditForm>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-10" style="width: 350px;">
+        <div class="dnet-m-b-10">Generic select multiselect</div>
+        <EditForm EditContext="@_editContext3" style="display: flex;flex-direction:column">
+            <DataAnnotationsValidator />
+            <DnetGenericSelect TValue="string"
+                               @bind-Value="person.Name"
+                               Items="_items"
+                               TItem="Person"
+                               DisplayValueConverter="(value) => (value.Name)"
+                               OnSelectionChanged="SelectionChanged"
+                               PlaceHolder="Name"
+                               Label="Name"
+                               Appearance="_appearance"
+                               MultiSelect="true">
+                <ErrorContent>
+                    <ValidationMessage For="@(() => person.Name)" />
+                </ErrorContent>
+            </DnetGenericSelect>
+        </EditForm>
+    </div>
 </div>
 
 
@@ -139,13 +201,25 @@
 
     private Person _formData1 = new();
 
+    private Person person = new();
+
     private EditContext? _editContext;
+
+    private EditContext? _editContext1;
+
+    private EditContext? _editContext2;
+
+    private EditContext? _editContext3;
 
     private bool _formInvalid = true;
 
     private ValidationMessageStore? messageStore;
 
     private RightDto _right { get; set; } = new();
+
+    private RightDto _right1 { get; set; } = new();
+
+    private RightDto _right2 { get; set; } = new();
 
     private List<ApiResourceDto> _apiResources = new();
 
@@ -168,12 +242,12 @@
         {
             new()
             {
-                Id = 1,
+                ApiResourceId = 1,
                 Name = "APi_1"
             },
              new()
             {
-                Id = 2,
+                ApiResourceId = 2,
                 Name = "APi_2"
             }
         };
@@ -207,19 +281,37 @@
         };
 
         _editContext = new EditContext(_right);
-
-        _editContext.OnFieldChanged += (data, eventArgs) =>
-        {
-            _formInvalid = !_editContext.Validate();
-            StateHasChanged();
-        };
-
         _editContext.OnValidationRequested += (data, eventArgs) =>
         {
             messageStore?.Clear();
 
             StateHasChanged();
         };
+
+        _right1.ApiResourceId = 2;
+        _editContext1 = new EditContext(_right1);
+        _editContext1.OnValidationRequested += (data, eventArgs) =>
+        {
+            messageStore?.Clear();
+
+            StateHasChanged();
+        };
+
+        _editContext2 = new EditContext(_right2);
+        _editContext2.OnValidationRequested += (data, eventArgs) =>
+        {
+            messageStore?.Clear();
+
+            StateHasChanged();
+        };
+
+        _editContext3 = new EditContext(person);
+        _editContext3.OnValidationRequested += (data, eventArgs) =>
+       {
+           messageStore?.Clear();
+
+           StateHasChanged();
+       };
     }
 
     private async Task<List<Person>> GetPersons()
@@ -245,18 +337,33 @@
 
     private void ApiResourceItemSelected(ApiResourceDto item)
     {
-        _right.ApiResourceId = item.Id;
+        _right.ApiResourceName = item.Name;
 
         _apiResourceObjects = new();
 
-        _apiResourceObjects = _apiResourceObjectsFromDb.Where(p => p.ApiResourceId == item.Id).Select(p => p).ToList();
+        _apiResourceObjects = _apiResourceObjectsFromDb.Where(p => p.ApiResourceId == item.ApiResourceId).Select(p => p).ToList();
 
         _apiResourceObjectReference.RefreshData(_apiResourceObjects);
+    }
+
+    private void ApiResource1ItemSelected(ApiResourceDto item)
+    {
+        _right1.ApiResourceId = item.ApiResourceId;
+    }
+
+    private void ApiResource2ItemSelected(ApiResourceDto item)
+    {
+        _right1.ApiResourceName = item.Name;
     }
 
     private void ApiResourceChangeHandler(string item)
     {
         _right.ApiResourceName = item;
+    }
+
+    private void ApiResourceGenChangeHandler(int item)
+    {
+        _right.ApiResourceId = item;
     }
 
     private void ApiResourceObjectItemSelected(ApiResourceObjectDto item)
@@ -271,7 +378,7 @@
 
     public class ApiResourceDto
     {
-        public int Id { get; set; }
+        public int ApiResourceId { get; set; }
 
         [Required]
         public string Name { get; set; }

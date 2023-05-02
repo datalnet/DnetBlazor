@@ -10,13 +10,14 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>2.1.9</PackageVersion>
+		<PackageVersion>2.2.1</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- The performance of row selection has been improved.
-			- The bug where the parent was not selected when all child rows were selected, and the parent was not deselected when all child rows were deselected, has been fixed.
+			- Fixed up . No data is displayed at tree start when the call is asynchronous..
+			- Fixed up. The tree items were not displayed well when the text was very long.
+			- New Component DnetGenericSelect. Value can be now string or number
 		</PackageReleaseNotes>
 	</PropertyGroup>
 

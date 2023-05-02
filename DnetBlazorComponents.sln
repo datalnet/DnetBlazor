@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dnet.App.Shared", "samples\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dnet.Blazor", "src\Dnet.Blazor\Dnet.Blazor.csproj", "{F2C68E12-C93A-4032-81DF-5F05330CF3F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dnet.App.KestrelServer", "samples\Dnet.App.KestrelServer\Dnet.App.KestrelServer.csproj", "{CB2CCA42-E5F3-4E7E-B037-30E4C89CFC7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dnet.App.KestrelServer", "samples\Dnet.App.KestrelServer\Dnet.App.KestrelServer.csproj", "{CB2CCA42-E5F3-4E7E-B037-30E4C89CFC7C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
