@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Components.Web
+﻿@using Microsoft.AspNetCore.Components.Forms;
+@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
 @using System.Diagnostics.CodeAnalysis
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
@@ -19,6 +20,8 @@
 			   PrefixContent="@PrefixContent"
                SufixContent="@SufixContent"
 			   HintContent="HintContent"
+			   IsRequired="@IsRequired"
+			   HasErrors="_hasErrors && EditContext.IsModified(FieldIdentifier)"
 			   ErrorContent="ErrorContent">
 	<textarea @ref="__inputReference "
 		   @attributes="AdditionalAttributes"
@@ -63,7 +66,12 @@
 
 	[DisallowNull] public ElementReference? __inputReference { get; protected set; }
 
+	[Parameter]
+	public bool IsRequired { get; set; }
+
 	private bool _hasFocus { get; set; }
+
+	private bool _hasErrors { get; set; }
 
 	private string _placeHolder { get; set; }
 
@@ -94,7 +102,14 @@
 		}
 		_placeHolder = string.Empty;
 
+		if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
 		StateHasChanged();
+	}
+
+	private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
+	{
+		if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 	}
 
 	protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)

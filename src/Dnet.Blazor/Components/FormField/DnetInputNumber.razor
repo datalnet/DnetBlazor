@@ -24,7 +24,8 @@
 			   SufixContent="@SufixContent"
 			   HintContent="HintContent"
 			   ErrorContent="ErrorContent"
-			   HasErrors="_hasErrors">
+			   IsRequired="@IsRequired"
+			   HasErrors="_hasErrors && EditContext.IsModified(FieldIdentifier)">
 	<input @ref="__inputReference "
 		   @attributes="AdditionalAttributes"
 		   step="_stepAttributeValue"
@@ -75,6 +76,10 @@
 
 	[DisallowNull]
 	public ElementReference? __inputReference { get; protected set; }
+
+	[Parameter]
+	public bool IsRequired { get; set; }
+
 
 	private bool _hasFocus { get; set; }
 

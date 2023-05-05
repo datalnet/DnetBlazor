@@ -7,7 +7,7 @@
 	<div>
 		<EditForm Model="@Person" style="display: flex;flex-direction:column">
 			<DataAnnotationsValidator />
-			<DnetInputText @bind-Value="Person.Name" PlaceHolder="Ex. John" Label="Name" Appearance="Appearance" type="text" Disabled="true">
+			<DnetInputText @bind-Value="Person.Name" PlaceHolder="Ex. John" Label="Name" Appearance="Appearance" type="text" Disabled="true" IsRequired="true">
 				<HintContent>Required field</HintContent>
 				<ErrorContent>
 					<ValidationMessage For="@(() => Person.Name)" />

@@ -10,14 +10,13 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>2.2.1</PackageVersion>
+		<PackageVersion>2.3.2</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Fixed up . No data is displayed at tree start when the call is asynchronous..
-			- Fixed up. The tree items were not displayed well when the text was very long.
-			- New Component DnetGenericSelect. Value can be now string or number
+			- Add marker for required field.
+			- Fix bug where CSS display is required on initial load and the field has not been modified yet.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 

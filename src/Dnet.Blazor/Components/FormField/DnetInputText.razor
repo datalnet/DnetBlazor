@@ -21,16 +21,17 @@
                SufixContent="@SufixContent"
                HintContent="HintContent"
                ErrorContent="ErrorContent"
-               HasErrors="_hasErrors">
+               HasErrors="_hasErrors && EditContext.IsModified(FieldIdentifier)"
+               IsRequired="@IsRequired">
     <input @ref="__inputReference "
            @attributes="AdditionalAttributes"
            class="@_inputTextClass"
            value="@BindConverter.FormatValue(CurrentValue)"
            @onchange="@((ChangeEventArgs __e) => CurrentValueAsString = __e.Value.ToString())"
-           @onfocus=@(() => Focus()) 
+           @onfocus=@(() => Focus())
            @onblur=@(() => Blur())
            placeholder="@_placeHolder"
-           disabled="@Disabled"/>
+           disabled="@Disabled" />
 </DnetFormField>
 
 
@@ -68,6 +69,9 @@
 
     [DisallowNull]
     public ElementReference? __inputReference { get; protected set; }
+
+    [Parameter]
+    public bool IsRequired { get; set; }
 
     private bool _hasFocus { get; set; }
 

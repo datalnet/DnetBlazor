@@ -21,6 +21,12 @@
                 <span class="mat-form-field-label-wrapper">
                     <label class="@_formFieldLabelClass">
                         <span class="mat-label">@Label</span>
+                        @if(IsRequired)
+                        {
+                            <span aria-hidden="true"
+                                  class="mat-mdc-form-field-required-marker mdc-floating-label--required">
+                            </span>
+                        }
                     </label>
                 </span>
             </div>
@@ -93,6 +99,9 @@
 
     [Parameter]
     public bool HasErrors { get; set; }
+
+    [Parameter]
+    public bool IsRequired { get; set; }
 
     [Parameter]
     public string PlaceHolder { get; set; }

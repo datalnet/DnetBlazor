@@ -31,7 +31,7 @@
                    PrefixContent="@PrefixContent"
                    HintContent="@HintContent"
                    ErrorContent="@ErrorContent"
-                   HasErrors="@_hasErrors"
+                   HasErrors="_hasErrors && EditContext.IsModified(FieldIdentifier)"
                    @ref="_formField">
         <div class="mat-select">
             <div @ref="_menuTrigger"
@@ -166,6 +166,9 @@
 
     [Parameter]
     public bool ConfirmButtons { get; set; }
+
+    [Parameter]
+    public bool IsRequired { get; set; }
 
 
     private ElementReference _menuTrigger;

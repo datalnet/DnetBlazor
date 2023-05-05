@@ -35,7 +35,8 @@
                HintContent="@HintContent"
                ErrorContent="@ErrorContent"
                ClearButtonContent="@_clearButtonContent"
-               HasErrors="@_hasErrors"
+               HasErrors="_hasErrors && EditContext.IsModified(FieldIdentifier)"
+               IsRequired="@IsRequired"
                @ref="_formField">
         <input @ref="_menuTrigger"
            @attributes="AdditionalAttributes"
@@ -208,6 +209,9 @@ else
 
     [Parameter]
     public bool OrderStartingBySearchedString { get; set; } = false;
+
+    [Parameter]
+    public bool IsRequired { get; set; }
 
     private string _oldValue;
 

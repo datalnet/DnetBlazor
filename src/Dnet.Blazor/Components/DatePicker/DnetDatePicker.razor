@@ -31,7 +31,8 @@
                PrefixContent="@PrefixContent"
                HintContent="@HintContent"
                ErrorContent="@ErrorContent"
-               HasErrors="@_hasErrors"
+               HasErrors="@(_hasErrors  && EditContext.IsModified(FieldIdentifier))"
+               IsRequired="@IsRequired"
                @ref="_formField">
         <ChildContent>
             <input value="@BindConverter.FormatValue(CurrentValue)"
@@ -109,6 +110,9 @@ else
 
     [Parameter]
     public ComponentTheme ComponentTheme { get; set; } = ComponentTheme.Material;
+
+    [Parameter]
+    public bool IsRequired { get; set; }
 
 
     private ElementReference _menuTrigger;

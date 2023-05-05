@@ -245,3 +245,9 @@ $default-infix-width: 180px !default;
     transition: none;
   }
 }
+
+.mdc-floating-label--required::after {
+    margin-left: 1px;
+    margin-right: 0px;
+    content: "*";
+}
