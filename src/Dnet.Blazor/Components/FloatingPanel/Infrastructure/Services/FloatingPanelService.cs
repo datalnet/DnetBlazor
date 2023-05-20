@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Enums;
+﻿using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Enums;
 using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Interfaces;
 using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Models;
 using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces;
@@ -110,16 +108,16 @@ namespace Dnet.Blazor.Components.FloatingPanel.Infrastructure.Services
                 GlobalPositionStrategy = globalPositionStrategy,
             };
 
-            var toast = new RenderFragment(x =>
+            var floatingPanel = new RenderFragment(x =>
             {
                 x.OpenComponent(0, typeof(DnetFloatingPanel));
                 x.AddAttribute(1, "ComponentType", componentType);
                 x.AddAttribute(2, "Parameters", parameters);
-                x.AddAttribute(2, "FloatingPanelClass", floatingPanelConfig.FloatingPanelClass);
+                x.AddAttribute(3, "FloatingPanelClass", floatingPanelConfig.FloatingPanelClass);
                 x.CloseComponent();
             });
 
-            var overlayReference = _overlayService.Attach(toast, overlayConfig);
+            var overlayReference = _overlayService.Attach(floatingPanel, overlayConfig);
 
             return overlayReference;
         }
