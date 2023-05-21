@@ -1,0 +1,506 @@
+﻿@using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Models
+@using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Services
+@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Enums
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Globalization;
+
+@inherits DnetInputBase<string>
+
+@implements IDisposable
+
+@inject IJSRuntime JSRuntime
+
+@inject IOverlayService OverlayService
+
+@if (ComponentTheme == ComponentTheme.Material)
+{
+    <DnetFormField CurrentValue="@CurrentValue"
+               Appearance="@Appearance"
+               PlaceHolder="@PlaceHolder"
+               FloatLabel="@FloatLabel"
+               HasFocus="@_hasFocus"
+               Disabled="@Disabled"
+               Label="@Label"
+               PrefixContent="@PrefixContent"
+               HintContent="@HintContent"
+               ErrorContent="@ErrorContent"
+               HasErrors="@(_hasErrors  && EditContext.IsModified(FieldIdentifier))"
+               IsRequired="@IsRequired"
+               @ref="_formField">
+        <ChildContent>
+            <div class="mat-select" @onclick="ToggleMenu">
+                <div @ref="_menuTrigger"
+                     class="mat-select-trigger">
+                    <div class="mat-select-value">
+                        @if (string.IsNullOrEmpty(CurrentValue) && !string.IsNullOrEmpty(_placeHolder))
+                        {
+                            <span class="mat-select-placeholder mat-select-min-line">@_placeHolder</span>
+                        }
+                        @if (!string.IsNullOrEmpty(CurrentValue))
+                        {
+                            <span class="mat-select-value-text">
+                                <span class="mat-select-min-line">@BindConverter.FormatValue(CurrentValue)</span>
+                            </span>
+                        }
+                    </div>
+                    <div class="mat-select-arrow-wrapper" @onclick="ToggleMenu">
+                        <span class="dnet-datepickerweek-icon dnet-datepickerweek-icon-default" unselectable="on"></span>
+                    </div>
+                </div>
+            </div>
+        </ChildContent>
+    </DnetFormField>
+}
+else
+{
+    <div class="mat-select" @onclick="ToggleMenu">
+        <div @ref="_menuTrigger"
+             class="mat-select-trigger">
+            <div class="mat-select-value">
+                @if (string.IsNullOrEmpty(CurrentValue) && !string.IsNullOrEmpty(_placeHolder))
+                {
+                    <span class="mat-select-placeholder mat-select-min-line">@_placeHolder</span>
+                }
+                @if (!string.IsNullOrEmpty(CurrentValue))
+                {
+                    <span class="mat-select-value-text">
+                        <span class="mat-select-min-line">@BindConverter.FormatValue(CurrentValue)</span>
+                    </span>
+                }
+            </div>
+            <div class="mat-select-arrow-wrapper">
+                <div class="mat-select-arrow"></div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public string Format { get; set; } = $"yyyy/MM/dd";
+
+    [Parameter]
+    public string PlaceHolder { get; set; } = "";
+
+    [Parameter]
+    public DateTime? MaxDayValue { get; set; }
+
+    [Parameter]
+    public DateTime? MinDayValue { get; set; }
+
+    [Parameter]
+    public DateTime? FirstDayToShow { get; set; }
+
+    [Parameter]
+    public Func<CalendarDay, bool> DatepickerFilter { get; set; }
+
+    [Parameter]
+    public EventCallback<List<CalendarDay>> OnWeekSelected { get; set; }
+
+    [Parameter]
+    public RenderFragment PrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment HintContent { get; set; }
+
+    [Parameter]
+    public RenderFragment ErrorContent { get; set; }
+
+    [Parameter]
+    public Appearance Appearance { get; set; } = Appearance.Fill;
+
+    [Parameter]
+    public FloatLabel FloatLabel { get; set; } = FloatLabel.AsUserTypes;
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public ComponentTheme ComponentTheme { get; set; } = ComponentTheme.Material;
+
+    [Parameter]
+    public bool IsRequired { get; set; }
+
+
+    private ElementReference _menuTrigger;
+
+    private bool _isOpen = false;
+
+    private OverlayReference _menuReference;
+
+    private DatePickerWeekService _datePickerService;
+
+    private CalendarDay _selectedDay = new();
+
+    private List<CalendarDay> _selectedDays = new();
+
+    private bool _hasFocus { get; set; }
+
+    private bool _hasErrors { get; set; }
+
+    private string _placeHolder { get; set; }
+
+    private DnetFormField _formField { get; set; } = new();
+
+    private string _inputTextClass =>
+        new CssBuilder("mat-input-element")
+            .AddClass("mat-form-field-autofill-control")
+            .AddClass("cdk-text-field-autofill-monitored")
+            .AddClass(CssClass)
+            .Build();
+
+
+    protected override void OnInitialized()
+    {
+        _datePickerService = new DatePickerWeekService();
+
+        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+        if (!string.IsNullOrEmpty(CurrentValue)) _hasFocus = true;
+
+        _datePickerService.OnDaySelected += DaySelected;
+
+        var selectedDay = DateTime.Now;
+
+        var days = GetMonthDaysWithFullWeeks(selectedDay.Year, selectedDay.Month);
+
+        _selectedDays = GetWeekDays(days.FirstOrDefault(p => p.IsToday), days);
+
+        CurrentValue = GetWeekInterval(_selectedDays);
+    }
+
+    protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+
+    private void ToggleMenu()
+    {
+        if (Disabled) return;
+
+        if (!_isOpen)
+        {
+            AttachMenu();
+            _isOpen = true;
+        }
+        else
+        {
+            DetachMenu();
+        }
+    }
+
+    private void AttachMenu()
+    {
+        var overlayOrigin = _formField.OverlayOrigin;
+
+        var positions = new List<ConnectedPosition>
+        {
+            new ConnectedPosition
+            {
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new ConnectedPosition
+            {
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Bottom
+            },
+            new ConnectedPosition
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new ConnectedPosition
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Bottom
+            }
+        };
+
+        if (ComponentTheme == ComponentTheme.Raw) overlayOrigin = _menuTrigger;
+
+        var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
+            .WithLockedPosition()
+            .WithViewportMargin(8)
+            .SetOrigin(overlayOrigin)
+            .WithFlexibleDimensions(false)
+            .WithPositions(positions);
+
+        var connectedPanelConfig = new OverlayConfig()
+            {
+                HasBackdrop = true,
+                HasTransparentBackdrop = true,
+                PositionStrategy = PositionStrategy.FlexibleConnectedTo,
+                FlexibleConnectedPositionStrategyBuilder = flexibleConnectedPositionStrategyBuilder,
+            };
+
+        if (!string.IsNullOrEmpty(CurrentValue) && _selectedDays.Any())
+        {
+            _selectedDay = _selectedDays.FirstOrDefault();
+        }
+        else
+        {
+            var selectedDay = DateTime.Now;
+            _selectedDay.Year = selectedDay.Year;
+            _selectedDay.Month = selectedDay.Month;
+            _selectedDay.DayNumber = !string.IsNullOrEmpty(CurrentValue) ? selectedDay.Day : -1;
+        }
+
+        var menuContent = new RenderFragment(x =>
+        {
+            x.OpenComponent(0, typeof(DnetDatePickerWeekPanel));
+            x.AddAttribute(1, "DatePickerService", _datePickerService);
+            x.AddAttribute(2, "SelectedDay", _selectedDay);
+            x.AddAttribute(3, "MaxDayValue", MaxDayValue);
+            x.AddAttribute(4, "MinDayValue", MinDayValue);
+            x.AddAttribute(5, "DatepickerFilter", DatepickerFilter);
+            x.AddAttribute(6, "FirstDayToShow", FirstDayToShow);
+            x.CloseComponent();
+        });
+
+        _menuReference = OverlayService.Attach(menuContent, connectedPanelConfig);
+
+        _menuReference.Close += CloseDialog;
+    }
+
+    private void DetachMenu()
+    {
+        _isOpen = false;
+
+        var result = new OverlayResult
+            {
+                OverlayReferenceId = _menuReference.GetOverlayReferenceId(),
+                CloseReason = CloseReason.Cancel
+            };
+
+        OverlayService.Detach(result);
+    }
+
+    void CloseDialog(OverlayResult overlayDataResult)
+    {
+        _isOpen = false;
+    }
+
+    private async void DaySelected(List<CalendarDay> days)
+    {
+        _selectedDays = days;
+
+        var value = GetWeekInterval(days);
+
+        CurrentValue = value;
+
+        _hasFocus = !string.IsNullOrEmpty(CurrentValue) ? true : false;
+
+        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+
+        await ValueChanged.InvokeAsync(value);
+
+        EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+        await OnWeekSelected.InvokeAsync(_selectedDays);
+
+        DetachMenu();
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _isOpen = false;
+
+        if (_menuReference != null) _menuReference.Close -= CloseDialog;
+
+        _datePickerService.OnDaySelected -= DaySelected;
+    }
+
+    private bool EvaluateMinMaxDates(CalendarDay day)
+    {
+        CalendarDay minCalendarDay = null;
+        CalendarDay maxCalendarDay = null;
+
+        if (MinDayValue != null) minCalendarDay = GetCalendarDay((DateTime)MinDayValue);
+
+        if (MaxDayValue != null) maxCalendarDay = GetCalendarDay((DateTime)MaxDayValue);
+
+        var minEvaluation = false;
+        var maxEvaluation = false;
+        var filterEvaluation = false;
+
+        if (minCalendarDay != null)
+            minEvaluation = (day.DayNumber < minCalendarDay.DayNumber && day.Year == minCalendarDay.Year && day.Month == minCalendarDay.Month) ||
+                            day.Year < minCalendarDay.Year ||
+                            (day.Month < minCalendarDay.Month && day.Year == minCalendarDay.Year);
+
+        if (maxCalendarDay != null)
+            maxEvaluation = (day.DayNumber > maxCalendarDay.DayNumber && day.Year == maxCalendarDay.Year && day.Month == maxCalendarDay.Month) ||
+                            day.Year > maxCalendarDay.Year ||
+                            (day.Month > maxCalendarDay.Month && day.Year == maxCalendarDay.Year);
+
+        if (DatepickerFilter != null)
+            filterEvaluation = DatepickerFilter(day);
+
+        var result = minEvaluation || maxEvaluation || filterEvaluation;
+
+        return result;
+    }
+
+    private CalendarDay GetCalendarDay(DateTime date)
+    {
+        var calendarDay = new CalendarDay
+            {
+                DayNumber = date.Day,
+                DayName = date.DayOfWeek.ToString(),
+                Year = date.Year,
+                Month = date.Month,
+                DayIndex = (int)date.DayOfWeek
+            };
+
+        return calendarDay;
+    }
+
+    private void Focus()
+    {
+        _hasFocus = true;
+        _placeHolder = PlaceHolder;
+        StateHasChanged();
+    }
+
+    private void Blur()
+    {
+        if (string.IsNullOrEmpty(CurrentValue))
+        {
+            _hasFocus = false;
+        }
+        _placeHolder = string.Empty;
+
+        StateHasChanged();
+    }
+
+    private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
+    {
+        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+    }
+
+    public List<CalendarDay> GetMonthDaysWithFullWeeks(int workingYear, int workingMonth)
+    {
+        var days = new List<CalendarDay>();
+
+        var firstDayOfMonth = new DateTime(workingYear, workingMonth, 1);
+        int dayIndex = 0;
+
+        var previousMonthDays = new List<CalendarDay>();
+        while (firstDayOfMonth.DayOfWeek != DayOfWeek.Monday)
+        {
+            firstDayOfMonth = firstDayOfMonth.AddDays(-1);
+            previousMonthDays.Add(CreateCalendarDay(firstDayOfMonth, dayIndex++));
+        }
+        previousMonthDays.Reverse();
+        days.AddRange(previousMonthDays);
+
+        var day = new DateTime(workingYear, workingMonth, 1);
+        while (day.Month == workingMonth)
+        {
+            days.Add(CreateCalendarDay(day, dayIndex++));
+            day = day.AddDays(1);
+        }
+
+        while (day.DayOfWeek != DayOfWeek.Sunday)
+        {
+            days.Add(CreateCalendarDay(day, dayIndex++));
+            day = day.AddDays(1);
+        }
+
+        days.Add(CreateCalendarDay(day, dayIndex));
+
+        while (days.Count < 42)
+        {
+            day = day.AddDays(1);
+            days.Add(CreateCalendarDay(day, dayIndex++));
+        }
+
+        return days;
+    }
+
+    private static CalendarDay CreateCalendarDay(DateTime date, int dayIndex)
+    {
+        var calendar = CultureInfo.CurrentCulture.Calendar;
+
+        return new CalendarDay
+            {
+                DayNumber = date.Day,
+                DayName = date.DayOfWeek.ToString(),
+                DayWeek = (int)date.DayOfWeek,
+                DayIndex = dayIndex,
+                IsToday = date.Date == DateTime.Today,
+                Year = date.Year,
+                Month = date.Month,
+                Date = date,
+                FormattedDate = date.ToString("yyyy-MM-dd"),
+                WeekOfYear = calendar.GetWeekOfYear(date, CalendarWeekRule.FirstDay, DayOfWeek.Monday)
+            };
+    }
+
+    public List<CalendarDay> GetWeekDays(CalendarDay selectedDay, List<CalendarDay> allDays)
+    {
+        var result = new List<CalendarDay>();
+        var selectedDate = selectedDay.Date;
+
+        while (selectedDate.DayOfWeek != DayOfWeek.Monday)
+        {
+            selectedDate = selectedDate.AddDays(-1);
+        }
+
+        while (selectedDate.DayOfWeek != DayOfWeek.Sunday)
+        {
+            result.Add(allDays.Find(d => d.Date.Date == selectedDate.Date));
+            selectedDate = selectedDate.AddDays(1);
+        }
+
+        result.Add(allDays.Find(d => d.Date.Date == selectedDate.Date));
+
+        return result;
+    }
+
+    public string GetWeekInterval(List<CalendarDay> selectedDays)
+    {
+        var selectedDate = selectedDays.FirstOrDefault().Date;
+
+        while (selectedDate.DayOfWeek != DayOfWeek.Monday)
+        {
+            selectedDate = selectedDate.AddDays(-1);
+        }
+
+        var startDay = selectedDays.Find(d => d.Date.Date == selectedDate.Date);
+
+        while (selectedDate.DayOfWeek != DayOfWeek.Sunday)
+        {
+            selectedDate = selectedDate.AddDays(1);
+        }
+
+        var endDay = selectedDays.Find(d => d.Date.Date == selectedDate.Date);
+
+        return $"{startDay.Date.Year} / {startDay.Date.ToString("MMMM dd")} - {endDay.Date.ToString("MMMM dd")}";
+    }
+}

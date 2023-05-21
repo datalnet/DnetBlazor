@@ -5,6 +5,8 @@
 @using Dnet.Blazor.Components.DatePicker.Infrastructure.Models
 @using Dnet.Blazor.Components.DatePicker
 @using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Models
+@using Dnet.Blazor.Components.DatePickerWeek
 
 <div class="container-fluid" style="padding-top: 10px;">
 	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
@@ -36,6 +38,29 @@
             <span>@_dateSelected</span>
         </div>
     </div>
+    <div class="dnet-m-l-30 dnet-m-t-30" style="width: 226px;flex-direction: column">
+        <EditForm Model="@_formData1">
+            <DataAnnotationsValidator />
+            <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
+                <DnetDatePickerWeek @bind-Value="_formData1.DepartureDay"
+                                    Disabled="false"
+                                    OnWeekSelected="DaySelectedWeek"
+                                    PlaceHolder="Current week"
+                                    Label="Current week"
+                                    Format="@_datepickerFormat"
+                                    FirstDayToShow="DateTime.Now"
+                                    DatepickerFilter="(p) => { return p.DayIndex == 0; }"
+                                    ComponentTheme="@Blazor.Infrastructure.Enums.ComponentTheme.Raw">
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _formData1.DepartureDay)" />
+                    </ErrorContent>
+                </DnetDatePickerWeek>
+            </div>
+        </EditForm>
+        <div>
+            <span>@_dateSelected</span>
+        </div>
+    </div>
 </div>
 
 
@@ -57,9 +82,14 @@
         _formData.FilterValue = item;
     }
 
-    private void DaySelected(CalendarDay selecteDay)
+    private void DaySelected(Blazor.Components.DatePicker.Infrastructure.Models.CalendarDay selecteDay)
     {
         _dateSelected = selecteDay.FormattedDate;
+    }
+
+    private void DaySelectedWeek(List<Blazor.Components.DatePickerWeek.Infrastructure.Models.CalendarDay> selecteDays)
+    {
+        var tt = selecteDays;
     }
 
     protected class FormData

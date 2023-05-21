@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace Dnet.Blazor.Components.DatePicker
+namespace Dnet.Blazor.Components.DatePickerWeek
 {
     /// <summary>
     /// A base class for form input components. This base class automatically

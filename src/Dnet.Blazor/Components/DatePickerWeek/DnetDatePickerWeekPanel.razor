@@ -1,0 +1,561 @@
+﻿@using System.Globalization
+@using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Enums
+@using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Models
+@using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Services
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="dnet-datepickerweek-content">
+    <div class="dnet-calendar" style="height: 290px; width: 226px;">
+        <div class="dnet-datepickerweekca-header">
+            <div class="dnet-datepickerweekca-controls">
+                <button type="button" class="dnet-datepickerweekca-period-button dnet-button" @onclick="ChangeView">
+                    <span class="dnet-button-wrapper">
+                        @switch (_activeView)
+                        {
+                            case 1:
+                                <span>@_workingMonthName @_workingYear</span>
+                                break;
+                            case 2:
+                                @_yearRange
+                                break;
+                            case 3:
+                                @_yearLabelInMonths
+                                break;
+                        }
+                    </span>
+                    <div class="dnet-datepickerweekca-arrow @(_activeView == 1 ? "dnet-datepickerweekca-arrow-up" : "dnet-datepickerweekca-arrow-down")"></div>
+                </button>
+                <div class="dnet-datepickerweekca-spacer"></div>
+                <button type="button" class="dnet-datepickerweekca-previous-button dnet-focus-indicator dnet-icon-button" @onclick="CalendarPrevious" disabled="@(_activeView == 3)">
+                    <span class="dnet-button-wrapper"></span>
+                    <div class="dnet-ripple dnet-button-ripple dnet-button-ripple-round"></div>
+                    <div class="dnet-button-focus-overlay"></div>
+                </button>
+                <button type="button" class="dnet-datepickerweekca-next-button dnet-focus-indicator dnet-icon-button" @onclick="CalendarNext" disabled="@(_activeView == 3)">
+                    <span class="dnet-button-wrapper"></span>
+                    <div class="dnet-ripple dnet-button-ripple dnet-button-ripple-round"></div>
+                    <div class="dnet-button-focus-overlay"></div>
+                </button>
+            </div>
+        </div>
+        @switch (_activeView)
+        {
+            case 1:
+                <div class="dnet-datepickerweekca-content">
+                    <div class="dnet-datepickerweekca-content-header">
+                        @foreach (var caption in _dayNameCaptionsLarge)
+                        {
+                            <div class="dnet-datepickerweekca-content-header-item">@caption</div>
+                        }
+                    </div>
+                    <div class="dnet-datepickerweekca-content-body">
+                        @foreach (var day in _days)
+                        {
+                            <div class="dnet-datepickerweekca-day"
+                     @onclick="(() => SelectDay(day))"
+                     @onmouseover="(() => hoveredWeek = day.WeekOfYear)"
+                     @onmouseout="(() => hoveredWeek = null)">
+                                <span class="dnet-datepickerweekca-day-content @(day.IsToday ? "dnet-datepickerweekca-day-today" : null)
+                                                   @(day.IsSelected ? "dnet-datepickerweekca-day-selected" : null)
+                                                   @(day.WeekOfYear == hoveredWeek ? "hovered" : null)">
+                                    @day.DayNumber
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+                break;
+            case 2:
+                <div class="dnet-datepickerweekca-content">
+                    <div class="dnet-datepickerweekca-content-body-year">
+                        @foreach (var year in _years)
+                        {
+                            <div class="dnet-datepickerweekca-year" @onclick="(() => SelectYear(year))">
+                                <span class="dnet-datepickerweekca-year-content @(year == _workingYear ? "dnet-datepickerweekca-year-today" : null)
+                                                                        @(year == _tempWorkingYear ? "dnet-datepickerweekca-year-selected" : null)
+                                                                        @(((_minCalendarDay != null && year < _minCalendarDay.Year) || (_maxCalendarDay != null && year > _maxCalendarDay.Year))  ? "disabled" : null)">
+                                    @year
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+                break;
+            case 3:
+                <div class="dnet-datepickerweekca-content">
+                    <div class="dnet-datepickerweekca-content-body-month">
+                        @foreach (var month in _months)
+                        {
+                            var key = month.Key;
+                            var value = month.Value;
+
+                            <div class="dnet-datepickerweekca-month" @onclick="(() => SelectMonth(key))">
+                                <span class="dnet-datepickerweekca-month-content @(EvaluateMinMaxMonths(key, _tempWorkingYear)  ? "disabled" : null)">@month.Value</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+                break;
+        }
+        <div class="dnet-datepickerweekca-header-footer">
+            <div class="dnet-datepickerweek-reset-button-wrapper" @onclick="ResetCalendar">
+                <div class="dnet-datepickerweek-reset-image-wrapper">
+                    <span class="dnet-datepickerweek-icon dnet-datepickerweek-reset-button" unselectable="on"></span>
+                </div>
+                <span class="dnet-datepickerweek-reset-test">Reset</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public DatePickerWeekService DatePickerService { get; set; }
+
+    [Parameter]
+    public CalendarDay SelectedDay { get; set; }
+
+    [Parameter]
+    public DateTime? MaxDayValue { get; set; }
+
+    [Parameter]
+    public DateTime? MinDayValue { get; set; }
+
+    [Parameter]
+    public DateTime? FirstDayToShow { get; set; }
+
+    [Parameter]
+    public Func<CalendarDay, bool> DatepickerFilter { get; set; }
+
+
+    public List<CalendarDay> _days { get; set; } = new List<CalendarDay>();
+
+    private int _dayColumnSpan = 0;
+
+    private List<string> _dayNameCaptionsShort = new List<string> { "M", "T", "W", "T", "F", "S", "S" };
+
+    private List<string> _dayNameCaptionsLarge = new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+
+    private int _workingYear { get; set; }
+
+    private int _tempWorkingYear { get; set; }
+
+    private int _workingMonth { get; set; }
+
+    private string _workingMonthName { get; set; }
+
+    private List<int> _years { get; set; }
+
+    private Dictionary<int, string> _months { get; set; }
+
+    private int _activeView { get; set; } = (int)ActiveViewType.Day;
+
+    private string _yearRange { get; set; }
+
+    private int _yearLabelInMonths { get; set; }
+
+    private CalendarDay _minCalendarDay { get; set; }
+
+    private CalendarDay _maxCalendarDay { get; set; }
+
+    private int? hoveredWeek { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        var today = FirstDayToShow ?? DateTime.Now;
+
+        if (MinDayValue != null) _minCalendarDay = GetCalendarDay((DateTime)MinDayValue);
+
+        if (MaxDayValue != null) _maxCalendarDay = GetCalendarDay((DateTime)MaxDayValue);
+
+        if (SelectedDay.DayNumber < 1)
+        {
+            _workingYear = today.Year;
+
+            _workingMonth = today.Month;
+        }
+        else
+        {
+            _workingYear = SelectedDay.Year;
+
+            _workingMonth = SelectedDay.Month;
+        }
+
+        var selectedDay = new CalendarDay();
+
+        GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
+
+        if (SelectedDay != null && SelectedDay.DayNumber > 0)
+        {
+            if (_days != null && _days.Any()) SelectWeekDays(SelectedDay);
+
+            selectedDay = SelectedDay;
+        }
+        else
+        {
+            selectedDay = _days.FirstOrDefault(p => p.IsToday);
+
+            if (_days != null && _days.Any()) SelectWeekDays(selectedDay);
+        }
+
+        SetYears(_workingYear);
+
+        SetMonths(_workingYear);
+
+        //var selectedDays = GetWeekDays(selectedDay, _days);
+
+        //DatePickerService.UpdateSelectedDay(selectedDays);
+    }
+
+    private void SelectDay(CalendarDay selectedDay)
+    {
+        if (EvaluateMinMaxDates(selectedDay)) return;
+
+        if (_days != null && _days.Any()) SelectWeekDays(_days.FirstOrDefault(p => p.IsToday));
+
+        var selectedDays = GetWeekDays(selectedDay, _days);
+
+        DatePickerService.UpdateSelectedDay(selectedDays);
+
+        StateHasChanged();
+    }
+
+    public void GetMonthDaysWithFullWeeks(int workingYear, int workingMonth)
+    {
+        _workingMonthName = new DateTime(workingYear, workingMonth, 1).ToString("MMM", CultureInfo.InvariantCulture).ToUpper();
+
+        _days = new List<CalendarDay>();
+        var firstDayOfMonth = new DateTime(workingYear, workingMonth, 1);
+        int dayIndex = 0;
+
+        var previousMonthDays = new List<CalendarDay>();
+        while (firstDayOfMonth.DayOfWeek != DayOfWeek.Monday)
+        {
+            firstDayOfMonth = firstDayOfMonth.AddDays(-1);
+            previousMonthDays.Add(CreateCalendarDay(firstDayOfMonth, dayIndex++));
+        }
+        previousMonthDays.Reverse();
+        _days.AddRange(previousMonthDays);
+
+        var day = new DateTime(workingYear, workingMonth, 1);
+        while (day.Month == workingMonth)
+        {
+            _days.Add(CreateCalendarDay(day, dayIndex++));
+            day = day.AddDays(1);
+        }
+
+        while (day.DayOfWeek != DayOfWeek.Sunday)
+        {
+            _days.Add(CreateCalendarDay(day, dayIndex++));
+            day = day.AddDays(1);
+        }
+
+        _days.Add(CreateCalendarDay(day, dayIndex));
+
+        while (_days.Count < 42)
+        {
+            day = day.AddDays(1);
+            _days.Add(CreateCalendarDay(day, dayIndex++));
+        }
+    }
+
+    public List<CalendarDay> GetWeekDays(CalendarDay selectedDay, List<CalendarDay> allDays)
+    {
+        var result = new List<CalendarDay>();
+        var selectedDate = selectedDay.Date;
+
+        while (selectedDate.DayOfWeek != DayOfWeek.Monday)
+        {
+            selectedDate = selectedDate.AddDays(-1);
+        }
+
+        while (selectedDate.DayOfWeek != DayOfWeek.Sunday)
+        {
+            result.Add(allDays.Find(d => d.Date.Date == selectedDate.Date));
+            selectedDate = selectedDate.AddDays(1);
+        }
+
+        result.Add(allDays.Find(d => d.Date.Date == selectedDate.Date));
+
+        return result;
+    }
+
+    public void SelectWeekDays(CalendarDay selectedDay)
+    {
+        if (selectedDay == null) return;
+
+        var selectedDate = selectedDay.Date;
+
+        while (selectedDate.DayOfWeek != DayOfWeek.Monday)
+        {
+            selectedDate = selectedDate.AddDays(-1);
+        }
+
+        while (selectedDate.DayOfWeek != DayOfWeek.Sunday)
+        {
+            _days.Find(d => d.Date.Date == selectedDate.Date).IsSelected = true;
+            selectedDate = selectedDate.AddDays(1);
+        }
+
+        _days.Find(d => d.Date.Date == selectedDate.Date).IsSelected = true;
+    }
+
+    public string GetWeekInterval(CalendarDay selectedDay, List<CalendarDay> allDays)
+    {
+        var selectedDate = selectedDay.Date;
+
+        while (selectedDate.DayOfWeek != DayOfWeek.Monday)
+        {
+            selectedDate = selectedDate.AddDays(-1);
+        }
+
+        var startDay = allDays.Find(d => d.Date.Date == selectedDate.Date);
+
+        while (selectedDate.DayOfWeek != DayOfWeek.Sunday)
+        {
+            selectedDate = selectedDate.AddDays(1);
+        }
+
+        var endDay = allDays.Find(d => d.Date.Date == selectedDate.Date);
+
+        return $"{startDay.Date.Year} {startDay.Date.ToString("MMMM dd")} - {endDay.Date.ToString("MMMM dd")}";
+    }
+
+    private static CalendarDay CreateCalendarDay(DateTime date, int dayIndex)
+    {
+        var calendar = CultureInfo.CurrentCulture.Calendar;
+
+        return new CalendarDay
+            {
+                DayNumber = date.Day,
+                DayName = date.DayOfWeek.ToString(),
+                DayWeek = (int)date.DayOfWeek,
+                DayIndex = dayIndex,
+                IsToday = date.Date == DateTime.Today,
+                Year = date.Year,
+                Month = date.Month,
+                Date = date,
+                FormattedDate = date.ToString("yyyy-MM-dd"),
+                WeekOfYear = calendar.GetWeekOfYear(date, CalendarWeekRule.FirstDay, DayOfWeek.Monday)
+            };
+    }
+
+    private void CalendarPrevious()
+    {
+        switch (_activeView)
+        {
+            case (int)ActiveViewType.Day:
+                var currenDaytime = new DateTime(_workingYear, _workingMonth, 1);
+
+                var previousDayTime = currenDaytime.AddMonths(-1);
+
+                _workingYear = previousDayTime.Year;
+
+                _workingMonth = previousDayTime.Month;
+
+                GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
+                break;
+
+            case (int)ActiveViewType.Year:
+                SetYears(_years.First() - 24);
+                break;
+
+            case (int)ActiveViewType.Month:
+                SetMonths(_workingYear);
+                break;
+        }
+
+        StateHasChanged();
+    }
+
+    private void CalendarNext()
+    {
+        switch (_activeView)
+        {
+            case (int)ActiveViewType.Day:
+                var currenDaytime = new DateTime(_workingYear, _workingMonth, 1);
+
+                var nextDayTime = currenDaytime.AddMonths(1);
+
+                _workingYear = nextDayTime.Year;
+
+                _workingMonth = nextDayTime.Month;
+
+                GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
+                break;
+
+            case (int)ActiveViewType.Year:
+                SetYears(_years.Last() + 1);
+                break;
+
+            case (int)ActiveViewType.Month:
+                SetMonths(_workingYear);
+                break;
+        }
+
+        StateHasChanged();
+    }
+
+    private void SetYears(int workingYear)
+    {
+        _years = new List<int> { workingYear };
+
+        for (var i = 1; i < 21; i++)
+        {
+            _years.Add(workingYear + i);
+        }
+
+        _yearRange = $"{_years.First()} - {_years.Last()}";
+    }
+
+    private void SelectYear(int yearSelected)
+    {
+        if ((_minCalendarDay != null && yearSelected < _minCalendarDay.Year) || (_maxCalendarDay != null && yearSelected > _maxCalendarDay.Year)) return;
+
+        _tempWorkingYear = yearSelected;
+
+        _activeView = (int)ActiveViewType.Month;
+
+        SetActiveView(_activeView);
+
+        StateHasChanged();
+    }
+
+    private void SetMonths(int workingYear)
+    {
+        var monthNames = new DateTime(workingYear).ToString("MMM", CultureInfo.InvariantCulture).ToUpper();
+
+        _months = new Dictionary<int, string>();
+
+        for (var i = 1; i <= 12; i++)
+        {
+            var month = new DateTime(workingYear, i, 1).ToString("MMM", CultureInfo.InvariantCulture).ToUpper();
+
+            _months.Add(i, month);
+        }
+
+        _yearLabelInMonths = workingYear;
+    }
+
+    private void SelectMonth(int monthNumber)
+    {
+        if (EvaluateMinMaxMonths(monthNumber, _tempWorkingYear)) return;
+
+        _activeView = (int)ActiveViewType.Day;
+
+        if (_tempWorkingYear > 0) _workingYear = _tempWorkingYear;
+
+        _workingMonth = monthNumber;
+
+        SetActiveView(_activeView);
+
+        StateHasChanged();
+    }
+
+    private void ChangeView()
+    {
+        if (_activeView == (int)ActiveViewType.Day)
+        {
+            _activeView = (int)ActiveViewType.Year;
+            SetActiveView(_activeView);
+            StateHasChanged();
+            return;
+        }
+
+        if (_activeView > (int)ActiveViewType.Day)
+        {
+            _activeView = _activeView - 1;
+
+            if (_activeView == (int)ActiveViewType.Day) _tempWorkingYear = 0;
+
+            SetActiveView(_activeView);
+            StateHasChanged();
+        }
+    }
+
+    private void SetActiveView(int activeView)
+    {
+        switch (_activeView)
+        {
+            case (int)ActiveViewType.Day:
+                GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
+                break;
+
+            case (int)ActiveViewType.Year:
+                SetYears(_workingYear);
+                break;
+
+            case (int)ActiveViewType.Month:
+                SetMonths(_tempWorkingYear);
+                break;
+        }
+    }
+
+    private void ResetCalendar()
+    {
+        GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
+
+        var selectedDay = _days.FirstOrDefault(p => p.IsToday);
+
+        if (_days != null && _days.Any()) SelectWeekDays(selectedDay);
+
+        var selectedDays = GetWeekDays(selectedDay, _days);
+
+        DatePickerService.UpdateSelectedDay(selectedDays);
+
+        StateHasChanged();
+    }
+
+    private CalendarDay GetCalendarDay(DateTime date)
+    {
+        var calendarDay = new CalendarDay
+            {
+                DayNumber = date.Day,
+                DayName = date.DayOfWeek.ToString(),
+                Year = date.Year,
+                Month = date.Month
+            };
+
+        return calendarDay;
+    }
+
+    private bool EvaluateMinMaxDates(CalendarDay day)
+    {
+
+        var minEvaluation = false;
+        var maxEvaluation = false;
+        var filterEvaluation = false;
+
+        if (_minCalendarDay != null)
+            minEvaluation = (day.DayNumber < _minCalendarDay.DayNumber && day.Year == _minCalendarDay.Year && day.Month == _minCalendarDay.Month) ||
+                                 day.Year < _minCalendarDay.Year ||
+                                (day.Month < _minCalendarDay.Month && day.Year == _minCalendarDay.Year);
+
+        if (_maxCalendarDay != null)
+            maxEvaluation = (day.DayNumber > _maxCalendarDay.DayNumber && day.Year == _maxCalendarDay.Year && day.Month == _maxCalendarDay.Month) ||
+                                 day.Year > _maxCalendarDay.Year ||
+                                (day.Month > _maxCalendarDay.Month && day.Year == _maxCalendarDay.Year);
+
+        if (DatepickerFilter != null)
+            filterEvaluation = DatepickerFilter(day);
+
+        return minEvaluation || maxEvaluation || filterEvaluation;
+    }
+
+    private bool EvaluateMinMaxMonths(int month, int year)
+    {
+        var minEvaluation = false;
+        var maxEvaluation = false;
+
+        if (_minCalendarDay != null)
+            minEvaluation = (month < _minCalendarDay.Month && year == _minCalendarDay.Year);
+
+        if (_maxCalendarDay != null)
+            maxEvaluation = (month > _maxCalendarDay.Month && year == _maxCalendarDay.Year);
+
+        return minEvaluation || maxEvaluation;
+    }
+}
