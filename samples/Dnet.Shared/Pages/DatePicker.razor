@@ -7,16 +7,18 @@
 @using Dnet.Blazor.Components.FormField
 @using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Models
 @using Dnet.Blazor.Components.DatePickerWeek
+@using Dnet.Blazor.Components.DatePickerWeekRaw.Infrastructure.Models
+@using Dnet.Blazor.Components.DatePickerWeekRaw
 
 <div class="container-fluid" style="padding-top: 10px;">
-	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
         <span class="dnet-m-r-10 dnet-app-comp-name">DatePicker</span>
     </div>
     <div class="dnet-m-l-30 dnet-m-t-30" style="width: 297px;flex-direction: column">
         <DnetInputText @bind-Value="_datepickerFormat" PlaceHolder="Date Format" Label="Date Format" type="text" Appearance="@_appearance">
         </DnetInputText>
         <EditForm Model="@_formData">
-            <DataAnnotationsValidator/>
+            <DataAnnotationsValidator />
             <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
                 <DnetDatePicker @bind-Value="@_formData1.DepartureDay"
                                 Disabled="false"
@@ -29,7 +31,7 @@
                                 FirstDayToShow="DateTime.Now"
                                 DatepickerFilter="(p) => { return p.DayIndex == 0; }">
                     <ErrorContent>
-                        <ValidationMessage For="@(() => _formData1.DepartureDay)"/>
+                        <ValidationMessage For="@(() => _formData1.DepartureDay)" />
                     </ErrorContent>
                 </DnetDatePicker>
             </div>
@@ -42,7 +44,7 @@
         <EditForm Model="@_formData1">
             <DataAnnotationsValidator />
             <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
-                <DnetDatePickerWeek @bind-Value="_formData1.DepartureDay"
+                <DnetDatePickerWeek @bind-Value="_formData.DepartureDay"
                                     Disabled="false"
                                     OnWeekSelected="DaySelectedWeek"
                                     PlaceHolder="Current week"
@@ -57,6 +59,14 @@
                 </DnetDatePickerWeek>
             </div>
         </EditForm>
+        <div>
+            <span>@_dateSelected</span>
+        </div>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-30" style="width: 226px;flex-direction: column">
+        <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
+            <DnetDatePickerWeekRaw></DnetDatePickerWeekRaw>
+        </div>
         <div>
             <span>@_dateSelected</span>
         </div>
