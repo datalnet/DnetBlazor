@@ -1,0 +1,560 @@
+﻿@using Dnet.Blazor.Components.Chips
+@using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Models;
+@using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Services;
+@using Dnet.Blazor.Components.Grid.Infrastructure.Entities;
+@using Dnet.Blazor.Components.List;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using System.Timers
+@using System.Diagnostics.CodeAnalysis
+@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Components.Select.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using System.Globalization;
+@using System.Reflection;
+@using System.Linq.Expressions;
+@using Dnet.Blazor.Infrastructure.Models.SearchModels;
+
+@implements IDisposable
+
+@typeparam TItem
+
+@inherits Dnet.Blazor.Infrastructure.Forms.DnetInputBase<string>
+
+@inject IOverlayService OverlayService
+
+<div @onclick=@(() => OpenMenu()) style="width:100%;cursor:pointer">
+    <DnetFormField CurrentValue="@_displayValueAsString"
+                   Appearance="@Appearance"
+                   PlaceHolder="@PlaceHolder"
+                   FloatLabel="@FloatLabel"
+                   HasFocus="@_hasFocus"
+                   Disabled="@Disabled"
+                   Label="@Label"
+                   PrefixContent="@PrefixContent"
+                   HintContent="@HintContent"
+                   ErrorContent="@ErrorContent"
+                   HasErrors="@_hasErrors"
+                   IsRequired="@IsRequired"
+    @ref="_formField">
+        <div class="mat-select">
+            <div @ref="_menuTrigger"
+                 class="mat-select-trigger" style="width: 100%">
+                <div class="mat-select-value">
+                    <div class="dnet-select-multi-value-wrapper">
+                        @foreach (var item in _transferredItems.RightAddedItems)
+                        {
+                            <span class="dnet-select-multi-value">@DisplayValueConverter(item) <span> - </span></span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </DnetFormField>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<SearchModel> OnSearch { get; set; }
+
+    [Parameter]
+    public EventCallback<SearchModel> OnSort { get; set; }
+
+    [Parameter]
+    public List<TItem> RightItems { get; set; }
+
+    [Parameter]
+    public List<TItem> LeftItems { get; set; }
+
+    [Parameter]
+    public EventCallback<TransferredItems<TItem>> OnSelectionChanged { get; set; }
+
+    [Parameter]
+    public Func<TItem, TItem, bool> IsSelectedFn { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ListItemContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemPrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemSufixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ChildContent { get; set; }
+
+    [Parameter]
+    public ListOptions<TItem> LeftListOptions { get; set; }
+
+    [Parameter]
+    public ListOptions<TItem> RightListOptions { get; set; }
+
+    [Parameter]
+    public List<TItem> SelectedItems { get; set; } = new();
+
+    [Parameter]
+    public RenderFragment PrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment SufixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment HintContent { get; set; }
+
+    [Parameter]
+    public RenderFragment ErrorContent { get; set; }
+
+    [Parameter]
+    public RenderFragment FormFieldChildContent { get; set; }
+
+    [Parameter]
+    public string Width { get; set; }
+
+    [Parameter]
+    public string Height { get; set; }
+
+    [Parameter]
+    public string MinWidth { get; set; }
+
+    [Parameter]
+    public string MinHeight { get; set; }
+
+    [Parameter]
+    public string MaxWidth { get; set; }
+
+    [Parameter]
+    public string MaxHeight { get; set; }
+
+    [Parameter]
+    public int ItemHeight { get; set; } = 40;
+
+    [Parameter]
+    public int DebounceTime { get; set; } = 250;
+
+    [Parameter]
+    public bool InputTextToUpper { get; set; }
+
+    [Parameter]
+    public bool ItemAutoSelection { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; } = "";
+
+    [Parameter]
+    public string Hint { get; set; }
+
+    [Parameter]
+    public Appearance Appearance { get; set; } = Appearance.Fill;
+
+    [Parameter]
+    public FloatLabel FloatLabel { get; set; } = FloatLabel.AsUserTypes;
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public bool DisabledClearButton { get; set; }
+
+    [Parameter]
+    public bool ConfirmButtons { get; set; }
+
+    [Parameter]
+    public bool IsRequired { get; set; }
+
+    [Parameter]
+    public string LeftText { get; set; }
+
+    [Parameter]
+    public string RightText { get; set; }
+
+    [Parameter]
+    public IEqualityComparer<TItem> EqualityComparer { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> DisplayValueConverter { get; set; }
+
+
+    private ElementReference _menuTrigger;
+
+    private bool _isOpen;
+
+    private bool _isClosing;
+
+    private OverlayReference _menuReference;
+
+    private FloatingDoubleListService<TItem> _floatingDoubleListService;
+
+    private bool _hasFocus { get; set; }
+
+    private bool _hasErrors { get; set; }
+
+    private string _placeHolder { get; set; }
+
+    private RenderFragment _clearButtonContent { get; set; }
+
+    private List<FloatingDoubleListRowNode<TItem>> _selectedFloatingDoubleListRowNodes { get; set; } = new();
+
+    private List<FloatingDoubleListRowNode<TItem>> _rowNodes { get; set; } = new();
+
+    private long _nextId { get; set; } = -1;
+
+    private DnetFormField _formField { get; set; } = new();
+
+    private bool _isInitialized { get; set; }
+
+    private List<TItem> _items { get; set; } = new();
+
+    private string _inputTextClass =>
+        new CssBuilder("mat-input-element")
+            .AddClass("mat-form-field-autofill-control")
+            .AddClass("cdk-text-field-autofill-monitored")
+            .AddClass(CssClass)
+            .Build();
+
+    private string? _displayValueAsString { get; set; } = null;
+
+    private bool _hasInitializedParameters;
+
+    private TransferredItems<TItem> _transferredItems { get; set; } = new();
+
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(_displayValueAsString)) _hasFocus = true;
+
+        EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+
+        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+        if (!DisabledClearButton) _clearButtonContent = CreateClearButtonContent();
+
+        _isInitialized = true;
+    }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        parameters.SetParameterProperties(this);
+
+        if (ListItemContent == null && RightListOptions.DisplayValueConverter == null)
+        {
+            throw new InvalidOperationException(
+                        $"{nameof(DnetList<TItem>)} You must supply a value for ComponentType or for DisplayValueConverter.");
+        }
+
+        if (ListItemContent == null && LeftListOptions.DisplayValueConverter == null)
+        {
+            throw new InvalidOperationException(
+                        $"{nameof(DnetList<TItem>)} You must supply a value for ComponentType or for DisplayValueConverter.");
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        _floatingDoubleListService = new FloatingDoubleListService<TItem>();
+
+        _floatingDoubleListService.OnSelectionChange += SelectionChanged;
+    }
+
+    public static PropertyInfo GetPropertyInfoFromExpression<TItem, TValue>(Expression<Func<TItem, TValue>> expression)
+    {
+        if (expression.Body is MemberExpression memberExpression && memberExpression.Member is PropertyInfo propertyInfo)
+        {
+            return propertyInfo;
+        }
+
+        throw new ArgumentException("The provided expression does not represent a simple property.");
+    }
+
+    public TItem FindItemByPropertyValue<TItem, TValue>(string propertyName, TValue value, List<TItem> items)
+    {
+        PropertyInfo propertyInfo = typeof(TItem).GetProperty(propertyName);
+
+        if (propertyInfo == null)
+        {
+            throw new ArgumentException($"The property '{propertyName}' does not exist in the type '{typeof(TItem).Name}'.");
+        }
+
+        if (propertyInfo.PropertyType != typeof(TValue))
+        {
+            throw new ArgumentException($"The type of the property '{propertyName}' does not match the type '{typeof(TValue).Name}'.");
+        }
+
+        var parameter = Expression.Parameter(typeof(TItem), "item");
+        var property = Expression.Property(parameter, propertyInfo);
+        var valueExpression = Expression.Constant(value, typeof(TValue));
+        var equalsExpression = Expression.Equal(property, valueExpression);
+
+        var lambda = Expression.Lambda<Func<TItem, bool>>(equalsExpression, parameter);
+
+        return items.FirstOrDefault(lambda.Compile());
+    }
+
+    private void BuildFloatingDoubleListRowNodes()
+    {
+        if (_items == null) return;
+
+        foreach (var data in _items)
+        {
+            var rowNode = new FloatingDoubleListRowNode<TItem>
+                {
+                    RowNodeId = GetId(),
+                    RowData = data,
+                    Show = true,
+                };
+
+            var isSelected = SelectedItems.Where(p => IsSelectedFn(p, data)).Select(p => p).FirstOrDefault() != null;
+
+            if (isSelected)
+            {
+                rowNode.Selected = true;
+                _selectedFloatingDoubleListRowNodes.Add(rowNode);
+            }
+
+            _hasFocus = _selectedFloatingDoubleListRowNodes.Any() ? true : false;
+
+            _rowNodes.Add(rowNode);
+        }
+    }
+
+    private RenderFragment CreateClearButtonContent()
+    {
+        var inputContent = new RenderFragment(x =>
+        {
+            x.OpenElement(4, "div");
+            x.AddAttribute(5, "class", "dnet-app-icon-wrapper");
+            x.AddAttribute(3, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, _ => ClearInput()));
+            x.OpenElement(6, "span");
+            x.AddAttribute(7, "class", "dnet-app-icon dnet-autoc-reset-button");
+            x.CloseElement();
+            x.CloseElement();
+        });
+
+        return inputContent;
+    }
+
+    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        result = InputTextToUpper ? value?.ToUpper() : value;
+        validationErrorMessage = null;
+        return true;
+    }
+
+    private void OpenMenu()
+    {
+        if (Disabled) return;
+
+        if (_isOpen) return;
+
+        AttachMenu();
+
+        _isOpen = true;
+    }
+
+    private void ClosenMenu(FocusEventArgs data)
+    {
+        if (_isOpen && _isClosing)
+        {
+            _isClosing = false;
+            DetachMenu();
+        }
+    }
+
+    private async void SelectionChanged(TransferredItems<TItem> transferredItems)
+    {
+        //_selectedFloatingDoubleListRowNodes = new();
+
+        //_selectedFloatingDoubleListRowNodes.AddRange(items);
+
+        //_hasFocus = _selectedFloatingDoubleListRowNodes.Any() ? true : false;
+
+        _transferredItems = transferredItems;
+
+        await OnSelectionChanged.InvokeAsync(transferredItems);
+
+        StateHasChanged();
+    }
+
+    private async void ClearInput()
+    {
+        CurrentValueAsString = null;
+
+        _displayValueAsString = null;
+
+        PrefixContent = null;
+        SufixContent = null;
+
+        EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+        if (EditContext != null) _hasErrors = (EditContext?.GetValidationMessages(FieldIdentifier)).Any();
+
+        _hasFocus = false;
+
+        await ValueChanged.InvokeAsync(Value);
+
+        DetachMenu();
+
+        StateHasChanged();
+    }
+
+    private void AttachMenu()
+    {
+        var positions = new List<ConnectedPosition>
+        {
+            new()
+            {
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Bottom
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Bottom
+            }
+        };
+
+        var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
+            .WithLockedPosition()
+            .WithViewportMargin(8)
+            .SetOrigin(_formField.OverlayOrigin)
+            .WithFlexibleDimensions(false)
+            .WithPositions(positions);
+
+        var connectedPanelConfig = new OverlayConfig
+            {
+                HasBackdrop = true,
+                HasTransparentBackdrop = true,
+                PositionStrategy = PositionStrategy.FlexibleConnectedTo,
+                FlexibleConnectedPositionStrategyBuilder = flexibleConnectedPositionStrategyBuilder,
+                MinWidth = MinWidth,
+                MaxWidth = MaxWidth,
+                MinHeight = MinHeight,
+                MaxHeight = MaxHeight,
+            };
+
+        var menuContent = new RenderFragment(x =>
+        {
+            x.OpenComponent(0, typeof(DnetFloatingDoubleListPanel<TItem>));
+            x.AddAttribute(1, "RightItems", RightItems);
+            x.AddAttribute(2, "LeftItems", LeftItems);
+            x.AddAttribute(3, "Width", Width ?? "100%");
+            x.AddAttribute(4, "Height", Height ?? "200px");
+            x.AddAttribute(4, "MinWidth", MinWidth);
+            x.AddAttribute(5, "MaxWidth", MaxWidth);
+            x.AddAttribute(6, "MinHeight", MinHeight);
+            x.AddAttribute(7, "MaxHeight", MaxHeight);
+            x.AddAttribute(8, "ItemHeight", ItemHeight);
+            x.AddAttribute(9, "FloatingDoubleListService", _floatingDoubleListService);
+            x.AddAttribute(10, "ItemPrefixContent", ItemPrefixContent);
+            x.AddAttribute(11, "ItemSufixContent", ItemSufixContent);
+            x.AddAttribute(12, "ChildContent", ChildContent);
+            x.AddAttribute(13, "LeftListOptions", LeftListOptions);
+            x.AddAttribute(14, "RightListOptions", RightListOptions);
+            x.AddAttribute(15, "LeftText", LeftText);
+            x.AddAttribute(16, "RightText", RightText);
+            x.AddAttribute(17, "EqualityComparer", EqualityComparer);
+            x.CloseComponent();
+        });
+
+        _menuReference = OverlayService.Attach(menuContent, connectedPanelConfig);
+
+        _menuReference.Close += CloseFilter;
+    }
+
+    private void DetachMenu()
+    {
+        if (_isOpen)
+        {
+            _isOpen = false;
+
+            var result = new OverlayResult
+                {
+                    OverlayReferenceId = _menuReference.GetOverlayReferenceId(),
+                    CloseReason = CloseReason.Cancel
+                };
+
+            OverlayService.Detach(result);
+        }
+    }
+
+    void CloseFilter(OverlayResult overlayDataResult)
+    {
+        _isOpen = false;
+    }
+
+    public void Dispose()
+    {
+        if (_menuReference != null) _menuReference.Close -= CloseFilter;
+    }
+
+    private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
+    {
+        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+    }
+
+    public void RefreshData(List<TItem> items)
+    {
+        _isInitialized = false;
+
+        CurrentValueAsString = null;
+
+        _displayValueAsString = null;
+
+        PrefixContent = null;
+        SufixContent = null;
+
+        EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+        if (EditContext != null) _hasErrors = (EditContext?.GetValidationMessages(FieldIdentifier)).Any();
+
+        _hasFocus = false;
+
+        _items = items;
+
+        _rowNodes = new();
+
+        _selectedFloatingDoubleListRowNodes = new();
+
+        BuildFloatingDoubleListRowNodes();
+
+        StateHasChanged();
+    }
+
+    private long GetId()
+    {
+        _nextId++;
+        return _nextId;
+    }
+}

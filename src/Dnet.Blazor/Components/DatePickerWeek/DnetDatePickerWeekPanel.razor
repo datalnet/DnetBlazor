@@ -162,6 +162,8 @@
 
     private int? hoveredWeek { get; set; }
 
+    private List<CalendarDay> _selectedDays { get; set; } = new();
+
 
     protected override void OnInitialized()
     {
@@ -190,35 +192,46 @@
 
         if (SelectedDay != null && SelectedDay.DayNumber > 0)
         {
-            if (_days != null && _days.Any()) SelectWeekDays(SelectedDay);
-
             selectedDay = SelectedDay;
+
+            if (_days != null && _days.Any())
+            {
+                SelectWeekDays(selectedDay);
+
+                _selectedDays = GetWeekDays(selectedDay, _days);
+            }
         }
         else
         {
             selectedDay = _days.FirstOrDefault(p => p.IsToday);
 
-            if (_days != null && _days.Any()) SelectWeekDays(selectedDay);
+            if (_days != null && _days.Any())
+            {
+                SelectWeekDays(selectedDay);
+
+                _selectedDays = GetWeekDays(selectedDay, _days);
+            }
         }
 
         SetYears(_workingYear);
 
         SetMonths(_workingYear);
-
-        //var selectedDays = GetWeekDays(selectedDay, _days);
-
-        //DatePickerService.UpdateSelectedDay(selectedDays);
     }
 
     private void SelectDay(CalendarDay selectedDay)
     {
         if (EvaluateMinMaxDates(selectedDay)) return;
 
-        if (_days != null && _days.Any()) SelectWeekDays(_days.FirstOrDefault(p => p.IsToday));
+        if (_days != null && _days.Any())
+        {
+            SelectWeekDays(_days.FirstOrDefault(p => p.IsToday));
 
-        var selectedDays = GetWeekDays(selectedDay, _days);
+            SelectWeekDays(selectedDay);
 
-        DatePickerService.UpdateSelectedDay(selectedDays);
+            _selectedDays = GetWeekDays(selectedDay, _days);
+        }
+
+        DatePickerService.UpdateSelectedDay(_selectedDays);
 
         StateHasChanged();
     }
@@ -356,7 +369,6 @@
 
                 _workingMonth = previousDayTime.Month;
 
-                GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
                 break;
 
             case (int)ActiveViewType.Year:
@@ -366,6 +378,14 @@
             case (int)ActiveViewType.Month:
                 SetMonths(_workingYear);
                 break;
+        }
+
+        GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
+
+        foreach (var item in _selectedDays)
+        {
+            var selectedDay = _days.Where(p => p.Year == item.Year && p.Month == item.Month && p.DayNumber == item.DayNumber).FirstOrDefault();
+            if (selectedDay != null) selectedDay.IsSelected = true;
         }
 
         StateHasChanged();
@@ -384,7 +404,6 @@
 
                 _workingMonth = nextDayTime.Month;
 
-                GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
                 break;
 
             case (int)ActiveViewType.Year:
@@ -394,6 +413,14 @@
             case (int)ActiveViewType.Month:
                 SetMonths(_workingYear);
                 break;
+        }
+
+        GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
+
+        foreach (var item in _selectedDays)
+        {
+            var selectedDay = _days.Where(p => p.Year == item.Year && p.Month == item.Month && p.DayNumber == item.DayNumber).FirstOrDefault();
+            if (selectedDay != null) selectedDay.IsSelected = true;
         }
 
         StateHasChanged();
@@ -481,7 +508,15 @@
         switch (_activeView)
         {
             case (int)ActiveViewType.Day:
+
                 GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
+
+                foreach (var item in _selectedDays)
+                {
+                    var selectedDay = _days.Where(p => p.Year == item.Year && p.Month == item.Month && p.DayNumber == item.DayNumber).FirstOrDefault();
+                    if (selectedDay != null) selectedDay.IsSelected = true;
+                }
+
                 break;
 
             case (int)ActiveViewType.Year:

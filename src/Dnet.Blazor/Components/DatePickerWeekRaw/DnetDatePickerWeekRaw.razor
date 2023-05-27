@@ -4,11 +4,11 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 
-<div class="dnet-datepickerweek-content">
+<div class="dnet-datepickerweek-raw-content">
     <div class="dnet-calendar" style="height: 290px; width: 226px;">
-        <div class="dnet-datepickerweekca-header">
-            <div class="dnet-datepickerweekca-controls">
-                <button type="button" class="dnet-datepickerweekca-period-button dnet-button" @onclick="ChangeView">
+        <div class="dnet-datepickerweekca-raw-header">
+            <div class="dnet-datepickerweekca-raw-controls">
+                <button type="button" class="dnet-datepickerweekca-raw-period-button dnet-button" @onclick="ChangeView">
                     <span class="dnet-button-wrapper">
                         @switch (_activeView)
                         {
@@ -23,15 +23,15 @@
                                 break;
                         }
                     </span>
-                    <div class="dnet-datepickerweekca-arrow @(_activeView == 1 ? "dnet-datepickerweekca-arrow-up" : "dnet-datepickerweekca-arrow-down")"></div>
+                    <div class="dnet-datepickerweekca-raw-arrow @(_activeView == 1 ? "dnet-datepickerweekca-raw-arrow-up" : "dnet-datepickerweekca-raw-arrow-down")"></div>
                 </button>
-                <div class="dnet-datepickerweekca-spacer"></div>
-                <button type="button" class="dnet-datepickerweekca-previous-button dnet-focus-indicator dnet-icon-button" @onclick="CalendarPrevious" disabled="@(_activeView == 3)">
+                <div class="dnet-datepickerweekca-raw-spacer"></div>
+                <button type="button" class="dnet-datepickerweekca-raw-previous-button dnet-focus-indicator dnet-icon-button" @onclick="CalendarPrevious" disabled="@(_activeView == 3)">
                     <span class="dnet-button-wrapper"></span>
                     <div class="dnet-ripple dnet-button-ripple dnet-button-ripple-round"></div>
                     <div class="dnet-button-focus-overlay"></div>
                 </button>
-                <button type="button" class="dnet-datepickerweekca-next-button dnet-focus-indicator dnet-icon-button" @onclick="CalendarNext" disabled="@(_activeView == 3)">
+                <button type="button" class="dnet-datepickerweekca-raw-next-button dnet-focus-indicator dnet-icon-button" @onclick="CalendarNext" disabled="@(_activeView == 3)">
                     <span class="dnet-button-wrapper"></span>
                     <div class="dnet-ripple dnet-button-ripple dnet-button-ripple-round"></div>
                     <div class="dnet-button-focus-overlay"></div>
@@ -41,22 +41,22 @@
         @switch (_activeView)
         {
             case 1:
-                <div class="dnet-datepickerweekca-content">
-                    <div class="dnet-datepickerweekca-content-header">
+                <div class="dnet-datepickerweekca-raw-content">
+                    <div class="dnet-datepickerweekca-raw-content-header">
                         @foreach (var caption in _dayNameCaptionsLarge)
                         {
-                            <div class="dnet-datepickerweekca-content-header-item">@caption</div>
+                            <div class="dnet-datepickerweekca-raw-content-header-item">@caption</div>
                         }
                     </div>
-                    <div class="dnet-datepickerweekca-content-body">
+                    <div class="dnet-datepickerweekca-raw-content-body">
                         @foreach (var day in _days)
                         {
-                            <div class="dnet-datepickerweekca-day"
+                            <div class="dnet-datepickerweekca-raw-day"
                      @onclick="(() => SelectDay(day))"
                      @onmouseover="(() => hoveredWeek = day.WeekOfYear)"
                      @onmouseout="(() => hoveredWeek = null)">
-                                <span class="dnet-datepickerweekca-day-content @(day.IsToday ? "dnet-datepickerweekca-day-today" : null)
-                                                   @(day.IsSelected ? "dnet-datepickerweekca-day-selected" : null)
+                                <span class="dnet-datepickerweekca-raw-day-content @(day.IsToday ? "dnet-datepickerweekca-raw-day-today" : null)
+                                                   @(day.IsSelected ? "dnet-datepickerweekca-raw-day-selected" : null)
                                                    @(day.WeekOfYear == hoveredWeek ? "hovered" : null)">
                                     @day.DayNumber
                                 </span>
@@ -66,13 +66,13 @@
                 </div>
                 break;
             case 2:
-                <div class="dnet-datepickerweekca-content">
-                    <div class="dnet-datepickerweekca-content-body-year">
+                <div class="dnet-datepickerweekca-raw-content">
+                    <div class="dnet-datepickerweekca-raw-content-body-year">
                         @foreach (var year in _years)
                         {
-                            <div class="dnet-datepickerweekca-year" @onclick="(() => SelectYear(year))">
-                                <span class="dnet-datepickerweekca-year-content @(year == _workingYear ? "dnet-datepickerweekca-year-today" : null)
-                                                                        @(year == _tempWorkingYear ? "dnet-datepickerweekca-year-selected" : null)
+                            <div class="dnet-datepickerweekca-raw-year" @onclick="(() => SelectYear(year))">
+                                <span class="dnet-datepickerweekca-raw-year-content @(year == _workingYear ? "dnet-datepickerweekca-raw-year-today" : null)
+                                                                        @(year == _tempWorkingYear ? "dnet-datepickerweekca-raw-year-selected" : null)
                                                                         @(((_minCalendarDay != null && year < _minCalendarDay.Year) || (_maxCalendarDay != null && year > _maxCalendarDay.Year))  ? "disabled" : null)">
                                     @year
                                 </span>
@@ -82,27 +82,27 @@
                 </div>
                 break;
             case 3:
-                <div class="dnet-datepickerweekca-content">
-                    <div class="dnet-datepickerweekca-content-body-month">
+                <div class="dnet-datepickerweekca-raw-content">
+                    <div class="dnet-datepickerweekca-raw-content-body-month">
                         @foreach (var month in _months)
                         {
                             var key = month.Key;
                             var value = month.Value;
 
-                            <div class="dnet-datepickerweekca-month" @onclick="(() => SelectMonth(key))">
-                                <span class="dnet-datepickerweekca-month-content">@month.Value</span>
+                            <div class="dnet-datepickerweekca-raw-month" @onclick="(() => SelectMonth(key))">
+                                <span class="dnet-datepickerweekca-raw-month-content">@month.Value</span>
                             </div>
                         }
                     </div>
                 </div>
                 break;
         }
-        <div class="dnet-datepickerweekca-header-footer">
-            <div class="dnet-datepickerweek-reset-button-wrapper" @onclick="ResetCalendar">
-                <div class="dnet-datepickerweek-reset-image-wrapper">
-                    <span class="dnet-datepickerweek-icon dnet-datepickerweek-reset-button" unselectable="on"></span>
+        <div class="dnet-datepickerweekca-raw-header-footer">
+            <div class="dnet-datepickerweek-raw-reset-button-wrapper" @onclick="ResetCalendar">
+                <div class="dnet-datepickerweek-raw-reset-image-wrapper">
+                    <span class="dnet-datepickerweek-raw-icon dnet-datepickerweek-raw-reset-button" unselectable="on"></span>
                 </div>
-                <span class="dnet-datepickerweek-reset-test">Reset</span>
+                <span class="dnet-datepickerweek-raw-reset-test">Reset</span>
             </div>
         </div>
     </div>
@@ -162,7 +162,12 @@
 
         selectedDay = _days.FirstOrDefault(p => p.IsToday);
 
-        if (_days != null && _days.Any()) SelectWeekDays(selectedDay);
+        if (_days != null && _days.Any()) {
+
+            SelectWeekDays(selectedDay);
+
+            _selectedDays = GetWeekDays(selectedDay, _days);
+        }
 
         SetYears(_workingYear);
 
