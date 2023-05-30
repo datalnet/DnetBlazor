@@ -12,6 +12,7 @@
 @using System.Net.Http
 @using System.Net.Http.Json
 @using Dnet.Blazor.Components.Select
+@using Dnet.Blazor.Infrastructure.Models.SearchModels;
 
 @inject HttpClient HttpClient
 @inject IHttpClientFactory ClientFactory
@@ -27,7 +28,7 @@
     <div class="dnet-m-l-30 dnet-m-t-30" style="width: 300px">
         <EditForm Model="@_formData1">
             <DataAnnotationsValidator />
-            <DnetFloatingDoubleList @bind-Value="_personNameList" 
+            <DnetFloatingDoubleList @bind-Value="_personNameList"
                                     TItem="Person"
                                     LeftItems="_leftItems"
                                     RightItems="_rightItems"
@@ -37,8 +38,14 @@
                                     LeftText="Contactos"
                                     OnSelectionChanged="SelectionChanged"
                                     EqualityComparer="new PersonEqualityComparer()"
-                                    DisplayValueConverter="(value) => value.Name">
-           </DnetFloatingDoubleList>
+                                    DisplayValueConverter="(value) => value.Name"
+                                    Label="Participantes"
+                                    SideForSelections="ListToShow.Right"
+                                    Height="250px"
+                                    OnSearchLeft="SearchLeft"
+                                    OnSearchRight="SearchRight"
+            @ref="_floatingDoubleListPerson">
+            </DnetFloatingDoubleList>
         </EditForm>
     </div>
 </div>
@@ -80,6 +87,8 @@
     private ListOptions<Person> _rightListOptions { get; set; } = new();
 
     private string _personNameList { get; set; }
+
+    private DnetFloatingDoubleList<Person> _floatingDoubleListPerson { get; set; }
 
 
     protected override void OnInitialized()
@@ -135,70 +144,6 @@
         _formData1.Value = item;
     }
 
-    private void LeftDrop(List<Person> selectedItems)
-    {
-        _rightSelectedItems = selectedItems;
-        RightToLeft();
-    }
-
-    private void RightDrop(List<Person> selectedItems)
-    {
-        _leftSelectedItems = selectedItems;
-        LeftToRight();
-    }
-
-    private void LeftToRight()
-    {
-        if (!_leftSelectedItems.Any()) return;
-
-        _rightItems.AddRange(_leftSelectedItems);
-
-        foreach (var item in _leftSelectedItems)
-        {
-            _leftItems.Remove(item);
-        }
-
-        _leftSelectedItems = new();
-
-        _leftAddedItems = _leftItems.Except(_leftBkItems, new PersonEqualityComparer()).ToList();
-
-        _leftRemovedItems = _leftBkItems.Except(_leftItems, new PersonEqualityComparer()).ToList();
-
-        _rightAddedItems = _rightItems.Except(_rightBkItems, new PersonEqualityComparer()).ToList();
-
-        _rightRemovedItems = _rightBkItems.Except(_rightItems, new PersonEqualityComparer()).ToList();
-
-        _rightComponent.SetRowData(_rightItems);
-
-        _leftComponent.SetRowData(_leftItems);
-    }
-
-    private void RightToLeft()
-    {
-        if (!_rightSelectedItems.Any()) return;
-
-        _leftItems.AddRange(_rightSelectedItems);
-
-        foreach (var item in _rightSelectedItems)
-        {
-            _rightItems.Remove(item);
-        }
-
-        _rightSelectedItems = new();
-
-        _leftAddedItems = _leftItems.Except(_leftBkItems, new PersonEqualityComparer()).ToList();
-
-        _leftRemovedItems = _leftBkItems.Except(_leftItems, new PersonEqualityComparer()).ToList();
-
-        _rightAddedItems = _rightItems.Except(_rightBkItems, new PersonEqualityComparer()).ToList();
-
-        _rightRemovedItems = _rightBkItems.Except(_rightItems, new PersonEqualityComparer()).ToList();
-
-        _rightComponent.SetRowData(_rightItems);
-
-        _leftComponent.SetRowData(_leftItems);
-    }
-
     private ListOptions<Person> GetListOptions()
     {
         return new ListOptions<Person>()
@@ -211,7 +156,7 @@
                 ItemSize = 40f,
                 MultiSelect = true,
                 DebounceTime = 250,
-                EnableServerSide = false,
+                EnableServerSide = true,
                 EnableSearching = true,
                 EnableSorting = false,
                 PageSize = 50,
@@ -219,12 +164,33 @@
                 CheckboxSelectionColumn = false,
                 ShowHeader = false,
                 ShowFooter = false,
+                ServerSideSearchColumns = new List<string>() { "Name" },
+                ServerSideSortColumn = "Name"
             };
     }
 
     private void SelectionChanged(TransferredItems<Person> transferredItems)
     {
         var tt = transferredItems;
+    }
+
+    private async Task SearchLeft(SearchModel searchModel)
+    {
+        var items = await GetPersons();
+
+        var paginatedItems = items.Where(p => p.Name.ToUpper().Contains(searchModel.AdvancedFilterModels.FirstOrDefault().Value.ToUpper()))
+                                  .Skip((searchModel.PaginationModel.CurrentPage - 1) * searchModel.PaginationModel.PageSize)
+                                  .Take(searchModel.PaginationModel.PageSize).ToList();
+
+        _floatingDoubleListPerson.RefreshDataLeft(paginatedItems);
+    }
+
+    private async Task SearchRight(SearchModel searchModel)
+    {
+        var items = await GetPersons();
+
+        var paginatedItems = items.Skip((searchModel.PaginationModel.CurrentPage - 1) * searchModel.PaginationModel.PageSize)
+            .Take(searchModel.PaginationModel.PageSize).ToList();
     }
 
     public class PersonEqualityComparer : IEqualityComparer<Person>

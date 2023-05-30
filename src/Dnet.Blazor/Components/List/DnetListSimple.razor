@@ -31,10 +31,10 @@
     }
     <div class="dnet-selection-list-wrapper"
          ondragover="event.preventDefault();"
-         @ondragstart="(dragEventArgs => HandleDragStart(dragEventArgs))"
-         @ondrop="(dragEventArgs => HandleDrop(dragEventArgs))"
-         @ondragenter="HandleDragEnter"
-         @ondragleave="HandleDragLeave">
+    @ondragstart="(dragEventArgs => HandleDragStart(dragEventArgs))"
+    @ondrop="(dragEventArgs => HandleDrop(dragEventArgs))"
+    @ondragenter="HandleDragEnter"
+    @ondragleave="HandleDragLeave">
         <div class="dnet-list-base">
             @if (ItemPrefixContent != null || ItemSufixContent != null || ListItemContent != null)
             {
@@ -108,14 +108,14 @@
             @if (ListOptions.EnablePagingination == true)
             {
                 <DnetPaginator @ref="_paginator"
-                       OnGoToFirstPage="GoToFirstPage"
-                       OnGoToPreviousPage="GoToPreviousPage"
-                       OnGoToNextPage="GoToNextPage"
-                       OnGoToLastPage="GoToLastPage"
-                       OnGoToSpecificPage="GoToSpecificPage"
-                       CurrentPage="_searchModel.PaginationModel.CurrentPage"
-                       PageSize="_searchModel.PaginationModel.PageSize"
-                       TotalItems="_searchModel.PaginationModel.ItemsCount">
+                               OnGoToFirstPage="GoToFirstPage"
+                               OnGoToPreviousPage="GoToPreviousPage"
+                               OnGoToNextPage="GoToNextPage"
+                               OnGoToLastPage="GoToLastPage"
+                               OnGoToSpecificPage="GoToSpecificPage"
+                               CurrentPage="_searchModel.PaginationModel.CurrentPage"
+                               PageSize="_searchModel.PaginationModel.PageSize"
+                               TotalItems="_searchModel.PaginationModel.ItemsCount">
                 </DnetPaginator>
             }
             else
@@ -250,14 +250,16 @@
                     BuildRowNodes();
 
                     _searchModel = new SearchModel
-                    {
-                        PaginationModel = new PaginationModel
                         {
-                            CurrentPage = 1,
-                            PageSize = ListOptions.PageSize,
-                            ItemsCount = _items.Count
-                        }
-                    };
+                            PaginationModel = new PaginationModel
+                            {
+                                CurrentPage = 1,
+                                PageSize = ListOptions.PageSize,
+                                ItemsCount = _items.Count
+                            },
+                            SortModel = new SortModel(),
+                            AdvancedFilterModels = new List<AdvancedFilterModel>()
+                        };
 
                     if (ListOptions.EnablePagingination && !ListOptions.EnableServerSide) AssignRangeRenderedRows();
 
@@ -280,11 +282,11 @@
         foreach (var data in _items)
         {
             var rowNode = new RowNode<TItem>
-            {
-                RowNodeId = GetId(),
-                RowData = data,
-                Show = true,
-            };
+                {
+                    RowNodeId = GetId(),
+                    RowData = data,
+                    Show = true,
+                };
 
             _rowNodes.Add(rowNode);
             _rowNodesBk.Add(rowNode);
@@ -461,16 +463,16 @@
                     for (var i = 0; i < ListOptions.ServerSideSearchColumns.Count; i++)
                     {
                         var advancedFilterModel = new AdvancedFilterModel
-                        {
-                            AdditionalOperator = FilterOperator.None,
-                            AdditionalValue = null,
-                            Column = ListOptions.ServerSideSearchColumns[i],
-                            Condition = FilterCondition.None,
-                            FilterLinkCondition = i == 0 ? FilterCondition.None : FilterCondition.Or,
-                            Operator = FilterOperator.Contains,
-                            Type = CellDataType.Text,
-                            Value = filter
-                        };
+                            {
+                                AdditionalOperator = FilterOperator.None,
+                                AdditionalValue = null,
+                                Column = ListOptions.ServerSideSearchColumns[i],
+                                Condition = FilterCondition.None,
+                                FilterLinkCondition = i == 0 ? FilterCondition.None : FilterCondition.Or,
+                                Operator = FilterOperator.Contains,
+                                Type = CellDataType.Text,
+                                Value = filter
+                            };
 
                         _searchModel.AdvancedFilterModels.Add(advancedFilterModel);
                     }
@@ -494,8 +496,7 @@
                     }
                 }
             }
-
-            catch (NullReferenceException)
+            catch (NullReferenceException ex)
             {
                 throw new NullReferenceException($"SearchValueConverter could not be Null");
             }
@@ -595,14 +596,14 @@
         if (ListOptions.EnablePagingination && !ListOptions.EnableServerSide)
         {
             _searchModel = new SearchModel
-            {
-                PaginationModel = new PaginationModel
                 {
-                    CurrentPage = _items.Count > 0 ? 1 : 0,
-                    ItemsCount = _items.Count,
-                    PageSize = ListOptions.PageSize
-                }
-            };
+                    PaginationModel = new PaginationModel
+                    {
+                        CurrentPage = _items.Count > 0 ? 1 : 0,
+                        ItemsCount = _items.Count,
+                        PageSize = ListOptions.PageSize
+                    }
+                };
 
             AssignRangeRenderedRows();
         }

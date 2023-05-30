@@ -1,0 +1,16 @@
+﻿.dnet-floating-doublelist-value-wrapper {
+    display: flex;
+    align-items: center;
+    overflow: auto;
+    flex-wrap: wrap;
+
+    span:last-child {
+        span {
+            display: none;
+        }
+    }
+}
+
+.dnet-select-multi-value {
+    margin-right: 5px;
+}

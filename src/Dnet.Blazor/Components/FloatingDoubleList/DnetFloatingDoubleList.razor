@@ -46,8 +46,8 @@
             <div @ref="_menuTrigger"
                  class="mat-select-trigger" style="width: 100%">
                 <div class="mat-select-value">
-                    <div class="dnet-select-multi-value-wrapper">
-                        @foreach (var item in _transferredItems.RightAddedItems)
+                    <div class="dnet-floating-doublelist-value-wrapper" style="height: @(InputItemHeight)px">
+                        @foreach (var item in _itemsToshow)
                         {
                             <span class="dnet-select-multi-value">@DisplayValueConverter(item) <span> - </span></span>
                         }
@@ -62,7 +62,10 @@
 @code {
 
     [Parameter]
-    public EventCallback<SearchModel> OnSearch { get; set; }
+    public EventCallback<SearchModel> OnSearchLeft { get; set; }
+
+    [Parameter]
+    public EventCallback<SearchModel> OnSearchRight { get; set; }
 
     [Parameter]
     public EventCallback<SearchModel> OnSort { get; set; }
@@ -75,9 +78,6 @@
 
     [Parameter]
     public EventCallback<TransferredItems<TItem>> OnSelectionChanged { get; set; }
-
-    [Parameter]
-    public Func<TItem, TItem, bool> IsSelectedFn { get; set; }
 
     [Parameter]
     public RenderFragment<TItem> ListItemContent { get; set; }
@@ -96,9 +96,6 @@
 
     [Parameter]
     public ListOptions<TItem> RightListOptions { get; set; }
-
-    [Parameter]
-    public List<TItem> SelectedItems { get; set; } = new();
 
     [Parameter]
     public RenderFragment PrefixContent { get; set; }
@@ -140,6 +137,9 @@
     public int DebounceTime { get; set; } = 250;
 
     [Parameter]
+    public int InputItemHeight { get; set; } = 35;
+
+    [Parameter]
     public bool InputTextToUpper { get; set; }
 
     [Parameter]
@@ -167,9 +167,6 @@
     public bool DisabledClearButton { get; set; }
 
     [Parameter]
-    public bool ConfirmButtons { get; set; }
-
-    [Parameter]
     public bool IsRequired { get; set; }
 
     [Parameter]
@@ -183,6 +180,9 @@
 
     [Parameter]
     public Func<TItem, string> DisplayValueConverter { get; set; }
+
+    [Parameter]
+    public ListToShow SideForSelections { get; set; }
 
 
     private ElementReference _menuTrigger;
@@ -202,10 +202,6 @@
     private string _placeHolder { get; set; }
 
     private RenderFragment _clearButtonContent { get; set; }
-
-    private List<FloatingDoubleListRowNode<TItem>> _selectedFloatingDoubleListRowNodes { get; set; } = new();
-
-    private List<FloatingDoubleListRowNode<TItem>> _rowNodes { get; set; } = new();
 
     private long _nextId { get; set; } = -1;
 
@@ -228,11 +224,11 @@
 
     private TransferredItems<TItem> _transferredItems { get; set; } = new();
 
+    private List<TItem> _itemsToshow { get; set; } = new();
+
 
     protected override void OnInitialized()
     {
-        if (!string.IsNullOrEmpty(_displayValueAsString)) _hasFocus = true;
-
         EditContext.OnFieldChanged += HandleOnValidationStateChanged;
 
         if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
@@ -261,6 +257,32 @@
         return base.SetParametersAsync(ParameterView.Empty);
     }
 
+    protected override void OnParametersSet()
+    {
+        if (RightItems != null && SideForSelections == ListToShow.Right)
+        {
+            if (_isInitialized && RightItems.Any())
+            {
+                _itemsToshow = RightItems;
+
+                _hasFocus = true;
+
+                _isInitialized = false;
+            }
+        } 
+        else if (LeftItems != null && SideForSelections == ListToShow.Left)
+        {
+            if (_isInitialized && LeftItems.Any())
+            {
+                _itemsToshow = LeftItems;
+
+                _hasFocus = true;
+
+                _isInitialized = false;
+            }
+        }
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         if (!firstRender) return;
@@ -268,67 +290,10 @@
         _floatingDoubleListService = new FloatingDoubleListService<TItem>();
 
         _floatingDoubleListService.OnSelectionChange += SelectionChanged;
-    }
 
-    public static PropertyInfo GetPropertyInfoFromExpression<TItem, TValue>(Expression<Func<TItem, TValue>> expression)
-    {
-        if (expression.Body is MemberExpression memberExpression && memberExpression.Member is PropertyInfo propertyInfo)
-        {
-            return propertyInfo;
-        }
+        _floatingDoubleListService.OnSearchLeft += SearchLeft;
 
-        throw new ArgumentException("The provided expression does not represent a simple property.");
-    }
-
-    public TItem FindItemByPropertyValue<TItem, TValue>(string propertyName, TValue value, List<TItem> items)
-    {
-        PropertyInfo propertyInfo = typeof(TItem).GetProperty(propertyName);
-
-        if (propertyInfo == null)
-        {
-            throw new ArgumentException($"The property '{propertyName}' does not exist in the type '{typeof(TItem).Name}'.");
-        }
-
-        if (propertyInfo.PropertyType != typeof(TValue))
-        {
-            throw new ArgumentException($"The type of the property '{propertyName}' does not match the type '{typeof(TValue).Name}'.");
-        }
-
-        var parameter = Expression.Parameter(typeof(TItem), "item");
-        var property = Expression.Property(parameter, propertyInfo);
-        var valueExpression = Expression.Constant(value, typeof(TValue));
-        var equalsExpression = Expression.Equal(property, valueExpression);
-
-        var lambda = Expression.Lambda<Func<TItem, bool>>(equalsExpression, parameter);
-
-        return items.FirstOrDefault(lambda.Compile());
-    }
-
-    private void BuildFloatingDoubleListRowNodes()
-    {
-        if (_items == null) return;
-
-        foreach (var data in _items)
-        {
-            var rowNode = new FloatingDoubleListRowNode<TItem>
-                {
-                    RowNodeId = GetId(),
-                    RowData = data,
-                    Show = true,
-                };
-
-            var isSelected = SelectedItems.Where(p => IsSelectedFn(p, data)).Select(p => p).FirstOrDefault() != null;
-
-            if (isSelected)
-            {
-                rowNode.Selected = true;
-                _selectedFloatingDoubleListRowNodes.Add(rowNode);
-            }
-
-            _hasFocus = _selectedFloatingDoubleListRowNodes.Any() ? true : false;
-
-            _rowNodes.Add(rowNode);
-        }
+        _floatingDoubleListService.OnSearchRight += SearchRight;
     }
 
     private RenderFragment CreateClearButtonContent()
@@ -376,13 +341,11 @@
 
     private async void SelectionChanged(TransferredItems<TItem> transferredItems)
     {
-        //_selectedFloatingDoubleListRowNodes = new();
+        var transfered = SideForSelections == ListToShow.Right ? transferredItems.RighItems : transferredItems.LeftItems;
 
-        //_selectedFloatingDoubleListRowNodes.AddRange(items);
+        _hasFocus = transfered.Any() ? true : false;
 
-        //_hasFocus = _selectedFloatingDoubleListRowNodes.Any() ? true : false;
-
-        _transferredItems = transferredItems;
+        _itemsToshow = transfered;
 
         await OnSelectionChanged.InvokeAsync(transferredItems);
 
@@ -469,8 +432,8 @@
             x.OpenComponent(0, typeof(DnetFloatingDoubleListPanel<TItem>));
             x.AddAttribute(1, "RightItems", RightItems);
             x.AddAttribute(2, "LeftItems", LeftItems);
-            x.AddAttribute(3, "Width", Width ?? "100%");
-            x.AddAttribute(4, "Height", Height ?? "200px");
+            x.AddAttribute(3, "Width", Width ?? "450px");
+            x.AddAttribute(4, "Height", Height ?? "250px");
             x.AddAttribute(4, "MinWidth", MinWidth);
             x.AddAttribute(5, "MaxWidth", MaxWidth);
             x.AddAttribute(6, "MinHeight", MinHeight);
@@ -514,6 +477,56 @@
         _isOpen = false;
     }
 
+    private async void SearchLeft(SearchModel searchModel)
+    {
+        await OnSearchLeft.InvokeAsync(searchModel);
+    }
+
+    private async void SearchRight(SearchModel searchModel)
+    {
+        await OnSearchRight.InvokeAsync(searchModel);
+    }
+
+    public void RefreshDataLeft(List<TItem> items)
+    {
+        _isInitialized = false;
+
+        if (SideForSelections == ListToShow.Right)
+        {
+
+            CurrentValue = null;
+
+            PrefixContent = null;
+            SufixContent = null;
+
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+            if (EditContext != null) _hasErrors = (EditContext?.GetValidationMessages(FieldIdentifier)).Any();
+        }
+
+        _floatingDoubleListService.RefreshDataLeft(items);
+    }
+
+    public void RefreshDataRight(List<TItem> items)
+    {
+        _isInitialized = false;
+
+        if (SideForSelections == ListToShow.Right)
+        {
+
+            CurrentValue = null;
+
+            PrefixContent = null;
+            SufixContent = null;
+
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+            if (EditContext != null) _hasErrors = (EditContext?.GetValidationMessages(FieldIdentifier)).Any();
+        }
+
+        _floatingDoubleListService.RefreshDataRight(items);
+    }
+
     public void Dispose()
     {
         if (_menuReference != null) _menuReference.Close -= CloseFilter;
@@ -522,39 +535,5 @@
     private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
     {
         if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
-    }
-
-    public void RefreshData(List<TItem> items)
-    {
-        _isInitialized = false;
-
-        CurrentValueAsString = null;
-
-        _displayValueAsString = null;
-
-        PrefixContent = null;
-        SufixContent = null;
-
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
-
-        if (EditContext != null) _hasErrors = (EditContext?.GetValidationMessages(FieldIdentifier)).Any();
-
-        _hasFocus = false;
-
-        _items = items;
-
-        _rowNodes = new();
-
-        _selectedFloatingDoubleListRowNodes = new();
-
-        BuildFloatingDoubleListRowNodes();
-
-        StateHasChanged();
-    }
-
-    private long GetId()
-    {
-        _nextId++;
-        return _nextId;
     }
 }

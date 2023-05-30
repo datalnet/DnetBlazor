@@ -3,6 +3,7 @@
 @using Dnet.Blazor.Components.FormField
 @using Dnet.Blazor.Components.List
 @using Dnet.Blazor.Components.Checkbox
+@using Dnet.Blazor.Infrastructure.Models.SearchModels;
 @using Microsoft.AspNetCore.Components.Web
 
 @typeparam TItem
@@ -10,9 +11,9 @@
 @inject HttpClient HttpClient
 
 <div class="dnet-connected-panel-container" style="display:flex;flex-direction:column;width:100%">
-    <div style="height:calc(100% - 140px); width: 550px">
+    <div style="height:calc(100% - 140px); width: @Width">
         <div style="display: grid; grid-template-columns: 1fr 5px 1fr; height: calc(100% - 0px);">
-            <div style="height: 250px">
+            <div style="height: @Height">
                 <DnetListSimple TItem="TItem"
                 @ref="_leftComponent"
                                 Items="_leftItems"
@@ -23,12 +24,13 @@
                                 ListItemContent="ListItemContent"
                                 ItemPrefixContent="ItemPrefixContent"
                                 ItemSufixContent="ItemSufixContent"
-                                HeaderText="@LeftText">
+                                HeaderText="@LeftText"
+                                OnSearch="SearchLeft">
                 </DnetListSimple>
             </div>
-            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 30px; height: 250px">
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 5px; height: @Height">
             </div>
-            <div style="height: 250px">
+            <div style="height: @Height">
                 <DnetListSimple TItem="TItem"
                 @ref="_rightComponent"
                                 Items="_rightItems"
@@ -39,7 +41,8 @@
                                 ListItemContent="ListItemContent"
                                 ItemPrefixContent="ItemPrefixContent"
                                 ItemSufixContent="ItemSufixContent"
-                                HeaderText="@RightText">
+                                HeaderText="@RightText"
+                                OnSearch="SearchRight">
                 </DnetListSimple>
             </div>
         </div>
@@ -48,7 +51,6 @@
 
 
 @code {
-
 
     [Parameter]
     public ListOptions<TItem> LeftListOptions { get; set; }
@@ -161,6 +163,15 @@
         _rightListOptions.ConnectedTo = "LeftContainer";
     }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        FloatingDoubleListService.OnRefreshDataRight += RefreshDataRight;
+
+        FloatingDoubleListService.OnRefreshDataLeft += RefreshDataLeft;
+    }
+
     private void LeftSelectionChanged(List<TItem> selectedItems)
     {
         _leftSelectedItems = selectedItems;
@@ -222,8 +233,10 @@
 
         var transferredItems = new TransferredItems<TItem>()
             {
+                RighItems = _rightItems,
                 RightAddedItems = _rightAddedItems,
                 RightRemovedItems = _rightRemovedItems,
+                LeftItems = _leftItems,
                 LeftAddedItems = _leftAddedItems,
                 LeftRemovedItems = _leftRemovedItems
             };
@@ -258,13 +271,47 @@
 
         var transferredItems = new TransferredItems<TItem>()
             {
+                RighItems = _rightItems,
                 RightAddedItems = _rightAddedItems,
                 RightRemovedItems = _rightRemovedItems,
+                LeftItems = _leftItems,
                 LeftAddedItems = _leftAddedItems,
                 LeftRemovedItems = _leftRemovedItems
             };
 
         FloatingDoubleListService.UpdateTransferredItems(transferredItems);
+    }
+
+    private void SearchLeft(SearchModel searchModel)
+    {
+        FloatingDoubleListService.SearchLeft(searchModel);
+    }
+
+    private void SearchRight(SearchModel searchModel)
+    {
+        FloatingDoubleListService.SearchRight(searchModel);
+    }
+
+    public void RefreshDataLeft(List<TItem> items)
+    {
+        _leftItems = items;
+
+        _leftBkItems = new List<TItem>(LeftItems);
+
+        _leftComponent.SetRowData(_leftItems);
+
+        StateHasChanged();
+    }
+
+    public void RefreshDataRight(List<TItem> items)
+    {
+        _rightItems = items;
+
+        _rightBkItems = new List<TItem>(RightItems);
+
+        _leftComponent.SetRowData(_rightItems);
+
+        StateHasChanged();
     }
 }
 
