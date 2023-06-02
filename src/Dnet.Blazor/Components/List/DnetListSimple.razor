@@ -1,0 +1,665 @@
+﻿@using Dnet.Blazor.Components.Checkbox
+@using Dnet.Blazor.Infrastructure.Models.SearchModels.FilterModels
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using System.Timers
+@using Dnet.Blazor.Components.Paginator
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using Dnet.Blazor.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Models.SearchModels;
+@using Dnet.Blazor.Components.FormField
+
+@inherits OwningComponentBase
+
+@implements IDisposable
+
+@inject IPaginator PaginatorService
+@inject DnetListDragAndDropService<TItem> DnetListDragAndDropService
+
+@typeparam TItem
+
+<div class="dnet-list-wrapper" style="border: none">
+    @if (ListOptions.EnableSearching)
+    {
+        <form class="dnet-list-form">
+            <div class="dnet-list-search dnet-p-r-10">
+                <DnetInputTextAhead @bind-Value="filter" PlaceHolder="@HeaderText" Label="@HeaderText" Appearance="Appearance.Standard" type="text" OnStopTyping="FilterData" FloatLabel="FloatLabel.Always">
+                </DnetInputTextAhead>
+            </div>
+        </form>
+    }
+    <div class="dnet-selection-list-wrapper"
+         ondragover="event.preventDefault();"
+    @ondragstart="(dragEventArgs => HandleDragStart(dragEventArgs))"
+    @ondrop="(dragEventArgs => HandleDrop(dragEventArgs))"
+    @ondragenter="HandleDragEnter"
+    @ondragleave="HandleDragLeave">
+        <div class="dnet-list-base">
+            @if (ItemPrefixContent != null || ItemSufixContent != null || ListItemContent != null)
+            {
+                <Virtualize Items="@_rowNodes" TItem="RowNode<TItem>" Context="item">
+                    <ItemContent>
+                        @{
+                            var draggable = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? "false" : "true";
+
+                            var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
+
+                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))" @onclick="(e => Transfer(item.RowData))">
+                                @if (ItemPrefixContent != null)
+                                {
+                                    <div class="dnet-list-item-prefix-content">
+                                        @ItemPrefixContent(item.RowData)
+                                    </div>
+                                }
+                                <div class="dnet-list-item-middle-content">
+                                    @if (ListItemContent != null)
+                                    {
+                                        @ListItemContent(item.RowData)
+                                        ;
+                                    }
+                                    else
+                                    {
+                                        <span class="dnet-list-item-content-text">
+                                            @ListOptions.DisplayValueConverter(item.RowData)
+                                        </span>
+                                    }
+                                </div>
+                                @if (ItemSufixContent != null)
+                                {
+                                    <div class="dnet-list-item-sufix-content">
+                                        @ItemSufixContent(item.RowData)
+                                    </div>
+                                }
+                                @if (ListOptions.CheckboxSelectionColumn && disabled == false)
+                                {
+                                    <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)" ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                                }
+                            </div>
+                        }
+                    </ItemContent>
+                </Virtualize>
+            }
+            else
+            {
+                <Virtualize Items="@_rowNodes" TItem="RowNode<TItem>" Context="item">
+                    @{
+                        var draggable = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? "false" : "true";
+
+                        var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
+
+                        <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @onclick="(e => Transfer(item.RowData))">
+                            <div class="dnet-list-item dnet-list-item-content">
+                                @ListOptions.DisplayValueConverter(item.RowData)
+                            </div>
+                            @if (ListOptions.CheckboxSelectionColumn && disabled == false)
+                            {
+                                <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)" ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                            }
+                        </div>
+                    }
+                </Virtualize>
+            }
+        </div>
+    </div>
+    @if (ListOptions.ShowFooter)
+    {
+        <div class="dnet-paginator-wrapper">
+            @if (ListOptions.EnablePagingination == true)
+            {
+                <DnetPaginator @ref="_paginator"
+                               OnGoToFirstPage="GoToFirstPage"
+                               OnGoToPreviousPage="GoToPreviousPage"
+                               OnGoToNextPage="GoToNextPage"
+                               OnGoToLastPage="GoToLastPage"
+                               OnGoToSpecificPage="GoToSpecificPage"
+                               CurrentPage="_searchModel.PaginationModel.CurrentPage"
+                               PageSize="_searchModel.PaginationModel.PageSize"
+                               TotalItems="_searchModel.PaginationModel.ItemsCount">
+                </DnetPaginator>
+            }
+            else
+            {
+                <div style="display: flex; justify-content: flex-end; width: 100%; padding: 15px 15px 15px 15px">
+                    <span style="font-size:.675rem">Count: @_rowNodes.Count</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<List<TItem>> OnSelectionChange { get; set; }
+
+    [Parameter]
+    public EventCallback<TItem> OnCheckboxClick { get; set; }
+
+    [Parameter]
+    public EventCallback<SearchModel> OnPaginationChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<SearchModel> OnSearch { get; set; }
+
+    [Parameter]
+    public EventCallback<SearchModel> OnSort { get; set; }
+
+    [Parameter]
+    public EventCallback OnDragStart { get; set; }
+
+    [Parameter]
+    public EventCallback<List<TItem>> OnDrop { get; set; }
+
+    [Parameter]
+    public EventCallback<TItem> OnTransfer { get; set; }
+
+    [Parameter]
+    public ICollection<TItem> Items { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ListItemContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemPrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemSufixContent { get; set; }
+
+    [Parameter]
+    public ListOptions<TItem> ListOptions { get; set; }
+
+    [Parameter]
+    public string HeaderText { get; set; }
+
+
+    private List<RowNode<TItem>> _rowNodes { get; set; } = new();
+
+    private List<RowNode<TItem>> _rowNodesBk { get; set; } = new();
+
+    private List<RowNode<TItem>> _selectedRowNodes = new();
+
+    private RowNode<TItem> _previousSelectedRowNode;
+
+    private RenderFragment<TItem> _itemContent { get; set; }
+
+    private long _nextId { get; set; } = -1;
+
+    private SortOrder SortStatus { get; set; } = SortOrder.None;
+
+    private string SortIconClass { get; set; }
+
+    private string filter { get; set; }
+
+    private Timer _debounceTimer;
+
+    private DnetPaginator _paginator { get; set; }
+
+    private SearchModel _searchModel { get; set; }
+
+    private bool _allNodesSelected { get; set; }
+
+    private bool _rowSelected { get; set; }
+
+    private bool _isInitialized { get; set; }
+
+    private List<TItem> _items { get; set; } = new();
+
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+
+        if (ListItemContent == null && ListOptions.DisplayValueConverter == null)
+        {
+            throw new InvalidOperationException(
+                        $"{nameof(DnetList<TItem>)} You must supply a value for ComponentType or for DisplayValueConverter.");
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _searchModel = new();
+
+        _searchModel.AdvancedFilterModels = new();
+
+        _searchModel.PaginationModel = new();
+
+        _searchModel.SortModel = new();
+
+        _debounceTimer = new Timer(250);
+
+        _debounceTimer.Elapsed += FilterDataDiscard;
+
+        _debounceTimer.AutoReset = false;
+
+        _isInitialized = true;
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Items != null)
+        {
+            if (_isInitialized && Items.Any())
+            {
+                if (!_items.Any())
+                {
+                    _items.AddRange(Items);
+
+                    BuildRowNodes();
+
+                    _searchModel = new SearchModel
+                        {
+                            PaginationModel = new PaginationModel
+                            {
+                                CurrentPage = 1,
+                                PageSize = ListOptions.PageSize,
+                                ItemsCount = _items.Count
+                            },
+                            SortModel = new SortModel(),
+                            AdvancedFilterModels = new List<AdvancedFilterModel>()
+                        };
+
+                    if (ListOptions.EnablePagingination && !ListOptions.EnableServerSide) AssignRangeRenderedRows();
+
+                    _isInitialized = false;
+                }
+            }
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                $"{GetType()} requires the '{nameof(Items)}'parameters to be specified " +
+                $"and non-null.");
+        }
+    }
+
+    private void BuildRowNodes()
+    {
+        if (_items == null) return;
+
+        foreach (var data in _items)
+        {
+            var rowNode = new RowNode<TItem>
+                {
+                    RowNodeId = GetId(),
+                    RowData = data,
+                    Show = true,
+                };
+
+            _rowNodes.Add(rowNode);
+            _rowNodesBk.Add(rowNode);
+        }
+
+        StateHasChanged();
+    }
+
+    private void AssignRangeRenderedRows()
+    {
+        if (_searchModel.PaginationModel.ItemsCount > 0)
+        {
+            var (startIndex, count) = PaginatorService.GetRangePage(_searchModel.PaginationModel.CurrentPage, _searchModel.PaginationModel.PageSize, _searchModel.PaginationModel.ItemsCount);
+
+            var pagingRowNodes = _rowNodesBk.GetRange(startIndex, count);
+
+            _rowNodes = pagingRowNodes;
+
+            StateHasChanged();
+        }
+    }
+
+    private string GetRowCssClasses(RowNode<TItem> rowNode)
+    {
+        var classes = new CssBuilder()
+            .AddClass("dnet-row-selected", when: rowNode.Selected)
+            .Build();
+
+        return classes;
+    }
+
+    private async void CheckboxClicked(RowNode<TItem> rowNode)
+    {
+        rowNode.Selected = !rowNode.Selected;
+
+        ManageSelections(rowNode);
+
+        await OnCheckboxClick.InvokeAsync(rowNode.RowData);
+
+        await OnSelectionChange.InvokeAsync(_selectedRowNodes.Select(p => p.RowData).ToList());
+    }
+
+    private void ManageSelections(RowNode<TItem> rowNode)
+    {
+        if (rowNode == null) return;
+
+        if (ListOptions.MultiSelect)
+        {
+            if (rowNode.Selected)
+            {
+                _selectedRowNodes.Add(rowNode);
+            }
+            else
+            {
+                _selectedRowNodes.Remove(rowNode);
+            }
+        }
+        else
+        {
+            if (_previousSelectedRowNode != null)
+            {
+                _selectedRowNodes.Remove(_previousSelectedRowNode);
+                _previousSelectedRowNode.Selected = false;
+            }
+
+            _selectedRowNodes.Add(rowNode);
+
+            _previousSelectedRowNode = rowNode;
+        }
+    }
+
+    private async void ChangeSelectAllNodes(bool value)
+    {
+        _allNodesSelected = value;
+
+        _selectedRowNodes = new();
+
+        foreach (var item in _rowNodes)
+        {
+            item.Selected = value;
+        }
+
+        _selectedRowNodes.AddRange(_rowNodes);
+
+        await OnSelectionChange.InvokeAsync(_selectedRowNodes.Select(p => p.RowData).ToList());
+    }
+
+    private async void Sort()
+    {
+
+        if (!ListOptions.EnableSorting) return;
+
+        UpdateOrder();
+
+        if (ListOptions.EnableServerSide)
+        {
+            _searchModel.PaginationModel.CurrentPage = 1;
+            _searchModel.SortModel.ColumnName = null;
+            _searchModel.SortModel.Order = SortStatus;
+
+            await OnSort.InvokeAsync(_searchModel);
+        }
+        else
+        {
+            var sortedRowNodes = SortTexts(_rowNodes);
+
+            _rowNodes = sortedRowNodes;
+
+            StateHasChanged();
+        }
+    }
+
+    private bool IsSortAscending()
+    {
+        return SortStatus == SortOrder.Ascending;
+    }
+
+    private bool IsSortDescending()
+    {
+        return SortStatus == SortOrder.Descending;
+    }
+
+    private bool IsSortNone()
+    {
+        return SortStatus == SortOrder.None;
+    }
+
+    private void UpdateOrder()
+    {
+        var sortStatus = SortStatus;
+
+        SortStatus = sortStatus switch
+        {
+            SortOrder.None => SortOrder.Ascending,
+            SortOrder.Ascending => SortOrder.Descending,
+            SortOrder.Descending => SortOrder.None,
+            _ => SortStatus
+        };
+    }
+
+    private int TextCellComparer(RowNode<TItem> a, RowNode<TItem> b)
+    {
+        var sortOrder = SortStatus == SortOrder.Descending ? -1 : 1;
+        return string.Compare(ListOptions.SortedData(a.RowData), ListOptions.SortedData(b.RowData), StringComparison.Ordinal) * sortOrder;
+    }
+
+    private List<RowNode<TItem>> SortTexts(List<RowNode<TItem>> nodes)
+    {
+        nodes.Sort(TextCellComparer);
+        return nodes;
+    }
+
+    public void FilterDataDiscard(Object source, ElapsedEventArgs e)
+    {
+        _ = FilterData();
+    }
+
+    private async Task FilterData()
+    {
+        await InvokeAsync(async () =>
+        {
+            try
+            {
+                if (ListOptions.EnableServerSide)
+                {
+                    _searchModel.PaginationModel.CurrentPage = 1;
+
+                    _searchModel.SortModel.ColumnName = ListOptions.ServerSideSortColumn;
+
+                    _searchModel.SortModel.Order = ListOptions.ServerSideSortOrder;
+
+                    _searchModel.AdvancedFilterModels = new List<AdvancedFilterModel>();
+
+                    for (var i = 0; i < ListOptions.ServerSideSearchColumns.Count; i++)
+                    {
+                        var advancedFilterModel = new AdvancedFilterModel
+                            {
+                                AdditionalOperator = FilterOperator.None,
+                                AdditionalValue = null,
+                                Column = ListOptions.ServerSideSearchColumns[i],
+                                Condition = FilterCondition.None,
+                                FilterLinkCondition = i == 0 ? FilterCondition.None : FilterCondition.Or,
+                                Operator = FilterOperator.Contains,
+                                Type = CellDataType.Text,
+                                Value = filter
+                            };
+
+                        _searchModel.AdvancedFilterModels.Add(advancedFilterModel);
+                    }
+
+                    await OnSearch.InvokeAsync(_searchModel);
+                }
+                else
+                {
+                    _rowNodes = new List<RowNode<TItem>>();
+
+                    var items = _rowNodesBk.Where(p => ListOptions.SearchValueConverter(p.RowData).ToUpper().Contains(filter.ToUpper())).ToList();
+
+                    if (SortStatus != SortOrder.None)
+                    {
+                        var sortedNodes = SortTexts(items);
+                        _rowNodes.AddRange(sortedNodes);
+                    }
+                    else
+                    {
+                        _rowNodes.AddRange(items);
+                    }
+                }
+            }
+            catch (NullReferenceException ex)
+            {
+                throw new NullReferenceException($"SearchValueConverter could not be Null");
+            }
+
+            StateHasChanged();
+        });
+    }
+
+    private void Filter(KeyboardEventArgs data)
+    {
+        if (!ListOptions.EnableSearching) return;
+
+        _debounceTimer.Stop();
+        _debounceTimer.Start();
+    }
+
+    private async void PaginationChanged(int currentPage)
+    {
+        _searchModel.PaginationModel.CurrentPage = currentPage;
+
+        if (ListOptions.EnableServerSide)
+        {
+            await OnPaginationChanged.InvokeAsync(_searchModel);
+        }
+        else
+        {
+            AssignRangeRenderedRows();
+        }
+    }
+
+    private void GoToFirstPage(int currentPage)
+    {
+        PaginationChanged(currentPage);
+        ManageSelectedNodes();
+    }
+
+    private void GoToPreviousPage(int currentPage)
+    {
+        PaginationChanged(currentPage);
+        ManageSelectedNodes();
+    }
+
+    private void GoToNextPage(int currentPage)
+    {
+        PaginationChanged(currentPage);
+        ManageSelectedNodes();
+    }
+
+    private void GoToLastPage(int currentPage)
+    {
+        PaginationChanged(currentPage);
+        ManageSelectedNodes();
+    }
+
+    private void GoToSpecificPage(int specificPage)
+    {
+        PaginationChanged(specificPage);
+        ManageSelectedNodes();
+    }
+
+    private void ManageSelectedNodes()
+    {
+        var selectedNodes = _rowNodes.Where(p => p.Selected == true).Count();
+
+        if (selectedNodes == _rowNodes.Count() && selectedNodes != 0)
+        {
+            _allNodesSelected = true;
+        }
+        else
+        {
+            _allNodesSelected = false;
+        }
+    }
+
+    public void SetRowData(List<TItem> items, int? totalItems = null, int? currentPage = null)
+    {
+        _allNodesSelected = false;
+
+        _nextId = 0;
+
+        _items = items;
+
+        _selectedRowNodes = new List<RowNode<TItem>>();
+
+        _rowNodes = new List<RowNode<TItem>>();
+
+        _rowNodesBk = new List<RowNode<TItem>>();
+
+        if (ListOptions.EnablePagingination && ListOptions.EnableServerSide && totalItems != null) _searchModel.PaginationModel.ItemsCount = (int)totalItems;
+
+        if (ListOptions.EnablePagingination && ListOptions.EnableServerSide && currentPage != null) _searchModel.PaginationModel.CurrentPage = (int)currentPage;
+
+        _searchModel.PaginationModel.PageSize = ListOptions.PageSize;
+
+        BuildRowNodes();
+
+        if (ListOptions.EnablePagingination && !ListOptions.EnableServerSide)
+        {
+            _searchModel = new SearchModel
+                {
+                    PaginationModel = new PaginationModel
+                    {
+                        CurrentPage = _items.Count > 0 ? 1 : 0,
+                        ItemsCount = _items.Count,
+                        PageSize = ListOptions.PageSize
+                    }
+                };
+
+            AssignRangeRenderedRows();
+        }
+
+        StateHasChanged();
+    }
+
+    private long GetId()
+    {
+        _nextId++;
+        return _nextId;
+    }
+
+    private void HandleDragEnter()
+    {
+
+    }
+
+    private void HandleDragLeave()
+    {
+    }
+
+    private async Task HandleDrop(DragEventArgs eventdrag)
+    {
+        if (DnetListDragAndDropService.FromContainer == ListOptions.ConnectedTo)
+        {
+            var data = DnetListDragAndDropService.TransferData;
+            await OnDrop.InvokeAsync(data);
+        }
+    }
+
+    private async Task HandleDragStart(DragEventArgs eventdrag)
+    {
+        var dataToTransfer = _selectedRowNodes.Select(p => p.RowData).ToList();
+
+        DnetListDragAndDropService.StartDrag(dataToTransfer, ListOptions.ContainerName);
+
+        await OnDragStart.InvokeAsync();
+    }
+
+    private void HandleItemDragStart(RowNode<TItem> item)
+    {
+        if (!_selectedRowNodes.Any())
+        {
+            _selectedRowNodes.Add(item);
+        }
+    }
+
+    private async Task Transfer(TItem item)
+    {
+        await OnTransfer.InvokeAsync(item);
+    }
+
+    public void Dispose()
+    {
+        _debounceTimer.Elapsed -= FilterDataDiscard;
+        _debounceTimer?.Dispose();
+    }
+}

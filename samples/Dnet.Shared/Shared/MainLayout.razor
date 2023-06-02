@@ -75,7 +75,7 @@
     {
         AppName = "Datalnet Blazor Components";
         AppDescription = "";
-        AppVersion = "V.2.3.2";
+        AppVersion = "V.2.4.0";
         Title = "Ready to eat";
         UserName = "admin@datalnet.com";
         PersonName = "Adrian Mustelier";
@@ -416,6 +416,18 @@
                 Link = "/DoubleList",
                 ParentId = 0,
                 Text = "Double list",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/FloatingDoubleList",
+                ParentId = 0,
+                Text = "Floating Double list",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,

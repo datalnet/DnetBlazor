@@ -1,0 +1,222 @@
+﻿@page "/FloatingDoubleList"
+
+@using System.Drawing
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.App.Shared.Infrastructure.Models
+@using Dnet.App.Shared.Infrastructure.Services
+@using Dnet.Blazor.Components.FloatingDoubleList
+@using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Models;
+@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.List
+@using Dnet.Blazor.Components.Checkbox
+@using System.Net.Http
+@using System.Net.Http.Json
+@using Dnet.Blazor.Components.Select
+@using Dnet.Blazor.Infrastructure.Models.SearchModels;
+
+@inject HttpClient HttpClient
+@inject IHttpClientFactory ClientFactory
+@inject IApplicationServiceService ApplicationServiceService
+
+<div class="container-fluid" style="padding-top: 10px;">
+    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+        <span class="dnet-m-r-10 dnet-app-comp-name">Double list</span>
+    </div>
+    <div class="d-flex dnet-m-l-30 dnet-m-t-20 dnet-w-500">
+        <span class="dnet-m-r-10">Select and use de buttons or Drag&Drop between lists</span>
+    </div>
+    <div class="dnet-m-l-30 dnet-m-t-30" style="width: 300px">
+        <EditForm Model="@_formData1">
+            <DataAnnotationsValidator />
+            <DnetFloatingDoubleList @bind-Value="_personNameList"
+                                    TItem="Person"
+                                    LeftItems="_leftItems"
+                                    RightItems="_rightItems"
+                                    LeftListOptions="_leftListOptions"
+                                    RightListOptions="_rightListOptions"
+                                    RightText="Participantes"
+                                    LeftText="Contactos"
+                                    OnSelectionChanged="SelectionChanged"
+                                    EqualityComparer="new PersonEqualityComparer()"
+                                    DisplayValueConverter="(value) => value.Name"
+                                    Label="Participantes"
+                                    SideForSelections="ListToShow.Right"
+                                    Height="250px"
+                                    OnSearchLeft="SearchLeft"
+                                    OnSearchRight="SearchRight"
+            @ref="_floatingDoubleListPerson">
+            </DnetFloatingDoubleList>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private List<Person> _leftItems = new();
+
+    private List<Person> _leftBkItems = new();
+
+    private List<Person> _leftSelectedItems = new();
+
+    private List<Person> _leftAddedItems = new();
+
+    private List<Person> _leftRemovedItems = new();
+
+    private List<Person> _rightItems = new();
+
+    private List<Person> _rightBkItems = new();
+
+    private List<Person> _rightSelectedItems = new();
+
+    private List<Person> _rightAddedItems = new();
+
+    private List<Person> _rightRemovedItems = new();
+
+    private DnetList<Person> _leftComponent { get; set; }
+
+    private DnetList<Person> _rightComponent { get; set; }
+
+    private List<KeyValueModel<int>> _features = new();
+
+    private List<KeyValueModel<int>> _selectedFeatures = new();
+
+    private KeyValueModel<int> _formData1 = new();
+
+    private ListOptions<Person> _leftListOptions { get; set; } = new();
+
+    private ListOptions<Person> _rightListOptions { get; set; } = new();
+
+    private string _personNameList { get; set; }
+
+    private DnetFloatingDoubleList<Person> _floatingDoubleListPerson { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        _leftListOptions = GetListOptions();
+        _leftListOptions.HeaderText = "Left";
+        _leftListOptions.ContainerName = "LeftContainer";
+        _leftListOptions.ConnectedTo = "RghtContainer";
+
+        _rightListOptions = GetListOptions();
+        _rightListOptions.HeaderText = "Right";
+        _rightListOptions.ContainerName = "RghtContainer";
+        _rightListOptions.ConnectedTo = "LeftContainer";
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var itemsToTake = 5;
+
+        var items = await GetPersons();
+
+        _leftItems = items.Take(itemsToTake).ToList();
+
+        _leftBkItems = items.Take(itemsToTake).ToList();
+
+        _rightItems = items.Skip(itemsToTake).Take(itemsToTake).ToList();
+
+        _rightBkItems = items.Skip(itemsToTake).Take(itemsToTake).ToList();
+
+        StateHasChanged();
+    }
+
+    private async Task<List<Person>> GetPersons()
+    {
+        var dataPersons = await ApplicationServiceService.GetPersons();
+
+        return dataPersons;
+    }
+
+    private void LeftSelectionChanged(List<Person> selectedItems)
+    {
+        _leftSelectedItems = selectedItems;
+    }
+
+    private void RightSelectionChanged(List<Person> selectedItems)
+    {
+        _rightSelectedItems = selectedItems;
+    }
+
+    private void MyValueChangeHandler(string item)
+    {
+        _formData1.Value = item;
+    }
+
+    private ListOptions<Person> GetListOptions()
+    {
+        return new ListOptions<Person>()
+            {
+                DisplayValueConverter = (value) => value.Name,
+                SortedData = (value) => value.Name,
+                SearchValueConverter = (value) => value.Name,
+                DisableItem = (value) => value.IsActive,
+                HeaderText = "",
+                ItemSize = 40f,
+                MultiSelect = true,
+                DebounceTime = 250,
+                EnableServerSide = true,
+                EnableSearching = true,
+                EnableSorting = false,
+                PageSize = 50,
+                EnablePagingination = true,
+                CheckboxSelectionColumn = false,
+                ShowHeader = false,
+                ShowFooter = false,
+                ServerSideSearchColumns = new List<string>() { "Name" },
+                ServerSideSortColumn = "Name"
+            };
+    }
+
+    private void SelectionChanged(TransferredItems<Person> transferredItems)
+    {
+        var tt = transferredItems;
+    }
+
+    private async Task SearchLeft(SearchModel searchModel)
+    {
+        var items = await GetPersons();
+
+        var paginatedItems = items.Where(p => p.Name.ToUpper().Contains(searchModel.AdvancedFilterModels.FirstOrDefault().Value.ToUpper()))
+                                  .Skip((searchModel.PaginationModel.CurrentPage - 1) * searchModel.PaginationModel.PageSize)
+                                  .Take(searchModel.PaginationModel.PageSize).ToList();
+
+        _floatingDoubleListPerson.RefreshDataLeft(paginatedItems);
+    }
+
+    private async Task SearchRight(SearchModel searchModel)
+    {
+        var items = await GetPersons();
+
+        var paginatedItems = items.Skip((searchModel.PaginationModel.CurrentPage - 1) * searchModel.PaginationModel.PageSize)
+            .Take(searchModel.PaginationModel.PageSize).ToList();
+    }
+
+    public class PersonEqualityComparer : IEqualityComparer<Person>
+    {
+        public bool Equals(Person x, Person y)
+        {
+            if (x == null || y == null)
+                return false;
+
+            if (ReferenceEquals(x, y)) return true;
+
+            x.PersonId = x.PersonId ?? string.Empty;
+
+            y.PersonId = y.PersonId ?? string.Empty;
+
+            return x.PersonId.Equals(y.PersonId);
+        }
+
+        public int GetHashCode(Person obj)
+        {
+            int hashPersonId = obj.PersonId == null ? 0 : obj.PersonId.GetHashCode();
+
+            return hashPersonId;
+        }
+    }
+}
+
+
+

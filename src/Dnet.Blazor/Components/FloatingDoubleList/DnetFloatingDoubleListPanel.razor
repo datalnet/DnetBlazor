@@ -1,0 +1,341 @@
+﻿@using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Models;
+@using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Services;
+@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.List
+@using Dnet.Blazor.Components.Checkbox
+@using Dnet.Blazor.Infrastructure.Models.SearchModels;
+@using Microsoft.AspNetCore.Components.Web
+
+@typeparam TItem
+
+@inject HttpClient HttpClient
+
+<div class="dnet-connected-panel-container" style="display:flex;flex-direction:column;width:100%">
+    <div style="height:calc(100% - 140px); width: @Width">
+        <div style="display: grid; grid-template-columns: 1fr 5px 1fr; height: calc(100% - 0px);">
+            <div style="height: @Height">
+                <DnetListSimple TItem="TItem"
+                @ref="_leftComponent"
+                                Items="_leftItems"
+                                OnSelectionChange="LeftSelectionChanged"
+                                OnDrop="LeftDrop"
+                                OnTransfer="LeftTransfer"
+                                ListOptions="@_leftListOptions"
+                                ListItemContent="ListItemContent"
+                                ItemPrefixContent="ItemPrefixContent"
+                                ItemSufixContent="ItemSufixContent"
+                                HeaderText="@LeftText"
+                                OnSearch="SearchLeft">
+                </DnetListSimple>
+            </div>
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 5px; height: @Height">
+            </div>
+            <div style="height: @Height">
+                <DnetListSimple TItem="TItem"
+                @ref="_rightComponent"
+                                Items="_rightItems"
+                                OnSelectionChange="RightSelectionChanged"
+                                OnDrop="RightDrop"
+                                OnTransfer="RightTransfer"
+                                ListOptions="@_rightListOptions"
+                                ListItemContent="ListItemContent"
+                                ItemPrefixContent="ItemPrefixContent"
+                                ItemSufixContent="ItemSufixContent"
+                                HeaderText="@RightText"
+                                OnSearch="SearchRight">
+                </DnetListSimple>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public ListOptions<TItem> LeftListOptions { get; set; }
+
+    [Parameter]
+    public ListOptions<TItem> RightListOptions { get; set; }
+
+    [Parameter]
+    public IEqualityComparer<TItem> EqualityComparer { get; set; }
+
+    [Parameter]
+    public List<TItem> RightItems { get; set; }
+
+    [Parameter]
+    public List<TItem> LeftItems { get; set; }
+
+    [Parameter]
+    public string Width { get; set; }
+
+    [Parameter]
+    public string Height { get; set; }
+
+    [Parameter]
+    public string MinWidth { get; set; }
+
+    [Parameter]
+    public string MinHeight { get; set; }
+
+    [Parameter]
+    public string MaxWidth { get; set; }
+
+    [Parameter]
+    public string MaxHeight { get; set; }
+
+    [Parameter]
+    public int ItemHeight { get; set; } = 40;
+
+    [Parameter]
+    public int DebounceTime { get; set; } = 250;
+
+    [Parameter]
+    public FloatingDoubleListService<TItem> FloatingDoubleListService { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ListItemContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemPrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemSufixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ChildContent { get; set; }
+
+    [Parameter]
+    public string LeftText { get; set; }
+
+    [Parameter]
+    public string RightText { get; set; }
+
+
+    private List<TItem> _leftItems = new();
+
+    private List<TItem> _leftBkItems = new();
+
+    private List<TItem> _leftSelectedItems = new();
+
+    private List<TItem> _leftAddedItems = new();
+
+    private List<TItem> _leftRemovedItems = new();
+
+    private List<TItem> _rightItems = new();
+
+    private List<TItem> _rightBkItems = new();
+
+    private List<TItem> _rightSelectedItems = new();
+
+    private List<TItem> _rightAddedItems = new();
+
+    private List<TItem> _rightRemovedItems = new();
+
+    private DnetListSimple<TItem> _leftComponent { get; set; }
+
+    private DnetListSimple<TItem> _rightComponent { get; set; }
+
+    private ListOptions<TItem> _leftListOptions { get; set; } = new();
+
+    private ListOptions<TItem> _rightListOptions { get; set; } = new();
+
+
+    protected override void OnInitialized()
+    {
+        _leftItems = LeftItems;
+
+        _rightItems = RightItems;
+
+        _leftBkItems = new List<TItem>(LeftItems);
+
+        _rightBkItems = new List<TItem>(RightItems);
+
+        _leftListOptions = LeftListOptions;
+        _leftListOptions.HeaderText = "Left";
+        _leftListOptions.ContainerName = "LeftContainer";
+        _leftListOptions.ConnectedTo = "RghtContainer";
+
+        _rightListOptions = RightListOptions;
+        _rightListOptions.HeaderText = "Right";
+        _rightListOptions.ContainerName = "RghtContainer";
+        _rightListOptions.ConnectedTo = "LeftContainer";
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        FloatingDoubleListService.OnRefreshDataRight += RefreshDataRight;
+
+        FloatingDoubleListService.OnRefreshDataLeft += RefreshDataLeft;
+    }
+
+    private void LeftSelectionChanged(List<TItem> selectedItems)
+    {
+        _leftSelectedItems = selectedItems;
+    }
+
+    private void RightSelectionChanged(List<TItem> selectedItems)
+    {
+        _rightSelectedItems = selectedItems;
+    }
+
+    private void LeftDrop(List<TItem> selectedItems)
+    {
+        _rightSelectedItems = selectedItems;
+        RightToLeft();
+    }
+
+    private void RightDrop(List<TItem> selectedItems)
+    {
+        _leftSelectedItems = selectedItems;
+        LeftToRight();
+    }
+
+    private void LeftTransfer(TItem item)
+    {
+        _leftSelectedItems = new List<TItem>() { item };
+        LeftToRight();
+    }
+
+    private void RightTransfer(TItem item)
+    {
+        _rightSelectedItems = new List<TItem>() { item };
+        RightToLeft();
+    }
+
+    private void LeftToRight()
+    {
+        if (!_leftSelectedItems.Any()) return;
+
+        _rightItems.AddRange(_leftSelectedItems);
+
+        for (int i = _leftItems.Count - 1; i >= 0; i--)
+        {
+            if (_leftSelectedItems.Contains(_leftItems[i], EqualityComparer))
+            {
+                _leftItems.RemoveAt(i);
+            }
+        }
+
+        _leftSelectedItems = new();
+
+        _leftAddedItems = _leftItems.Except(_leftBkItems, EqualityComparer).ToList();
+
+        _leftRemovedItems = _leftBkItems.Except(_leftItems, EqualityComparer).ToList();
+
+        _rightAddedItems = _rightItems.Except(_rightBkItems, EqualityComparer).ToList();
+
+        _rightRemovedItems = _rightBkItems.Except(_rightItems, EqualityComparer).ToList();
+
+        _rightComponent.SetRowData(_rightItems);
+
+        _leftComponent.SetRowData(_leftItems);
+
+        var transferredItems = new TransferredItems<TItem>()
+            {
+                RighItems = _rightItems,
+                RightAddedItems = _rightAddedItems,
+                RightRemovedItems = _rightRemovedItems,
+                LeftItems = _leftItems,
+                LeftAddedItems = _leftAddedItems,
+                LeftRemovedItems = _leftRemovedItems
+            };
+
+        FloatingDoubleListService.UpdateTransferredItems(transferredItems);
+    }
+
+    private void RightToLeft()
+    {
+        if (!_rightSelectedItems.Any()) return;
+
+        _leftItems.AddRange(_rightSelectedItems);
+
+        for (int i = _rightItems.Count - 1; i >= 0; i--)
+        {
+            if (_rightSelectedItems.Contains(_rightItems[i], EqualityComparer))
+            {
+                _rightItems.RemoveAt(i);
+            }
+        }
+
+        _rightSelectedItems = new();
+
+        _leftAddedItems = _leftItems.Except(_leftBkItems, EqualityComparer).ToList();
+
+        _leftRemovedItems = _leftBkItems.Except(_leftItems, EqualityComparer).ToList();
+
+        _rightAddedItems = _rightItems.Except(_rightBkItems, EqualityComparer).ToList();
+
+        _rightRemovedItems = _rightBkItems.Except(_rightItems, EqualityComparer).ToList();
+
+        _rightComponent.SetRowData(_rightItems);
+
+        _leftComponent.SetRowData(_leftItems);
+
+        var transferredItems = new TransferredItems<TItem>()
+            {
+                RighItems = _rightItems,
+                RightAddedItems = _rightAddedItems,
+                RightRemovedItems = _rightRemovedItems,
+                LeftItems = _leftItems,
+                LeftAddedItems = _leftAddedItems,
+                LeftRemovedItems = _leftRemovedItems
+            };
+
+        FloatingDoubleListService.UpdateTransferredItems(transferredItems);
+    }
+
+    private void SearchLeft(SearchModel searchModel)
+    {
+        FloatingDoubleListService.SearchLeft(searchModel);
+    }
+
+    private void SearchRight(SearchModel searchModel)
+    {
+        FloatingDoubleListService.SearchRight(searchModel);
+    }
+
+    public void RefreshDataLeft(List<TItem> items)
+    {
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            if (_rightItems.Contains(items[i], EqualityComparer))
+            {
+                items.RemoveAt(i);
+            }
+        }
+
+        _leftItems = items;
+
+        _leftBkItems = new List<TItem>(items);
+
+        _leftComponent.SetRowData(items);
+
+        StateHasChanged();
+    }
+
+    public void RefreshDataRight(List<TItem> items)
+    {
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            if (_leftItems.Contains(items[i], EqualityComparer))
+            {
+                items.RemoveAt(i);
+            }
+        }
+
+        _rightItems = items;
+
+        _rightBkItems = new List<TItem>(items);
+
+        _rightComponent.SetRowData(items);
+
+        StateHasChanged();
+    }
+}
+
+
+
