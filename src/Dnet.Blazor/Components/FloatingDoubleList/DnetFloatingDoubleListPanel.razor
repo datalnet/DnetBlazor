@@ -212,9 +212,12 @@
 
         _rightItems.AddRange(_leftSelectedItems);
 
-        foreach (var item in _leftSelectedItems)
+        for (int i = _leftItems.Count - 1; i >= 0; i--)
         {
-            _leftItems.Remove(item);
+            if (_leftSelectedItems.Contains(_leftItems[i], EqualityComparer))
+            {
+                _leftItems.RemoveAt(i);
+            }
         }
 
         _leftSelectedItems = new();
@@ -250,9 +253,12 @@
 
         _leftItems.AddRange(_rightSelectedItems);
 
-        foreach (var item in _rightSelectedItems)
+        for (int i = _rightItems.Count - 1; i >= 0; i--)
         {
-            _rightItems.Remove(item);
+            if (_rightSelectedItems.Contains(_rightItems[i], EqualityComparer))
+            {
+                _rightItems.RemoveAt(i);
+            }
         }
 
         _rightSelectedItems = new();
@@ -294,22 +300,38 @@
 
     public void RefreshDataLeft(List<TItem> items)
     {
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            if (_rightItems.Contains(items[i], EqualityComparer))
+            {
+                items.RemoveAt(i);
+            }
+        }
+
         _leftItems = items;
 
-        _leftBkItems = new List<TItem>(LeftItems);
+        _leftBkItems = new List<TItem>(items);
 
-        _leftComponent.SetRowData(_leftItems);
+        _leftComponent.SetRowData(items);
 
         StateHasChanged();
     }
 
     public void RefreshDataRight(List<TItem> items)
     {
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            if (_leftItems.Contains(items[i], EqualityComparer))
+            {
+                items.RemoveAt(i);
+            }
+        }
+
         _rightItems = items;
 
-        _rightBkItems = new List<TItem>(RightItems);
+        _rightBkItems = new List<TItem>(items);
 
-        _leftComponent.SetRowData(_rightItems);
+        _rightComponent.SetRowData(items);
 
         StateHasChanged();
     }
