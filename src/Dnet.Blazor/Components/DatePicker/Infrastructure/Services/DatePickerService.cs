@@ -8,6 +8,8 @@ namespace Dnet.Blazor.Components.DatePicker.Infrastructure.Services
 
         public event Action<CalendarDay> OnDaySelected;
 
+        public event Action OnResetCalendar;
+
         public void UdateDays(List<CalendarDay> days)
         {
             OnUpdateList?.Invoke(days);
@@ -16,6 +18,11 @@ namespace Dnet.Blazor.Components.DatePicker.Infrastructure.Services
         public void UpdateSelectedDay(CalendarDay day)
         {
             OnDaySelected?.Invoke(day);
+        }
+
+        public void ResetCalendar()
+        {
+            OnResetCalendar?.Invoke();
         }
     }
 }

@@ -503,4 +503,24 @@ else
 
         return $"{startDay.Date.Year} / {startDay.Date.ToString("MMMM dd")} - {endDay.Date.ToString("MMMM dd")}";
     }
+
+    public void UpdateValue(string dayValue)
+    {
+        var currentValue = "";
+
+        if (!string.IsNullOrEmpty(dayValue))
+        {
+            currentValue = dayValue;
+
+            var selectedDay = Convert.ToDateTime(dayValue);
+
+            var days = GetMonthDaysWithFullWeeks(selectedDay.Year, selectedDay.Month);
+
+            _selectedDays = GetWeekDays(days.FirstOrDefault(p => p.Date == selectedDay.Date), days);
+
+            CurrentValue = GetWeekInterval(_selectedDays);
+
+            StateHasChanged();
+        }
+    }
 }

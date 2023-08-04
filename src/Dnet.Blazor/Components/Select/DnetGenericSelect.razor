@@ -228,11 +228,22 @@
     {
         if (!string.IsNullOrEmpty(CurrentValueAsString))
         {
-            var propertyInfo = GetPropertyInfoFromExpression<TItem, TValue>(ValueConverter);
+            var type = typeof(TItem);
 
-            var selectedItem = FindItemByPropertyValue<TItem, TValue>(propertyInfo.Name, CurrentValue, Items);
+            if (type == typeof(string) || type == typeof(int))
+            {
+                var selectedItem = FindItemByValue<TItem, TValue>(CurrentValue, Items);
 
-            ItemSelected(selectedItem);
+                if(selectedItem != null) ItemSelected(selectedItem);
+            }
+            else
+            {
+                var propertyInfo = GetPropertyInfoFromExpression<TItem, TValue>(ValueConverter);
+
+                var selectedItem = FindItemByPropertyValue<TItem, TValue>(propertyInfo.Name, CurrentValue, Items);
+
+                if(selectedItem != null) ItemSelected(selectedItem);
+            }
         }
 
         if (!string.IsNullOrEmpty(_displayValueAsString)) _hasFocus = true;
@@ -331,6 +342,11 @@
         return items.FirstOrDefault(lambda.Compile());
     }
 
+    public TItem FindItemByValue<TItem, TValue>(TValue value, List<TItem> items)
+    {
+        return items.FirstOrDefault(item => item.Equals(value));
+    }
+
     private void BuildRowNodes()
     {
         if (_items == null) return;
@@ -421,11 +437,11 @@
 
         await ValueChanged.InvokeAsync(Value);
 
-        await OnItemSelected.InvokeAsync(item);
-
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
         if (!string.IsNullOrEmpty(CurrentValueAsString)) _hasFocus = true;
+
+        await OnItemSelected.InvokeAsync(item);
 
         if (ItemPrefixContent != null && PrefixContent == null) PrefixContent = ItemPrefixContent(item);
 

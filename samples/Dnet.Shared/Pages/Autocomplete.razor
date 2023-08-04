@@ -64,158 +64,184 @@
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
-                    <DnetAutocomplete Value="@_formData.Name"
-                                      ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                      ValueExpression="@( () => _formData.Name )"
-                                      Items="_items"
-                                      TItem="Person"
-                                      DisplayValueConverter="(value) => value.Name"
-                                      OnItemSelected="OnAutocompleteFilter"
-                                      ComponentTheme="ComponentTheme.Raw"
-                                      InputTextToUpper="true"
-                                      PlaceHolder="Name"
-                                      Label="Name"
-                                      Appearance="_appearance"
-                                      SortBy="@sortBy"
-                                      FilterBy="@filterBy">
-                        <HintContent>You can add the country prefix</HintContent>
+                    <DnetGenericAutocomplete TValue="string"
+                                             @bind-Value="@_formData.Name"
+                                             Items="_items"
+                                             TItem="Person"
+                                             DisplayValueConverter="(value) => value.Name"
+                                             ValueConverter="(value) => (value.Name)"
+                                             OnItemSelected="OnAutocompleteFilter"
+                                             ComponentTheme="ComponentTheme.Material"
+                                             InputTextToUpper="true"
+                                             PlaceHolder="Name"
+                                             Label="Name"
+                                             Appearance="_appearance"
+                                             SortBy="@sortBy"
+                                             FilterBy="@filterBy">
                         <ErrorContent>
                             <ValidationMessage For="@(() => _formData.Name)" />
                         </ErrorContent>
-                        <SufixContent>
-                            <div class="dnet-app-icon-wrapper">
-                                <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
-                            </div>
-                        </SufixContent>
-                    </DnetAutocomplete>
+                    </DnetGenericAutocomplete>
                 </div>
                 <div style="display: flex;align-items: center;" class="dnet-m-t-20">
                     <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
                     <span>@_formData.Name</span>
                 </div>
             </div>
-            <div class="d-flex flex-column dnet-m-t-45">
-                <div class="d-flex align-items-sm-center dnet-m-b-5">
-                    <DnetInputCheckbox @bind-Value="_itemAutoSelection" class="dnet-m-r-5">Activate Autoselect item</DnetInputCheckbox>
-                </div>
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
-                    <DnetAutocomplete @bind-Value="@_formData1.Name"
-                                      Items="_items"
-                                      TItem="Person"
-                                      DisplayValueConverter="(value) => value.Name"
-                                      OnItemSelected="OnAutocompleteFilter"
-                                      ItemAutoSelection="_itemAutoSelection"
-                                      Disabled="false"
-                                      PlaceHolder="Name"
-                                      Label="Name"
-                                      Appearance="_appearance"
-                                      SortBy="@sortBy"
-                                      FilterBy="@filterBy"
-                                      OrderStartingBySearchedString="true"
-                                      >
-                        <ItemPrefixContent Context="Person">
-                            <div class="dnet-app-icon-wrapper">
-                                <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
-                            </div>
-                        </ItemPrefixContent>
-                    </DnetAutocomplete>
-                </div>
-                <div style="display: flex;align-items: center;">
-                    <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
-                    <span>@_formData1.Name</span>
-                </div>
+            @*  <div style="display: flex; flex-direction: column">
+            <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
+            <DnetAutocomplete Value="@_formData.Name"
+            ValueChanged="@((string e) => MyValueChangeHandler(e))"
+            ValueExpression="@( () => _formData.Name )"
+            Items="_items"
+            TItem="Person"
+            DisplayValueConverter="(value) => value.Name"
+            OnItemSelected="OnAutocompleteFilter"
+            ComponentTheme="ComponentTheme.Raw"
+            InputTextToUpper="true"
+            PlaceHolder="Name"
+            Label="Name"
+            Appearance="_appearance"
+            SortBy="@sortBy"
+            FilterBy="@filterBy">
+            <HintContent>You can add the country prefix</HintContent>
+            <ErrorContent>
+            <ValidationMessage For="@(() => _formData.Name)" />
+            </ErrorContent>
+            <SufixContent>
+            <div class="dnet-app-icon-wrapper">
+            <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
+            </div>
+            </SufixContent>
+            </DnetAutocomplete>
+            </div>
+            <div style="display: flex;align-items: center;" class="dnet-m-t-20">
+            <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
+            <span>@_formData.Name</span>
+            </div>
             </div>
             <div class="d-flex flex-column dnet-m-t-45">
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
-                    <DnetAutocomplete @bind-Value="@_formData2.Name"
-                                      Items="_items"
-                                      TItem="Person"
-                                      DisplayValueConverter="(value) => value.Name"
-                                      OnItemSelected="OnAutocompleteFilter"
-                                      ItemAutoSelection="_itemAutoSelection"
-                                      Disabled="false"
-                                      PlaceHolder="Name"
-                                      Label="Name"
-                                      Appearance="_appearance"
-                                      SortBy="@sortBy"
-                                      FilterBy="@filterBy">
+            <div class="d-flex align-items-sm-center dnet-m-b-5">
+            <DnetInputCheckbox @bind-Value="_itemAutoSelection" class="dnet-m-r-5">Activate Autoselect item</DnetInputCheckbox>
+            </div>
+            <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
+            <DnetAutocomplete @bind-Value="@_formData1.Name"
+            Items="_items"
+            TItem="Person"
+            DisplayValueConverter="(value) => value.Name"
+            OnItemSelected="OnAutocompleteFilter"
+            ItemAutoSelection="_itemAutoSelection"
+            Disabled="false"
+            PlaceHolder="Name"
+            Label="Name"
+            Appearance="_appearance"
+            SortBy="@sortBy"
+            FilterBy="@filterBy"
+            OrderStartingBySearchedString="true"
+            >
+            <ItemPrefixContent Context="Person">
+            <div class="dnet-app-icon-wrapper">
+            <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
+            </div>
+            </ItemPrefixContent>
+            </DnetAutocomplete>
+            </div>
+            <div style="display: flex;align-items: center;">
+            <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
+            <span>@_formData1.Name</span>
+            </div>
+            </div>
+            <div class="d-flex flex-column dnet-m-t-45">
+            <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
+            <DnetAutocomplete @bind-Value="@_formData2.Name"
+            Items="_items"
+            TItem="Person"
+            DisplayValueConverter="(value) => value.Name"
+            OnItemSelected="OnAutocompleteFilter"
+            ItemAutoSelection="_itemAutoSelection"
+            Disabled="false"
+            PlaceHolder="Name"
+            Label="Name"
+            Appearance="_appearance"
+            SortBy="@sortBy"
+            FilterBy="@filterBy">
 
-                        <ItemSufixContent Context="Person">
-                            <span style="width: 20px; height: 20px; display: block; background-color: @Person.EyeColor; margin-right:10px"></span>
-                        </ItemSufixContent>
-                        <ItemPrefixContent Context="Person">
-                            <div class="dnet-app-icon-wrapper">
-                                <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
-                            </div>
-                        </ItemPrefixContent>
-                    </DnetAutocomplete>
-                </div>
-                <div style="display: flex;align-items: center;">
-                    <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
-                    <span>@_formData2.Name</span>
-                </div>
+            <ItemSufixContent Context="Person">
+            <span style="width: 20px; height: 20px; display: block; background-color: @Person.EyeColor; margin-right:10px"></span>
+            </ItemSufixContent>
+            <ItemPrefixContent Context="Person">
+            <div class="dnet-app-icon-wrapper">
+            <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
+            </div>
+            </ItemPrefixContent>
+            </DnetAutocomplete>
+            </div>
+            <div style="display: flex;align-items: center;">
+            <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
+            <span>@_formData2.Name</span>
+            </div>
             </div>
             <div class="d-flex flex-column dnet-m-t-45">
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
-                    <DnetAutocomplete @bind-Value="@_formData3.Name"
-                                      Items="_items"
-                                      TItem="Person"
-                                      DisplayValueConverter="(value) => value.Name"
-                                      OnItemSelected="OnAutocompleteFilter"
-                                      ItemAutoSelection="_itemAutoSelection"
-                                      Disabled="false"
-                                      PlaceHolder="Name"
-                                      Label="Name"
-                                      Appearance="_appearance"
-                                      Context="Person"
-                                      ItemHeight="40"
-                                      SortBy="@sortBy"
-                                      FilterBy="@filterBy">
-                        <div style="width:100%;display:flex;justify-content:center;flex-direction:column">
-                            <div style="font-size:.875rem;height:20px;display:flex;align-items:center">@Person.Name</div>
-                            <div style="font-size:.625rem;height:15px;display:flex;align-items:center;color:#757575">@Person.Address</div>
-                        </div>
-                    </DnetAutocomplete>
-                </div>
-                <div style="display: flex;align-items: center;">
-                    <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
-                    <span>@_formData3.Name</span>
-                </div>
+            <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
+            <DnetAutocomplete @bind-Value="@_formData3.Name"
+            Items="_items"
+            TItem="Person"
+            DisplayValueConverter="(value) => value.Name"
+            OnItemSelected="OnAutocompleteFilter"
+            ItemAutoSelection="_itemAutoSelection"
+            Disabled="false"
+            PlaceHolder="Name"
+            Label="Name"
+            Appearance="_appearance"
+            Context="Person"
+            ItemHeight="40"
+            SortBy="@sortBy"
+            FilterBy="@filterBy">
+            <div style="width:100%;display:flex;justify-content:center;flex-direction:column">
+            <div style="font-size:.875rem;height:20px;display:flex;align-items:center">@Person.Name</div>
+            <div style="font-size:.625rem;height:15px;display:flex;align-items:center;color:#757575">@Person.Address</div>
+            </div>
+            </DnetAutocomplete>
+            </div>
+            <div style="display: flex;align-items: center;">
+            <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
+            <span>@_formData3.Name</span>
+            </div>
             </div>
             <div style="display: flex; flex-direction: column">
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
-                    <DnetAutocomplete Value="@_formData.Name"
-                                      @ref="_dnetAutocomplete"
-                                      ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                      ValueExpression="@( () => _formData.Name )"
-                                      Items="_items"
-                                      TItem="Person"
-                                      DisplayValueConverter="(value) => value.Name"
-                                      OnItemSelected="OnAutocompleteFilter"
-                                      InputTextToUpper="true"
-                                      PlaceHolder="Name"
-                                      Label="Name"
-                                      Appearance="_appearance"
-                                      EnableServerSide="true"
-                                      OnStopTyping="StopTyping"
-                                      SortBy="@sortBy"
-                                      FilterBy="@filterBy">
-                        <HintContent>You can add the country prefix</HintContent>
-                        <ErrorContent>
-                            <ValidationMessage For="@(() => _formData.Name)" />
-                        </ErrorContent>
-                        <SufixContent>
-                            <div class="dnet-app-icon-wrapper">
-                                <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
-                            </div>
-                        </SufixContent>
-                    </DnetAutocomplete>
-                </div>
-                <div style="display: flex;align-items: center;">
-                    <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
-                    <span>@_formData.Name</span>
-                </div>
+            <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
+            <DnetAutocomplete Value="@_formData.Name"
+            @ref="_dnetAutocomplete"
+            ValueChanged="@((string e) => MyValueChangeHandler(e))"
+            ValueExpression="@( () => _formData.Name )"
+            Items="_items"
+            TItem="Person"
+            DisplayValueConverter="(value) => value.Name"
+            OnItemSelected="OnAutocompleteFilter"
+            InputTextToUpper="true"
+            PlaceHolder="Name"
+            Label="Name"
+            Appearance="_appearance"
+            EnableServerSide="true"
+            OnStopTyping="StopTyping"
+            SortBy="@sortBy"
+            FilterBy="@filterBy">
+            <HintContent>You can add the country prefix</HintContent>
+            <ErrorContent>
+            <ValidationMessage For="@(() => _formData.Name)" />
+            </ErrorContent>
+            <SufixContent>
+            <div class="dnet-app-icon-wrapper">
+            <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
             </div>
+            </SufixContent>
+            </DnetAutocomplete>
+            </div>
+            <div style="display: flex;align-items: center;">
+            <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
+            <span>@_formData.Name</span>
+            </div>
+            </div>*@
         </EditForm>
     </div>
 </div>
@@ -259,7 +285,7 @@
 
     protected override void OnInitialized()
     {
-       
+        _formData.Name = "dfgjhfghjfg dfghjfghj";
     }
 
     protected override async Task OnInitializedAsync()

@@ -52,9 +52,9 @@
                         @foreach (var day in _days)
                         {
                             <div class="dnet-datepickerweekca-raw-day"
-                     @onclick="(() => SelectDay(day))"
-                     @onmouseover="(() => hoveredWeek = day.WeekOfYear)"
-                     @onmouseout="(() => hoveredWeek = null)">
+                            @onclick="(() => SelectDay(day))"
+                            @onmouseover="(() => hoveredWeek = day.WeekOfYear)"
+                            @onmouseout="(() => hoveredWeek = null)">
                                 <span class="dnet-datepickerweekca-raw-day-content @(day.IsToday ? "dnet-datepickerweekca-raw-day-today" : null)
                                                    @(day.IsSelected ? "dnet-datepickerweekca-raw-day-selected" : null)
                                                    @(day.WeekOfYear == hoveredWeek ? "hovered" : null)">
@@ -97,14 +97,14 @@
                 </div>
                 break;
         }
-        <div class="dnet-datepickerweekca-raw-header-footer">
+      @*  <div class="dnet-datepickerweekca-raw-header-footer">
             <div class="dnet-datepickerweek-raw-reset-button-wrapper" @onclick="ResetCalendar">
                 <div class="dnet-datepickerweek-raw-reset-image-wrapper">
                     <span class="dnet-datepickerweek-raw-icon dnet-datepickerweek-raw-reset-button" unselectable="on"></span>
                 </div>
                 <span class="dnet-datepickerweek-raw-reset-test">Reset</span>
             </div>
-        </div>
+        </div>*@
     </div>
 </div>
 
@@ -112,6 +112,9 @@
 
     [Parameter]
     public EventCallback<List<CalendarDay>> OnWeekSelected { get; set; }
+
+    [Parameter]
+    public string Format { get; set; } = $"yyyy/MM/dd";
 
     public List<CalendarDay> _days { get; set; } = new();
 
@@ -147,7 +150,6 @@
 
     private List<CalendarDay> _selectedDays { get; set; } = new();
 
-
     protected override void OnInitialized()
     {
         var today = DateTime.Now;
@@ -162,7 +164,8 @@
 
         selectedDay = _days.FirstOrDefault(p => p.IsToday);
 
-        if (_days != null && _days.Any()) {
+        if (_days != null && _days.Any())
+        {
 
             SelectWeekDays(selectedDay);
 
@@ -174,10 +177,8 @@
         SetMonths(_workingYear);
     }
 
-    private void SelectDay(CalendarDay selectedDay)
+    private async Task SelectDay(CalendarDay selectedDay)
     {
-        //if (EvaluateMinMaxDates(selectedDay)) return;
-
         foreach (var item in _days)
         {
             item.IsSelected = false;
@@ -186,6 +187,8 @@
         if (_days != null && _days.Any()) SelectWeekDays(selectedDay);
 
         _selectedDays = GetWeekDays(selectedDay, _days);
+
+        await OnWeekSelected.InvokeAsync(_selectedDays);
 
         StateHasChanged();
     }
@@ -494,40 +497,37 @@
         StateHasChanged();
     }
 
-    //private bool EvaluateMinMaxDates(CalendarDay day)
-    //{
+    public void UpdateValue(string dayValue)
+    {
+        var currentValue = "";
 
-    //    var minEvaluation = false;
-    //    var maxEvaluation = false;
-    //    var filterEvaluation = false;
+        if (!string.IsNullOrEmpty(dayValue))
+        {
+            currentValue = dayValue;
 
-    //    if (_minCalendarDay != null)
-    //        minEvaluation = (day.DayNumber < _minCalendarDay.DayNumber && day.Year == _minCalendarDay.Year && day.Month == _minCalendarDay.Month) ||
-    //                             day.Year < _minCalendarDay.Year ||
-    //                            (day.Month < _minCalendarDay.Month && day.Year == _minCalendarDay.Year);
+            var day = Convert.ToDateTime(dayValue);
 
-    //    if (_maxCalendarDay != null)
-    //        maxEvaluation = (day.DayNumber > _maxCalendarDay.DayNumber && day.Year == _maxCalendarDay.Year && day.Month == _maxCalendarDay.Month) ||
-    //                             day.Year > _maxCalendarDay.Year ||
-    //                            (day.Month > _maxCalendarDay.Month && day.Year == _maxCalendarDay.Year);
+            _workingYear = day.Year;
 
-    //    if (DatepickerFilter != null)
-    //        filterEvaluation = DatepickerFilter(day);
+            _workingMonth = day.Month;
 
-    //    return minEvaluation || maxEvaluation || filterEvaluation;
-    //}
+            var selectedDay = new CalendarDay();
 
-    //private bool EvaluateMinMaxMonths(int month, int year)
-    //{
-    //    var minEvaluation = false;
-    //    var maxEvaluation = false;
+            GetMonthDaysWithFullWeeks(_workingYear, _workingMonth);
 
-    //    if (_minCalendarDay != null)
-    //        minEvaluation = (month < _minCalendarDay.Month && year == _minCalendarDay.Year);
+            selectedDay = _days.FirstOrDefault(p => p.Date == day.Date);
 
-    //    if (_maxCalendarDay != null)
-    //        maxEvaluation = (month > _maxCalendarDay.Month && year == _maxCalendarDay.Year);
+            if (_days != null && _days.Any())
+            {
 
-    //    return minEvaluation || maxEvaluation;
-    //}
+                SelectWeekDays(selectedDay);
+
+                _selectedDays = GetWeekDays(selectedDay, _days);
+            }
+
+            SetYears(_workingYear);
+
+            SetMonths(_workingYear);
+        }
+    }
 }

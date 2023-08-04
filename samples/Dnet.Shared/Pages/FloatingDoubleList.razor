@@ -54,8 +54,6 @@
 @code {
     private List<Person> _leftItems = new();
 
-    private List<Person> _leftBkItems = new();
-
     private List<Person> _leftSelectedItems = new();
 
     private List<Person> _leftAddedItems = new();
@@ -63,8 +61,6 @@
     private List<Person> _leftRemovedItems = new();
 
     private List<Person> _rightItems = new();
-
-    private List<Person> _rightBkItems = new();
 
     private List<Person> _rightSelectedItems = new();
 
@@ -113,11 +109,7 @@
 
         _leftItems = items.Take(itemsToTake).ToList();
 
-        _leftBkItems = items.Take(itemsToTake).ToList();
-
         _rightItems = items.Skip(itemsToTake).Take(itemsToTake).ToList();
-
-        _rightBkItems = items.Skip(itemsToTake).Take(itemsToTake).ToList();
 
         StateHasChanged();
     }

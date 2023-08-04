@@ -129,7 +129,7 @@
         @if (header.Pinned == Pinned.None && header.CanGrow == 1)
         {
             <div style="cursor:col-resize; position:absolute; height:@height; user-select:none; width:7px; background-color:transparent; color: transparent; right: 0px; margin-right: -4px"
-                 @onmousedown="(e) => MouseDown(header, e.ClientX)">
+            @onmousedown="(e) => MouseDown(header, e.ClientX)">
                 |
             </div>
         }
@@ -176,34 +176,37 @@
 
     @foreach (var header in GridColumns.FindAll(p => !p.Hide))
     {
+
         <div class="blg-header-cell">
             <div class="blg-header-cell-container">
-                @switch (header.CellDataType)
+                @if (header.CellDataType != CellDataType.None && header.EnableSimpleFilter == true)
                 {
-                    case CellDataType.Number:
-                    case CellDataType.Boolean:
-                    case CellDataType.Text:
-                        <input class="coms-input-search"
-                               type="text"
-                               style="height: 30px;"
-                               @bind-value="@header.Filter"
-                               @bind-value:event="oninput"
-                               @onkeyup="Filter"
-                               @onkeyup:stopPropagation="true"
-                               @onkeyup:preventDefault="true">
-                        break;
-                    case CellDataType.Date:
-                        <EditForm Model="@header" style="width:100%">
-                            <DnetDatePicker @bind-Value="@header.Filter"
-                                            Disabled="false"
-                                            OnDaySelected="@((day) => DaySelected(day, header))"
-                                            Format="@header.DateFormat"
-                                            ComponentTheme="ComponentTheme.Raw">
-                            </DnetDatePicker>
-                        </EditForm>
-                        break;
+                    @switch (header.CellDataType)
+                    {
+                        case CellDataType.Number:
+                        case CellDataType.Boolean:
+                        case CellDataType.Text:
+                            <input class="coms-input-search"
+                                   type="text"
+                                   style="height: 30px;"
+                            @bind-value="@header.Filter"
+                            @bind-value:event="oninput"
+                            @onkeyup="Filter"
+                            @onkeyup:stopPropagation="true"
+                            @onkeyup:preventDefault="true">
+                            break;
+                        case CellDataType.Date:
+                            <EditForm Model="@header" style="width:100%">
+                                <DnetDatePicker @bind-Value="@header.Filter"
+                                                Disabled="false"
+                                                OnDaySelected="@((day) => DaySelected(day, header))"
+                                                Format="@header.DateFormat"
+                                                ComponentTheme="ComponentTheme.Raw">
+                                </DnetDatePicker>
+                            </EditForm>
+                            break;
+                    }
                 }
-
             </div>
         </div>
     }
@@ -387,7 +390,7 @@
 
     private void MouseDown(GridColumn<TItem> header, double clientX)
     {
-        OnMouseDown.InvokeAsync(new Tuple<string, int>(header.DataField, (int) clientX));
+        OnMouseDown.InvokeAsync(new Tuple<string, int>(header.DataField, (int)clientX));
         _shouldRender = true;
     }
 
