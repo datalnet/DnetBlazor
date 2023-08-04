@@ -11,10 +11,7 @@
 @using Dnet.Blazor.Components.Grid.Infrastructure.Enums
 @using Dnet.Blazor.Infrastructure.Models.SearchModels
 
-@inject IThemeMessageService<ThemeConfigData> ThemeMessageService
-@inject HttpClient HttpClient
-@inject IHttpClientFactory ClientFactory
-@inject IApplicationServiceService ApplicationServiceService
+@inject IPersonService PersonService
 
 <div class="container-fluid" style="padding-top: 10px;">
     <div class="row" style="height: calc(100% - 40px)">
@@ -55,11 +52,11 @@
     private List<Person> _selectedPerson { get; set; } = new List<Person>();
 
 
-    public override async Task SetParametersAsync(ParameterView parameters)
+    protected override async Task OnInitializedAsync()
     {
         GridOptions = GetGridOptions();
 
-        var persons = await GetPersons();
+        var persons = await PersonService.GetPersons();
 
         GridOptions.NumberOfRows = persons.Count;
 
@@ -70,14 +67,14 @@
         StateHasChanged();
     }
 
-    private async Task<List<Person>> GetPersons()
-    {
-        var client = ClientFactory.CreateClient("WebHostURL");
+    //private async Task<List<Person>> GetPersons()
+    //{
+    //    var client = ClientFactory.CreateClient("WebHostURL");
 
-        var dataPersons = await client.GetFromJsonAsync<List<Person>>("/sample-data/person_500.json");
+    //    var dataPersons = await client.GetFromJsonAsync<List<Person>>("/sample-data/person_500.json");
 
-        return dataPersons;
-    }
+    //    return dataPersons;
+    //}
 
     private GridOptions<Person> GetGridOptions()
     {

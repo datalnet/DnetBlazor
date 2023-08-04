@@ -65,6 +65,8 @@ namespace Dnet.Blazor.Infrastructure.Services
             
             services.AddTransient(typeof(ITooltipService), typeof(TooltipService));
 
+            services.AddTransient(typeof(IBlGridInterop<>), typeof(BlGridInterop<>));
+
             return services;
         }
     }
