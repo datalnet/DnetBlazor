@@ -1,4 +1,5 @@
 ﻿@using Dnet.Blazor.Components.Grid.BlgGrid
+@using Dnet.Blazor.Infrastructure.Models.SearchModels;
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
 @using System.Globalization
@@ -19,8 +20,8 @@
                 @_rowCssClasses @(RowNode.IsHovered() ? "blg-hover-class" : null)
                 @(RowNode.IsClicked() && !RowNode.IsSelected() ? "blg-row-clicked" : null)
                 @(RowNode.IsSelected() ? "blg-row-selected" : null)"
-     id="@($"Row{RowNode.RowNodeId}Cell0")"
-     style="flex:0 0 auto; width: 40px; height: 40px; grid-column: 1/1">
+         id="@($"Row{RowNode.RowNodeId}Cell0")"
+         style="flex:0 0 auto; width: 40px; height: 40px; grid-column: 1/1">
         @if (GetDisableRow() == false)
         {
             <input type="checkbox" checked="@RowNode.IsSelected()" @onchange="CheckboxClicked" class="blg-checkbox-no-label">
@@ -39,7 +40,7 @@
                       @_rowCssClasses @(RowNode.IsHovered() ? "blg-hover-class" : null)
                       @(RowNode.IsClicked() && !RowNode.IsSelected() ? "blg-row-clicked" : null)
                       @(RowNode.IsSelected() ? "blg-row-selected" : null)"
-     style="height: @height; width: @width;">
+             style="height: @height; width: @width;">
         </div>
     }
 
@@ -76,7 +77,40 @@
 
         var spanRowBy = 1;
 
-        var data = cell.CellDataFn(cellParams);
+        string data;
+
+        if (cell?.CellDataFn == null)
+        {
+            data = string.Empty;
+        }
+        else
+        {
+            var result = cell.CellDataFn(cellParams);
+
+            if (result == null)
+            {
+                data = string.Empty;
+            }
+            else if (cell.CellDataType == CellDataType.Date)
+            {
+                DateTime temp;
+                if (result != null && DateTime.TryParse(result.ToString(), out temp))
+                {
+                    data = Convert.ToDateTime(result).ToString(cell.DateFormat, CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    data = string.Empty;
+                }
+            }
+            else
+            {
+                data = result.ToString();
+            }
+        }
+
+        @*  var data = cell.CellDataType != CellDataType.Date ? cell.CellDataFn(cellParams)
+                                                  : Convert.ToDateTime(cell.CellDataFn(cellParams)).ToString(cell.DateFormat, CultureInfo.InvariantCulture);*@
 
         if (RowNode.RowSpanTargetCells.ContainsKey(cell))
             spanRowBy = (int)Math.Max(spanRowBy, RowNode.RowSpanTargetCells[cell]);
@@ -95,16 +129,16 @@
                     @(RowNode.IsClicked() && cell.RowSpanFn == null && !RowNode.IsSelected() && !GetDisableRow() ? "blg-row-clicked" : null)
                     @(RowNode.IsSelected() && cell.RowSpanFn == null && !GetDisableRow() ? "blg-row-selected" : null)
                     @(GetDisableRow() ? "blg-row-disabled" : null)"
-     role="gridcell"
-     id="@($"Row{RowNode.RowNodeId}Cell{cellId}")"
-     style="justify-content: @cell.AlingContent; grid-column-end: span @Math.Min(@columnSpanFn(cellParams), gridColumns.Count - i);
+             role="gridcell"
+             id="@($"Row{RowNode.RowNodeId}Cell{cellId}")"
+             style="justify-content: @cell.AlingContent; grid-column-end: span @Math.Min(@columnSpanFn(cellParams), gridColumns.Count - i);
                                         grid-row-end: span @spanRowBy; @cellStyle"
-     title="@data"
-     @onmouseover="() => MouseOver(RowNode)"
-     @onmouseout="() => MouseOut(RowNode)"
-     @onclick="() => CellClicked(RowNode, cell)"
-     @ondblclick="() => RowDoubleClicked(RowNode, cell)"
-     @onclick:preventDefault="true">
+             title="@data"
+        @onmouseover="() => MouseOver(RowNode)"
+        @onmouseout="() => MouseOut(RowNode)"
+        @onclick="() => CellClicked(RowNode, cell)"
+        @ondblclick="() => RowDoubleClicked(RowNode, cell)"
+        @onclick:preventDefault="true">
             @if (cell.CellTemplateFn != null && cell.CellTemplate == null)
             {
                 @cell.CellTemplateFn(cellParams)
@@ -143,7 +177,7 @@ else
                                 @_rowCssClasses @(RowNode.IsHovered() ? "blg-hover-class" : null)
                                 @(RowNode.IsClicked() && !RowNode.IsSelected() ? "blg-row-clicked" : null)
                                 @(RowNode.IsSelected() ? "blg-row-selected" : null)"
-     style="height: @height; grid-column: @(1 + checkboxCounter)/@(GridColumns.Count + 2 + checkboxCounter)">
+             style="height: @height; grid-column: @(1 + checkboxCounter)/@(GridColumns.Count + 2 + checkboxCounter)">
             <span style="padding-left: @paddingLeft; width: 100%; display: flex">
                 <span @onclick="() => ChangeExpanded(RowNode.RowNodeId)" class="blg-icon-wrapper">
                     <span class="blg-icon @iconClass" unselectable="on"></span>
