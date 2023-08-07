@@ -1,6 +1,6 @@
 # DnetBlazor
 Blazor component library. All components are written in C#.
-Current ver: 2.2.1
+Current ver: 2.5.7
 
 ### Demo
 https://www.datalnet.com

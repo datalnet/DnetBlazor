@@ -19,6 +19,8 @@
 
 @inject IJSRuntime JSRuntime
 
+@inject IBlGridInterop<TItem> BlGridInterop
+
 @typeparam TItem
 
 
@@ -314,7 +316,8 @@
 
         if (Pinned == Pinned.None)
         {
-            var headerWith = await BlGridInterop<TItem>.getHeaderWidth(JSRuntime, "blgHeaderConatiner");
+            //var headerWith = await BlGridInterop<TItem>.getHeaderWidth(JSRuntime, "blgHeaderConatiner");
+            var headerWith = await BlGridInterop.GetHeaderWidth("blgHeaderConatiner");
 
             if (_headerWith != headerWith)
             {

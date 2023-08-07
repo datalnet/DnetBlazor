@@ -294,7 +294,7 @@
         return $"{startDay.Date.Year} {startDay.Date.ToString("MMMM dd")} - {endDay.Date.ToString("MMMM dd")}";
     }
 
-    private static CalendarDay CreateCalendarDay(DateTime date, int dayIndex)
+    private CalendarDay CreateCalendarDay(DateTime date, int dayIndex)
     {
         var calendar = CultureInfo.CurrentCulture.Calendar;
 

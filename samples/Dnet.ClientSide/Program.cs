@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using Dnet.Blazor.Infrastructure.Services;
 using Dnet.App.Shared.Infrastructure.Services;
+using Dnet.App.Shared.Pages.BlGridPages;
 
 namespace Dnet.App.ClientSide
 {
@@ -20,6 +21,8 @@ namespace Dnet.App.ClientSide
             builder.Services.AddDnetBlazor();
 
             builder.Services.AddScoped(typeof(IApplicationServiceService), typeof(ApplicationServiceService));
+
+            builder.Services.AddScoped(typeof(IGridConfigurationService), typeof(GridConfigurationService));
 
             await builder.Build().RunAsync();
         }

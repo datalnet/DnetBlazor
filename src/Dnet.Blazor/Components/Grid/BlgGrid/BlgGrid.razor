@@ -20,6 +20,7 @@
 @inject IGrouping<TItem> GroupingService
 @inject IPaginator PaginatorService
 @inject IAdvancedFiltering<TItem> AdvancedFilteringService
+@inject IBlGridInterop<TItem> BlGridInterop
 
 @inject IJSRuntime JSRuntime
 
@@ -636,7 +637,8 @@
         {
             _firstRender = true;
 
-            var result = await BlGridInterop<TItem>.AddWindowEventListeners(JSRuntime, _eGridContainer, DotNetObjectReference.Create(this));
+            //var result = await BlGridInterop<TItem>.AddWindowEventListeners(JSRuntime, _eGridContainer, DotNetObjectReference.Create(this));
+            var result = await BlGridInterop.AddWindowEventListeners(_eGridContainer, DotNetObjectReference.Create(this));
 
             if (GridOptions.UseVirtualization)
             {
@@ -1403,7 +1405,8 @@
 
     private async void OnScroll()
     {
-        var result = await BlGridInterop<TItem>.GetElementScrollLeft(JSRuntime, _eBodyHorizontalScrollViewport);
+        //var result = await BlGridInterop<TItem>.GetElementScrollLeft(JSRuntime, _eBodyHorizontalScrollViewport);
+        var result = await BlGridInterop.GetElementScrollLeft(_eBodyHorizontalScrollViewport);
 
         _transformX = $"-{Math.Floor(result)}px";
 

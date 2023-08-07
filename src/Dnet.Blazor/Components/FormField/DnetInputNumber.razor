@@ -94,7 +94,7 @@
 					.AddClass(CssClass)
 				.Build();
 
-	private static readonly string _stepAttributeValue = GetStepAttributeValue();
+	private string _stepAttributeValue { get; set; }
 
 	private static string GetStepAttributeValue()
 	{
@@ -116,9 +116,10 @@
 		}
 	}
 
-
 	protected override void OnInitialized()
 	{
+		_stepAttributeValue = GetStepAttributeValue();
+
 		if (!string.IsNullOrEmpty(CurrentValueAsString )) _hasFocus = true;
 
 		EditContext.OnFieldChanged += HandleOnValidationStateChanged;

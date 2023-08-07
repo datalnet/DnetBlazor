@@ -11,10 +11,8 @@
 @using Dnet.Blazor.Components.Grid.Infrastructure.Enums
 @using Dnet.Blazor.Infrastructure.Models.SearchModels
 
-@inject IThemeMessageService<ThemeConfigData> ThemeMessageService
-@inject HttpClient HttpClient
-@inject IHttpClientFactory ClientFactory
-@inject IApplicationServiceService ApplicationServiceService
+@inject IPersonService PersonService
+@inject IGridConfigurationService GridConfigurationService
 
 <div class="container-fluid" style="padding-top: 10px;">
     <div class="row" style="height: calc(100% - 40px)">
@@ -55,46 +53,19 @@
     private List<Person> _selectedPerson { get; set; } = new List<Person>();
 
 
-    public override async Task SetParametersAsync(ParameterView parameters)
+    protected override async Task OnInitializedAsync()
     {
-        GridOptions = GetGridOptions();
+        GridOptions = GridConfigurationService.GetGridOptions();
 
-        var persons = await GetPersons();
+        var persons = await PersonService.GetPersons();
 
         GridOptions.NumberOfRows = persons.Count;
 
         Persons = persons;
 
-        GridColumns = GetGridColumns();
+        GridColumns = GridConfigurationService.GetGridColumns();
 
         StateHasChanged();
-    }
-
-    private async Task<List<Person>> GetPersons()
-    {
-        var client = ClientFactory.CreateClient("WebHostURL");
-
-        var dataPersons = await client.GetFromJsonAsync<List<Person>>("/sample-data/person_500.json");
-
-        return dataPersons;
-    }
-
-    private GridOptions<Person> GetGridOptions()
-    {
-        return new GridOptions<Person>()
-            {
-                HeaderHeight = 60,
-                RowHeight = 40,
-                GridClass = "cvs-bl-grid",
-                CheckboxSelectionColumn = true,
-                SuppressRowClickSelection = true,
-                RowMultiSelectWithClick = false,
-                SuppressRowDeselection = false,
-                RowSelectionType = RowSelectionType.Multiple,
-                EnableGrouping = true,
-                EnableAdvancedFilter = true,
-                GroupDefaultExpanded = false
-            };
     }
 
     public async Task OnRowClicked(RowNode<Person> rowNode)
@@ -125,95 +96,5 @@
         GridOptions.CheckboxSelectionColumn = _showChecks;
 
         await _blGridReference.SetColumnDefsAsync(GridColumns);
-    }
-
-    private List<GridColumn<Person>> GetGridColumns()
-    {
-        var height = 40;
-        var width = 100;
-        var canGrow = 1;
-
-        return new List<GridColumn<Person>> {
-                        new GridColumn<Person> {
-                            ColumnId = 3,
-                            ColumnOrder = 1,
-                            HeaderName = "IsActive",
-                            DataField = "IsActive",
-                            Width= 150,
-                            Height= height,
-                            CanGrow = canGrow,
-                            CellDataFn = (x) => x.RowData.IsActive,
-                            AlingContent = AlingContent.Center
-                        },
-                        new GridColumn<Person> {
-                            ColumnId = 5,
-                            ColumnOrder = 2,
-                            HeaderName = "Age",
-                            DataField = "Age",
-                            Width= width,
-                            Height= height,
-                            CanGrow = canGrow,
-                            CellDataFn = (x) => x.RowData.Age,
-                            AlingContent = AlingContent.Center,
-                            CellDataType = CellDataType.Number,
-                        },
-                        new GridColumn<Person> {
-                            ColumnId = 0,
-                            ColumnOrder = 3,
-                            HeaderName = "Name",
-                            DataField = "Name",
-                            Width= width,
-                            Height= height,
-                            CanGrow = canGrow,
-                            CellDataFn = (x) => x.RowData.Name,
-                            EnableAdvancedFilter = true,
-                            CellDataType = CellDataType.Text,
-                        },
-                        new GridColumn<Person> {
-                            ColumnId = 1,
-                            HeaderName = "Gender",
-                            DataField = "Gender",
-                            Width= width,
-                            Height= height,
-                            CanGrow = canGrow,
-                            CellDataFn = (x) => x.RowData.Gender
-                        },
-                        new GridColumn<Person> {
-                            ColumnId = 6,
-                            HeaderName = "Company",
-                            DataField = "Company",
-                            Width= width,
-                            Height= height,
-                            CanGrow = canGrow,
-                            CellDataFn = (x) => x.RowData.Company,
-                        },
-                        new GridColumn<Person> {
-                            ColumnId = 7,
-                            HeaderName = "Email",
-                            DataField = "Email",
-                            Width= width,
-                            Height= height,
-                            CanGrow = canGrow,
-                            CellDataFn = (x) => x.RowData.Email,
-                        },
-                          new GridColumn<Person> {
-                            ColumnId = 11,
-                            HeaderName = "Phone",
-                            DataField = "Phone",
-                            Width= width,
-                            Height= height,
-                            CanGrow = canGrow,
-                            CellDataFn = (x) => x.RowData.Phone
-                        },
-                           new GridColumn<Person> {
-                            ColumnId = 12,
-                            HeaderName = "Address",
-                            DataField = "Address",
-                            Width= width,
-                            Height= height,
-                            CanGrow = canGrow,
-                            CellDataFn = (x) => x.RowData.Address
-                        }
-        };
     }
 }
