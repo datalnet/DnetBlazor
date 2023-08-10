@@ -11,7 +11,7 @@ using Dnet.Blazor.Components.Overlay.Infrastructure.Services;
 using Dnet.Blazor.Components.Paginator;
 using Dnet.Blazor.Infrastructure.Models.SearchModels;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
+using NSubstitute;
 
 namespace Dnet.App.Shared.Test.Pages.BlGridPages;
 
@@ -19,31 +19,29 @@ public class RowSelectionExampleMockedServices
 {
     public void RegisterMockedServices(TestContext ctx)
     {
-        var mockIBlGridMessageService = new Mock<IBlGridMessageService<List<RowNode<Person>>>>();
+        var mockIBlGridMessageService = Substitute.For<IBlGridMessageService<List<RowNode<Person>>>>();
 
-        var mockAdvancedFiltering = new Mock<IAdvancedFiltering<Person>>();
+        var mockAdvancedFiltering = Substitute.For<IAdvancedFiltering<Person>>();
 
-        var mockPaginationService = new Mock<IPaginator>();
+        var mockPaginationService = Substitute.For<IPaginator>();
 
-        var mockGroupingService = new Mock<IGrouping<Person>>();
+        var mockGroupingService = Substitute.For<IGrouping<Person>>();
 
-        var mockFilteringService = new Mock<IFiltering<Person>>();
+        var mockFilteringService = Substitute.For<IFiltering<Person>>();
 
-        var mockSortingService = new Mock<ISorting<Person>>();
+        var mockSortingService = Substitute.For<ISorting<Person>>();
 
-        var mockPersonService = new Mock<IPersonService>();
+        var mockPersonService = Substitute.For<IPersonService>();
 
-        var mockBlGridInteropService = new Mock<IBlGridInterop<Person>>();
+        var mockBlGridInteropService = Substitute.For<IBlGridInterop<Person>>();
 
         List<Person> mockPersons = new() { new Person { Name = "Test", Age = 30 } };
 
-        mockPersonService
-            .Setup(service => service.GetPersons())
-            .ReturnsAsync(mockPersons);
+        mockPersonService.GetPersons().Returns(mockPersons);
 
-        ctx.Services.AddSingleton(mockPersonService.Object);
+        ctx.Services.AddSingleton(mockPersonService);
 
-        ctx.Services.AddSingleton(mockIBlGridMessageService.Object);
+        ctx.Services.AddSingleton(mockIBlGridMessageService);
 
         ctx.Services.AddTransient(typeof(IGrouping<>), typeof(Grouping<>));
 
@@ -59,15 +57,15 @@ public class RowSelectionExampleMockedServices
 
         ctx.Services.AddScoped(typeof(IOverlayService), typeof(OverlayService));
 
-        ctx.Services.AddSingleton(mockBlGridInteropService.Object);
+        ctx.Services.AddSingleton(mockBlGridInteropService);
 
         ctx.JSInterop.SetupVoid("blginterop.init", _ => true);
 
         ctx.JSInterop.SetupVoid("blginterop.dispose", _ => true);
 
-        var gridConfigServiceMock = new Mock<IGridConfigurationService>();
+        var gridConfigServiceMock = Substitute.For<IGridConfigurationService>();
 
-        gridConfigServiceMock.Setup(service => service.GetGridOptions()).Returns(new GridOptions<Person>()
+        gridConfigServiceMock.GetGridOptions().Returns(new GridOptions<Person>()
         {
             HeaderHeight = 60,
             RowHeight = 40,
@@ -83,13 +81,11 @@ public class RowSelectionExampleMockedServices
             UseVirtualization = false
         });
 
-        gridConfigServiceMock.Setup(service => service.GetGridColumns()).Returns(() =>
-        {
-            var height = 40;
-            var width = 100;
-            var canGrow = 1;
+        var height = 40;
+        var width = 100;
+        var canGrow = 1;
 
-            return new List<GridColumn<Person>>
+        gridConfigServiceMock.GetGridColumns().Returns(new List<GridColumn<Person>>
             {
                  new GridColumn<Person> {
                             ColumnId = 1,
@@ -176,32 +172,8 @@ public class RowSelectionExampleMockedServices
                             CanGrow = canGrow,
                             CellDataFn = (x) => x.RowData.Address
                         }
-                };
         });
 
-        ctx.Services.AddSingleton(gridConfigServiceMock.Object);
+        ctx.Services.AddSingleton(gridConfigServiceMock);
     }
 }
-
-
-// Crear un mock de HttpMessageHandler
-//var mockHandler = new Mock<HttpMessageHandler>();
-
-//mockHandler
-//  .Protected()
-//  .Setup<Task<HttpResponseMessage>>(
-//     "SendAsync",
-//     ItExpr.IsAny<HttpRequestMessage>(),
-//     ItExpr.IsAny<CancellationToken>())
-//  .ReturnsAsync(new HttpResponseMessage()
-//  {
-//      StatusCode = HttpStatusCode.OK,
-//      Content = new StringContent("[{'id':1,'value':'1'}]"),
-//  });
-
-//var httpClient = new HttpClient(mockHandler.Object);
-
-//var mockFactory = new Mock<IHttpClientFactory>();
-//mockFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
-
-//ctx.Services.AddSingleton(mockFactory.Object);

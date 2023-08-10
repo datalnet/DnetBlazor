@@ -10,12 +10,13 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>2.5.9</PackageVersion>
+		<PackageVersion>2.5.11</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Fix bug when DateFormat is null and check for valid DateTime string conversion for visualization.
+			- Fix AdminDashboardLayout Navbar state when page reload.
+			- Fix menu link active indication
 		</PackageReleaseNotes>
 	</PropertyGroup>
 

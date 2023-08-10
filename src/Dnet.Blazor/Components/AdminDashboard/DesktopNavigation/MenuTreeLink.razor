@@ -47,7 +47,7 @@
 
         @if (Menu.Children.Count <= 0)
         {
-            <NavLink href="@Menu.Link" class="@(!string.IsNullOrEmpty(Menu.IconClass) ? "has-image" : null)">
+            <NavLink Match="NavLinkMatch.All" href="@Menu.Link" class="@(!string.IsNullOrEmpty(Menu.IconClass) ? "has-image" : null)">
 
                 @if (!string.IsNullOrEmpty(Menu.IconClass))
                 {
