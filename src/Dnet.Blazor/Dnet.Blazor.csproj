@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Authors>Adrian Mustelier Camino</Authors>
@@ -32,9 +32,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.4" />
-		<PackageReference Include="SixLabors.ImageSharp" Version="3.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.0-rc.1.23421.29" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0-rc.1.23421.29" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
