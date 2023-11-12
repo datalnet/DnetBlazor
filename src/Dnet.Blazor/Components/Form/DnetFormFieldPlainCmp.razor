@@ -1,5 +1,9 @@
-﻿@using Microsoft.AspNetCore.Components.Web
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components
+@using System.Linq.Expressions
+
+@inject IFormEventService FormEventService
 
 <style>
     /* Estilo para el contenedor principal del formulario */
@@ -18,6 +22,12 @@
         color: #757575;
     }
 
+    .dnet-form-field-plain-label-wrapper > label {
+        font-weight: 400;
+        margin: 0px;
+        padding: 0px;
+    }
+
     /* Estilos para el contenedor del control del formulario */
     .dnet-form-field-plain-control-container {
         display: flex; /* Disposición horizontal de los elementos internos */
@@ -33,6 +43,7 @@
         width: 34px; /* Ancho igual al alto del contenedor del control */
         display: flex;
         align-items: center;
+        justify-content: center;
     }
 
     .dnet-form-field-plain-control {
@@ -42,9 +53,50 @@
         padding-left: 10px;
     }
 
+    .dnet-form-field-plain-prefix + .dnet-form-field-plain-control {
+        padding-left: 0px;
+    }
+
     /* Estilos para la información adicional bajo el control */
     .dnet-form-field-plain-info {
         font-size: 0.70rem;
+    }
+
+    .dnet-form-field-plain-clear {
+        width: 24px; /* Ancho igual al alto del contenedor del control */
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-right: 5px;
+    }
+
+    .dnet-component-icon {
+        display: block;
+        background-repeat: no-repeat;
+        background-size: 1em 1em;
+        height: 1em;
+        width: 1em;
+        cursor: pointer;
+        color: #5f6368;
+    }
+
+    .dnet-component-icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        width: 24px;
+    }
+
+    .dnet-floating-label--required::after {
+        margin-left: 2px;
+        margin-right: 0px;
+        content: "*";
+        font-size: .75rem;
+    }
+
+    .dnet-component-clear-button {
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/></svg>");
     }
 </style>
 
@@ -52,7 +104,13 @@
     @if (!string.IsNullOrEmpty(Label))
     {
         <div class="dnet-form-field-plain-label-wrapper">
-            <span class="dnet-form-field-plain-label">@Label</span>
+            <label class="dnet-form-field-plain-label">@Label</label>
+            @if (IsRequired)
+            {
+                <span aria-hidden="true"
+                      class="dnet-floating-label--required">
+                </span>
+            }
         </div>
     }
     <div class="dnet-form-field-plain-control-container">
@@ -63,12 +121,20 @@
             </div>
         }
         <div class="dnet-form-field-plain-control">
-            @ChildContent
+            <CascadingValue Value="FormEventService">
+                @ChildContent
+            </CascadingValue>
         </div>
         @if (SufixContent != null)
         {
             <div class="dnet-form-field-plain-suffix">
                 @SufixContent
+            </div>
+        }
+        @if (UseClearButton == true)
+        {
+            <div class="dnet-component-icon-wrapper" @onclick="ClearInput">
+                <span class="dnet-component-icon dnet-component-clear-button"></span>
             </div>
         }
     </div>
@@ -108,7 +174,7 @@
     public RenderFragment ErrorContent { get; set; }
 
     [Parameter]
-    public RenderFragment ClearButtonContent { get; set; }
+    public bool UseClearButton { get; set; }
 
     [Parameter]
     public string Label { get; set; }
@@ -119,9 +185,49 @@
     [Parameter]
     public FormAppearance Appearance { get; set; }
 
+    [Parameter]
+    public bool IsRequired { get; set; }
+
+    private FieldIdentifier _fieldIdentifier;
+
     public string _currentValue { get; set; }
 
     public bool _hasErrors { get; set; }
 
     public bool _hasFocus { get; set; }
+
+    protected override void OnInitialized()
+    {
+        FormEventService.OnError += HandleError;
+
+        FormEventService.OnFocus += HandleFocus;
+
+        FormEventService.OnCurrentValue += HandleCurrentValue;
+    }
+
+    private void HandleError(bool hasError)
+    {
+        _hasErrors = hasError;
+
+        StateHasChanged();
+    }
+
+    private void HandleFocus(bool hasFocus)
+    {
+        _hasFocus = hasFocus;
+
+        StateHasChanged();
+    }
+
+    private void HandleCurrentValue(string? currentValue)
+    {
+        _currentValue = currentValue;
+
+        StateHasChanged();
+    }
+
+    private async void ClearInput()
+    {
+        FormEventService.RaiseClearContent();
+    }
 }

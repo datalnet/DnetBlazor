@@ -68,7 +68,7 @@ namespace Dnet.Blazor.Infrastructure.Services
 
             services.AddTransient(typeof(IBlGridInterop<>), typeof(BlGridInterop<>));
 
-            services.AddSingleton<IFormEventService, FormEventService>();
+            services.AddTransient<IFormEventService, FormEventService>();
 
             return services;
         }

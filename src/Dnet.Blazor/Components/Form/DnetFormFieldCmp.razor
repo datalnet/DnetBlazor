@@ -15,8 +15,9 @@
                 </div>
             }
             <div class="mat-form-field-infix">
-                @ChildContent
-
+                <CascadingValue Value="FormEventService">
+                    @ChildContent
+                </CascadingValue>
                 <span class="mat-form-field-label-wrapper">
                     <label class="@_formFieldLabelClass">
                         <span class="mat-label">@Label</span>
