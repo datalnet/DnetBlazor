@@ -1,0 +1,119 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using System.Diagnostics.CodeAnalysis
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+
+@inherits Dnet.Blazor.Infrastructure.Forms.DnetInputBase<string>
+
+@implements IDisposable
+
+@inject IFormEventService FormEventService
+
+<input @ref="__inputReference "
+       @attributes="AdditionalAttributes"
+       class="@_inputTextClass"
+       value="@BindConverter.FormatValue(CurrentValue)"
+       @onchange="HandleChange"
+       @onfocus=@(() => Focus())
+       @onblur=@(() => Blur())
+       placeholder="@_placeHolder"
+       disabled="@Disabled" />
+
+
+@code {
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; }
+
+    [DisallowNull]
+    public ElementReference? __inputReference { get; protected set; }
+
+    private bool _hasFocus { get; set; }
+
+    private bool _hasErrors { get; set; }
+
+    private string _placeHolder { get; set; }
+
+    private string _inputTextClass =>
+        new CssBuilder("mat-input-element")
+            .AddClass("mat-form-field-autofill-control")
+            .AddClass("cdk-text-field-autofill-monitored")
+            .AddClass(CssClass)
+            .Build();
+
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(CurrentValue)) {
+
+            _hasFocus = true;
+
+            FormEventService.RaiseFocus(_hasFocus);
+        }
+
+        FormEventService.RaiseCurrentValue(CurrentValueAsString);
+
+        if (EditContext != null) EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+    }
+
+    private void HandleChange(ChangeEventArgs e)
+    {
+        CurrentValueAsString = e.Value.ToString();
+
+        FormEventService.RaiseCurrentValue(CurrentValueAsString);
+    }
+
+    private void Focus()
+    {
+        _hasFocus = true;
+        _placeHolder = PlaceHolder;
+
+        FormEventService.RaiseFocus(_hasFocus);
+
+        StateHasChanged();
+    }
+
+    private void Blur()
+    {
+        if (string.IsNullOrEmpty(CurrentValue))
+        {
+            _hasFocus = false;
+
+            FormEventService.RaiseFocus(_hasFocus);
+        }
+
+        _placeHolder = string.Empty;
+
+        if (EditContext != null){
+
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            FormEventService.RaiseError(_hasErrors);
+        }
+
+        StateHasChanged();
+    }
+
+    private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
+    {
+        if (EditContext != null) {
+
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            FormEventService.RaiseError(_hasErrors);
+        }
+    }
+
+    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        result = value;
+
+        validationErrorMessage = null;
+
+        return true;
+    }
+
+}

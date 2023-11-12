@@ -1,0 +1,127 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components
+
+<style>
+    /* Estilo para el contenedor principal del formulario */
+    .dnet-form-field-plain-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Estilos para la etiqueta (label) del formulario */
+    .dnet-form-field-plain-label-wrapper {
+        margin-bottom: 1px; /* Espaciado entre la etiqueta y el contenedor del control */
+    }
+
+    .dnet-form-field-plain-label {
+        font-size: 0.75rem; /* Tamaño de fuente de la etiqueta */
+        color: #757575;
+    }
+
+    /* Estilos para el contenedor del control del formulario */
+    .dnet-form-field-plain-control-container {
+        display: flex; /* Disposición horizontal de los elementos internos */
+        align-items: stretch; /* Alineación vertical para que todos los elementos internos tengan la misma altura */
+        height: 34px; /* Altura del contenedor del control */
+        margin-bottom: 3px; /* Espaciado entre el contenedor del control y la información */
+        border: 1px solid rgba(0,0,0,.08)
+    }
+
+    /* Estilos para el prefijo, control y sufijo dentro del contenedor del control */
+    .dnet-form-field-plain-prefix,
+    .dnet-form-field-plain-suffix {
+        width: 34px; /* Ancho igual al alto del contenedor del control */
+        display: flex;
+        align-items: center;
+    }
+
+    .dnet-form-field-plain-control {
+        flex-grow: 1; /* Ocupar el espacio restante en el contenedor del control */
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+    }
+
+    /* Estilos para la información adicional bajo el control */
+    .dnet-form-field-plain-info {
+        font-size: 0.70rem;
+    }
+</style>
+
+<div class="dnet-form-field-plain-wrapper">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <div class="dnet-form-field-plain-label-wrapper">
+            <span class="dnet-form-field-plain-label">@Label</span>
+        </div>
+    }
+    <div class="dnet-form-field-plain-control-container">
+        @if (PrefixContent != null)
+        {
+            <div class="dnet-form-field-plain-prefix">
+                @PrefixContent
+            </div>
+        }
+        <div class="dnet-form-field-plain-control">
+            @ChildContent
+        </div>
+        @if (SufixContent != null)
+        {
+            <div class="dnet-form-field-plain-suffix">
+                @SufixContent
+            </div>
+        }
+    </div>
+    <div class="dnet-form-field-plain-info">
+        @if (_hasErrors)
+        {
+            <div class="mat-error">
+                @ErrorContent
+            </div>
+        }
+        else
+        {
+            <div class="mat-form-field-hint-wrapper">
+                <div class="mat-hint">
+                    @HintContent
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment PrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment SufixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment HintContent { get; set; }
+
+    [Parameter]
+    public RenderFragment ErrorContent { get; set; }
+
+    [Parameter]
+    public RenderFragment ClearButtonContent { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; }
+
+    [Parameter]
+    public FormAppearance Appearance { get; set; }
+
+    public string _currentValue { get; set; }
+
+    public bool _hasErrors { get; set; }
+
+    public bool _hasFocus { get; set; }
+}

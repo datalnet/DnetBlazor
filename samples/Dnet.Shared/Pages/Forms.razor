@@ -1,0 +1,63 @@
+﻿@page "/Forms"
+
+@using System.Drawing
+@using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.Blazor.Components.Form
+@using Dnet.Blazor.Components.FormField;
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Web;
+
+<div class="container-fluid" style="padding-top: 10px;">
+	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
+		<span class="dnet-m-r-10 dnet-app-comp-name">Forms Field</span>
+	</div>
+	<div class="d-flex dnet-m-l-30 dnet-m-t-30">
+		<div style="margin-right:100px; width: 350px;">
+			<DnetFormFieldCmp PlaceHolder="Ex. John" Label="Name" Appearance="FormAppearance.Fill">
+				<DnetInputTextCmp @bind-Value="_person.Name" PlaceHolder="Ex. MyCompany" Label="Company" type="text">
+				</DnetInputTextCmp>
+			</DnetFormFieldCmp>
+		</div>
+	</div>
+	<div class="d-flex dnet-m-l-30 dnet-m-t-30">
+		<div style="margin-right:100px; width: 350px;">
+			<DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="Name">
+				<ChildContent>
+					<DnetInputTextCmp @bind-Value="_person.Name" PlaceHolder="Ex. MyCompany" Label="Company" type="text">
+					</DnetInputTextCmp>
+				</ChildContent>
+				<HintContent>You can add the country prefix</HintContent>
+				<SufixContent>
+					<div class="dnet-app-icon-wrapper">
+						<span class="dnet-app-icon dnet-app-formfield-headphones"></span>
+					</div>
+				</SufixContent>
+			</DnetFormFieldPlainCmp>
+		</div>
+	</div>
+
+</div>
+
+
+@code {
+
+	private Person _person { get; set; } = new Person()
+		{
+			Name = "John",
+			LastName = "Doe",
+			Email = "john.doe@datalnet.com",
+			Phone = "678 89 90 09",
+			Age = 34,
+			Company = "Datalnet",
+			Balance = "90000",
+			Address = "597 Frost Street, Brogan, Indiana, 8687",
+			Birthday = DateTime.Now
+		};
+
+	protected override void OnInitialized()
+	{
+	}
+}
+
+
+
