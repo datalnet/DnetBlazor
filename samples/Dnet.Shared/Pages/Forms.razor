@@ -15,9 +15,15 @@
         <DataAnnotationsValidator />
         <div class="d-flex dnet-m-l-30 dnet-m-t-30">
             <div style="margin-right:100px; width: 250px;">
-                <DnetFormFieldCmp PlaceHolder="Ex. John" Label="Name" Appearance="FormAppearance.Fill">
-                    <DnetInputTextCmp @bind-Value="_person.Name" PlaceHolder="Ex. MyCompany" type="text">
-                    </DnetInputTextCmp>
+                <DnetFormFieldCmp PlaceHolder="Ex. John" Label="Name" Appearance="FormAppearance.Fill" UseClearButton="true" IsRequired="true">
+                    <ChildContent>
+                        <DnetInputTextCmp @bind-Value="_person.Name" PlaceHolder="Ex. MyCompany" type="text">
+                        </DnetInputTextCmp>
+                    </ChildContent>
+                    <HintContent>You can add the country prefix</HintContent>
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _person.Name)" />
+                    </ErrorContent>
                 </DnetFormFieldCmp>
             </div>
         </div>
@@ -61,10 +67,6 @@
             Address = "597 Frost Street, Brogan, Indiana, 8687",
             Birthday = DateTime.Now
         };
-
-    protected override void OnInitialized()
-    {
-    }
 }
 
 

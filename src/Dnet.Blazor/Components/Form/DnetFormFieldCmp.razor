@@ -36,10 +36,10 @@
                     @SufixContent
                 </div>
             }
-            @if (ClearButtonContent != null)
+            @if (UseClearButton == true)
             {
-                <div class="mat-form-field-suffix">
-                    @ClearButtonContent
+                <div class="dnet-component-icon-wrapper" @onclick="ClearInput">
+                    <span class="dnet-component-icon dnet-component-clear-button"></span>
                 </div>
             }
         </div>
@@ -83,31 +83,25 @@
     public RenderFragment ErrorContent { get; set; }
 
     [Parameter]
-    public RenderFragment ClearButtonContent { get; set; }
+    public bool UseClearButton { get; set; }
 
     [Parameter]
-    public bool Disabled { get; set; }
-
-    [Parameter]
-    public bool Empty { get; set; }
-
-    [Parameter]
-    public bool IsRequired { get; set; }
+    public string Label { get; set; }
 
     [Parameter]
     public string PlaceHolder { get; set; }
 
     [Parameter]
-    public string Hint { get; set; }
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool IsRequired { get; set; }
 
     [Parameter]
     public FormAppearance Appearance { get; set; } = FormAppearance.Standard;
 
     [Parameter]
     public FormFloatLabel FloatLabel { get; set; } = FormFloatLabel.AsUserTypes;
-
-    [Parameter]
-    public string Label { get; set; }
 
     internal ElementReference OverlayOrigin;
 
@@ -217,5 +211,19 @@
         _formFieldLabelClass = GetFormFieldLabelClass();
 
         StateHasChanged();
+    }
+
+    private async void ClearInput()
+    {
+        FormEventService.RaiseClearContent();
+    }
+
+    public void Dispose()
+    {
+        FormEventService.OnError -= HandleError;
+
+        FormEventService.OnFocus -= HandleFocus;
+
+        FormEventService.OnCurrentValue -= HandleCurrentValue;
     }
 }

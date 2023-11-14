@@ -196,7 +196,14 @@
 
     private void BackdropClicked(MouseEventArgs e, int reference)
     {
-        OverlayService.BackdropClicked(new OverlayResult { CloseReason = CloseReason.Cancel, OverlayReferenceId = reference });
+        var overlay = _overlays.GetValueOrDefault(reference);
+
+        var disableBackdropClick = overlay is not null ? overlay.Item2.DisableBackdropClick : false;
+
+        if(!disableBackdropClick)
+        {
+            OverlayService.BackdropClicked(new OverlayResult { CloseReason = CloseReason.Cancel, OverlayReferenceId = reference });
+        }
     }
 
     public ElementReference GeElementReference()

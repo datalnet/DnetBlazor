@@ -3,22 +3,22 @@
 @using Microsoft.AspNetCore.Components
 @using System.Linq.Expressions
 
+@implements IDisposable
+
 @inject IFormEventService FormEventService
 
 <style>
-    /* Estilo para el contenedor principal del formulario */
     .dnet-form-field-plain-wrapper {
         display: flex;
         flex-direction: column;
     }
 
-    /* Estilos para la etiqueta (label) del formulario */
     .dnet-form-field-plain-label-wrapper {
-        margin-bottom: 1px; /* Espaciado entre la etiqueta y el contenedor del control */
+        margin-bottom: 1px;
     }
 
     .dnet-form-field-plain-label {
-        font-size: 0.75rem; /* Tamaño de fuente de la etiqueta */
+        font-size: 0.72rem;
         color: #757575;
     }
 
@@ -28,26 +28,24 @@
         padding: 0px;
     }
 
-    /* Estilos para el contenedor del control del formulario */
     .dnet-form-field-plain-control-container {
-        display: flex; /* Disposición horizontal de los elementos internos */
-        align-items: stretch; /* Alineación vertical para que todos los elementos internos tengan la misma altura */
-        height: 34px; /* Altura del contenedor del control */
-        margin-bottom: 3px; /* Espaciado entre el contenedor del control y la información */
+        display: flex;
+        align-items: stretch;
+        height: 34px;
+        margin-bottom: 3px;
         border: 1px solid rgba(0,0,0,.08)
     }
 
-    /* Estilos para el prefijo, control y sufijo dentro del contenedor del control */
     .dnet-form-field-plain-prefix,
     .dnet-form-field-plain-suffix {
-        width: 34px; /* Ancho igual al alto del contenedor del control */
+        width: 34px;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
     .dnet-form-field-plain-control {
-        flex-grow: 1; /* Ocupar el espacio restante en el contenedor del control */
+        flex-grow: 1;
         display: flex;
         align-items: center;
         padding-left: 10px;
@@ -57,13 +55,12 @@
         padding-left: 0px;
     }
 
-    /* Estilos para la información adicional bajo el control */
     .dnet-form-field-plain-info {
         font-size: 0.70rem;
     }
 
     .dnet-form-field-plain-clear {
-        width: 24px; /* Ancho igual al alto del contenedor del control */
+        width: 24px;
         display: flex;
         align-items: flex-end;
         justify-content: center;
@@ -113,7 +110,7 @@
             }
         </div>
     }
-    <div class="dnet-form-field-plain-control-container">
+    <div class="dnet-form-field-plain-control-container" @ref="OverlayOrigin">
         @if (PrefixContent != null)
         {
             <div class="dnet-form-field-plain-prefix">
@@ -183,18 +180,22 @@
     public string PlaceHolder { get; set; }
 
     [Parameter]
-    public FormAppearance Appearance { get; set; }
+    public bool Disabled { get; set; }
 
     [Parameter]
     public bool IsRequired { get; set; }
 
-    private FieldIdentifier _fieldIdentifier;
+    [Parameter]
+    public FormAppearance Appearance { get; set; }
+
+    internal ElementReference OverlayOrigin;
 
     public string _currentValue { get; set; }
 
     public bool _hasErrors { get; set; }
 
     public bool _hasFocus { get; set; }
+
 
     protected override void OnInitialized()
     {
@@ -229,5 +230,14 @@
     private async void ClearInput()
     {
         FormEventService.RaiseClearContent();
+    }
+
+    public void Dispose()
+    {
+        FormEventService.OnError -= HandleError;
+
+        FormEventService.OnFocus -= HandleFocus;
+
+        FormEventService.OnCurrentValue -= HandleCurrentValue;
     }
 }

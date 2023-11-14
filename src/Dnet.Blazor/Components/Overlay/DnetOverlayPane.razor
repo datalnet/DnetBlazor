@@ -64,8 +64,6 @@
             .AddStyle("z-index", $"{OverlayConfig.PanelZindex}", when: OverlayConfig.PanelZindex != null)
             .Build();
 
-        var tt = Convert.ToString(_styles, CultureInfo.InvariantCulture);
-
         _contentChild = ContentChild;
 
         OverlayReferenceId = OverlayConfig.OverlayReferenceId;
