@@ -103,6 +103,7 @@ namespace Dnet.Blazor.Components.FloatingPanel.Infrastructure.Services
             {
                 HasBackdrop = floatingPanelConfig.HasBackdrop,
                 HasTransparentBackdrop = floatingPanelConfig.HasTransparentBackdrop,
+                DisableBackdropClick  = floatingPanelConfig.DisableBackdropClick,
                 Width = floatingPanelConfig.Width == null ? "100vw" : floatingPanelConfig.Width + "px",
                 Height = floatingPanelConfig.Height == null ? "100vh" : floatingPanelConfig.Height + "px",
                 GlobalPositionStrategy = globalPositionStrategy,

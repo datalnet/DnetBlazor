@@ -6,6 +6,7 @@ using Dnet.Blazor.Components.Dialog.Infrastructure.Interfaces;
 using Dnet.Blazor.Components.Dialog.Infrastructure.Services;
 using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Interfaces;
 using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Services;
+using Dnet.Blazor.Components.Form;
 using Dnet.Blazor.Components.Grid.Infrastructure.Interfaces;
 using Dnet.Blazor.Components.Grid.Infrastructure.Services;
 using Dnet.Blazor.Components.ImageEditor.Infrastructure.Services;
@@ -66,6 +67,8 @@ namespace Dnet.Blazor.Infrastructure.Services
             services.AddTransient(typeof(ITooltipService), typeof(TooltipService));
 
             services.AddTransient(typeof(IBlGridInterop<>), typeof(BlGridInterop<>));
+
+            services.AddTransient<IFormEventService, FormEventService>();
 
             return services;
         }

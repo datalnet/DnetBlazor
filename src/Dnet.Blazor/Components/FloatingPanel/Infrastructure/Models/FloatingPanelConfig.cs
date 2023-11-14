@@ -12,6 +12,8 @@ namespace Dnet.Blazor.Components.FloatingPanel.Infrastructure.Models
 
         public bool HasTransparentBackdrop { get; set; }
 
+        public bool DisableBackdropClick { get; set; }
+
         public string? BackdropClass { get; set; } = null;
 
         public int? Width { get; set; } = null;

@@ -16,6 +16,8 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Models
 
         public bool HasTransparentBackdrop { get; set; }
 
+        public bool DisableBackdropClick { get; set; }
+
         public string BackdropClass { get; set; }
 
         public string Width { get; set; }

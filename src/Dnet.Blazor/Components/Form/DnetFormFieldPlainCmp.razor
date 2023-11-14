@@ -1,0 +1,243 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components
+@using System.Linq.Expressions
+
+@implements IDisposable
+
+@inject IFormEventService FormEventService
+
+<style>
+    .dnet-form-field-plain-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dnet-form-field-plain-label-wrapper {
+        margin-bottom: 1px;
+    }
+
+    .dnet-form-field-plain-label {
+        font-size: 0.72rem;
+        color: #757575;
+    }
+
+    .dnet-form-field-plain-label-wrapper > label {
+        font-weight: 400;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .dnet-form-field-plain-control-container {
+        display: flex;
+        align-items: stretch;
+        height: 34px;
+        margin-bottom: 3px;
+        border: 1px solid rgba(0,0,0,.08)
+    }
+
+    .dnet-form-field-plain-prefix,
+    .dnet-form-field-plain-suffix {
+        width: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dnet-form-field-plain-control {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+    }
+
+    .dnet-form-field-plain-prefix + .dnet-form-field-plain-control {
+        padding-left: 0px;
+    }
+
+    .dnet-form-field-plain-info {
+        font-size: 0.70rem;
+    }
+
+    .dnet-form-field-plain-clear {
+        width: 24px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-right: 5px;
+    }
+
+    .dnet-component-icon {
+        display: block;
+        background-repeat: no-repeat;
+        background-size: 1em 1em;
+        height: 1em;
+        width: 1em;
+        cursor: pointer;
+        color: #5f6368;
+    }
+
+    .dnet-component-icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        width: 24px;
+    }
+
+    .dnet-floating-label--required::after {
+        margin-left: 2px;
+        margin-right: 0px;
+        content: "*";
+        font-size: .75rem;
+    }
+
+    .dnet-component-clear-button {
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/></svg>");
+    }
+</style>
+
+<div class="dnet-form-field-plain-wrapper">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <div class="dnet-form-field-plain-label-wrapper">
+            <label class="dnet-form-field-plain-label">@Label</label>
+            @if (IsRequired)
+            {
+                <span aria-hidden="true"
+                      class="dnet-floating-label--required">
+                </span>
+            }
+        </div>
+    }
+    <div class="dnet-form-field-plain-control-container" @ref="OverlayOrigin">
+        @if (PrefixContent != null)
+        {
+            <div class="dnet-form-field-plain-prefix">
+                @PrefixContent
+            </div>
+        }
+        <div class="dnet-form-field-plain-control">
+            <CascadingValue Value="FormEventService">
+                @ChildContent
+            </CascadingValue>
+        </div>
+        @if (SufixContent != null)
+        {
+            <div class="dnet-form-field-plain-suffix">
+                @SufixContent
+            </div>
+        }
+        @if (UseClearButton == true)
+        {
+            <div class="dnet-component-icon-wrapper" @onclick="ClearInput">
+                <span class="dnet-component-icon dnet-component-clear-button"></span>
+            </div>
+        }
+    </div>
+    <div class="dnet-form-field-plain-info">
+        @if (_hasErrors)
+        {
+            <div class="mat-error">
+                @ErrorContent
+            </div>
+        }
+        else
+        {
+            <div class="mat-form-field-hint-wrapper">
+                <div class="mat-hint">
+                    @HintContent
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment PrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment SufixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment HintContent { get; set; }
+
+    [Parameter]
+    public RenderFragment ErrorContent { get; set; }
+
+    [Parameter]
+    public bool UseClearButton { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool IsRequired { get; set; }
+
+    [Parameter]
+    public FormAppearance Appearance { get; set; }
+
+    internal ElementReference OverlayOrigin;
+
+    public string _currentValue { get; set; }
+
+    public bool _hasErrors { get; set; }
+
+    public bool _hasFocus { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        FormEventService.OnError += HandleError;
+
+        FormEventService.OnFocus += HandleFocus;
+
+        FormEventService.OnCurrentValue += HandleCurrentValue;
+    }
+
+    private void HandleError(bool hasError)
+    {
+        _hasErrors = hasError;
+
+        StateHasChanged();
+    }
+
+    private void HandleFocus(bool hasFocus)
+    {
+        _hasFocus = hasFocus;
+
+        StateHasChanged();
+    }
+
+    private void HandleCurrentValue(string? currentValue)
+    {
+        _currentValue = currentValue;
+
+        StateHasChanged();
+    }
+
+    private async void ClearInput()
+    {
+        FormEventService.RaiseClearContent();
+    }
+
+    public void Dispose()
+    {
+        FormEventService.OnError -= HandleError;
+
+        FormEventService.OnFocus -= HandleFocus;
+
+        FormEventService.OnCurrentValue -= HandleCurrentValue;
+    }
+}

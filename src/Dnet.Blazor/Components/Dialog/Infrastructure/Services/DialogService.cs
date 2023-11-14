@@ -1,5 +1,6 @@
 ﻿using Dnet.Blazor.Components.Dialog.Infrastructure.Interfaces;
 using Dnet.Blazor.Components.Dialog.Infrastructure.Models;
+using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Models;
 using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces;
 using Dnet.Blazor.Components.Overlay.Infrastructure.Models;
 using Dnet.Blazor.Components.Overlay.Infrastructure.Services;
@@ -32,6 +33,7 @@ namespace Dnet.Blazor.Components.Dialog.Infrastructure.Services
             {
                 HasBackdrop = dialogConfig.HasBackdrop,
                 HasTransparentBackdrop = dialogConfig.HasTransparentBackdrop,
+                DisableBackdropClick = dialogConfig.DisableBackdropClick,
                 Width = dialogConfig.Width,
                 Height = dialogConfig.Height,
                 MaxHeight = dialogConfig.MaxHeight,

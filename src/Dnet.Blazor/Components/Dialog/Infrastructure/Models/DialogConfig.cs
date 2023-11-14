@@ -14,6 +14,8 @@
 
         public bool HasTransparentBackdrop { get; set; }
 
+        public bool DisableBackdropClick { get; set; }
+
         public string BackdropClass { get; set; } = null;
 
         public string Width { get; set; } = "100%";
