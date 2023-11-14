@@ -3,6 +3,7 @@
 @using Microsoft.JSInterop
 @using System.Diagnostics.CodeAnalysis
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using System.Timers
 
 @inherits Dnet.Blazor.Infrastructure.Forms.DnetInputBase<string>
 
@@ -10,32 +11,68 @@
 
 @inject IJSRuntime JSRuntime
 
-<DnetFormField CurrentValue="@CurrentValue"
-               Appearance="@Appearance"
-               PlaceHolder="@PlaceHolder"
-               FloatLabel="@FloatLabel"
-               HasFocus="@_hasFocus"
-               Disabled="@Disabled"
-               Label="@Label"
-               PrefixContent="@PrefixContent"
-               SufixContent="@SufixContent"
-               HintContent="HintContent"
-               ErrorContent="ErrorContent"
-               HasErrors="_hasErrors && EditContext.IsModified(FieldIdentifier)"
-               IsRequired="@IsRequired">
-    <input @ref="__inputReference "
-           @attributes="AdditionalAttributes"
-           class="@_inputTextClass"
-           value="@BindConverter.FormatValue(CurrentValue)"
-           @onchange="@((ChangeEventArgs __e) => CurrentValueAsString = __e.Value.ToString())"
-           @onfocus=@(() => Focus())
-           @onblur=@(() => Blur())
-           placeholder="@_placeHolder"
-           disabled="@Disabled" />
-</DnetFormField>
+@if (!ImmediateResponse)
+{
+    <DnetFormField CurrentValue="@CurrentValue"
+                   Appearance="@Appearance"
+                   PlaceHolder="@PlaceHolder"
+                   FloatLabel="@FloatLabel"
+                   HasFocus="@_hasFocus"
+                   Disabled="@Disabled"
+                   Label="@Label"
+                   PrefixContent="@PrefixContent"
+                   SufixContent="@SufixContent"
+                   HintContent="HintContent"
+                   ErrorContent="ErrorContent"
+                   HasErrors="_hasErrors && EditContext.IsModified(FieldIdentifier)"
+                   IsRequired="@IsRequired">
+        <input @ref="__inputReference "
+               @attributes="AdditionalAttributes"
+               class="@_inputTextClass"
+               value="@BindConverter.FormatValue(CurrentValue)"
+               @onchange="@((ChangeEventArgs __e) => CurrentValueAsString = __e.Value.ToString())"
+               @onfocus=@(() => Focus())
+               @onblur=@(() => Blur())
+               placeholder="@_placeHolder"
+               disabled="@Disabled" />
+    </DnetFormField>
+
+}
+else
+{
+    <DnetFormField CurrentValue="@CurrentValue"
+                   Appearance="@Appearance"
+                   PlaceHolder="@PlaceHolder"
+                   FloatLabel="@FloatLabel"
+                   HasFocus="@_hasFocus"
+                   Disabled="@Disabled"
+                   Label="@Label"
+                   PrefixContent="@PrefixContent"
+                   SufixContent="@SufixContent"
+                   HintContent="HintContent"
+                   ErrorContent="ErrorContent"
+                   HasErrors="_hasErrors && EditContext.IsModified(FieldIdentifier)"
+                   IsRequired="@IsRequired">
+        <input @ref="__inputReference "
+               @attributes="AdditionalAttributes"
+               class="@_inputTextClass"
+               @bind="CurrentValueAsString"
+               @bind:event="oninput"
+               @onkeyup="ResetTimer"
+               @onkeyup:stopPropagation="true"
+               @onkeyup:preventDefault="true"
+               @onfocus=@(() => Focus())
+               @onblur=@(() => Blur())
+               placeholder="@_placeHolder"
+               disabled="@Disabled" />
+    </DnetFormField>
+}
 
 
 @code {
+
+    [Parameter]
+    public EventCallback<string> OnStopTyping { get; set; }
 
     [Parameter]
     public RenderFragment PrefixContent { get; set; }
@@ -73,11 +110,19 @@
     [Parameter]
     public bool IsRequired { get; set; }
 
+    [Parameter]
+    public bool ImmediateResponse { get; set; } = true;
+
+    [Parameter]
+    public int DebounceTime { get; set; } = 300;
+
     private bool _hasFocus { get; set; }
 
     private bool _hasErrors { get; set; }
 
     private string _placeHolder { get; set; }
+
+    private Timer _debounceTimer;
 
     private string _inputTextClass =>
         new CssBuilder("mat-input-element")
@@ -89,9 +134,38 @@
 
     protected override void OnInitialized()
     {
+        if (ImmediateResponse)
+        {
+            _debounceTimer = new Timer(DebounceTime);
+
+            _debounceTimer.Elapsed += HandleChangeDebouncedDiscard;
+
+            _debounceTimer.AutoReset = false;
+        }
+
         if (!string.IsNullOrEmpty(CurrentValue)) _hasFocus = true;
 
         if (EditContext != null) EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+    }
+
+    public void HandleChangeDebouncedDiscard(Object source, ElapsedEventArgs e)
+    {
+        _ = HandleChangeDebounced(e);
+    }
+
+    private async Task HandleChangeDebounced(ElapsedEventArgs e)
+    {
+        await InvokeAsync(async () =>
+        {
+            await OnStopTyping.InvokeAsync(CurrentValueAsString);
+        });
+    }
+
+    private void ResetTimer(KeyboardEventArgs data)
+    {
+        _debounceTimer.Stop();
+
+        _debounceTimer.Start();
     }
 
     private void Focus()
@@ -126,4 +200,8 @@
         return true;
     }
 
+    public void Dispose()
+    {
+        if (ImmediateResponse) _debounceTimer.Elapsed -= HandleChangeDebouncedDiscard;
+    }
 }

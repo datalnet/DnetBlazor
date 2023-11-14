@@ -7,7 +7,7 @@
 	<div>
 		<EditForm Model="@Person" style="display: flex;flex-direction:column">
 			<DataAnnotationsValidator />
-			<DnetInputText @bind-Value="Person.Name" PlaceHolder="Ex. John" Label="Name" Appearance="Appearance" type="text" Disabled="true" IsRequired="true">
+			<DnetInputText @bind-Value="Person.Name" PlaceHolder="Ex. John" Label="Name" Appearance="Appearance" type="text" IsRequired="true">
 				<HintContent>Required field</HintContent>
 				<ErrorContent>
 					<ValidationMessage For="@(() => Person.Name)" />
@@ -30,7 +30,7 @@
 			</div>
 			<DnetInputNumber @bind-Value="Person.Age" PlaceHolder="Ex. Pizza" Label="Favorite food" Appearance="Appearance" type="text">
 			</DnetInputNumber>
-			<DnetInputText @bind-Value="Person.Company" PlaceHolder="Ex. MyCompany" Label="Company" Appearance="Appearance" type="text">
+			<DnetInputText @bind-Value="Person.Company" PlaceHolder="Ex. MyCompany" Label="Company" Appearance="Appearance" type="text" Disabled="true">
 			</DnetInputText>
 			<DnetInputText @bind-Value="Person.Balance" PlaceHolder="Ex. Current Balance" Label="Balance" Appearance="Appearance" type="text">
 				<SufixContent>
