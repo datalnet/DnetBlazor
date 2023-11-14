@@ -10,12 +10,16 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>3.0.0-rc.1</PackageVersion>
+		<PackageVersion>3.0.0</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Upgrade to .Net 8
+			- Upgrade to .Net 8 final
+			- Adds the functionality of not closing the overlay when clicking on it
+			- New implementation for  form components. DnetInputTextCmp
+			- Added new plain theme for new form components
+			- Added immediate response functionality for input text
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
@@ -31,8 +35,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.0-rc.1.23421.29" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0-rc.1.23421.29" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
 	</ItemGroup>
 

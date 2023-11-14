@@ -75,7 +75,7 @@
     {
         AppName = "Datalnet Blazor Components";
         AppDescription = "";
-        AppVersion = "V.2.5.11";
+        AppVersion = "V.3.0.0";
         Title = "Ready to eat";
         UserName = "admin@datalnet.com";
         PersonName = "Adrian Mustelier";
@@ -272,6 +272,18 @@
                 Link = "/InputText",
                 ParentId = 0,
                 Text = "Form Fields",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/Forms",
+                ParentId = 0,
+                Text = "New Forms",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
