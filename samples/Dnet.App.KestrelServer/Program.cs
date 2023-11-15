@@ -1,16 +1,16 @@
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Listen(IPAddress.Any, 5001, x => x.Protocols = HttpProtocols.Http1AndHttp2AndHttp3);
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
-
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.Listen(IPAddress.Any, 5001, x => x.Protocols = HttpProtocols.Http1AndHttp2AndHttp3);
-});
 
 // Configure the HTTP request pipeline.
 //if (!app.Environment.IsDevelopment())
