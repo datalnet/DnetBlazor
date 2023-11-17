@@ -11,7 +11,7 @@
 
 @if (!ImmediateResponse)
 {
-    <input @ref="__inputReference "
+    <input @ref="__inputReference"
            @attributes="AdditionalAttributes"
            class="@_inputTextClass"
            value="@BindConverter.FormatValue(CurrentValue)"
@@ -23,7 +23,7 @@
 }
 else
 {
-    <input @ref="__inputReference "
+    <input @ref="__inputReference"
            @attributes="AdditionalAttributes"
            class="@_inputTextClass"
            @bind="CurrentValueAsString"
@@ -41,7 +41,7 @@ else
 @code {
 
     [CascadingParameter]
-    private IFormEventService? _formEventService { get; set; }
+    private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
 
     [Parameter]
     public EventCallback<bool> OnClearInput { get; set; }
@@ -72,6 +72,8 @@ else
 
     private Timer _debounceTimer;
 
+    private IFormEventService _formEventService { get; set; }
+
     private string _inputTextClass =>
         new CssBuilder("mat-input-element")
             .AddClass(CssClass)
@@ -80,6 +82,8 @@ else
 
     protected override void OnInitialized()
     {
+        _formEventService = _formFieldCascadingValues.FormEventService;
+
         if (ImmediateResponse)
         {
             _debounceTimer = new Timer(DebounceTime);
@@ -91,7 +95,6 @@ else
 
         if (!string.IsNullOrEmpty(CurrentValue))
         {
-
             _hasFocus = true;
 
             if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
@@ -99,9 +102,9 @@ else
 
         if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
-        if (EditContext != null) EditContext.OnFieldChanged += HandleOnValidationStateChanged;
-
         if (_formEventService is not null) _formEventService.OnClearContent += HandleClearContent;
+
+        if (EditContext != null) EditContext.OnFieldChanged += HandleOnValidationStateChanged;
     }
 
     public void HandleChangeDebouncedDiscard(Object source, ElapsedEventArgs e)
@@ -156,7 +159,6 @@ else
 
         if (EditContext != null)
         {
-
             _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
             if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
@@ -169,7 +171,6 @@ else
     {
         if (EditContext != null)
         {
-
             _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
             if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));

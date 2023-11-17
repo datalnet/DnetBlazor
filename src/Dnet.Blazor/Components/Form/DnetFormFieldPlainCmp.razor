@@ -15,6 +15,7 @@
 
     .dnet-form-field-plain-label-wrapper {
         margin-bottom: 1px;
+        padding-left: 3px;
     }
 
     .dnet-form-field-plain-label {
@@ -33,7 +34,8 @@
         align-items: stretch;
         height: 34px;
         margin-bottom: 3px;
-        border: 1px solid rgba(0,0,0,.08)
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 5px;
     }
 
     .dnet-form-field-plain-prefix,
@@ -110,7 +112,7 @@
             }
         </div>
     }
-    <div class="dnet-form-field-plain-control-container" @ref="OverlayOrigin">
+    <div class="dnet-form-field-plain-control-container" @ref="_formField">
         @if (PrefixContent != null)
         {
             <div class="dnet-form-field-plain-prefix">
@@ -118,7 +120,7 @@
             </div>
         }
         <div class="dnet-form-field-plain-control">
-            <CascadingValue Value="FormEventService">
+            <CascadingValue Value="_formFieldCascadingValues">
                 @ChildContent
             </CascadingValue>
         </div>
@@ -128,7 +130,7 @@
                 @SufixContent
             </div>
         }
-        @if (UseClearButton == true)
+        @if (_useClearButton == true)
         {
             <div class="dnet-component-icon-wrapper" @onclick="ClearInput">
                 <span class="dnet-component-icon dnet-component-clear-button"></span>
@@ -171,7 +173,7 @@
     public RenderFragment ErrorContent { get; set; }
 
     [Parameter]
-    public bool UseClearButton { get; set; }
+    public bool UseClearButton { get; set; } = false;
 
     [Parameter]
     public string Label { get; set; }
@@ -188,22 +190,40 @@
     [Parameter]
     public FormAppearance Appearance { get; set; }
 
-    internal ElementReference OverlayOrigin;
+    private string _currentValue { get; set; }
 
-    public string _currentValue { get; set; }
+    private bool _hasErrors { get; set; }
 
-    public bool _hasErrors { get; set; }
+    private bool _hasFocus { get; set; }
 
-    public bool _hasFocus { get; set; }
+    private bool _useClearButton { get; set; }
+
+    private ElementReference _formField;
+
+    private FormFieldCascadingValues _formFieldCascadingValues { get; set; }
 
 
     protected override void OnInitialized()
     {
+        _formFieldCascadingValues = new FormFieldCascadingValues()
+            {
+                FormEventService = FormEventService,
+            };
+
         FormEventService.OnError += HandleError;
 
         FormEventService.OnFocus += HandleFocus;
 
         FormEventService.OnCurrentValue += HandleCurrentValue;
+
+        _useClearButton = UseClearButton;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        _formFieldCascadingValues.FormField = _formField;
     }
 
     private void HandleError(bool hasError)

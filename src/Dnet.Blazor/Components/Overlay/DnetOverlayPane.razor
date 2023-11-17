@@ -61,6 +61,7 @@
             .AddStyle("min-width", OverlayConfig.MinWidth, when: !string.IsNullOrEmpty(OverlayConfig.MinWidth))
             .AddStyle("max-width", OverlayConfig.MaxWidth, when: !string.IsNullOrEmpty(OverlayConfig.MaxWidth))
             .AddStyle("max-height", OverlayConfig.MaxHeight, when: !string.IsNullOrEmpty(OverlayConfig.MaxHeight))
+            .AddStyle("margin-top", OverlayConfig.MarginTop, when: !string.IsNullOrEmpty(OverlayConfig.MarginTop))
             .AddStyle("z-index", $"{OverlayConfig.PanelZindex}", when: OverlayConfig.PanelZindex != null)
             .Build();
 
@@ -140,6 +141,7 @@
             .AddStyle("min-width", OverlayConfig.MinWidth, when: !string.IsNullOrEmpty(OverlayConfig.MinWidth))
             .AddStyle("max-width", OverlayConfig.MaxWidth, when: !string.IsNullOrEmpty(OverlayConfig.MaxWidth))
             .AddStyle("max-height", OverlayConfig.MaxHeight, when: !string.IsNullOrEmpty(OverlayConfig.MaxHeight))
+            .AddStyle("margin-top", OverlayConfig.MarginTop, when: !string.IsNullOrEmpty(OverlayConfig.MarginTop))
             .AddStyle("z-index", $"{OverlayConfig.PanelZindex}", when: OverlayConfig.PanelZindex != null)
             .Build();
 
@@ -309,6 +311,7 @@
                                        .AddStyle("min-width", minWidth, when: !string.IsNullOrEmpty(minWidth))
                                        .AddStyle("max-width", OverlayConfig.MaxWidth, when: !string.IsNullOrEmpty(maxWidth))
                                        .AddStyle("max-height", OverlayConfig.MaxHeight, when: !string.IsNullOrEmpty(maxHeight))
+                                       .AddStyle("margin-top", OverlayConfig.MarginTop, when: !string.IsNullOrEmpty(OverlayConfig.MarginTop))
                                        .AddStyle("z-index", $"{OverlayConfig.PanelZindex}", when: OverlayConfig.PanelZindex != null)
                                        .Build();
 

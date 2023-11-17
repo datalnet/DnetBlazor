@@ -12,53 +12,55 @@
 
 @inject IJSRuntime JSRuntime
 
-<div class="dnet-autoc-menu-container dnet-virtual-scroll-viewport dnet-virtual-scroll-orientation-vertical" style="@_styles">
-    <div class="dnet-autoc-menu-container-filter-wrapper dnet-virtual-scroll-content-wrapper">
-        @if (ItemPrefixContent != null || ItemSufixContent != null || ChildContent != null)
-        {
-            <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
-                <ItemContent>
-                    <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))" style="margin-bottom: 2px; height:@(ItemHeight)px">
-                        <div class="dnet-autoc-content-wrapper">
-                            @if (ItemPrefixContent != null)
-                            {
-                                <div class="dnet-autoc-prefix-content">
-                                    @ItemPrefixContent(item)
-                                </div>
-                            }
-                            <div class="dnet-autoc-middle-content">
-                                @if (ChildContent != null)
+<div class="dnet-autoc-menu-container" style="display:flex;flex-direction:column;width:100%;border-radius:@BorderRadius;">
+    <div class="dnet-virtual-scroll-viewport dnet-virtual-scroll-orientation-vertical" style="@_styles">
+        <div class="dnet-autoc-menu-container-filter-wrapper dnet-virtual-scroll-content-wrapper">
+            @if (ItemPrefixContent != null || ItemSufixContent != null || ChildContent != null)
+            {
+                <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
+                    <ItemContent>
+                        <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))" style="margin-bottom: 2px; height:@(ItemHeight)px">
+                            <div class="dnet-autoc-content-wrapper">
+                                @if (ItemPrefixContent != null)
                                 {
-                                    @ChildContent(item)
+                                    <div class="dnet-autoc-prefix-content">
+                                        @ItemPrefixContent(item)
+                                    </div>
                                 }
-                                else
+                                <div class="dnet-autoc-middle-content">
+                                    @if (ChildContent != null)
+                                    {
+                                        @ChildContent(item)
+                                    }
+                                    else
+                                    {
+                                        <span class="dnet-autoc-content-text">
+                                            @DisplayValueConverter(item)
+                                        </span>
+                                    }
+                                </div>
+                                @if (ItemSufixContent != null)
                                 {
-                                    <span class="dnet-autoc-content-text">
-                                        @DisplayValueConverter(item)
-                                    </span>
+                                    <div class="dnet-autoc-sufix-content">
+                                        @ItemSufixContent(item)
+                                    </div>
                                 }
                             </div>
-                            @if (ItemSufixContent != null)
-                            {
-                                <div class="dnet-autoc-sufix-content">
-                                    @ItemSufixContent(item)
-                                </div>
-                            }
                         </div>
+                    </ItemContent>
+                </Virtualize>
+            }
+            else
+            {
+                <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
+                    <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))" style="margin-bottom: 2px; height:@(ItemHeight)px">
+                        <span class="dnet-autoc-content-text has-content">
+                            @DisplayValueConverter(item)
+                        </span>
                     </div>
-                </ItemContent>
-            </Virtualize>
-        }
-        else
-        {
-            <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
-                <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))" style="margin-bottom: 2px; height:@(ItemHeight)px">
-                    <span class="dnet-autoc-content-text has-content">
-                        @DisplayValueConverter(item)
-                    </span>
-                </div>
-            </Virtualize>
-        }
+                </Virtualize>
+            }
+        </div>
     </div>
 </div>
 
@@ -76,6 +78,9 @@
 
     [Parameter]
     public string Height { get; set; } = "200px";
+
+    [Parameter]
+    public string BorderRadius { get; set; } = "5px";
 
     [Parameter]
     public string MinWidth { get; set; }

@@ -12,7 +12,7 @@
 
 @inject IJSRuntime JSRuntime
 
-<div class="dnet-autoc-menu-container" style="display:flex;flex-direction:column;width:100%">
+<div class="dnet-autoc-menu-container" style="display:flex;flex-direction:column;width:100%;border-radius:@BorderRadius;">
     <div class="dnet-virtual-scroll-viewport dnet-virtual-scroll-orientation-vertical" style="@_styles">
         <div class="dnet-autoc-menu-container-filter-wrapper dnet-virtual-scroll-content-wrapper">
             @if (ItemPrefixContent != null || ItemSufixContent != null || ChildContent != null)
@@ -112,6 +112,9 @@
 
     [Parameter]
     public string MaxHeight { get; set; } = null;
+
+    [Parameter]
+    public string BorderRadius { get; set; } = "0px";
 
     [Parameter]
     public SelectService<TItem> SelectService { get; set; }

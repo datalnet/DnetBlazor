@@ -25,10 +25,13 @@ namespace Dnet.App.Shared.Infrastructure.Entities
         [Required]
         public string LastName { get; set; }
 
+        [Required]
         public string Gender { get; set; }
 
         public string Company { get; set; }
 
+        [Required]
+        [RegularExpression(@"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9.-]+$", ErrorMessage = "Introduzca un email valido.")]
         public string Email { get; set; }
 
         public string Phone { get; set; }

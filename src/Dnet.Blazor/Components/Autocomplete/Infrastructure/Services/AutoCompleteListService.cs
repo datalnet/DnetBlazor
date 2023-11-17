@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Dnet.Blazor.Components.Autocomplete.Infrastructure.Services
+﻿namespace Dnet.Blazor.Components.Autocomplete.Infrastructure.Services
 {
     public class AutoCompleteListService<TItem>
     {
