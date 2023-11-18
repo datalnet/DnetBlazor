@@ -115,6 +115,23 @@
                 </DnetFormFieldPlainCmp>
             </div>
         </div>
+        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
+            <div style="margin-right:100px; width: 250px;">
+                <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="Email" IsRequired="true">
+                    <ChildContent>
+                        <DnetInputTextAreaCmp @bind-Value="_person.Address"
+                                              PlaceHolder="Ex. 4th Street, CP: 11901"
+                                              Label="Address"
+                                              type="text"
+                                              rows="5">
+                        </DnetInputTextAreaCmp>
+                    </ChildContent>
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _person.Email)" />
+                    </ErrorContent>
+                </DnetFormFieldPlainCmp>
+            </div>
+        </div>
     </EditForm>
 </div>
 

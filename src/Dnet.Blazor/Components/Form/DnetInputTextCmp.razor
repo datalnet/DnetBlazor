@@ -139,6 +139,7 @@ else
     private void Focus()
     {
         _hasFocus = true;
+
         _placeHolder = PlaceHolder;
 
         if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
