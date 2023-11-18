@@ -7,6 +7,7 @@
 @using Dnet.Blazor.Components.FormField;
 @using Dnet.Blazor.Components.Select
 @using Dnet.Blazor.Components.Autocomplete
+@using Dnet.Blazor.Components.DatePicker
 @using Dnet.Blazor.Infrastructure.Services
 @using Microsoft.AspNetCore.Components;
 @using Microsoft.AspNetCore.Components.Web;
@@ -61,10 +62,10 @@
                 <DnetFormFieldPlainCmp PlaceHolder="Gender" Label="Gender" IsRequired="true">
                     <ChildContent>
                         <DnetGenericSelectCmp TValue="string" @bind-Value="_person.Gender" Items="_genders"
-                            TItem="Gender" DisplayValueConverter="(value) => (value.Name)"
-                            ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResource1ItemSelected"
-                            PlaceHolder="Api Resource" Label="Api Resource" BorderRadius="5px" MarginTop="5px"
-                            Appearance="Appearance.Fill">
+                                              TItem="Gender" DisplayValueConverter="(value) => (value.Name)"
+                                              ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResource1ItemSelected"
+                                              PlaceHolder="Api Resource" Label="Api Resource" BorderRadius="5px" MarginTop="5px"
+                                              Appearance="Appearance.Fill">
                         </DnetGenericSelectCmp>
                     </ChildContent>
                     <ErrorContent>
@@ -78,13 +79,38 @@
                 <DnetFormFieldPlainCmp PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
                     <ChildContent>
                         <DnetAutocompleteCmp TValue="string" @bind-Value="@_person.Name" Items="_items" TItem="Person"
-                            DisplayValueConverter="(value) => value.Name" ValueConverter="(value) => (value.Name)"
-                            OnItemSelected="OnAutocompleteFilter" InputTextToUpper="true" PlaceHolder="Name"
-                            SortBy="@sortBy" FilterBy="@filterBy">
+                                             DisplayValueConverter="(value) => value.Name" ValueConverter="(value) => (value.Name)"
+                                             OnItemSelected="OnAutocompleteFilter" InputTextToUpper="true" PlaceHolder="Name"
+                                             SortBy="@sortBy" FilterBy="@filterBy">
                         </DnetAutocompleteCmp>
                     </ChildContent>
                     <ErrorContent>
                         <ValidationMessage For="@(() => _person.Gender)" />
+                    </ErrorContent>
+                </DnetFormFieldPlainCmp>
+            </div>
+        </div>
+        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
+            <div style="margin-right:100px; width: 250px;">
+                <DnetFormFieldPlainCmp PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+                    <ChildContent>
+                        <DnetDatePickerCmp @bind-Value="@_person.StartDate"
+                                           Disabled="false"
+                                           OnDaySelected="DaySelected"
+                                           PlaceHolder="Departure day"
+                                           MaxDayValue="DateTime.Now"
+                                           MinDayValue="DateTime.Now.AddDays(-10)"
+                                           FirstDayToShow="DateTime.Now"
+                                           DatepickerFilter="(p) => { return p.DayIndex == 0; }">
+                        </DnetDatePickerCmp>
+                    </ChildContent>
+                    <SufixContent>
+                        <div class="dnet-datepicker-icon-wrapper">
+                            <span class="dnet-datepicker-icon dnet-datepicker-icon-default" unselectable="on"></span>
+                        </div>
+                    </SufixContent>
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _person.StartDate)" />
                     </ErrorContent>
                 </DnetFormFieldPlainCmp>
             </div>
@@ -105,7 +131,6 @@
             Company = "Datalnet",
             Balance = "90000",
             Address = "597 Frost Street, Brogan, Indiana, 8687",
-            Birthday = DateTime.Now,
         };
 
     private EditContext? _editContext;
@@ -124,6 +149,8 @@
 
     private DnetAutocomplete<Person> _dnetAutocomplete { get; set; }
 
+    private string _dateSelected { get; set; }
+
     CustomFilter<Person> filterBy = CustomFilter<Person>
     .FilterBy(x => x.Name, CustomFilterOperator.Contains)
     .ThenFilterBy(x => x.Company, CustomFilterOperator.Contains);
@@ -136,18 +163,18 @@
     protected override void OnInitialized()
     {
         _genders = new List<Gender>()
-{
-new ()
-{
-GenderId = 1,
-Name = "Female"
-},
-new ()
-{
-GenderId = 2,
-Name = "Male"
-}
-};
+        {
+            new ()
+            {
+                GenderId = 1,
+                Name = "Female"
+            },
+            new ()
+            {
+                GenderId = 2,
+                Name = "Male"
+            }
+        };
 
         _editContext = new EditContext(_person);
 
@@ -209,5 +236,10 @@ Name = "Male"
         var items = (await GetPersons()).Where(p => p.Name.ToUpper().Contains(value.ToUpper())).ToList();
 
         _dnetAutocomplete.UpdateData(items);
+    }
+
+    private void DaySelected(Blazor.Components.DatePicker.Infrastructure.Models.CalendarDay selecteDay)
+    {
+        _dateSelected = selecteDay.FormattedDate;
     }
 }

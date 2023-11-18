@@ -394,6 +394,8 @@
 
         _hasFocus = false;
 
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
         await ValueChanged.InvokeAsync(Value);
         await OnClearInput.InvokeAsync(true);
 
@@ -513,7 +515,11 @@
     private void Focus()
     {
         _hasFocus = true;
+
         _placeHolder = PlaceHolder;
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
         StateHasChanged();
     }
 
@@ -522,6 +528,8 @@
         if (string.IsNullOrEmpty(CurrentValueAsString))
         {
             _hasFocus = false;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
 
         _placeHolder = string.Empty;
