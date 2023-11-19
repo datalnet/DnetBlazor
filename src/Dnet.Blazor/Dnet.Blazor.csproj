@@ -10,16 +10,12 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>3.0.1</PackageVersion>
+		<PackageVersion>3.1.0</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Upgrade to .Net 8 final
-			- Adds the functionality of not closing the overlay when clicking on it
-			- New implementation for  form components. DnetInputTextCmp
-			- Added new plain theme for new form components
-			- Added immediate response functionality for input text
+			- New plain style for form components
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
@@ -44,6 +40,10 @@
 		<Content Update="wwwroot\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Components\Grid\BlgSingleFilter\" />
 	</ItemGroup>
 
 </Project>

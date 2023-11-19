@@ -25,20 +25,11 @@
 
 @inject IOverlayService OverlayService
 
-<input @ref="__inputReference"
-       @attributes="AdditionalAttributes"
-       class="@_inputTextClass"
-       value="@BindConverter.FormatValue(CurrentValue)"
-       @onfocus=@(() => Focus())
-       @onblur=@(() => Blur())
-       @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))"
-       @onfocusin=@(() => OpenMenu())
-       @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e))
-       @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
-       @onclick:stopPropagation="true"
-       @onclick:preventDefault="true"
-       placeholder="@PlaceHolder"
-       disabled="@Disabled"
+<input @ref="__inputReference" @attributes="AdditionalAttributes" class="@_inputTextClass"
+       value="@BindConverter.FormatValue(CurrentValue)" @onfocus=@(() => Focus()) @onblur=@(() => Blur())
+       @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" @onfocusin=@(() => OpenMenu())
+       @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
+       @onclick:stopPropagation="true" @onclick:preventDefault="true" placeholder="@PlaceHolder" disabled="@Disabled"
        autocomplete="none" />
 
 
@@ -162,9 +153,9 @@
     private List<TItem> _items { get; set; } = new();
 
     private string _inputTextClass =>
-                new CssBuilder("mat-input-element")
-                    .AddClass(CssClass)
-                .Build();
+    new CssBuilder("mat-input-element")
+    .AddClass(CssClass)
+    .Build();
 
 
     protected override void OnInitialized()
@@ -184,14 +175,11 @@
             if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
 
-        if (EditContext != null)
-        {
-            EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+        EditContext.OnFieldChanged += HandleOnValidationStateChanged;
 
-            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
-        }
+        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
 
         if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
@@ -239,10 +227,14 @@
         if (value is string stringValue)
         {
             CurrentValue = (TValue)(object)stringValue;
+
+            if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
         }
         else if (typeof(TValue) == typeof(int) && int.TryParse(value.ToString(), out var parsedValue))
         {
             CurrentValue = (TValue)(object)parsedValue;
+
+            if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
         }
     }
 
@@ -253,7 +245,8 @@
         if (FilterBy == null) throw new NullReferenceException($"FilterBy could not be Null");
     }
 
-    protected override bool TryParseValueFromString(string? value, out TValue result, [NotNullWhen(false)] out string? validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, out TValue result, [NotNullWhen(false)] out string?
+    validationErrorMessage)
     {
         if (typeof(TValue) == typeof(string))
         {
@@ -373,7 +366,14 @@
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        if (!string.IsNullOrEmpty(CurrentValueAsString)) _hasFocus = true;
+        if (!string.IsNullOrEmpty(CurrentValueAsString))
+        {
+            _hasFocus = true;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+        }
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
         await OnItemSelected.InvokeAsync(item);
 
@@ -390,11 +390,13 @@
 
         _hasErrors = EditContext?.GetValidationMessages(FieldIdentifier).Count() > 0;
 
-         if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
 
         _hasFocus = false;
 
         if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
         await ValueChanged.InvokeAsync(Value);
         await OnClearInput.InvokeAsync(true);
@@ -407,43 +409,43 @@
     private void AttachMenu()
     {
         var positions = new List<ConnectedPosition>
+        {
+            new()
             {
-                new()
-                {
-                    OriginX = HorizontalConnectionPos.Start,
-                    OriginY = VerticalConnectionPos.Bottom,
-                    OverlayX = HorizontalConnectionPos.Start,
-                    OverlayY = VerticalConnectionPos.Top
-                },
-                new()
-                {
-                    OriginX = HorizontalConnectionPos.Start,
-                    OriginY = VerticalConnectionPos.Top,
-                    OverlayX = HorizontalConnectionPos.Start,
-                    OverlayY = VerticalConnectionPos.Bottom
-                },
-                new()
-                {
-                    OriginX = HorizontalConnectionPos.End,
-                    OriginY = VerticalConnectionPos.Bottom,
-                    OverlayX = HorizontalConnectionPos.End,
-                    OverlayY = VerticalConnectionPos.Top
-                },
-                new()
-                {
-                    OriginX = HorizontalConnectionPos.End,
-                    OriginY = VerticalConnectionPos.Top,
-                    OverlayX = HorizontalConnectionPos.End,
-                    OverlayY = VerticalConnectionPos.Bottom
-                }
-            };
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Bottom
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Bottom
+            }
+        };
 
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
-           .WithLockedPosition()
-           .WithViewportMargin(8)
-           .SetOrigin(_formFieldCascadingValues.FormField)
-           .WithFlexibleDimensions(false)
-           .WithPositions(positions);
+        .WithLockedPosition()
+        .WithViewportMargin(8)
+        .SetOrigin(_formFieldCascadingValues.FormField)
+        .WithFlexibleDimensions(false)
+        .WithPositions(positions);
 
         var connectedPanelConfig = new OverlayConfig
             {
@@ -543,7 +545,7 @@
     {
         _hasErrors = EditContext?.GetValidationMessages(FieldIdentifier).Count() > 0;
 
-         if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
     }
 
     public void UpdateData(List<TItem> items)

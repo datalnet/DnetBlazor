@@ -10,6 +10,8 @@ public class FormEventService : IFormEventService
 
     public event Action OnClearContent;
 
+    public Action<FormEventData> OnFormEventRaised;
+
     public void RaiseError(bool hasError)
     {
         OnError?.Invoke(hasError);
@@ -28,5 +30,28 @@ public class FormEventService : IFormEventService
     public void RaiseClearContent()
     {
         OnClearContent?.Invoke();
+    }
+
+    public void FormRaiseEvent(string error, bool hasFocus, object currentValue)
+    {
+        var eventData = new FormEventData(error, hasFocus, currentValue);
+
+        OnFormEventRaised?.Invoke(eventData);
+    }
+}
+
+public class FormEventData
+{
+    public string Error { get; set; }
+
+    public bool HasFocus { get; set; }
+
+    public object CurrentValue { get; set; }
+
+    public FormEventData(string error, bool hasFocus, object currentValue)
+    {
+        Error = error;
+        HasFocus = hasFocus;
+        CurrentValue = currentValue;
     }
 }

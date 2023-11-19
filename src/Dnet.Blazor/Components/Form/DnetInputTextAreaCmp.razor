@@ -16,7 +16,7 @@
           @attributes="AdditionalAttributes"
           class="@_textareaClass"
           value="@BindConverter.FormatValue(CurrentValue)"
-          @onchange="@((ChangeEventArgs __e) => CurrentValue = __e.Value.ToString())"
+          @onchange="HandleChange"
           @onfocus=@(() => Focus())
           @onblur=@(() => Blur())
           placeholder="@_placeHolder"
@@ -112,6 +112,13 @@
         _debounceTimer.Start();
     }
 
+    private void HandleChange(ChangeEventArgs e)
+    {
+        CurrentValueAsString = e.Value?.ToString();
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+    }
+
     private void Focus()
     {
         _hasFocus = true;
@@ -134,19 +141,18 @@
 
         _placeHolder = string.Empty;
 
-        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
 
         StateHasChanged();
     }
 
     private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
     {
-        if (EditContext != null)
-        {
-            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
-        }
+        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
     }
 
     protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)

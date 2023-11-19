@@ -15,6 +15,7 @@ namespace Dnet.App.Shared.Infrastructure.Entities
 
         public string Picture { get; set; }
 
+        [Range(0, 50, ErrorMessage = "La edad debe estar entre 0 y 50.")]
         public int? Age { get; set; }
 
         public string EyeColor { get; set; }

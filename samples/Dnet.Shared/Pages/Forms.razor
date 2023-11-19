@@ -132,6 +132,32 @@
                 </DnetFormFieldPlainCmp>
             </div>
         </div>
+        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
+            <div style="margin-right:100px; width: 250px;">
+                <DnetFormFieldPlainCmp PlaceHolder="67" Label="Age" IsRequired="true">
+                    <ChildContent>
+                        <DnetInputNumberCmp @bind-Value="_person.Age" PlaceHolder="Ex. Pizza">
+                        </DnetInputNumberCmp>
+                    </ChildContent>
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _person.Age)" />
+                    </ErrorContent>
+                </DnetFormFieldPlainCmp>
+            </div>    
+        </div>
+        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
+            <div style="margin-right:100px; width: 250px;">
+                <DnetFormFieldPlainCmp PlaceHolder="67" Label="Age" IsRequired="true">
+                    <ChildContent>
+                        <DnetInputDateCmp @bind-Value="_person.Birthday" PlaceHolder="Ex. 2021/10/6">
+                        </DnetInputDateCmp>
+                    </ChildContent>
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _person.Birthday)" />
+                    </ErrorContent>
+                </DnetFormFieldPlainCmp>
+            </div>
+        </div>
     </EditForm>
 </div>
 

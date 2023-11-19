@@ -17,4 +17,6 @@ public interface IFormEventService
     void RaiseCurrentValue(string? currentValue);
 
     void RaiseClearContent();
+
+    void FormRaiseEvent(string error, bool hasFocus, object currentValue);
 }

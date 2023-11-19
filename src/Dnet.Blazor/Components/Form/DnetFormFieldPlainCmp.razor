@@ -125,7 +125,7 @@
                 @ChildContent
             </CascadingValue>
         </div>
-        @if (_useClearButton == true)
+        @if (_useClearButton == true && !string.IsNullOrEmpty(_currentValue))
         {
             <div class="dnet-component-icon-wrapper" @onclick="ClearInput">
                 <span class="dnet-component-icon dnet-component-clear-button"></span>

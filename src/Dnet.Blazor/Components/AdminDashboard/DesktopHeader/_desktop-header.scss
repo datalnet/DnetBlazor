@@ -1,6 +1,6 @@
 .dnet-desktop-header {
     background-color: var(--dnet-dash-header-background);
-    height: var(--dnet-dash-navbar-height);
+    height: var(--dnet-dash-header-height);
     margin: 0 0 0 calc(var(--dnet-dash-asideWidth) * -1);
     z-index: 101;
     border-bottom: var(--dnet-dash-header-border);
@@ -8,7 +8,7 @@
 
 .minified {
     .dnet-desktop-header {
-        margin: 0 0 0 calc((var(--dnet-dash-navbar-height) + 10px) * -1);
+        margin: 0 0 0 calc((var(--dnet-dash-header-height) + 10px) * -1);
     }
 }
 
