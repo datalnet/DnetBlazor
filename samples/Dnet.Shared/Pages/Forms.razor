@@ -20,147 +20,123 @@
     <div class="d-flex dnet-m-l-30 dnet-m-t-20">
         <span class="dnet-m-r-10 dnet-app-comp-name">Forms Field</span>
     </div>
-    <EditForm EditContext="@_editContext" style="display: flex;flex-direction:column">
+    <EditForm EditContext="@_editContext" style="display: flex;flex-direction:column; width:300px">
         <DataAnnotationsValidator />
-        <div class="d-flex dnet-m-l-30 dnet-m-t-30">
-            <div style="margin-right:100px; width: 250px;">
-                <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="LastName" UseClearButton="true" IsRequired="true">
-                    <PrefixContent>
-                        <div class="dnet-app-icon-wrapper">
-                            <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
-                        </div>
-                    </PrefixContent>
-                    <ChildContent>
-                        <DnetInputTextCmp @bind-Value="_person.LastName" PlaceHolder="Ex. MyCompany" type="text">
-                        </DnetInputTextCmp>
-                    </ChildContent>
-                    <HintContent>You can add the country prefix</HintContent>
-                    <SufixContent>
-                        €
-                    </SufixContent>
-                    <ErrorContent>
-                        <ValidationMessage For="@(() => _person.LastName)" />
-                    </ErrorContent>
-                </DnetFormFieldPlainCmp>
-            </div>
-        </div>
-        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
-            <div style="margin-right:100px; width: 250px;">
-                <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
-                    <ChildContent>
-                        <DnetInputTextCmp @bind-Value="_person.Email" PlaceHolder="Ex. Email" type="text">
-                        </DnetInputTextCmp>
-                    </ChildContent>
-                    <ErrorContent>
-                        <ValidationMessage For="@(() => _person.Email)" />
-                    </ErrorContent>
-                </DnetFormFieldPlainCmp>
-            </div>
-        </div>
-        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
-            <div style="margin-right:100px; width: 250px;">
-                <DnetFormFieldPlainCmp PlaceHolder="Gender" Label="Gender" IsRequired="true">
-                    <ChildContent>
-                        <DnetGenericSelectCmp TValue="string" @bind-Value="_person.Gender" Items="_genders"
-                                              TItem="Gender" DisplayValueConverter="(value) => (value.Name)"
-                                              ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResource1ItemSelected"
-                                              PlaceHolder="Api Resource" Label="Api Resource" BorderRadius="5px" MarginTop="5px"
-                                              Appearance="Appearance.Fill">
-                        </DnetGenericSelectCmp>
-                    </ChildContent>
-                    <ErrorContent>
-                        <ValidationMessage For="@(() => _person.Gender)" />
-                    </ErrorContent>
-                </DnetFormFieldPlainCmp>
-            </div>
-        </div>
-        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
-            <div style="margin-right:100px; width: 250px;">
-                <DnetFormFieldPlainCmp PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
-                    <ChildContent>
-                        <DnetAutocompleteCmp TValue="string" @bind-Value="@_person.Name" Items="_items" TItem="Person"
-                                             DisplayValueConverter="(value) => value.Name" ValueConverter="(value) => (value.Name)"
-                                             OnItemSelected="OnAutocompleteFilter" InputTextToUpper="true" PlaceHolder="Name"
-                                             SortBy="@sortBy" FilterBy="@filterBy">
-                        </DnetAutocompleteCmp>
-                    </ChildContent>
-                    <ErrorContent>
-                        <ValidationMessage For="@(() => _person.Gender)" />
-                    </ErrorContent>
-                </DnetFormFieldPlainCmp>
-            </div>
-        </div>
-        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
-            <div style="margin-right:100px; width: 250px;">
-                <DnetFormFieldPlainCmp PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
-                    <ChildContent>
-                        <DnetDatePickerCmp @bind-Value="@_person.StartDate"
-                                           Disabled="false"
-                                           OnDaySelected="DaySelected"
-                                           PlaceHolder="Departure day"
-                                           MaxDayValue="DateTime.Now"
-                                           MinDayValue="DateTime.Now.AddDays(-10)"
-                                           FirstDayToShow="DateTime.Now"
-                                           DatepickerFilter="(p) => { return p.DayIndex == 0; }">
-                        </DnetDatePickerCmp>
-                    </ChildContent>
-                    <SufixContent>
-                        <div class="dnet-datepicker-icon-wrapper">
-                            <span class="dnet-datepicker-icon dnet-datepicker-icon-default" unselectable="on"></span>
-                        </div>
-                    </SufixContent>
-                    <ErrorContent>
-                        <ValidationMessage For="@(() => _person.StartDate)" />
-                    </ErrorContent>
-                </DnetFormFieldPlainCmp>
-            </div>
-        </div>
-        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
-            <div style="margin-right:100px; width: 250px;">
-                <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="Email" IsRequired="true">
-                    <ChildContent>
-                        <DnetInputTextAreaCmp @bind-Value="_person.Address"
-                                              PlaceHolder="Ex. 4th Street, CP: 11901"
-                                              Label="Address"
-                                              type="text"
-                                              rows="5">
-                        </DnetInputTextAreaCmp>
-                    </ChildContent>
-                    <ErrorContent>
-                        <ValidationMessage For="@(() => _person.Email)" />
-                    </ErrorContent>
-                </DnetFormFieldPlainCmp>
-            </div>
-        </div>
-        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
-            <div style="margin-right:100px; width: 250px;">
-                <DnetFormFieldPlainCmp PlaceHolder="67" Label="Age" IsRequired="true">
-                    <ChildContent>
-                        <DnetInputNumberCmp @bind-Value="_person.Age" PlaceHolder="Ex. Pizza">
-                        </DnetInputNumberCmp>
-                    </ChildContent>
-                    <ErrorContent>
-                        <ValidationMessage For="@(() => _person.Age)" />
-                    </ErrorContent>
-                </DnetFormFieldPlainCmp>
-            </div>    
-        </div>
-        <div class="d-flex dnet-m-l-30 dnet-m-t-10">
-            <div style="margin-right:100px; width: 250px;">
-                <DnetFormFieldPlainCmp PlaceHolder="67" Label="Age" IsRequired="true">
-                    <ChildContent>
-                        <DnetInputDateCmp @bind-Value="_person.Birthday" PlaceHolder="Ex. 2021/10/6">
-                        </DnetInputDateCmp>
-                    </ChildContent>
-                    <ErrorContent>
-                        <ValidationMessage For="@(() => _person.Birthday)" />
-                    </ErrorContent>
-                </DnetFormFieldPlainCmp>
-            </div>
-        </div>
+
+        <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="LastName" UseClearButton="true" IsRequired="true">
+            <PrefixContent>
+                <div class="dnet-app-icon-wrapper">
+                    <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
+                </div>
+            </PrefixContent>
+            <ChildContent>
+                <DnetInputTextCmp @bind-Value="_person.LastName" PlaceHolder="Ex. MyCompany" type="text">
+                </DnetInputTextCmp>
+            </ChildContent>
+            <HintContent>You can add the country prefix</HintContent>
+            <SufixContent>
+                €
+            </SufixContent>
+            <ErrorContent>
+                <ValidationMessage For="@(() => _person.LastName)" />
+            </ErrorContent>
+        </DnetFormFieldPlainCmp>
+
+
+        <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+            <ChildContent>
+                <DnetInputTextCmp @bind-Value="_person.Email" PlaceHolder="Ex. Email" type="text">
+                </DnetInputTextCmp>
+            </ChildContent>
+            <ErrorContent>
+                <ValidationMessage For="@(() => _person.Email)" />
+            </ErrorContent>
+        </DnetFormFieldPlainCmp>
+
+        <DnetFormFieldPlainCmp PlaceHolder="Gender" Label="Gender" IsRequired="true">
+            <ChildContent>
+                <DnetGenericSelectCmp TValue="string" @bind-Value="_person.Gender" Items="_genders"
+                                      TItem="Gender" DisplayValueConverter="(value) => (value.Name)"
+                                      ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResource1ItemSelected"
+                                      PlaceHolder="Api Resource" Label="Api Resource" BorderRadius="5px" MarginTop="5px"
+                                      Appearance="Appearance.Fill">
+                </DnetGenericSelectCmp>
+            </ChildContent>
+            <ErrorContent>
+                <ValidationMessage For="@(() => _person.Gender)" />
+            </ErrorContent>
+        </DnetFormFieldPlainCmp>
+
+        <DnetFormFieldPlainCmp PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+            <ChildContent>
+                <DnetAutocompleteCmp TValue="string" @bind-Value="@_person.Name" Items="_items" TItem="Person"
+                                     DisplayValueConverter="(value) => value.Name" ValueConverter="(value) => (value.Name)"
+                                     OnItemSelected="OnAutocompleteFilter" InputTextToUpper="true" PlaceHolder="Name"
+                                     SortBy="@sortBy" FilterBy="@filterBy">
+                </DnetAutocompleteCmp>
+            </ChildContent>
+            <ErrorContent>
+                <ValidationMessage For="@(() => _person.Gender)" />
+            </ErrorContent>
+        </DnetFormFieldPlainCmp>
+
+        <DnetFormFieldPlainCmp PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+            <ChildContent>
+                <DnetDatePickerCmp @bind-Value="@_person.StartDate"
+                                   Disabled="false"
+                                   OnDaySelected="DaySelected"
+                                   PlaceHolder="Departure day"
+                                   MaxDayValue="DateTime.Now"
+                                   MinDayValue="DateTime.Now.AddDays(-10)"
+                                   FirstDayToShow="DateTime.Now"
+                                   DatepickerFilter="(p) => { return p.DayIndex == 0; }">
+                </DnetDatePickerCmp>
+            </ChildContent>
+            <SufixContent>
+                <div class="dnet-datepicker-icon-wrapper">
+                    <span class="dnet-datepicker-icon dnet-datepicker-icon-default" unselectable="on"></span>
+                </div>
+            </SufixContent>
+            <ErrorContent>
+                <ValidationMessage For="@(() => _person.StartDate)" />
+            </ErrorContent>
+        </DnetFormFieldPlainCmp>
+
+        <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="Email" IsRequired="true">
+            <ChildContent>
+                <DnetInputTextAreaCmp @bind-Value="_person.Address"
+                                      PlaceHolder="Ex. 4th Street, CP: 11901"
+                                      Label="Address"
+                                      type="text"
+                                      rows="5">
+                </DnetInputTextAreaCmp>
+            </ChildContent>
+            <ErrorContent>
+                <ValidationMessage For="@(() => _person.Email)" />
+            </ErrorContent>
+        </DnetFormFieldPlainCmp>
+
+        <DnetFormFieldPlainCmp PlaceHolder="67" Label="Age" IsRequired="true">
+            <ChildContent>
+                <DnetInputNumberCmp @bind-Value="_person.Age" PlaceHolder="Ex. Pizza">
+                </DnetInputNumberCmp>
+            </ChildContent>
+            <ErrorContent>
+                <ValidationMessage For="@(() => _person.Age)" />
+            </ErrorContent>
+        </DnetFormFieldPlainCmp>
+
+        <DnetFormFieldPlainCmp PlaceHolder="67" Label="Age" IsRequired="true">
+            <ChildContent>
+                <DnetInputDateCmp @bind-Value="_person.Birthday" PlaceHolder="Ex. 2021/10/6">
+                </DnetInputDateCmp>
+            </ChildContent>
+            <ErrorContent>
+                <ValidationMessage For="@(() => _person.Birthday)" />
+            </ErrorContent>
+        </DnetFormFieldPlainCmp>
     </EditForm>
 </div>
-
 
 @code {
 
@@ -206,18 +182,18 @@
     protected override void OnInitialized()
     {
         _genders = new List<Gender>()
-        {
-            new ()
-            {
-                GenderId = 1,
-                Name = "Female"
-            },
-            new ()
-            {
-                GenderId = 2,
-                Name = "Male"
-            }
-        };
+    {
+    new ()
+    {
+    GenderId = 1,
+    Name = "Female"
+    },
+    new ()
+    {
+    GenderId = 2,
+    Name = "Male"
+    }
+    };
 
         _editContext = new EditContext(_person);
 
@@ -285,4 +261,4 @@
     {
         _dateSelected = selecteDay.FormattedDate;
     }
-}
+    }
