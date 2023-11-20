@@ -1,0 +1,92 @@
+﻿.dnet-form-field-plain-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.dnet-form-field-plain-label-wrapper {
+    margin-bottom: 1px;
+    padding-left: 3px;
+}
+
+.dnet-form-field-plain-label {
+    font-size: 0.72rem;
+    color: #757575;
+}
+
+.dnet-form-field-plain-label-wrapper > label {
+    font-weight: 400;
+    margin: 0px;
+    padding: 0px;
+}
+
+.dnet-form-field-plain-control-container {
+    display: flex;
+    align-items: stretch;
+    min-height: 34px;
+    max-height: 272px;
+    margin-bottom: 3px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 5px;
+}
+
+.dnet-form-field-plain-prefix,
+.dnet-form-field-plain-suffix {
+    width: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dnet-form-field-plain-control {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+}
+
+.dnet-form-field-plain-prefix + .dnet-form-field-plain-control {
+    padding-left: 0px;
+}
+
+.dnet-form-field-plain-info {
+    font-size: 0.70rem;
+}
+
+.dnet-form-field-plain-clear {
+    width: 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-right: 5px;
+}
+
+.dnet-component-icon {
+    display: block;
+    background-repeat: no-repeat;
+    background-size: 1em 1em;
+    height: 1em;
+    width: 1em;
+    cursor: pointer;
+    color: #5f6368;
+}
+
+.dnet-component-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 24px;
+}
+
+.dnet-floating-label--required::after {
+    margin-left: 2px;
+    margin-right: 0px;
+    content: "*";
+    font-size: .75rem;
+}
+
+.dnet-component-clear-button {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/></svg>");
+}
