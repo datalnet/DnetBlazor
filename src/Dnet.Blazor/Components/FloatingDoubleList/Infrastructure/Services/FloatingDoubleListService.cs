@@ -15,6 +15,8 @@ public class FloatingDoubleListService<TItem>
 
     public event Action<List<TItem>> OnRefreshDataRight;
 
+    public event Action OnClose;
+
     public void UpdateTransferredItems(TransferredItems<TItem> item)
     {
         OnSelectionChange?.Invoke(item);
@@ -38,5 +40,10 @@ public class FloatingDoubleListService<TItem>
     public void RefreshDataRight(List<TItem> items)
     {
         OnRefreshDataRight?.Invoke(items);
+    }
+
+    public void Close()
+    {
+        OnClose?.Invoke();
     }
 }

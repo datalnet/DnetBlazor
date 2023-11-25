@@ -5,17 +5,18 @@
 @using Dnet.Blazor.Components.Checkbox
 @using Dnet.Blazor.Infrastructure.Models.SearchModels;
 @using Microsoft.AspNetCore.Components.Web
+@using Dnet.Blazor.Components.Button
 
 @typeparam TItem
 
 @inject HttpClient HttpClient
 
-<div class="dnet-connected-panel-container" style="display:flex;flex-direction:column;width:100%">
+<div class="dnet-connected-panel-container" style="display:flex;flex-direction:column;width:100%;border-radius:@BorderRadius;">
     <div style="height:calc(100% - 140px); width: @Width">
         <div style="display: grid; grid-template-columns: 1fr 5px 1fr; height: calc(100% - 0px);">
             <div style="height: @Height">
                 <DnetListSimple TItem="TItem"
-                @ref="_leftComponent"
+                                @ref="_leftComponent"
                                 Items="_leftItems"
                                 OnSelectionChange="LeftSelectionChanged"
                                 OnDrop="LeftDrop"
@@ -25,6 +26,8 @@
                                 ItemPrefixContent="ItemPrefixContent"
                                 ItemSufixContent="ItemSufixContent"
                                 HeaderText="@LeftText"
+                                Label="@_leftLabel"
+                                PlaceHolder="@_leftPlaceHolder"
                                 OnSearch="SearchLeft">
                 </DnetListSimple>
             </div>
@@ -32,7 +35,7 @@
             </div>
             <div style="height: @Height">
                 <DnetListSimple TItem="TItem"
-                @ref="_rightComponent"
+                                @ref="_rightComponent"
                                 Items="_rightItems"
                                 OnSelectionChange="RightSelectionChanged"
                                 OnDrop="RightDrop"
@@ -42,9 +45,14 @@
                                 ItemPrefixContent="ItemPrefixContent"
                                 ItemSufixContent="ItemSufixContent"
                                 HeaderText="@RightText"
+                                Label="@_rightLabel"
+                                PlaceHolder="@_rightPlaceHolder"
                                 OnSearch="SearchRight">
                 </DnetListSimple>
             </div>
+        </div>
+        <div class="dnet-panel-footer" style="height: 34px;display: flex;align-items: center;justify-content: flex-end;">
+            <DnetButton OnClick="Close" InitialFocus="true" class="dnet-m-r-10 dnet-m-b-5">Cerrar</DnetButton>
         </div>
     </div>
 </div>
@@ -86,6 +94,9 @@
     public string MaxHeight { get; set; }
 
     [Parameter]
+    public string BorderRadius { get; set; } = "0px";
+
+    [Parameter]
     public int ItemHeight { get; set; } = 40;
 
     [Parameter]
@@ -111,6 +122,9 @@
 
     [Parameter]
     public string RightText { get; set; }
+
+    [Parameter]
+    public SearchControlOptions SearchControlOptions { get; set; }
 
 
     private List<TItem> _leftItems = new();
@@ -141,6 +155,18 @@
 
     private ListOptions<TItem> _rightListOptions { get; set; } = new();
 
+    private string _leftPlaceHolder { get; set; }
+
+    private string _leftHint { get; set; }
+
+    private string _leftLabel { get; set; }
+
+    private string _rightPlaceHolder { get; set; }
+
+    private string _rightHint { get; set; }
+
+    private string _rightLabel { get; set; }
+
 
     protected override void OnInitialized()
     {
@@ -161,6 +187,21 @@
         _rightListOptions.HeaderText = "Right";
         _rightListOptions.ContainerName = "RghtContainer";
         _rightListOptions.ConnectedTo = "LeftContainer";
+
+        if (SearchControlOptions != null)
+        {
+            _leftPlaceHolder = SearchControlOptions.LeftPlaceHolder;
+
+            _leftLabel = SearchControlOptions.LeftLabel;
+
+            _leftHint = SearchControlOptions.LeftHint;
+
+            _rightPlaceHolder = SearchControlOptions.RightPlaceHolder;
+
+            _rightLabel = SearchControlOptions.RightLabel;
+
+            _rightHint = SearchControlOptions.RightHint;
+        }
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -334,6 +375,21 @@
         _rightComponent.SetRowData(items);
 
         StateHasChanged();
+    }
+
+    private void Close()
+    {
+        FloatingDoubleListService.Close();
+    }
+
+    public void Dispose()
+    {
+        if (FloatingDoubleListService is not null)
+        {
+            FloatingDoubleListService.OnRefreshDataRight -= RefreshDataRight;
+
+            FloatingDoubleListService.OnRefreshDataLeft -= RefreshDataLeft;
+        }
     }
 }
 

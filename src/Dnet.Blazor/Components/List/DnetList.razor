@@ -1,4 +1,5 @@
 ﻿@using Dnet.Blazor.Components.Checkbox
+@using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Infrastructure.Models.SearchModels.FilterModels
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
@@ -24,18 +25,22 @@
     {
         <form class="dnet-list-form">
             <div class="dnet-list-search dnet-p-r-10">
-                <DnetInputTextAhead @bind-Value="filter" PlaceHolder="Search" Label="Search" Appearance="Appearance.Standard" type="text" OnStopTyping="FilterData" FloatLabel="FloatLabel.Always">
-                </DnetInputTextAhead>
-                @* <input style="width: 100%"
-                    type="text"
-                    class="dnet-list-input"
-                    placeholder="Search"
-                    @bind-value="@filter"
-                    @bind-value:event="oninput"
-                    @onkeyup="Filter"
-                    @onkeyup:stopPropagation="true"
-                    @onkeyup:preventDefault="true">*@
-                @*<span class="dnet-m-l-10 dnet-list-search-icon dnet-list-search-icon-default"></span>*@
+
+                @if (UsePlainControl)
+                {
+                    <DnetFormFieldPlainCmp PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
+                        <ChildContent>
+                            <DnetInputTextCmp @bind-Value="filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData">
+                            </DnetInputTextCmp>
+                        </ChildContent>
+                    </DnetFormFieldPlainCmp>
+                }
+                else
+                {
+                    <DnetInputTextAhead @bind-Value="filter" PlaceHolder="@PlaceHolder" Label="@Label" Appearance="Appearance.Standard" type="text" OnStopTyping="FilterData" FloatLabel="FloatLabel.Always">
+                    </DnetInputTextAhead>
+                }
+
             </div>
         </form>
     }
@@ -138,14 +143,14 @@
             @if (ListOptions.EnablePagingination == true)
             {
                 <DnetPaginator @ref="_paginator"
-                       OnGoToFirstPage="GoToFirstPage"
-                       OnGoToPreviousPage="GoToPreviousPage"
-                       OnGoToNextPage="GoToNextPage"
-                       OnGoToLastPage="GoToLastPage"
-                       OnGoToSpecificPage="GoToSpecificPage"
-                       CurrentPage="_searchModel.PaginationModel.CurrentPage"
-                       PageSize="_searchModel.PaginationModel.PageSize"
-                       TotalItems="_searchModel.PaginationModel.ItemsCount">
+                               OnGoToFirstPage="GoToFirstPage"
+                               OnGoToPreviousPage="GoToPreviousPage"
+                               OnGoToNextPage="GoToNextPage"
+                               OnGoToLastPage="GoToLastPage"
+                               OnGoToSpecificPage="GoToSpecificPage"
+                               CurrentPage="_searchModel.PaginationModel.CurrentPage"
+                               PageSize="_searchModel.PaginationModel.PageSize"
+                               TotalItems="_searchModel.PaginationModel.ItemsCount">
                 </DnetPaginator>
             }
             else
@@ -196,6 +201,15 @@
 
     [Parameter]
     public ListOptions<TItem> ListOptions { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; } = "";
+
+    [Parameter]
+    public string Label { get; set; } = "";
+
+    [Parameter]
+    public bool UsePlainControl { get; set; } = true;
 
 
     private List<RowNode<TItem>> _rowNodes { get; set; } = new();
@@ -274,14 +288,14 @@
                     BuildRowNodes();
 
                     _searchModel = new SearchModel
-                    {
-                        PaginationModel = new PaginationModel
                         {
-                            CurrentPage = 1,
-                            PageSize = ListOptions.PageSize,
-                            ItemsCount = _items.Count
-                        }
-                    };
+                            PaginationModel = new PaginationModel
+                            {
+                                CurrentPage = 1,
+                                PageSize = ListOptions.PageSize,
+                                ItemsCount = _items.Count
+                            }
+                        };
 
                     if (ListOptions.EnablePagingination && !ListOptions.EnableServerSide) AssignRangeRenderedRows();
 
@@ -304,11 +318,11 @@
         foreach (var data in _items)
         {
             var rowNode = new RowNode<TItem>
-            {
-                RowNodeId = GetId(),
-                RowData = data,
-                Show = true,
-            };
+                {
+                    RowNodeId = GetId(),
+                    RowData = data,
+                    Show = true,
+                };
 
             _rowNodes.Add(rowNode);
             _rowNodesBk.Add(rowNode);
@@ -485,16 +499,16 @@
                     for (var i = 0; i < ListOptions.ServerSideSearchColumns.Count; i++)
                     {
                         var advancedFilterModel = new AdvancedFilterModel
-                        {
-                            AdditionalOperator = FilterOperator.None,
-                            AdditionalValue = null,
-                            Column = ListOptions.ServerSideSearchColumns[i],
-                            Condition = FilterCondition.None,
-                            FilterLinkCondition = i == 0 ? FilterCondition.None : FilterCondition.Or,
-                            Operator = FilterOperator.Contains,
-                            Type = CellDataType.Text,
-                            Value = filter
-                        };
+                            {
+                                AdditionalOperator = FilterOperator.None,
+                                AdditionalValue = null,
+                                Column = ListOptions.ServerSideSearchColumns[i],
+                                Condition = FilterCondition.None,
+                                FilterLinkCondition = i == 0 ? FilterCondition.None : FilterCondition.Or,
+                                Operator = FilterOperator.Contains,
+                                Type = CellDataType.Text,
+                                Value = filter
+                            };
 
                         _searchModel.AdvancedFilterModels.Add(advancedFilterModel);
                     }
@@ -619,14 +633,14 @@
         if (ListOptions.EnablePagingination && !ListOptions.EnableServerSide)
         {
             _searchModel = new SearchModel
-            {
-                PaginationModel = new PaginationModel
                 {
-                    CurrentPage = _items.Count > 0 ? 1 : 0,
-                    ItemsCount = _items.Count,
-                    PageSize = ListOptions.PageSize
-                }
-            };
+                    PaginationModel = new PaginationModel
+                    {
+                        CurrentPage = _items.Count > 0 ? 1 : 0,
+                        ItemsCount = _items.Count,
+                        PageSize = ListOptions.PageSize
+                    }
+                };
 
             AssignRangeRenderedRows();
         }

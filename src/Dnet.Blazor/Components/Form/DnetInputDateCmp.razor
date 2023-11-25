@@ -143,7 +143,10 @@ else
 
         if (_formEventService is not null) _formEventService.OnClearContent += HandleClearContent;
 
-        EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+        if (EditContext is not null)
+        {
+            EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+        }
     }
 
     protected override void OnParametersSet()
@@ -213,16 +216,24 @@ else
 
         _placeHolder = string.Empty;
 
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         StateHasChanged();
     }
 
     private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
     {
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
     }
 
     protected override string FormatValueAsString(TValue? value)
@@ -254,11 +265,14 @@ else
     {
         CurrentValue = default;
 
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
+        if (EditContext is not null)
+        {
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         await ValueChanged.InvokeAsync(Value);
 
@@ -273,6 +287,6 @@ else
 
         if (_formEventService is not null) _formEventService.OnClearContent -= HandleClearContent;
 
-        EditContext.OnFieldChanged -= HandleOnValidationStateChanged;
+        if (EditContext is not null) EditContext.OnFieldChanged -= HandleOnValidationStateChanged;
     }
 }

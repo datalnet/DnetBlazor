@@ -89,7 +89,7 @@ else
 
         if (_formEventService is not null) _formEventService.OnClearContent += HandleClearContent;
 
-        EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+        if (EditContext is not null) EditContext.OnFieldChanged += HandleOnValidationStateChanged;
     }
 
     public void HandleChangeDebouncedDiscard(Object source, ElapsedEventArgs e)
@@ -143,18 +143,25 @@ else
 
         _placeHolder = string.Empty;
 
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext is not null)
+        {
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         StateHasChanged();
     }
 
     private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
     {
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
     }
 
     protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string?
@@ -171,11 +178,14 @@ else
     {
         CurrentValue = null;
 
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
+        if (EditContext is not null)
+        {
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
@@ -188,10 +198,15 @@ else
 
     public void Dispose()
     {
-        if (ImmediateResponse) _debounceTimer.Elapsed -= HandleChangeDebouncedDiscard;
+        if (ImmediateResponse)
+        {
+            _debounceTimer.Elapsed -= HandleChangeDebouncedDiscard;
+
+            _debounceTimer.Dispose();
+        }
 
         if (_formEventService is not null) _formEventService.OnClearContent -= HandleClearContent;
 
-        if (EditContext != null) EditContext.OnFieldChanged -= HandleOnValidationStateChanged;
+        if (EditContext is not null) EditContext.OnFieldChanged -= HandleOnValidationStateChanged;
     }
 }

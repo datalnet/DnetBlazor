@@ -21,8 +21,6 @@
           @onblur=@(() => Blur())
           placeholder="@_placeHolder"
           disabled="@Disabled" />
-
-
 @code {
 
     [CascadingParameter]
@@ -141,18 +139,24 @@
 
         _placeHolder = string.Empty;
 
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         StateHasChanged();
     }
 
     private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
     {
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
     }
 
     protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
@@ -162,5 +166,12 @@
         validationErrorMessage = null;
 
         return true;
+    }
+
+    public void Dispose()
+    {
+        _debounceTimer.Elapsed -= HandleChangeDebouncedDiscard;
+
+        _debounceTimer.Dispose();
     }
 }

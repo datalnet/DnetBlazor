@@ -186,7 +186,10 @@ else
 
         if (_formEventService is not null) _formEventService.OnClearContent += HandleClearContent;
 
-        EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+        if (EditContext is not null)
+        {
+            EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+        }
     }
 
     public void HandleChangeDebouncedDiscard(Object source, ElapsedEventArgs e)
@@ -240,18 +243,24 @@ else
 
         _placeHolder = string.Empty;
 
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         StateHasChanged();
     }
 
     private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
     {
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
     }
 
     protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TValue result, [NotNullWhen(false)] out string? validationErrorMessage)
@@ -303,11 +312,14 @@ else
     {
         CurrentValue = default;
 
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
+        if (EditContext is not null)
+        {
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         await ValueChanged.InvokeAsync(Value);
 

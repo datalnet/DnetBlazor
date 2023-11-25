@@ -1,4 +1,5 @@
 ﻿@using Dnet.Blazor.Components.Checkbox
+@using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Infrastructure.Models.SearchModels.FilterModels
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
@@ -23,18 +24,24 @@
     @if (ListOptions.EnableSearching)
     {
         <form class="dnet-list-form">
-            <div class="dnet-list-search dnet-p-r-10">
-                <DnetInputTextAhead @bind-Value="filter" PlaceHolder="@HeaderText" Label="@HeaderText" Appearance="Appearance.Standard" type="text" OnStopTyping="FilterData" FloatLabel="FloatLabel.Always">
-                </DnetInputTextAhead>
+            <div class="dnet-list-search">
+
+                <DnetFormFieldPlainCmp PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
+                    <ChildContent>
+                        <DnetInputTextCmp @bind-Value="filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData">
+                        </DnetInputTextCmp>
+                    </ChildContent>
+                </DnetFormFieldPlainCmp>
+
             </div>
         </form>
     }
     <div class="dnet-selection-list-wrapper"
          ondragover="event.preventDefault();"
-    @ondragstart="(dragEventArgs => HandleDragStart(dragEventArgs))"
-    @ondrop="(dragEventArgs => HandleDrop(dragEventArgs))"
-    @ondragenter="HandleDragEnter"
-    @ondragleave="HandleDragLeave">
+         @ondragstart="(dragEventArgs => HandleDragStart(dragEventArgs))"
+         @ondrop="(dragEventArgs => HandleDrop(dragEventArgs))"
+         @ondragenter="HandleDragEnter"
+         @ondragleave="HandleDragLeave">
         <div class="dnet-list-base">
             @if (ItemPrefixContent != null || ItemSufixContent != null || ListItemContent != null)
             {
@@ -172,6 +179,12 @@
 
     [Parameter]
     public string HeaderText { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
 
 
     private List<RowNode<TItem>> _rowNodes { get; set; } = new();
@@ -660,6 +673,7 @@
     public void Dispose()
     {
         _debounceTimer.Elapsed -= FilterDataDiscard;
+
         _debounceTimer?.Dispose();
     }
 }

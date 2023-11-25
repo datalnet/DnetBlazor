@@ -102,9 +102,12 @@
 
         _datePickerService = new DatePickerService();
 
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         if (!string.IsNullOrEmpty(CurrentValue))
         {
@@ -272,9 +275,12 @@
             }
         }
 
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         return currentValue;
     }
@@ -298,11 +304,14 @@
 
         _hasFocus = !string.IsNullOrEmpty(CurrentValue) ? true : false;
 
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+
         if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
-
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
-
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
 
         await ValueChanged.InvokeAsync(value);
 
@@ -387,9 +396,12 @@
 
     private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
     {
-        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
     }
 
     private async void ClearInput()

@@ -2,12 +2,17 @@
 
 @using System.Drawing
 @using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.App.Shared.Infrastructure.Models
 @using Dnet.App.Shared.Infrastructure.Services
+@using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Models
 @using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Components.FormField;
+@using Dnet.Blazor.Components.List
 @using Dnet.Blazor.Components.Select
 @using Dnet.Blazor.Components.Autocomplete
 @using Dnet.Blazor.Components.DatePicker
+@using Dnet.Blazor.Components.FloatingDoubleList
+@using Dnet.Blazor.Infrastructure.Models.SearchModels
 @using Dnet.Blazor.Infrastructure.Services
 @using Microsoft.AspNetCore.Components;
 @using Microsoft.AspNetCore.Components.Web;
@@ -41,7 +46,6 @@
                 <ValidationMessage For="@(() => _person.LastName)" />
             </ErrorContent>
         </DnetFormFieldPlainCmp>
-
 
         <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
             <ChildContent>
@@ -126,10 +130,35 @@
             </ErrorContent>
         </DnetFormFieldPlainCmp>
 
-        <DnetFormFieldPlainCmp PlaceHolder="67" Label="Age" IsRequired="true">
+        <DnetFormFieldPlainCmp PlaceHolder="" Label="Birthday" IsRequired="true">
             <ChildContent>
                 <DnetInputDateCmp @bind-Value="_person.Birthday" PlaceHolder="Ex. 2021/10/6">
                 </DnetInputDateCmp>
+            </ChildContent>
+            <ErrorContent>
+                <ValidationMessage For="@(() => _person.Birthday)" />
+            </ErrorContent>
+        </DnetFormFieldPlainCmp>
+
+        <DnetFormFieldPlainCmp PlaceHolder="67" Label="Participantes" IsRequired="true">
+            <ChildContent>
+                <DnetFloatingDoubleListCmp @bind-Value="_personNameList"
+                                           TItem="Person"
+                                           LeftItems="_leftItems"
+                                           RightItems="_rightItems"
+                                           LeftListOptions="_leftListOptions"
+                                           RightListOptions="_rightListOptions"
+                                           RightText="Participantes"
+                                           LeftText="Contactos"
+                                           OnSelectionChanged="SelectionChanged"
+                                           EqualityComparer="new PersonEqualityComparer()"
+                                           DisplayValueConverter="(value) => value.Name"
+                                           SideForSelections="ListToShow.Right"
+                                           Height="250px"
+                                           OnSearchLeft="SearchLeft"
+                                           OnSearchRight="SearchRight"
+                                           @ref="_floatingDoubleListPerson">
+                </DnetFloatingDoubleListCmp>
             </ChildContent>
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.Birthday)" />
@@ -170,6 +199,44 @@
 
     private string _dateSelected { get; set; }
 
+
+
+    private List<Person> _leftItems = new();
+
+    private List<Person> _leftSelectedItems = new();
+
+    private List<Person> _leftAddedItems = new();
+
+    private List<Person> _leftRemovedItems = new();
+
+    private List<Person> _rightItems = new();
+
+    private List<Person> _rightSelectedItems = new();
+
+    private List<Person> _rightAddedItems = new();
+
+    private List<Person> _rightRemovedItems = new();
+
+    private DnetList<Person> _leftComponent { get; set; }
+
+    private DnetList<Person> _rightComponent { get; set; }
+
+    private List<KeyValueModel<int>> _features = new();
+
+    private List<KeyValueModel<int>> _selectedFeatures = new();
+
+    private KeyValueModel<int> _formData1 = new();
+
+    private ListOptions<Person> _leftListOptions { get; set; } = new();
+
+    private ListOptions<Person> _rightListOptions { get; set; } = new();
+
+    private string _personNameList { get; set; }
+
+    private DnetFloatingDoubleListCmp<Person> _floatingDoubleListPerson { get; set; }
+
+
+
     CustomFilter<Person> filterBy = CustomFilter<Person>
     .FilterBy(x => x.Name, CustomFilterOperator.Contains)
     .ThenFilterBy(x => x.Company, CustomFilterOperator.Contains);
@@ -181,19 +248,29 @@
 
     protected override void OnInitialized()
     {
+        _leftListOptions = GetListOptions();
+        _leftListOptions.HeaderText = "Left";
+        _leftListOptions.ContainerName = "LeftContainer";
+        _leftListOptions.ConnectedTo = "RghtContainer";
+
+        _rightListOptions = GetListOptions();
+        _rightListOptions.HeaderText = "Right";
+        _rightListOptions.ContainerName = "RghtContainer";
+        _rightListOptions.ConnectedTo = "LeftContainer";
+
         _genders = new List<Gender>()
-    {
-    new ()
-    {
-    GenderId = 1,
-    Name = "Female"
-    },
-    new ()
-    {
-    GenderId = 2,
-    Name = "Male"
-    }
-    };
+        {
+            new ()
+            {
+                GenderId = 1,
+                Name = "Female"
+            },
+            new ()
+            {
+                GenderId = 2,
+                Name = "Male"
+            }
+        };
 
         _editContext = new EditContext(_person);
 
@@ -216,6 +293,14 @@
     protected override async Task OnInitializedAsync()
     {
         _items = await GetPersons();
+
+        var itemsToTake = 5;
+
+        var items = await GetPersons();
+
+        _leftItems = items.Take(itemsToTake).ToList();
+
+        _rightItems = items.Skip(itemsToTake).Take(itemsToTake).ToList();
 
         StateHasChanged();
     }
@@ -261,4 +346,96 @@
     {
         _dateSelected = selecteDay.FormattedDate;
     }
+
+    // Double List
+    private void LeftSelectionChanged(List<Person> selectedItems)
+    {
+        _leftSelectedItems = selectedItems;
     }
+
+    private void RightSelectionChanged(List<Person> selectedItems)
+    {
+        _rightSelectedItems = selectedItems;
+    }
+
+    private void MyValueChangeHandlerDl(string item)
+    {
+        _formData1.Value = item;
+    }
+
+    private ListOptions<Person> GetListOptions()
+    {
+        return new ListOptions<Person>()
+            {
+                DisplayValueConverter = (value) => value.Name,
+                SortedData = (value) => value.Name,
+                SearchValueConverter = (value) => value.Name,
+                DisableItem = (value) => value.IsActive,
+                HeaderText = "",
+                ItemSize = 40f,
+                MultiSelect = true,
+                DebounceTime = 250,
+                EnableServerSide = true,
+                EnableSearching = true,
+                EnableSorting = false,
+                PageSize = 50,
+                EnablePagingination = true,
+                CheckboxSelectionColumn = false,
+                ShowHeader = false,
+                ShowFooter = false,
+                ServerSideSearchColumns = new List<string>() { "Name" },
+                ServerSideSortColumn = "Name"
+            };
+    }
+
+    private void SelectionChanged(TransferredItems<Person> transferredItems)
+    {
+        var tt = transferredItems;
+    }
+
+    private async Task SearchLeft(SearchModel searchModel)
+    {
+        var items = await GetPersons();
+
+        var paginatedItems = items.Where(p => p.Name.ToUpper().Contains(searchModel.AdvancedFilterModels.FirstOrDefault().Value.ToUpper()))
+                                  .Skip((searchModel.PaginationModel.CurrentPage - 1) * searchModel.PaginationModel.PageSize)
+                                  .Take(searchModel.PaginationModel.PageSize).ToList();
+
+        _floatingDoubleListPerson.RefreshDataLeft(paginatedItems);
+    }
+
+    private async Task SearchRight(SearchModel searchModel)
+    {
+        var items = await GetPersons();
+
+        var paginatedItems = items.Where(p => p.Name.ToUpper().Contains(searchModel.AdvancedFilterModels.FirstOrDefault().Value.ToUpper()))
+                                  .Skip((searchModel.PaginationModel.CurrentPage - 1) * searchModel.PaginationModel.PageSize)
+                                  .Take(searchModel.PaginationModel.PageSize).ToList();
+
+        _floatingDoubleListPerson.RefreshDataRight(paginatedItems);
+    }
+
+    public class PersonEqualityComparer : IEqualityComparer<Person>
+    {
+        public bool Equals(Person x, Person y)
+        {
+            if (x == null || y == null)
+                return false;
+
+            if (ReferenceEquals(x, y)) return true;
+
+            x.PersonId = x.PersonId ?? string.Empty;
+
+            y.PersonId = y.PersonId ?? string.Empty;
+
+            return x.PersonId.Equals(y.PersonId);
+        }
+
+        public int GetHashCode(Person obj)
+        {
+            int hashPersonId = obj.PersonId == null ? 0 : obj.PersonId.GetHashCode();
+
+            return hashPersonId;
+        }
+    }
+}

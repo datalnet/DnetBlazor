@@ -25,11 +25,19 @@
 
 @inject IOverlayService OverlayService
 
-<input @ref="__inputReference" @attributes="AdditionalAttributes" class="@_inputTextClass"
-       value="@BindConverter.FormatValue(CurrentValue)" @onfocus=@(() => Focus()) @onblur=@(() => Blur())
-       @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" @onfocusin=@(() => OpenMenu())
-       @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
-       @onclick:stopPropagation="true" @onclick:preventDefault="true" placeholder="@PlaceHolder" disabled="@Disabled"
+<input @ref="__inputReference" 
+       @attributes="AdditionalAttributes" 
+       class="@_inputTextClass"
+       value="@BindConverter.FormatValue(CurrentValue)" 
+       @onfocus=@(() => Focus()) @onblur=@(() => Blur())
+       @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" 
+       @onfocusin=@(() => OpenMenu())
+       @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) 
+       @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
+       @onclick:stopPropagation="true" 
+       @onclick:preventDefault="true" 
+       placeholder="@PlaceHolder" 
+       disabled="@Disabled"
        autocomplete="none" />
 
 
