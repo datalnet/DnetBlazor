@@ -73,14 +73,21 @@
 
         <DnetFormFieldPlainCmp PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
             <ChildContent>
-                <DnetAutocompleteCmp TValue="string" @bind-Value="@_person.Name" Items="_items" TItem="Person"
-                                     DisplayValueConverter="(value) => value.Name" ValueConverter="(value) => (value.Name)"
-                                     OnItemSelected="OnAutocompleteFilter" InputTextToUpper="true" PlaceHolder="Name"
-                                     SortBy="@sortBy" FilterBy="@filterBy">
+                <DnetAutocompleteCmp TValue="string" 
+                                     @bind-Value="@_person.Name" 
+                                     Items="_items" 
+                                     TItem="Person"
+                                     DisplayValueConverter="(value) => value.Name" 
+                                     ValueConverter="(value) => (value.Name)"
+                                     OnItemSelected="OnAutocompleteFilter" 
+                                     InputTextToUpper="true" 
+                                     PlaceHolder="Name"
+                                     SortBy="@sortBy" 
+                                     FilterBy="@filterBy">
                 </DnetAutocompleteCmp>
             </ChildContent>
             <ErrorContent>
-                <ValidationMessage For="@(() => _person.Gender)" />
+                <ValidationMessage For="@(() => _person.Name)" />
             </ErrorContent>
         </DnetFormFieldPlainCmp>
 

@@ -59,9 +59,11 @@
     public EventCallback<bool> OnClearInput { get; set; }
 
     [Parameter]
+    [NotNull] 
     public Func<TItem, string> DisplayValueConverter { get; set; }
 
     [Parameter]
+    [NotNull] 
     public Expression<Func<TItem, TValue>> ValueConverter { get; set; }
 
     [Parameter]
@@ -172,7 +174,7 @@
 
         _debounceTimer = new Timer(DebounceTime);
 
-        _debounceTimer.Elapsed += OnUserFinish;
+        _debounceTimer.Elapsed += OnUserFinished;
 
         _debounceTimer.AutoReset = false;
 
@@ -200,12 +202,19 @@
 
         if (!_hasInitializedParameters)
         {
-            if (ValueConverter == null)
+            // This is the first run
+            // Could put this logic in OnInit, but its nice to avoid forcing people who override OnInit to call base.OnInit()
+            if(!EnableServerSide)
             {
-                throw new InvalidOperationException($"{GetType()} requires a value for the 'ValueConverter' ");
+                if (SortBy == null) throw new NullReferenceException($"SortBy could not be Null");
+
+                if (FilterBy == null) throw new NullReferenceException($"FilterBy could not be Null");
             }
+          
+            _hasInitializedParameters = true;
         }
 
+        // For derived components, retain the usual lifecycle with OnInit/OnParametersSet/etc.
         return base.SetParametersAsync(ParameterView.Empty);
     }
 
@@ -244,13 +253,6 @@
 
             if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
         }
-    }
-
-    private void ValidateComponentInputs()
-    {
-        if (SortBy == null) throw new NullReferenceException($"SortBy could not be Null");
-
-        if (FilterBy == null) throw new NullReferenceException($"FilterBy could not be Null");
     }
 
     protected override bool TryParseValueFromString(string? value, out TValue result, [NotNullWhen(false)] out string?
@@ -297,7 +299,7 @@
         _debounceTimer.Start();
     }
 
-    private async void OnUserFinish(Object? source, ElapsedEventArgs e)
+    private async void OnUserFinished(Object? source, ElapsedEventArgs e)
     {
         await InvokeAsync(async () =>
         {
@@ -334,7 +336,7 @@
                 }
             }
 
-            if (ItemPrefixContent == null && ItemSufixContent == null) return;
+            if (ItemPrefixContent is null && ItemSufixContent is null ) return;
 
             StateHasChanged();
         });
@@ -381,6 +383,13 @@
             if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
 
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+
         if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
         await OnItemSelected.InvokeAsync(item);
@@ -396,9 +405,12 @@
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        _hasErrors = EditContext?.GetValidationMessages(FieldIdentifier).Count() > 0;
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         _hasFocus = false;
 
@@ -603,7 +615,7 @@
 
         if (_autoCompleteListService != null) _autoCompleteListService.OnItemSelected -= ItemSelected;
 
-        _debounceTimer.Elapsed -= OnUserFinish;
+        _debounceTimer.Elapsed -= OnUserFinished;
 
         if (_formEventService is not null) _formEventService.OnClearContent -= ClearInput;
     }
