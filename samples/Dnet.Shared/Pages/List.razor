@@ -4,7 +4,7 @@
 @using Dnet.App.Shared.Infrastructure.Entities
 @using Dnet.App.Shared.Infrastructure.Models
 @using Dnet.App.Shared.Infrastructure.Services
-@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Components.List
 @using Dnet.Blazor.Components.Checkbox
 @using System.Net.Http
@@ -25,31 +25,34 @@
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
-                    <DnetSelect Value="@_formData1.Value"
-                                ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                ValueExpression="@( () => _formData1.Value )"
-                                Items="_features"
-                                TItem="KeyValueModel<int>"
-                                DisplayValueConverter="(value) => (value.Value)"
-                                OnSelectionChanged="SelectionChanged"
-                                InputTextToUpper="true"
-                                PlaceHolder="List features"
-                                Label="List features"
-                                Appearance="Appearance.Fill"
-                                MultiSelect="true"
-                                SelectedItems="@_selectedFeatures"
-                                IsSelectedFn="@( (item, itemSelected) => item.Key == itemSelected.Key )">
+                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                        <ChildContent>
+                            <DnetSelect Value="@_formData1.Value"
+                                        TValue="string"
+                                        ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                        ValueExpression="@( () => _formData1.Value )"
+                                        Items="_features"
+                                        TItem="KeyValueModel<int>"
+                                        DisplayValueConverter="(value) => (value.Value)"
+                                        OnSelectionChanged="SelectionChanged"
+                                        InputTextToUpper="true"
+                                        PlaceHolder="List features"
+                                        Label="List features"
+                                        MultiSelect="true"
+                                        SelectedItems="@_selectedFeatures"
+                                        IsSelectedFn="@( (item, itemSelected) => item.Key == itemSelected.Key )">
+
+                            </DnetSelect>
+                        </ChildContent>
                         <ErrorContent>
                             <ValidationMessage For="@(() => _formData1.Key)" />
                         </ErrorContent>
-                    </DnetSelect>
+                    </DnetFormField>
                 </div>
             </div>
         </EditForm>
     </div>
     <div class="dnet-m-l-30 dnet-m-t-30" style="height:400px;width:350px;">
-        @*DisplayValueConverter="(value) => value.Name">*@
-        @*ComponentType="typeof(DnetItemTemplate)">*@
         <DnetList TItem="Person"
                   @ref="_listComponent"
                   Items="_items"
@@ -62,9 +65,6 @@
                     @Person.Name
                 </div>
             </ListItemContent>
-            @* <ItemSufixContent Context="Person">
-                <span style="width: 20px; height: 20px; display: block; background-color: @Person.EyeColor"></span>
-                </ItemSufixContent>*@
             <ItemPrefixContent Context="Person">
                 <div class="dnet-app-icon-wrapper">
                     <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>

@@ -1,72 +1,66 @@
 ﻿@using Dnet.Blazor.Components.Chips
+@using Dnet.Blazor.Components.Form
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using System.Timers
 @using System.Diagnostics.CodeAnalysis
-@using Dnet.Blazor.Components.FormField
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Models
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Services
 @using Dnet.Blazor.Components.Select.Infrastructure.Services
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using System.Globalization;
+@using System.Reflection;
+@using System.Linq.Expressions;
 
 @implements IDisposable
 
 @typeparam TItem
 
-@inherits Dnet.Blazor.Infrastructure.Forms.DnetInputBase<string>
+@typeparam TValue
+
+@inherits Dnet.Blazor.Infrastructure.Forms.DnetInputBase<TValue>
 
 @inject IOverlayService OverlayService
 
-<div @onclick=@(() => OpenMenu()) style="width:100%;cursor:pointer">
-    <DnetFormField CurrentValue="@CurrentValue"
-                   Appearance="@Appearance"
-                   PlaceHolder="@PlaceHolder"
-                   FloatLabel="@FloatLabel"
-                   HasFocus="@_hasFocus"
-                   Disabled="@Disabled"
-                   Label="@Label"
-                   PrefixContent="@PrefixContent"
-                   HintContent="@HintContent"
-                   ErrorContent="@ErrorContent"
-                   HasErrors="_hasErrors && EditContext.IsModified(FieldIdentifier)"
-                   @ref="_formField">
-        <div class="mat-select">
-            <div @ref="_menuTrigger"
-                 class="mat-select-trigger">
-                <div class="mat-select-value">
-                    @if (string.IsNullOrEmpty(CurrentValue) && !string.IsNullOrEmpty(_placeHolder))
+
+<div class="dnet-plain-select" @onclick=@(() => OpenMenu())>
+    <div @ref="_menuTrigger"
+         class="dnet-plain-select-trigger">
+        <div class="dnet-plain-select-value">
+            @if (string.IsNullOrEmpty(_displayValueAsString) && !string.IsNullOrEmpty(_placeHolder))
+            {
+                <span class="mat-select-placeholder mat-select-min-line">@_placeHolder</span>
+            }
+            @if (!string.IsNullOrEmpty(_displayValueAsString))
+            {
+                <span class="dnet-plain-select-value-text">
+                    <span>@_displayValueAsString</span>
+                </span>
+            }
+            @if (_selectedRowNodes.Any() && MultiSelect)
+            {
+                <div class="dnet-select-multi-value-wrapper">
+                    @foreach (var item in _selectedRowNodes)
                     {
-                        <span class="mat-select-placeholder mat-select-min-line">@_placeHolder</span>
-                    }
-                    @if (!string.IsNullOrEmpty(CurrentValue))
-                    {
-                        <span class="mat-select-value-text">
-                            <span class="mat-select-min-line">@BindConverter.FormatValue(CurrentValue)</span>
-                        </span>
-                    }
-                    @if (_selectedRowNodes.Any() && MultiSelect)
-                    {
-                        <div class="dnet-select-multi-value-wrapper">
-                            @foreach (var item in _selectedRowNodes)
-                            {
-                                <span class="dnet-select-multi-value">@DisplayValueConverter(item.RowData) <span> - </span></span>
-                            }
-                        </div>
+                        <span class="dnet-select-multi-value">@DisplayValueConverter(item.RowData) <span> - </span></span>
                     }
                 </div>
-                <div class="mat-select-arrow-wrapper">
-                    <div class="mat-select-arrow"></div>
-                </div>
-            </div>
+            }
         </div>
-    </DnetFormField>
+        <div class="dnet-plain-select-arrow-wrapper">
+            <div class="dnet-plain-select-arrow"></div>
+        </div>
+    </div>
 </div>
 
 
 @code {
+
+    [CascadingParameter]
+    private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
 
     [Parameter]
     public EventCallback<TItem> OnItemSelected { get; set; }
@@ -78,6 +72,9 @@
     public Func<TItem, string> DisplayValueConverter { get; set; }
 
     [Parameter]
+    public Expression<Func<TItem, TValue>> ValueConverter { get; set; }
+
+    [Parameter]
     public Func<TItem, TItem, bool> IsSelectedFn { get; set; }
 
     [Parameter]
@@ -87,28 +84,13 @@
     public RenderFragment<TItem> ItemSufixContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ChildContent { get; set; }
+    public RenderFragment ItemChildContent { get; set; }
 
     [Parameter]
     public List<TItem> Items { get; set; } = new();
 
     [Parameter]
     public List<TItem> SelectedItems { get; set; } = new();
-
-    [Parameter]
-    public RenderFragment PrefixContent { get; set; }
-
-    [Parameter]
-    public RenderFragment SufixContent { get; set; }
-
-    [Parameter]
-    public RenderFragment HintContent { get; set; }
-
-    [Parameter]
-    public RenderFragment ErrorContent { get; set; }
-
-    [Parameter]
-    public RenderFragment FormFieldChildContent { get; set; }
 
     [Parameter]
     public string Width { get; set; }
@@ -132,6 +114,12 @@
     public int ItemHeight { get; set; } = 40;
 
     [Parameter]
+    public string BorderRadius { get; set; } = "5px";
+
+    [Parameter]
+    public string MarginTop { get; set; } = "5px";
+
+    [Parameter]
     public int DebounceTime { get; set; } = 250;
 
     [Parameter]
@@ -148,12 +136,6 @@
 
     [Parameter]
     public string Hint { get; set; }
-
-    [Parameter]
-    public Appearance Appearance { get; set; } = Appearance.Fill;
-
-    [Parameter]
-    public FloatLabel FloatLabel { get; set; } = FloatLabel.AsUserTypes;
 
     [Parameter]
     public string Label { get; set; }
@@ -197,7 +179,7 @@
 
     private DnetChipList _listComponent { get; set; }
 
-    private DnetFormField _formField { get; set; } = new();
+    private ElementReference _formField { get; set; } = new();
 
     private bool _isInitialized { get; set; }
 
@@ -210,10 +192,36 @@
             .AddClass(CssClass)
             .Build();
 
+    private string? _displayValueAsString { get; set; } = null;
+
+    private bool _hasInitializedParameters;
+
 
     protected override void OnInitialized()
     {
-        if (!string.IsNullOrEmpty(CurrentValue)) _hasFocus = true;
+        _placeHolder = PlaceHolder;
+
+        if (!string.IsNullOrEmpty(CurrentValueAsString))
+        {
+            var type = typeof(TItem);
+
+            if (type == typeof(string) || type == typeof(int))
+            {
+                var selectedItem = FindItemByValue<TItem, TValue>(CurrentValue, Items);
+
+                if (selectedItem != null) ItemSelected(selectedItem);
+            }
+            else
+            {
+                var propertyInfo = GetPropertyInfoFromExpression<TItem, TValue>(ValueConverter);
+
+                var selectedItem = FindItemByPropertyValue<TItem, TValue>(propertyInfo.Name, CurrentValue, Items);
+
+                if (selectedItem != null) ItemSelected(selectedItem);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(_displayValueAsString)) _hasFocus = true;
 
         EditContext.OnFieldChanged += HandleOnValidationStateChanged;
 
@@ -222,6 +230,23 @@
         if (!DisabledClearButton) _clearButtonContent = CreateClearButtonContent();
 
         _isInitialized = true;
+    }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        parameters.SetParameterProperties(this);
+
+        if (!_hasInitializedParameters)
+        {
+            if (ValueConverter == null && MultiSelect == false)
+            {
+                throw new InvalidOperationException($"{GetType()} requires a value for the 'ValueConverter' ");
+            }
+
+            _hasInitializedParameters = true;
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     protected override void OnParametersSet()
@@ -256,6 +281,45 @@
         _selectService.OnItemSelected += ItemSelected;
 
         _selectService.OnSelectionChange += SelectionChanged;
+    }
+
+    public static PropertyInfo GetPropertyInfoFromExpression<TItem, TValue>(Expression<Func<TItem, TValue>> expression)
+    {
+        if (expression.Body is MemberExpression memberExpression && memberExpression.Member is PropertyInfo propertyInfo)
+        {
+            return propertyInfo;
+        }
+
+        throw new ArgumentException("The provided expression does not represent a simple property.");
+    }
+
+    public TItem FindItemByPropertyValue<TItem, TValue>(string propertyName, TValue value, List<TItem> items)
+    {
+        PropertyInfo propertyInfo = typeof(TItem).GetProperty(propertyName);
+
+        if (propertyInfo == null)
+        {
+            throw new ArgumentException($"The property '{propertyName}' does not exist in the type '{typeof(TItem).Name}'.");
+        }
+
+        if (propertyInfo.PropertyType != typeof(TValue))
+        {
+            throw new ArgumentException($"The type of the property '{propertyName}' does not match the type '{typeof(TValue).Name}'.");
+        }
+
+        var parameter = Expression.Parameter(typeof(TItem), "item");
+        var property = Expression.Property(parameter, propertyInfo);
+        var valueExpression = Expression.Constant(value, typeof(TValue));
+        var equalsExpression = Expression.Equal(property, valueExpression);
+
+        var lambda = Expression.Lambda<Func<TItem, bool>>(equalsExpression, parameter);
+
+        return items.FirstOrDefault(lambda.Compile());
+    }
+
+    public TItem FindItemByValue<TItem, TValue>(TValue value, List<TItem> items)
+    {
+        return items.FirstOrDefault(item => item.Equals(value));
     }
 
     private void BuildRowNodes()
@@ -304,11 +368,18 @@
         return inputContent;
     }
 
-    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TValue result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
-        result = InputTextToUpper ? value?.ToUpper() : value;
-        validationErrorMessage = null;
-        return true;
+        if (BindConverter.TryConvertTo<TValue>(value, CultureInfo.InvariantCulture, out result))
+        {
+            validationErrorMessage = null;
+            return true;
+        }
+        else
+        {
+            validationErrorMessage = string.Format(CultureInfo.InvariantCulture, "", DisplayName ?? FieldIdentifier.FieldName);
+            return false;
+        }
     }
 
     private void OpenMenu()
@@ -331,45 +402,21 @@
         }
     }
 
-    //public async void PreSelecteItem(TItem item)
-    //{
-    //    var value = DisplayValueConverter(item);
-
-    //    Value = value;
-    //    await ValueChanged.InvokeAsync(value);
-
-    //    EditContext?.NotifyFieldChanged(FieldIdentifier);
-
-    //    await OnItemSelected.InvokeAsync(item);
-
-    //    if (ItemPrefixContent != null && PrefixContent == null) PrefixContent = ItemPrefixContent(item);
-
-    //    if (ItemSufixContent != null && SufixContent == null) SufixContent = ItemSufixContent(item);
-
-    //    if (ChildContent != null && FormFieldChildContent == null) FormFieldChildContent = ChildContent(item);
-
-    //    StateHasChanged();
-    //}
-
     private async void ItemSelected(TItem item)
     {
-        var value = DisplayValueConverter(item);
+        Func<TItem, TValue> func = ValueConverter.Compile();
 
-        Value = value;
+        Value = func(item);
 
-        await ValueChanged.InvokeAsync(value);
+        _displayValueAsString = DisplayValueConverter(item);
+
+        await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        if (!string.IsNullOrEmpty(CurrentValue)) _hasFocus = true;
+        if (!string.IsNullOrEmpty(CurrentValueAsString)) _hasFocus = true;
 
         await OnItemSelected.InvokeAsync(item);
-
-        if (ItemPrefixContent != null && PrefixContent == null) PrefixContent = ItemPrefixContent(item);
-
-        if (ItemSufixContent != null && SufixContent == null) SufixContent = ItemSufixContent(item);
-
-        if (ChildContent != null && FormFieldChildContent == null) FormFieldChildContent = ChildContent(item);
 
         DetachMenu();
 
@@ -391,10 +438,9 @@
 
     private async void ClearInput()
     {
-        CurrentValue = null;
+        CurrentValueAsString = null;
 
-        PrefixContent = null;
-        SufixContent = null;
+        _displayValueAsString = null;
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
@@ -446,7 +492,7 @@
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
             .WithLockedPosition()
             .WithViewportMargin(8)
-            .SetOrigin(_formField.OverlayOrigin)
+            .SetOrigin(_formFieldCascadingValues.FormField)
             .WithFlexibleDimensions(false)
             .WithPositions(positions);
 
@@ -460,6 +506,7 @@
                 MaxWidth = MaxWidth,
                 MinHeight = MinHeight,
                 MaxHeight = MaxHeight,
+                MarginTop = MarginTop 
             };
 
         var menuContent = new RenderFragment(x =>
@@ -472,14 +519,15 @@
             x.AddAttribute(5, "MaxWidth", MaxWidth);
             x.AddAttribute(6, "MinHeight", MinHeight);
             x.AddAttribute(7, "MaxHeight", MaxHeight);
-            x.AddAttribute(7, "ItemHeight", ItemHeight);
-            x.AddAttribute(8, "SelectService", _selectService);
-            x.AddAttribute(9, "DisplayValueConverter", DisplayValueConverter);
-            x.AddAttribute(10, "ItemPrefixContent", ItemPrefixContent);
-            x.AddAttribute(10, "ItemSufixContent", ItemSufixContent);
-            x.AddAttribute(10, "ChildContent", ChildContent);
-            x.AddAttribute(11, "MultiSelect", MultiSelect);
-            x.AddAttribute(11, "SelectedRowNodes", _selectedRowNodes);
+            x.AddAttribute(8, "ItemHeight", ItemHeight);
+            x.AddAttribute(9, "BorderRadius", BorderRadius);
+            x.AddAttribute(10, "SelectService", _selectService);
+            x.AddAttribute(11, "DisplayValueConverter", DisplayValueConverter);
+            x.AddAttribute(12, "ItemPrefixContent", ItemPrefixContent);
+            x.AddAttribute(13, "ItemSufixContent", ItemSufixContent);
+            x.AddAttribute(14, "ChildContent", ItemChildContent);
+            x.AddAttribute(15, "MultiSelect", MultiSelect);
+            x.AddAttribute(16, "SelectedRowNodes", _selectedRowNodes);
             x.CloseComponent();
         });
 
@@ -490,15 +538,18 @@
 
     private void DetachMenu()
     {
-        _isOpen = false;
+        if (_isOpen)
+        {
+            _isOpen = false;
 
-        var result = new OverlayResult
-            {
-                OverlayReferenceId = _menuReference.GetOverlayReferenceId(),
-                CloseReason = CloseReason.Cancel
-            };
+            var result = new OverlayResult
+                {
+                    OverlayReferenceId = _menuReference.GetOverlayReferenceId(),
+                    CloseReason = CloseReason.Cancel
+                };
 
-        OverlayService.Detach(result);
+            OverlayService.Detach(result);
+        }
     }
 
     void CloseFilter(OverlayResult overlayDataResult)
@@ -522,10 +573,9 @@
     {
         _isInitialized = false;
 
-        CurrentValue = null;
+        CurrentValueAsString = null;
 
-        PrefixContent = null;
-        SufixContent = null;
+        _displayValueAsString = null;
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
@@ -548,5 +598,38 @@
     {
         _nextId++;
         return _nextId;
+    }
+
+    protected override string? FormatValueAsString(TValue? value)
+    {
+        switch (value)
+        {
+            case null:
+                return null;
+
+            case Int32 @int:
+                return BindConverter.FormatValue(@int, CultureInfo.InvariantCulture);
+
+            case long @long:
+                return BindConverter.FormatValue(@long, CultureInfo.InvariantCulture);
+
+            case short @short:
+                return BindConverter.FormatValue(@short, CultureInfo.InvariantCulture);
+
+            case float @float:
+                return BindConverter.FormatValue(@float, CultureInfo.InvariantCulture);
+
+            case double @double:
+                return BindConverter.FormatValue(@double, CultureInfo.InvariantCulture);
+
+            case decimal @decimal:
+                return BindConverter.FormatValue(@decimal, CultureInfo.InvariantCulture);
+
+            case string @string:
+                return @string;
+
+            default:
+                throw new InvalidOperationException($"Unsupported type {value.GetType()}");
+        }
     }
 }

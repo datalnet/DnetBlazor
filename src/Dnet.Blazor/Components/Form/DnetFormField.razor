@@ -1,0 +1,168 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components
+@using System.Linq.Expressions
+
+@implements IDisposable
+
+@inject IFormEventService FormEventService
+
+<div class="dnet-form-field-plain-wrapper">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <div class="dnet-form-field-plain-label-wrapper">
+            <label class="dnet-form-field-plain-label">@Label</label>
+            @if (IsRequired)
+            {
+                <span aria-hidden="true"
+                      class="dnet-floating-label--required">
+                </span>
+            }
+        </div>
+    }
+    <div class="dnet-form-field-plain-control-container" @ref="_formField">
+        @if (PrefixContent != null)
+        {
+            <div class="dnet-form-field-plain-prefix">
+                @PrefixContent
+            </div>
+        }
+        <div class="dnet-form-field-plain-control">
+            <CascadingValue Value="_formFieldCascadingValues">
+                @ChildContent
+            </CascadingValue>
+        </div>
+        @if (_useClearButton == true && !string.IsNullOrEmpty(_currentValue))
+        {
+            <div class="dnet-component-icon-wrapper" @onclick="ClearInput">
+                <span class="dnet-component-icon dnet-component-clear-button"></span>
+            </div>
+        }
+        @if (SufixContent != null)
+        {
+            <div class="dnet-form-field-plain-suffix">
+                @SufixContent
+            </div>
+        }
+    </div>
+    <div class="dnet-form-field-plain-info">
+        @if (_hasErrors)
+        {
+            <div class="mat-error">
+                @ErrorContent
+            </div>
+        }
+        else
+        {
+            <div class="mat-form-field-hint-wrapper">
+                <div class="mat-hint">
+                    @HintContent
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment PrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment SufixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment HintContent { get; set; }
+
+    [Parameter]
+    public RenderFragment ErrorContent { get; set; }
+
+    [Parameter]
+    public bool UseClearButton { get; set; } = false;
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; }
+
+    [Parameter]
+    public bool IsRequired { get; set; }
+
+    [Parameter]
+    public FormAppearance Appearance { get; set; }
+
+    private string _currentValue { get; set; }
+
+    private bool _hasErrors { get; set; }
+
+    private bool _hasFocus { get; set; }
+
+    private bool _useClearButton { get; set; }
+
+    private ElementReference _formField;
+
+    private FormFieldCascadingValues _formFieldCascadingValues { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        _formFieldCascadingValues = new FormFieldCascadingValues()
+            {
+                FormEventService = FormEventService,
+            };
+
+        FormEventService.OnError += HandleError;
+
+        FormEventService.OnFocus += HandleFocus;
+
+        FormEventService.OnCurrentValue += HandleCurrentValue;
+
+        _useClearButton = UseClearButton;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        _formFieldCascadingValues.FormField = _formField;
+    }
+
+    private void HandleError(bool hasError)
+    {
+        _hasErrors = hasError;
+
+        StateHasChanged();
+    }
+
+    private void HandleFocus(bool hasFocus)
+    {
+        _hasFocus = hasFocus;
+
+        StateHasChanged();
+    }
+
+    private void HandleCurrentValue(string? currentValue)
+    {
+        _currentValue = currentValue;
+
+        StateHasChanged();
+    }
+
+    private async void ClearInput()
+    {
+        FormEventService.RaiseClearContent();
+    }
+
+    public void Dispose()
+    {
+        FormEventService.OnError -= HandleError;
+
+        FormEventService.OnFocus -= HandleFocus;
+
+        FormEventService.OnCurrentValue -= HandleCurrentValue;
+    }
+}

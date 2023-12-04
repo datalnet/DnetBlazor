@@ -6,7 +6,6 @@
 @using Dnet.App.Shared.Infrastructure.Services
 @using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Models
 @using Dnet.Blazor.Components.Form
-@using Dnet.Blazor.Components.FormField;
 @using Dnet.Blazor.Components.List
 @using Dnet.Blazor.Components.Select
 @using Dnet.Blazor.Components.Autocomplete
@@ -28,15 +27,15 @@
     <EditForm EditContext="@_editContext" style="display: flex;flex-direction:column; width:300px">
         <DataAnnotationsValidator />
 
-        <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="LastName" UseClearButton="true" IsRequired="true">
+        <DnetFormField PlaceHolder="Ex. John" Label="LastName" UseClearButton="true" IsRequired="true">
             <PrefixContent>
                 <div class="dnet-app-icon-wrapper">
                     <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
                 </div>
             </PrefixContent>
             <ChildContent>
-                <DnetInputTextCmp @bind-Value="_person.LastName" PlaceHolder="Ex. MyCompany" type="text">
-                </DnetInputTextCmp>
+                <DnetInputText @bind-Value="_person.LastName" PlaceHolder="Ex. MyCompany" type="text">
+                </DnetInputText>
             </ChildContent>
             <HintContent>You can add the country prefix</HintContent>
             <SufixContent>
@@ -45,35 +44,35 @@
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.LastName)" />
             </ErrorContent>
-        </DnetFormFieldPlainCmp>
+        </DnetFormField>
 
-        <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+        <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
             <ChildContent>
-                <DnetInputTextCmp @bind-Value="_person.Email" PlaceHolder="Ex. Email" type="text">
-                </DnetInputTextCmp>
+                <DnetInputText @bind-Value="_person.Email" PlaceHolder="Ex. Email" type="text">
+                </DnetInputText>
             </ChildContent>
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.Email)" />
             </ErrorContent>
-        </DnetFormFieldPlainCmp>
+        </DnetFormField>
 
-        <DnetFormFieldPlainCmp PlaceHolder="Gender" Label="Gender" IsRequired="true">
+        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
             <ChildContent>
-                <DnetGenericSelectCmp TValue="string" @bind-Value="_person.Gender" Items="_genders"
+                <DnetSelect TValue="string" @bind-Value="_person.Gender" Items="_genders"
                                       TItem="Gender" DisplayValueConverter="(value) => (value.Name)"
                                       ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResource1ItemSelected"
                                       PlaceHolder="Api Resource" Label="Api Resource"
-                                      Appearance="Appearance.Fill">
-                </DnetGenericSelectCmp>
+                                      >
+                </DnetSelect>
             </ChildContent>
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.Gender)" />
             </ErrorContent>
-        </DnetFormFieldPlainCmp>
+        </DnetFormField>
 
-        <DnetFormFieldPlainCmp PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+        <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
             <ChildContent>
-                <DnetAutocompleteCmp TValue="string" 
+                <DnetAutocomplete TValue="string" 
                                      @bind-Value="@_person.Name" 
                                      Items="_items" 
                                      TItem="Person"
@@ -84,16 +83,16 @@
                                      PlaceHolder="Name"
                                      SortBy="@sortBy" 
                                      FilterBy="@filterBy">
-                </DnetAutocompleteCmp>
+                </DnetAutocomplete>
             </ChildContent>
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.Name)" />
             </ErrorContent>
-        </DnetFormFieldPlainCmp>
+        </DnetFormField>
 
-        <DnetFormFieldPlainCmp PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+        <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
             <ChildContent>
-                <DnetDatePickerCmp @bind-Value="@_person.StartDate"
+                <DnetDatePicker @bind-Value="@_person.StartDate"
                                    Disabled="false"
                                    OnDaySelected="DaySelected"
                                    PlaceHolder="Departure day"
@@ -101,7 +100,7 @@
                                    MinDayValue="DateTime.Now.AddDays(-10)"
                                    FirstDayToShow="DateTime.Now"
                                    DatepickerFilter="(p) => { return p.DayIndex == 0; }">
-                </DnetDatePickerCmp>
+                </DnetDatePicker>
             </ChildContent>
             <SufixContent>
                 <div class="dnet-datepicker-icon-wrapper">
@@ -111,45 +110,45 @@
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.StartDate)" />
             </ErrorContent>
-        </DnetFormFieldPlainCmp>
+        </DnetFormField>
 
-        <DnetFormFieldPlainCmp PlaceHolder="Ex. John" Label="Email" IsRequired="true">
+        <DnetFormField PlaceHolder="Ex. John" Label="Email" IsRequired="true">
             <ChildContent>
-                <DnetInputTextAreaCmp @bind-Value="_person.Address"
+                <DnetInputTextArea @bind-Value="_person.Address"
                                       PlaceHolder="Ex. 4th Street, CP: 11901"
                                       Label="Address"
                                       type="text"
                                       rows="5">
-                </DnetInputTextAreaCmp>
+                </DnetInputTextArea>
             </ChildContent>
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.Email)" />
             </ErrorContent>
-        </DnetFormFieldPlainCmp>
+        </DnetFormField>
 
-        <DnetFormFieldPlainCmp PlaceHolder="67" Label="Age" IsRequired="true">
+        <DnetFormField PlaceHolder="67" Label="Age" IsRequired="true">
             <ChildContent>
-                <DnetInputNumberCmp @bind-Value="_person.Age" PlaceHolder="Ex. Pizza">
-                </DnetInputNumberCmp>
+                <DnetInputNumber @bind-Value="_person.Age" PlaceHolder="Ex. Pizza">
+                </DnetInputNumber>
             </ChildContent>
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.Age)" />
             </ErrorContent>
-        </DnetFormFieldPlainCmp>
+        </DnetFormField>
 
-        <DnetFormFieldPlainCmp PlaceHolder="" Label="Birthday" IsRequired="true">
+        <DnetFormField PlaceHolder="" Label="Birthday" IsRequired="true">
             <ChildContent>
-                <DnetInputDateCmp @bind-Value="_person.Birthday" PlaceHolder="Ex. 2021/10/6">
-                </DnetInputDateCmp>
+                <DnetInputDate @bind-Value="_person.Birthday" PlaceHolder="Ex. 2021/10/6">
+                </DnetInputDate>
             </ChildContent>
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.Birthday)" />
             </ErrorContent>
-        </DnetFormFieldPlainCmp>
+        </DnetFormField>
 
-        <DnetFormFieldPlainCmp PlaceHolder="67" Label="Participantes" IsRequired="true">
+        <DnetFormField PlaceHolder="67" Label="Participantes" IsRequired="true">
             <ChildContent>
-                <DnetFloatingDoubleListCmp @bind-Value="_personNameList"
+                <DnetFloatingDoubleList @bind-Value="_personNameList"
                                            TItem="Person"
                                            LeftItems="_leftItems"
                                            RightItems="_rightItems"
@@ -165,12 +164,12 @@
                                            OnSearchLeft="SearchLeft"
                                            OnSearchRight="SearchRight"
                                            @ref="_floatingDoubleListPerson">
-                </DnetFloatingDoubleListCmp>
+                </DnetFloatingDoubleList>
             </ChildContent>
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.Birthday)" />
             </ErrorContent>
-        </DnetFormFieldPlainCmp>
+        </DnetFormField>
     </EditForm>
 </div>
 
@@ -202,11 +201,7 @@
 
     private List<Person> _items = new List<Person>();
 
-    private DnetAutocomplete<Person> _dnetAutocomplete { get; set; }
-
     private string _dateSelected { get; set; }
-
-
 
     private List<Person> _leftItems = new();
 
@@ -240,7 +235,7 @@
 
     private string _personNameList { get; set; }
 
-    private DnetFloatingDoubleListCmp<Person> _floatingDoubleListPerson { get; set; }
+    private DnetFloatingDoubleList<Person> _floatingDoubleListPerson { get; set; }
 
 
 
@@ -345,8 +340,6 @@
     private async Task StopTyping(string value)
     {
         var items = (await GetPersons()).Where(p => p.Name.ToUpper().Contains(value.ToUpper())).ToList();
-
-        _dnetAutocomplete.UpdateData(items);
     }
 
     private void DaySelected(Blazor.Components.DatePicker.Infrastructure.Models.CalendarDay selecteDay)

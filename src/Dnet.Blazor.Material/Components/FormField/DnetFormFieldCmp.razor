@@ -1,0 +1,229 @@
+﻿@using Dnet.Blazor.Material.Infrastructure.Services.CssBuilder
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using System.Diagnostics.CodeAnalysis
+
+@inject IFormEventService FormEventService
+
+<div class="@_formFieldClass">
+    <div class="mat-form-field-wrapper">
+        <div class="mat-form-field-flex" @ref="OverlayOrigin">
+            @if (PrefixContent != null)
+            {
+                <div class="mat-form-field-prefix">
+                    @PrefixContent
+                </div>
+            }
+            <div class="mat-form-field-infix">
+                <CascadingValue Value="FormEventService">
+                    @ChildContent
+                </CascadingValue>
+                <span class="mat-form-field-label-wrapper">
+                    <label class="@_formFieldLabelClass">
+                        <span class="mat-label">@Label</span>
+                        @if (IsRequired)
+                        {
+                            <span aria-hidden="true"
+                                  class="mat-mdc-form-field-required-marker mdc-floating-label--required">
+                            </span>
+                        }
+                    </label>
+                </span>
+            </div>
+            @if (SufixContent != null)
+            {
+                <div class="mat-form-field-suffix">
+                    @SufixContent
+                </div>
+            }
+            @if (UseClearButton == true)
+            {
+                <div class="dnet-component-icon-wrapper" @onclick="ClearInput">
+                    <span class="dnet-component-icon dnet-component-clear-button"></span>
+                </div>
+            }
+        </div>
+        <div class="mat-form-field-underline">
+            <div class="mat-form-field-ripple"></div>
+        </div>
+        <div class="mat-form-field-subscript-wrapper">
+            @if (_hasErrors)
+            {
+                <div class="mat-error">
+                    @ErrorContent
+                </div>
+            }
+            else
+            {
+                <div class="mat-form-field-hint-wrapper">
+                    <div class="mat-hint">
+                        @HintContent
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment PrefixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment SufixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment HintContent { get; set; }
+
+    [Parameter]
+    public RenderFragment ErrorContent { get; set; }
+
+    [Parameter]
+    public bool UseClearButton { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool IsRequired { get; set; }
+
+    [Parameter]
+    public Appearance Appearance { get; set; } = Appearance.Standard;
+
+    [Parameter]
+    public FloatLabel FloatLabel { get; set; } = FloatLabel.AsUserTypes;
+
+    internal ElementReference OverlayOrigin;
+
+    private string _appearanceClass { get; set; }
+
+    public string _formFieldClass { get; set; }
+
+    public string _formFieldLabelClass { get; set; }
+
+    public string _currentValue { get; set; }
+
+    public bool _hasErrors { get; set; }
+
+    public bool _hasFocus { get; set; }
+
+    public bool _shouldFloat { get; set; }
+
+    public FloatLabel _floatLabel { get; set; }
+
+    public Appearance _formAppearance { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        _formFieldClass = GetCssClasses();
+
+        _formFieldLabelClass = GetFormFieldLabelClass();
+
+        FormEventService.OnError += HandleError;
+
+        FormEventService.OnFocus += HandleFocus;
+
+        FormEventService.OnCurrentValue += HandleCurrentValue;
+
+        _floatLabel = FloatLabel;
+
+        _formAppearance = Appearance;
+    }
+
+    protected override void OnParametersSet()
+    {
+        _formFieldClass = GetCssClasses();
+
+        _formFieldLabelClass = GetFormFieldLabelClass();
+    }
+
+    private string GetCssClasses()
+    {
+        var classes = new CssBuilder("mat-form-field")
+                    .AddClass("mat-form-field-type-mat-input", true)
+                    .AddClass("mat-form-field-appearance-fill", _formAppearance == Appearance.Fill)
+                    .AddClass("mat-form-field-appearance-standard", _formAppearance == Appearance.Standard)
+                    .AddClass("mat-form-field-appearance-legacy", _formAppearance == Appearance.Legacy)
+                    .AddClass("mat-form-field-can-float", _floatLabel != FloatLabel.Never)
+                    .AddClass("mat-form-field-should-float", _shouldFloat == true)
+                    .AddClass("mat-form-field-has-label", true)
+                    .AddClass("mat-form-field-hide-placeholder", _hasFocus == false)
+                    .AddClass("mat-form-field-disabled", Disabled)
+                    .AddClass("mat-focused", _hasFocus == true)
+                .Build();
+
+        return classes;
+    }
+
+    private string GetFormFieldLabelClass()
+    {
+        var classes = new CssBuilder("mat-form-field-label")
+                    .AddClass("mat-form-field-empty", string.IsNullOrEmpty(_currentValue))
+                .Build();
+
+        return classes;
+    }
+
+    private void ShouldLabelFloat()
+    {
+        _shouldFloat = (_hasFocus == true && FloatLabel == FloatLabel.AsUserTypes) || FloatLabel == FloatLabel.Always || (!string.IsNullOrEmpty(_currentValue) && FloatLabel == FloatLabel.AsUserTypes);
+    }
+
+    private void HandleError(bool hasError)
+    {
+        _hasErrors = hasError;
+
+        StateHasChanged();
+    }
+
+    private void HandleFocus(bool hasFocus)
+    {
+        _hasFocus = hasFocus;
+
+        ShouldLabelFloat();
+
+        _formFieldClass = GetCssClasses();
+
+        _formFieldLabelClass = GetFormFieldLabelClass();
+
+        StateHasChanged();
+    }
+
+    private void HandleCurrentValue(string? currentValue)
+    {
+        _currentValue = currentValue;
+
+        ShouldLabelFloat();
+
+        _formFieldClass = GetCssClasses();
+
+        _formFieldLabelClass = GetFormFieldLabelClass();
+
+        StateHasChanged();
+    }
+
+    private async void ClearInput()
+    {
+        FormEventService.RaiseClearContent();
+    }
+
+    public void Dispose()
+    {
+        FormEventService.OnError -= HandleError;
+
+        FormEventService.OnFocus -= HandleFocus;
+
+        FormEventService.OnCurrentValue -= HandleCurrentValue;
+    }
+}

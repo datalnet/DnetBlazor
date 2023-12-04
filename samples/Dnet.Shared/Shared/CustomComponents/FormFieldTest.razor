@@ -1,71 +1,105 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using Dnet.App.Shared.Infrastructure.Entities
-@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Form
 
 
 <div class="d-flex flex-column justify-content-between" style="height: 100%">
-	<div>
-		<EditForm Model="@Person" style="display: flex;flex-direction:column">
-			<DataAnnotationsValidator />
-			<DnetInputText @bind-Value="Person.Name" PlaceHolder="Ex. John" Label="Name" Appearance="Appearance" type="text" IsRequired="true">
-				<HintContent>Required field</HintContent>
-				<ErrorContent>
-					<ValidationMessage For="@(() => Person.Name)" />
-				</ErrorContent>
-			</DnetInputText>
-			<DnetInputTextAhead @bind-Value="Person.LastName" PlaceHolder="Dnet TypeAhead" Label="LastName" Appearance="Appearance" type="text" OnStopTyping="StopTyping" FloatLabel="FloatLabel.Always">
-				<HintContent>On stop typing: @aheadTypeResult</HintContent>
-			</DnetInputTextAhead>
-			<DnetInputText @bind-Value="Person.Email" PlaceHolder="Ex. john.doe@mycompany.com" Label="Email" Appearance="Appearance" type="text">
-			</DnetInputText>
-			<div class="dnet-m-b-10" style="width:100%">
-				<DnetInputText @bind-Value="Person.Phone" PlaceHolder="Ex. +34 678 897 765" Label="Phone" Appearance="Appearance" type="text">
-					<HintContent>You can add the country prefix</HintContent>
-					<SufixContent>
-						<div class="dnet-app-icon-wrapper">
-							<span class="dnet-app-icon dnet-app-formfield-headphones"></span>
-						</div>
-					</SufixContent>
-				</DnetInputText>
-			</div>
-			<DnetInputNumber @bind-Value="Person.Age" PlaceHolder="Ex. Pizza" Label="Favorite food" Appearance="Appearance" type="text">
-			</DnetInputNumber>
-			<DnetInputText @bind-Value="Person.Company" PlaceHolder="Ex. MyCompany" Label="Company" Appearance="Appearance" type="text" Disabled="true">
-			</DnetInputText>
-			<DnetInputText @bind-Value="Person.Balance" PlaceHolder="Ex. Current Balance" Label="Balance" Appearance="Appearance" type="text">
-				<SufixContent>
-					€
-				</SufixContent>
-			</DnetInputText>
-			<DnetInputDate @bind-Value="Person.Birthday" PlaceHolder="Ex. 2021/10/6" Label="Birthday" Appearance="Appearance">
-			</DnetInputDate>
-			<DnetInputTextArea @bind-Value="Person.Address"
-							   PlaceHolder="Ex. 4th Street, CP: 11901"
-							   Label="Address" Appearance="Appearance"
-							   type="text"
-							   rows="5">
-			</DnetInputTextArea>
-		</EditForm>
-	</div>
+    <div>
+        <EditForm Model="@Person" style="display: flex;flex-direction:column">
+            <DataAnnotationsValidator />
+            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                <ChildContent>
+                    <DnetInputText @bind-Value="Person.Name" PlaceHolder="Ex. John" type="text" IsRequired="true">
+                    </DnetInputText>
+                </ChildContent>
+                <HintContent>Required field</HintContent>
+                <ErrorContent>
+                    <ValidationMessage For="@(() => Person.Name)" />
+                </ErrorContent>
+            </DnetFormField>
+            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                <ChildContent>
+                    <DnetInputText @bind-Value="Person.LastName" PlaceHolder="Dnet TypeAhead" type="text" OnStopTyping="StopTyping">
+                    </DnetInputText>
+                </ChildContent>
+                <HintContent>On stop typing: @aheadTypeResult</HintContent>
+            </DnetFormField>
+            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                <ChildContent>
+                    <DnetInputText @bind-Value="Person.Email" PlaceHolder="Ex. john.doe@mycompany.com" type="text">
+                    </DnetInputText>
+                </ChildContent>
+            </DnetFormField>
+            <div class="dnet-m-b-10" style="width:100%">
+                <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                    <ChildContent>
+                        <DnetInputText @bind-Value="Person.Phone" PlaceHolder="Ex. +34 678 897 765" type="text">
+                        </DnetInputText>
+                    </ChildContent>
+                    <HintContent>You can add the country prefix</HintContent>
+                    <SufixContent>
+                        <div class="dnet-app-icon-wrapper">
+                            <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
+                        </div>
+                    </SufixContent>
+                </DnetFormField>
+            </div>
+            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                <ChildContent>
+                    <DnetInputNumber @bind-Value="Person.Age" PlaceHolder="Ex. Pizza" type="text">
+                    </DnetInputNumber>
+                </ChildContent>
+            </DnetFormField>
+            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                <ChildContent>
+                    <DnetInputText @bind-Value="Person.Company" PlaceHolder="Ex. MyCompany" type="text" Disabled="true">
+                    </DnetInputText>
+                </ChildContent>
+            </DnetFormField>
+            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                <ChildContent>
+                    <DnetInputText @bind-Value="Person.Balance" PlaceHolder="Ex. Current Balance" type="text">
+                    </DnetInputText>
+                </ChildContent>
+                <SufixContent>
+                    €
+                </SufixContent>
+            </DnetFormField>
+            <DnetFormField PlaceHolder="Ex. John" Label="Birthday" UseClearButton="true" IsRequired="true">
+                <ChildContent>
+                    <DnetInputDate @bind-Value="Person.Birthday" PlaceHolder="Ex. 2021/10/6">
+                    </DnetInputDate>
+                </ChildContent>
+            </DnetFormField>
+            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                <ChildContent>
+                    <DnetInputTextArea @bind-Value="Person.Address"
+                                       PlaceHolder="Ex. 4th Street, CP: 11901"
+                                       Label="Address"
+                                       type="text"
+                                       rows="5">
+                    </DnetInputTextArea>
+                </ChildContent>
+            </DnetFormField>
+        </EditForm>
+    </div>
 </div>
 
 @code {
 
-	[Parameter]
-	public Person Person { get; set; } = new Person();
+    [Parameter]
+    public Person Person { get; set; } = new Person();
 
-	[Parameter]
-	public Appearance Appearance { get; set; } = Appearance.Fill;
-
-	private string aheadTypeResult { get; set; }
+    private string aheadTypeResult { get; set; }
 
 
-	protected override void OnInitialized()
-	{
-	}
+    protected override void OnInitialized()
+    {
+    }
 
-	private void StopTyping(string value) {
-		aheadTypeResult = value; 
-	}
+    private void StopTyping(string value)
+    {
+        aheadTypeResult = value;
+    }
 
 }

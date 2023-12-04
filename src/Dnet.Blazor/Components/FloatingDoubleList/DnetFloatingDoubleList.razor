@@ -1,6 +1,7 @@
 ﻿@using Dnet.Blazor.Components.Chips
 @using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Models;
 @using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Services;
+@using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Components.Grid.Infrastructure.Entities;
 @using Dnet.Blazor.Components.List;
 @using Microsoft.AspNetCore.Components.Forms
@@ -8,7 +9,6 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using System.Timers
 @using System.Diagnostics.CodeAnalysis
-@using Dnet.Blazor.Components.FormField
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Models
@@ -28,38 +28,27 @@
 
 @inject IOverlayService OverlayService
 
-<div @onclick=@(() => OpenMenu()) style="width:100%;cursor:pointer">
-    <DnetFormField CurrentValue="@_displayValueAsString"
-                   Appearance="@Appearance"
-                   PlaceHolder="@PlaceHolder"
-                   FloatLabel="@FloatLabel"
-                   HasFocus="@_hasFocus"
-                   Disabled="@Disabled"
-                   Label="@Label"
-                   PrefixContent="@PrefixContent"
-                   HintContent="@HintContent"
-                   ErrorContent="@ErrorContent"
-                   HasErrors="@_hasErrors"
-                   IsRequired="@IsRequired"
-    @ref="_formField">
-        <div class="mat-select">
-            <div @ref="_menuTrigger"
-                 class="mat-select-trigger" style="width: 100%">
-                <div class="mat-select-value">
-                    <div class="dnet-floating-doublelist-value-wrapper" style="height: @(InputItemHeight)px">
-                        @foreach (var item in _itemsToshow)
-                        {
-                            <span class="dnet-select-multi-value">@DisplayValueConverter(item) <span> - </span></span>
-                        }
-                    </div>
-                </div>
+
+<div class="dnet-plain-select" @onclick=@(() => OpenMenu())>
+    <div @ref="_menuTrigger"
+         class="dnet-plain-select-trigger" style="width: 100%">
+        <div class="dnet-plain-select-value">
+            <div class="dnet-floating-doublelist-value-wrapper" style="height: @(InputItemHeight)px">
+                @foreach (var item in _itemsToshow)
+                {
+                    <span class="dnet-select-multi-value">@DisplayValueConverter(item) <span> - </span></span>
+                }
             </div>
         </div>
-    </DnetFormField>
+    </div>
 </div>
 
 
+
 @code {
+
+    [CascadingParameter]
+    private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
 
     [Parameter]
     public EventCallback<SearchModel> OnSearchLeft { get; set; }
@@ -89,28 +78,13 @@
     public RenderFragment<TItem> ItemSufixContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ChildContent { get; set; }
-
-    [Parameter]
     public ListOptions<TItem> LeftListOptions { get; set; }
 
     [Parameter]
     public ListOptions<TItem> RightListOptions { get; set; }
 
     [Parameter]
-    public RenderFragment PrefixContent { get; set; }
-
-    [Parameter]
-    public RenderFragment SufixContent { get; set; }
-
-    [Parameter]
-    public RenderFragment HintContent { get; set; }
-
-    [Parameter]
-    public RenderFragment ErrorContent { get; set; }
-
-    [Parameter]
-    public RenderFragment FormFieldChildContent { get; set; }
+    public RenderFragment ItemChildContent { get; set; }
 
     [Parameter]
     public string Width { get; set; }
@@ -134,10 +108,16 @@
     public int ItemHeight { get; set; } = 40;
 
     [Parameter]
-    public int DebounceTime { get; set; } = 250;
+    public string BorderRadius { get; set; } = "5px";
 
     [Parameter]
-    public int InputItemHeight { get; set; } = 35;
+    public string MarginTop { get; set; } = "5px";
+
+    [Parameter]
+    public int DebounceTime { get; set; } = 300;
+
+    [Parameter]
+    public int InputItemHeight { get; set; } = 34;
 
     [Parameter]
     public bool InputTextToUpper { get; set; }
@@ -149,25 +129,13 @@
     public bool Disabled { get; set; }
 
     [Parameter]
-    public string PlaceHolder { get; set; } = "";
-
-    [Parameter]
-    public string Hint { get; set; }
-
-    [Parameter]
-    public Appearance Appearance { get; set; } = Appearance.Fill;
-
-    [Parameter]
-    public FloatLabel FloatLabel { get; set; } = FloatLabel.AsUserTypes;
-
-    [Parameter]
-    public string Label { get; set; }
-
-    [Parameter]
     public bool DisabledClearButton { get; set; }
 
     [Parameter]
     public bool IsRequired { get; set; }
+
+    [Parameter]
+    public SearchControlOptions SearchControlOptions { get; set; }
 
     [Parameter]
     public string LeftText { get; set; }
@@ -189,8 +157,6 @@
 
     private bool _isOpen;
 
-    private bool _isClosing;
-
     private OverlayReference _menuReference;
 
     private FloatingDoubleListService<TItem> _floatingDoubleListService;
@@ -204,8 +170,6 @@
     private RenderFragment _clearButtonContent { get; set; }
 
     private long _nextId { get; set; } = -1;
-
-    private DnetFormField _formField { get; set; } = new();
 
     private bool _isInitialized { get; set; }
 
@@ -226,14 +190,32 @@
 
     private List<TItem> _itemsToshow { get; set; } = new();
 
+    private IFormEventService _formEventService { get; set; }
+
 
     protected override void OnInitialized()
     {
+        _formEventService = _formFieldCascadingValues.FormEventService;
+
         EditContext.OnFieldChanged += HandleOnValidationStateChanged;
 
-        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext != null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         if (!DisabledClearButton) _clearButtonContent = CreateClearButtonContent();
+
+        if (!string.IsNullOrEmpty(_displayValueAsString))
+        {
+            _hasFocus = true;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+        }
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
         _isInitialized = true;
     }
@@ -267,9 +249,11 @@
 
                 _hasFocus = true;
 
+                if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
                 _isInitialized = false;
             }
-        } 
+        }
         else if (LeftItems != null && SideForSelections == ListToShow.Left)
         {
             if (_isInitialized && LeftItems.Any())
@@ -277,6 +261,8 @@
                 _itemsToshow = LeftItems;
 
                 _hasFocus = true;
+
+                if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
 
                 _isInitialized = false;
             }
@@ -294,6 +280,8 @@
         _floatingDoubleListService.OnSearchLeft += SearchLeft;
 
         _floatingDoubleListService.OnSearchRight += SearchRight;
+
+        _floatingDoubleListService.OnClose += ClosenMenu;
     }
 
     private RenderFragment CreateClearButtonContent()
@@ -330,11 +318,10 @@
         _isOpen = true;
     }
 
-    private void ClosenMenu(FocusEventArgs data)
+    private void ClosenMenu()
     {
-        if (_isOpen && _isClosing)
+        if (_isOpen)
         {
-            _isClosing = false;
             DetachMenu();
         }
     }
@@ -344,6 +331,8 @@
         var transfered = SideForSelections == ListToShow.Right ? transferredItems.RighItems : transferredItems.LeftItems;
 
         _hasFocus = transfered.Any() ? true : false;
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
 
         _itemsToshow = transfered;
 
@@ -358,14 +347,18 @@
 
         _displayValueAsString = null;
 
-        PrefixContent = null;
-        SufixContent = null;
-
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        if (EditContext != null) _hasErrors = (EditContext?.GetValidationMessages(FieldIdentifier)).Any();
+        if (EditContext != null)
+        {
+            _hasErrors = (EditContext.GetValidationMessages(FieldIdentifier)).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         _hasFocus = false;
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
 
         await ValueChanged.InvokeAsync(Value);
 
@@ -411,7 +404,7 @@
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
             .WithLockedPosition()
             .WithViewportMargin(8)
-            .SetOrigin(_formField.OverlayOrigin)
+            .SetOrigin(_formFieldCascadingValues.FormField)
             .WithFlexibleDimensions(false)
             .WithPositions(positions);
 
@@ -425,6 +418,7 @@
                 MaxWidth = MaxWidth,
                 MinHeight = MinHeight,
                 MaxHeight = MaxHeight,
+                MarginTop = MarginTop
             };
 
         var menuContent = new RenderFragment(x =>
@@ -434,20 +428,21 @@
             x.AddAttribute(2, "LeftItems", LeftItems);
             x.AddAttribute(3, "Width", Width ?? "450px");
             x.AddAttribute(4, "Height", Height ?? "250px");
-            x.AddAttribute(4, "MinWidth", MinWidth);
-            x.AddAttribute(5, "MaxWidth", MaxWidth);
-            x.AddAttribute(6, "MinHeight", MinHeight);
-            x.AddAttribute(7, "MaxHeight", MaxHeight);
-            x.AddAttribute(8, "ItemHeight", ItemHeight);
-            x.AddAttribute(9, "FloatingDoubleListService", _floatingDoubleListService);
-            x.AddAttribute(10, "ItemPrefixContent", ItemPrefixContent);
-            x.AddAttribute(11, "ItemSufixContent", ItemSufixContent);
-            x.AddAttribute(12, "ChildContent", ChildContent);
-            x.AddAttribute(13, "LeftListOptions", LeftListOptions);
-            x.AddAttribute(14, "RightListOptions", RightListOptions);
-            x.AddAttribute(15, "LeftText", LeftText);
-            x.AddAttribute(16, "RightText", RightText);
-            x.AddAttribute(17, "EqualityComparer", EqualityComparer);
+            x.AddAttribute(5, "MinWidth", MinWidth);
+            x.AddAttribute(6, "MaxWidth", MaxWidth);
+            x.AddAttribute(7, "MinHeight", MinHeight);
+            x.AddAttribute(8, "MaxHeight", MaxHeight);
+            x.AddAttribute(9, "ItemHeight", ItemHeight);
+            x.AddAttribute(10, "BorderRadius", BorderRadius);
+            x.AddAttribute(11, "FloatingDoubleListService", _floatingDoubleListService);
+            x.AddAttribute(12, "ItemPrefixContent", ItemPrefixContent);
+            x.AddAttribute(13, "ItemSufixContent", ItemSufixContent);
+            x.AddAttribute(14, "ChildContent", ItemChildContent);
+            x.AddAttribute(15, "LeftListOptions", LeftListOptions);
+            x.AddAttribute(16, "RightListOptions", RightListOptions);
+            x.AddAttribute(17, "LeftText", LeftText);
+            x.AddAttribute(18, "RightText", RightText);
+            x.AddAttribute(19, "EqualityComparer", EqualityComparer);
             x.CloseComponent();
         });
 
@@ -496,12 +491,14 @@
 
             CurrentValue = null;
 
-            PrefixContent = null;
-            SufixContent = null;
-
             EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-            if (EditContext != null) _hasErrors = (EditContext?.GetValidationMessages(FieldIdentifier)).Any();
+            if (EditContext != null)
+            {
+                _hasErrors = (EditContext.GetValidationMessages(FieldIdentifier)).Any();
+
+                if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            }
         }
 
         _floatingDoubleListService.RefreshDataLeft(items);
@@ -516,24 +513,42 @@
 
             CurrentValue = null;
 
-            PrefixContent = null;
-            SufixContent = null;
-
             EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-            if (EditContext != null) _hasErrors = (EditContext?.GetValidationMessages(FieldIdentifier)).Any();
+            if (EditContext != null)
+            {
+                _hasErrors = (EditContext.GetValidationMessages(FieldIdentifier)).Any();
+
+                if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            }
         }
 
         _floatingDoubleListService.RefreshDataRight(items);
     }
 
+    private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
+    {
+        if (EditContext != null)
+        {
+            _hasErrors = (EditContext.GetValidationMessages(FieldIdentifier)).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+    }
+
     public void Dispose()
     {
         if (_menuReference != null) _menuReference.Close -= CloseFilter;
-    }
 
-    private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
-    {
-        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+        if (_floatingDoubleListService is not null)
+        {
+            _floatingDoubleListService.OnSelectionChange -= SelectionChanged;
+
+            _floatingDoubleListService.OnSearchLeft -= SearchLeft;
+
+            _floatingDoubleListService.OnSearchRight -= SearchRight;
+
+            _floatingDoubleListService.OnClose -= ClosenMenu;
+        }
     }
 }

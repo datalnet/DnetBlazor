@@ -2,47 +2,47 @@
 
 @using System.Drawing
 @using Dnet.App.Shared.Infrastructure.Entities
-@using Dnet.Blazor.Components.FormField;
+@using Dnet.Blazor.Components.Form;
 @using Microsoft.AspNetCore.Components;
 @using Microsoft.AspNetCore.Components.Web;
 
 <div class="container-fluid" style="padding-top: 10px;">
-	<div class="d-flex dnet-m-l-30 dnet-m-t-20">
-		<span class="dnet-m-r-10 dnet-app-comp-name">Forms Field</span>
-	</div>
-	<div class="d-flex dnet-m-l-30 dnet-m-t-30">
-		<div style="margin-right:100px; width: 350px;">
-			<FormFieldTest Person="@_person"></FormFieldTest>
-		</div>
-		<div style="margin-right:100px; width: 350px;">
-			<FormFieldTest Person="@_person" Appearance="Appearance.Legacy"></FormFieldTest>
-		</div>
-		<div style="width: 350px;">
-			<FormFieldTest Person="@_person" Appearance="Appearance.Standard"></FormFieldTest>
-		</div>
-	</div>
+    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+        <span class="dnet-m-r-10 dnet-app-comp-name">Forms Field</span>
+    </div>
+    <div class="d-flex dnet-m-l-30 dnet-m-t-30">
+        <div style="margin-right:100px; width: 350px;">
+            <FormFieldTest Person="@_person"></FormFieldTest>
+        </div>
+        <div style="margin-right:100px; width: 350px;">
+            <FormFieldTest Person="@_person"></FormFieldTest>
+        </div>
+        <div style="width: 350px;">
+            <FormFieldTest Person="@_person"></FormFieldTest>
+        </div>
+    </div>
 
 </div>
 
 
 @code {
 
-	private Person _person { get; set; } = new Person()
-		{
-			Name = "John",
-			LastName = "Doe",
-			Email = "john.doe@datalnet.com",
-			Phone = "678 89 90 09",
-			Age = 34,
-			Company = "Datalnet",
-			Balance = "90000",
-			Address = "597 Frost Street, Brogan, Indiana, 8687",
-			Birthday = DateTime.Now
-		};
+    private Person _person { get; set; } = new Person()
+        {
+            Name = "John",
+            LastName = "Doe",
+            Email = "john.doe@datalnet.com",
+            Phone = "678 89 90 09",
+            Age = 34,
+            Company = "Datalnet",
+            Balance = "90000",
+            Address = "597 Frost Street, Brogan, Indiana, 8687",
+            Birthday = DateTime.Now
+        };
 
-	protected override void OnInitialized()
-	{
-	}
+    protected override void OnInitialized()
+    {
+    }
 }
 
 

@@ -6,7 +6,6 @@
 @using Dnet.App.Shared.Infrastructure.Services
 @using Dnet.Blazor.Components.FloatingDoubleList
 @using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Models;
-@using Dnet.Blazor.Components.FormField
 @using Dnet.Blazor.Components.List
 @using Dnet.Blazor.Components.Checkbox
 @using System.Net.Http
@@ -39,7 +38,6 @@
                                     OnSelectionChanged="SelectionChanged"
                                     EqualityComparer="new PersonEqualityComparer()"
                                     DisplayValueConverter="(value) => value.Name"
-                                    Label="Participantes"
                                     SideForSelections="ListToShow.Right"
                                     Height="250px"
                                     OnSearchLeft="SearchLeft"

@@ -1,6 +1,6 @@
 ﻿@using Dnet.Blazor.Components.DatePicker.Infrastructure.Models
 @using Dnet.Blazor.Components.DatePicker.Infrastructure.Services
-@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Models
@@ -10,6 +10,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Components.Forms
+@using System.Diagnostics.CodeAnalysis
 
 @inherits DnetInputBase<string>
 
@@ -19,52 +20,24 @@
 
 @inject IOverlayService OverlayService
 
-@if (ComponentTheme == ComponentTheme.Material)
-{
-    <DnetFormField CurrentValue="@CurrentValue"
-               Appearance="@Appearance"
-               PlaceHolder="@PlaceHolder"
-               FloatLabel="@FloatLabel"
-               HasFocus="@_hasFocus"
-               Disabled="@Disabled"
-               Label="@Label"
-               PrefixContent="@PrefixContent"
-               HintContent="@HintContent"
-               ErrorContent="@ErrorContent"
-               HasErrors="@(_hasErrors  && EditContext.IsModified(FieldIdentifier))"
-               IsRequired="@IsRequired"
-               @ref="_formField">
-        <ChildContent>
-            <input value="@BindConverter.FormatValue(CurrentValue)"
-               @onchange="@(async (ChangeEventArgs __e) => { CurrentValue = await UpdateTextValue(__e.Value.ToString()); })"
-               disabled="@Disabled"
-               placeholder="@PlaceHolder"
-               class="@_inputTextClass"
-               @onfocus="@(() => Focus())"
-               @onblur="@(() => Blur())" />
-        </ChildContent>
-        <SufixContent>
-            <div class="dnet-datepicker-icon-wrapper" @onclick="ToggleMenu">
-                <span class="dnet-datepicker-icon dnet-datepicker-icon-default" unselectable="on"></span>
-            </div>
-        </SufixContent>
-    </DnetFormField>
-}
-else
-{
-    <div @ref="_menuTrigger" class="dnet-datepicker-input-container @(Disabled ? "dnet-datepicker-disable" : null)" @attributes="AdditionalAttributes">
-        <input value="@BindConverter.FormatValue(CurrentValue)"
-           @onchange="@(async (ChangeEventArgs __e) => { CurrentValue = await UpdateTextValue(__e.Value.ToString()); })"
-           class="dnet-datepicker-input-search"
-           disabled="@Disabled"
-           placeholder="@PlaceHolder" />
-        <div class="dnet-datepicker-icon-wrapper" @onclick="ToggleMenu">
-            <span class="dnet-datepicker-icon dnet-datepicker-icon-default" unselectable="on"></span>
-        </div>
-    </div>
-}
+<input @ref="__inputReference"
+       value="@BindConverter.FormatValue(CurrentValue)"
+       @onchange="@(async (ChangeEventArgs __e) => { CurrentValue = await UpdateTextValue(__e.Value.ToString()); })"
+       disabled="@Disabled"
+       placeholder="@PlaceHolder"
+       class="@_inputTextClass"
+       @onfocusin=@(() => ToggleMenu())
+       @onfocus="@(() => Focus())"
+       @onblur="@(() => Blur())" />
+
 
 @code {
+
+    [CascadingParameter]
+    private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
+
+    [DisallowNull]
+    public ElementReference __inputReference { get; protected set; }
 
     [Parameter]
     public bool Disabled { get; set; } = false;
@@ -91,31 +64,14 @@ else
     public EventCallback<CalendarDay> OnDaySelected { get; set; }
 
     [Parameter]
-    public RenderFragment PrefixContent { get; set; }
-
-    [Parameter]
-    public RenderFragment HintContent { get; set; }
-
-    [Parameter]
-    public RenderFragment ErrorContent { get; set; }
-
-    [Parameter]
-    public Appearance Appearance { get; set; } = Appearance.Fill;
-
-    [Parameter]
-    public FloatLabel FloatLabel { get; set; } = FloatLabel.AsUserTypes;
-
-    [Parameter]
-    public string Label { get; set; }
-
-    [Parameter]
-    public ComponentTheme ComponentTheme { get; set; } = ComponentTheme.Material;
-
-    [Parameter]
     public bool IsRequired { get; set; }
 
+    [Parameter]
+    public string BorderRadius { get; set; } = "5px";
 
-    private ElementReference _menuTrigger;
+    [Parameter]
+    public string MarginTop { get; set; } = "5px";
+
 
     private bool _isOpen = false;
 
@@ -131,25 +87,39 @@ else
 
     private string _placeHolder { get; set; }
 
-    private DnetFormField _formField { get; set; } = new();
+    private IFormEventService _formEventService { get; set; }
 
     private string _inputTextClass =>
         new CssBuilder("mat-input-element")
-            .AddClass("mat-form-field-autofill-control")
-            .AddClass("cdk-text-field-autofill-monitored")
             .AddClass(CssClass)
             .Build();
 
 
     protected override void OnInitialized()
     {
+        _formEventService = _formFieldCascadingValues.FormEventService;
+
         _datePickerService = new DatePickerService();
 
-        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-        if (!string.IsNullOrEmpty(CurrentValue)) _hasFocus = true;
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+
+        if (!string.IsNullOrEmpty(CurrentValue))
+        {
+            _hasFocus = true;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+        }
 
         _datePickerService.OnDaySelected += DaySelected;
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+
+        if (_formEventService is not null) _formEventService.OnClearContent += ClearInput;
     }
 
     protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
@@ -176,8 +146,6 @@ else
 
     private void AttachMenu()
     {
-        var overlayOrigin = _formField.OverlayOrigin;
-
         var positions = new List<ConnectedPosition>
         {
             new ConnectedPosition
@@ -210,12 +178,10 @@ else
             }
         };
 
-        if (ComponentTheme == ComponentTheme.Raw) overlayOrigin = _menuTrigger;
-
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
             .WithLockedPosition()
             .WithViewportMargin(8)
-            .SetOrigin(overlayOrigin)
+            .SetOrigin(_formFieldCascadingValues.FormField)
             .WithFlexibleDimensions(false)
             .WithPositions(positions);
 
@@ -225,6 +191,7 @@ else
                 HasTransparentBackdrop = true,
                 PositionStrategy = PositionStrategy.FlexibleConnectedTo,
                 FlexibleConnectedPositionStrategyBuilder = flexibleConnectedPositionStrategyBuilder,
+                MarginTop = MarginTop
             };
 
         var selectedDay = DateTime.Now;
@@ -247,6 +214,7 @@ else
             x.AddAttribute(4, "MinDayValue", MinDayValue);
             x.AddAttribute(5, "DatepickerFilter", DatepickerFilter);
             x.AddAttribute(6, "FirstDayToShow", FirstDayToShow);
+            x.AddAttribute(7, "BorderRadius", BorderRadius);
             x.CloseComponent();
         });
 
@@ -294,15 +262,24 @@ else
 
                 _hasFocus = true;
 
+                if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
                 await OnDaySelected.InvokeAsync(day);
             }
             else
             {
                 _hasFocus = false;
+
+                if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
             }
         }
 
-        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         return currentValue;
     }
@@ -326,7 +303,14 @@ else
 
         _hasFocus = !string.IsNullOrEmpty(CurrentValue) ? true : false;
 
-        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
 
         await ValueChanged.InvokeAsync(value);
 
@@ -337,15 +321,6 @@ else
         DetachMenu();
 
         StateHasChanged();
-    }
-
-    public void Dispose()
-    {
-        _isOpen = false;
-
-        if (_menuReference != null) _menuReference.Close -= CloseDialog;
-
-        _datePickerService.OnDaySelected -= DaySelected;
     }
 
     private bool EvaluateMinMaxDates(CalendarDay day)
@@ -396,7 +371,11 @@ else
     private void Focus()
     {
         _hasFocus = true;
+
         _placeHolder = PlaceHolder;
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
         StateHasChanged();
     }
 
@@ -405,7 +384,10 @@ else
         if (string.IsNullOrEmpty(CurrentValue))
         {
             _hasFocus = false;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
+
         _placeHolder = string.Empty;
 
         StateHasChanged();
@@ -413,6 +395,29 @@ else
 
     private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
     {
-        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+    }
+
+    private async void ClearInput()
+    {
+        var day = new CalendarDay();
+
+        DaySelected(day);
+    }
+
+    public void Dispose()
+    {
+        _isOpen = false;
+
+        if (_menuReference != null) _menuReference.Close -= CloseDialog;
+
+        _datePickerService.OnDaySelected -= DaySelected;
+
+        if (_formEventService is not null) _formEventService.OnClearContent -= ClearInput;
     }
 }

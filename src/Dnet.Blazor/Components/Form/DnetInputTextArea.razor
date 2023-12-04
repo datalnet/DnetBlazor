@@ -1,0 +1,177 @@
+﻿@using Microsoft.AspNetCore.Components.Forms;
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using System.Diagnostics.CodeAnalysis
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using System.Timers
+
+@inherits Dnet.Blazor.Infrastructure.Forms.DnetInputBase<string>
+
+@implements IDisposable
+
+@inject IJSRuntime JSRuntime
+
+<textarea @ref="__inputReference "
+          style="margin-bottom:5px; margin-right:5px; margin-top:5px; resize:none;"
+          @attributes="AdditionalAttributes"
+          class="@_textareaClass"
+          value="@BindConverter.FormatValue(CurrentValue)"
+          @onchange="HandleChange"
+          @onfocus=@(() => Focus())
+          @onblur=@(() => Blur())
+          placeholder="@_placeHolder"
+          disabled="@Disabled" />
+@code {
+
+    [CascadingParameter]
+    private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnStopTyping { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClearInput { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [DisallowNull] public ElementReference? __inputReference { get; protected set; }
+
+    [Parameter]
+    public int DebounceTime { get; set; } = 300;
+
+    [Parameter]
+    public bool ImmediateResponse { get; set; } = true;
+
+    [Parameter]
+    public bool IsRequired { get; set; }
+
+    private bool _hasFocus { get; set; }
+
+    private bool _hasErrors { get; set; }
+
+    private string _placeHolder { get; set; }
+
+    private Timer _debounceTimer;
+
+    private IFormEventService _formEventService { get; set; }
+
+    private string _textareaClass =>
+                new CssBuilder("mat-input-element")
+                    .AddClass(CssClass)
+                .Build();
+
+    protected override void OnInitialized()
+    {
+        _formEventService = _formFieldCascadingValues.FormEventService;
+
+        if (ImmediateResponse)
+        {
+            _debounceTimer = new Timer(DebounceTime);
+
+            _debounceTimer.Elapsed += HandleChangeDebouncedDiscard;
+
+            _debounceTimer.AutoReset = false;
+        }
+
+        if (!string.IsNullOrEmpty(CurrentValue))
+        {
+            _hasFocus = true;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+        }
+    }
+
+    public void HandleChangeDebouncedDiscard(Object source, ElapsedEventArgs e)
+    {
+        _ = HandleChangeDebounced(e);
+    }
+
+    private async Task HandleChangeDebounced(ElapsedEventArgs e)
+    {
+        await InvokeAsync(async () =>
+        {
+            if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+
+            await OnStopTyping.InvokeAsync(CurrentValueAsString);
+        });
+    }
+
+    private void ResetTimer(KeyboardEventArgs data)
+    {
+        _debounceTimer.Stop();
+
+        _debounceTimer.Start();
+    }
+
+    private void HandleChange(ChangeEventArgs e)
+    {
+        CurrentValueAsString = e.Value?.ToString();
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+    }
+
+    private void Focus()
+    {
+        _hasFocus = true;
+
+        _placeHolder = PlaceHolder;
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
+        StateHasChanged();
+    }
+
+    private void Blur()
+    {
+        if (string.IsNullOrEmpty(CurrentValue))
+        {
+            _hasFocus = false;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+        }
+
+        _placeHolder = string.Empty;
+
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+
+        StateHasChanged();
+    }
+
+    private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
+    {
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+    }
+
+    protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+
+        validationErrorMessage = null;
+
+        return true;
+    }
+
+    public void Dispose()
+    {
+        _debounceTimer.Elapsed -= HandleChangeDebouncedDiscard;
+
+        _debounceTimer.Dispose();
+    }
+}

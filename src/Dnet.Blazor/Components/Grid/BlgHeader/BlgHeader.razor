@@ -190,22 +190,26 @@
                         case CellDataType.Boolean:
                         case CellDataType.Text:
                             <EditForm Model="@header" style="width:100%">
-                                <DnetFormFieldPlainCmp UseClearButton="true">
+                                <DnetFormField UseClearButton="true">
                                     <ChildContent>
-                                        <DnetInputTextCmp @bind-Value="@header.Filter" type="text" OnStopTyping="StopTyping" OnClearInput="StopTyping">
-                                        </DnetInputTextCmp>
+                                        <DnetInputText @bind-Value="@header.Filter" type="text" OnStopTyping="StopTyping" OnClearInput="StopTyping">
+                                        </DnetInputText>
                                     </ChildContent>
-                                </DnetFormFieldPlainCmp>
+                                </DnetFormField>
                             </EditForm>
                             break;
                         case CellDataType.Date:
                             <EditForm Model="@header" style="width:100%">
-                                <DnetDatePicker @bind-Value="@header.Filter"
-                                                Disabled="false"
-                                                OnDaySelected="@((day) => DaySelected(day, header))"
-                                                Format="@header.DateFormat"
-                                                ComponentTheme="ComponentTheme.Raw">
-                                </DnetDatePicker>
+                                <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+                                    <ChildContent>
+                                        <DnetDatePicker @bind-Value="@header.Filter"
+                                                           Disabled="false"
+                                                           OnDaySelected="@((day) => DaySelected(day, header))"
+                                                           Format="@header.DateFormat"
+                                                           >
+                                        </DnetDatePicker>
+                                    </ChildContent>
+                                </DnetFormField>
                             </EditForm>
                             break;
                     }

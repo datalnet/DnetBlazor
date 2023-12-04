@@ -1,6 +1,5 @@
 ﻿@using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Models
 @using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Services
-@using Dnet.Blazor.Components.FormField
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Models
@@ -20,7 +19,7 @@
 
 @inject IOverlayService OverlayService
 
-@if (ComponentTheme == ComponentTheme.Material)
+@* @if (ComponentTheme == ComponentTheme.Material)
 {
     <DnetFormField CurrentValue="@CurrentValue"
                Appearance="@Appearance"
@@ -61,27 +60,29 @@
 }
 else
 {
-    <div class="mat-select" @onclick="ToggleMenu">
-        <div @ref="_menuTrigger"
-             class="mat-select-trigger">
-            <div class="mat-select-value">
-                @if (string.IsNullOrEmpty(CurrentValue) && !string.IsNullOrEmpty(_placeHolder))
-                {
-                    <span class="mat-select-placeholder mat-select-min-line">@_placeHolder</span>
-                }
-                @if (!string.IsNullOrEmpty(CurrentValue))
-                {
-                    <span class="mat-select-value-text">
-                        <span class="mat-select-min-line">@BindConverter.FormatValue(CurrentValue)</span>
-                    </span>
-                }
-            </div>
-            <div class="mat-select-arrow-wrapper">
-                <div class="mat-select-arrow"></div>
-            </div>
+   
+} *@
+
+<div class="mat-select" @onclick="ToggleMenu">
+    <div @ref="_menuTrigger"
+         class="mat-select-trigger">
+        <div class="mat-select-value">
+            @if (string.IsNullOrEmpty(CurrentValue) && !string.IsNullOrEmpty(_placeHolder))
+            {
+                <span class="mat-select-placeholder mat-select-min-line">@_placeHolder</span>
+            }
+            @if (!string.IsNullOrEmpty(CurrentValue))
+            {
+                <span class="mat-select-value-text">
+                    <span class="mat-select-min-line">@BindConverter.FormatValue(CurrentValue)</span>
+                </span>
+            }
+        </div>
+        <div class="mat-select-arrow-wrapper">
+            <div class="mat-select-arrow"></div>
         </div>
     </div>
-}
+</div>
 
 @code {
 
@@ -119,12 +120,6 @@ else
     public RenderFragment ErrorContent { get; set; }
 
     [Parameter]
-    public Appearance Appearance { get; set; } = Appearance.Fill;
-
-    [Parameter]
-    public FloatLabel FloatLabel { get; set; } = FloatLabel.AsUserTypes;
-
-    [Parameter]
     public string Label { get; set; }
 
     [Parameter]
@@ -151,8 +146,6 @@ else
     private bool _hasErrors { get; set; }
 
     private string _placeHolder { get; set; }
-
-    private DnetFormField _formField { get; set; } = new();
 
     private string _inputTextClass =>
         new CssBuilder("mat-input-element")
@@ -205,8 +198,6 @@ else
 
     private void AttachMenu()
     {
-        var overlayOrigin = _formField.OverlayOrigin;
-
         var positions = new List<ConnectedPosition>
         {
             new ConnectedPosition
@@ -239,12 +230,10 @@ else
             }
         };
 
-        if (ComponentTheme == ComponentTheme.Raw) overlayOrigin = _menuTrigger;
-
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
             .WithLockedPosition()
             .WithViewportMargin(8)
-            .SetOrigin(overlayOrigin)
+            // .SetOrigin(overlayOrigin)
             .WithFlexibleDimensions(false)
             .WithPositions(positions);
 

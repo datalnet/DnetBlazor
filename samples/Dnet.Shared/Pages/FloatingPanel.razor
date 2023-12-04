@@ -4,7 +4,7 @@
 @using Dnet.App.Shared.Infrastructure.Models
 @using Dnet.App.Shared.Shared.CustomComponents
 @using Dnet.Blazor.Components.Button
-@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Models
@@ -27,21 +27,25 @@
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 250px;">
-                    <DnetSelect Value="@_formData1.Value"
-                                ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                ValueExpression="@( () => _formData1.Value )"
-                                Items="_features"
-                                TItem="KeyValueModel<FloatingPanelPostion>"
-                                DisplayValueConverter="(value) => (value.Value)"
-                                OnItemSelected="ItemSelected"
-                                InputTextToUpper="true"
-                                PlaceHolder="Panel position"
-                                Label="Panel position"
-                                Appearance="Appearance.Fill">
+                    <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+                        <ChildContent>
+                            <DnetSelect Value="@_formData1.Value"
+                                        TValue="string"
+                                        ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                        ValueExpression="@( () => _formData1.Value )"
+                                        Items="_features"
+                                        TItem="KeyValueModel<FloatingPanelPostion>"
+                                        DisplayValueConverter="(value) => (value.Value)"
+                                        OnItemSelected="ItemSelected"
+                                        InputTextToUpper="true"
+                                        PlaceHolder="Panel position"
+                                        Label="Panel position">
+                            </DnetSelect>
+                        </ChildContent>
                         <ErrorContent>
                             <ValidationMessage For="@(() => _formData1.Key)" />
                         </ErrorContent>
-                    </DnetSelect>
+                    </DnetFormField>
                 </div>
             </div>
         </EditForm>
@@ -50,9 +54,9 @@
         <DnetButton OnClick="ShowFloatingPanel" InitialFocus="true" class="dnet-m-r-10">Show Panel</DnetButton>
     </div>
     <div class="dnet-m-l-30 dnet-m-t-30">
-		<span>Dialog Ok result: </span>
-		<span>@_floatingPanelResultData</span>
-	</div>
+        <span>Dialog Ok result: </span>
+        <span>@_floatingPanelResultData</span>
+    </div>
 </div>
 
 
