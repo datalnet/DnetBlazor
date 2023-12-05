@@ -195,12 +195,12 @@
 
     protected override void OnInitialized()
     {
-        _formEventService = _formFieldCascadingValues.FormEventService;
-
-        EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+        if (_formFieldCascadingValues is not null) _formEventService = _formFieldCascadingValues.FormEventService;
 
         if (EditContext != null)
         {
+            EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+
             _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
             if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));

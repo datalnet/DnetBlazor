@@ -6,6 +6,7 @@
 @using Dnet.App.Shared.Infrastructure.Services
 @using Dnet.Blazor.Components.FloatingDoubleList
 @using Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Models;
+@using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Components.List
 @using Dnet.Blazor.Components.Checkbox
 @using System.Net.Http
@@ -27,23 +28,27 @@
     <div class="dnet-m-l-30 dnet-m-t-30" style="width: 300px">
         <EditForm Model="@_formData1">
             <DataAnnotationsValidator />
-            <DnetFloatingDoubleList @bind-Value="_personNameList"
-                                    TItem="Person"
-                                    LeftItems="_leftItems"
-                                    RightItems="_rightItems"
-                                    LeftListOptions="_leftListOptions"
-                                    RightListOptions="_rightListOptions"
-                                    RightText="Participantes"
-                                    LeftText="Contactos"
-                                    OnSelectionChanged="SelectionChanged"
-                                    EqualityComparer="new PersonEqualityComparer()"
-                                    DisplayValueConverter="(value) => value.Name"
-                                    SideForSelections="ListToShow.Right"
-                                    Height="250px"
-                                    OnSearchLeft="SearchLeft"
-                                    OnSearchRight="SearchRight"
-            @ref="_floatingDoubleListPerson">
-            </DnetFloatingDoubleList>
+            <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+                <ChildContent>
+                    <DnetFloatingDoubleList @bind-Value="_personNameList"
+                                            TItem="Person"
+                                            LeftItems="_leftItems"
+                                            RightItems="_rightItems"
+                                            LeftListOptions="_leftListOptions"
+                                            RightListOptions="_rightListOptions"
+                                            RightText="Participantes"
+                                            LeftText="Contactos"
+                                            OnSelectionChanged="SelectionChanged"
+                                            EqualityComparer="new PersonEqualityComparer()"
+                                            DisplayValueConverter="(value) => value.Name"
+                                            SideForSelections="ListToShow.Right"
+                                            Height="250px"
+                                            OnSearchLeft="SearchLeft"
+                                            OnSearchRight="SearchRight"
+                                            @ref="_floatingDoubleListPerson">
+                    </DnetFloatingDoubleList>
+                </ChildContent>
+            </DnetFormField>
         </EditForm>
     </div>
 </div>
