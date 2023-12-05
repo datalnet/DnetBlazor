@@ -117,9 +117,14 @@
 
         _datePickerService.OnDaySelected += DaySelected;
 
-        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+        if (_formEventService is not null)
+        {
+            _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
-        if (_formEventService is not null) _formEventService.OnClearContent += ClearInput;
+            _formEventService.OnClearContent += ClearInput;
+
+            _formEventService.OnSufixContentClicked += SufixContentClicked;
+        }
     }
 
     protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
@@ -403,11 +408,16 @@
         }
     }
 
-    private async void ClearInput()
+    private void ClearInput()
     {
         var day = new CalendarDay();
 
         DaySelected(day);
+    }
+
+    private void SufixContentClicked()
+    {
+        ToggleMenu();
     }
 
     public void Dispose()
@@ -418,6 +428,11 @@
 
         _datePickerService.OnDaySelected -= DaySelected;
 
-        if (_formEventService is not null) _formEventService.OnClearContent -= ClearInput;
+        if (_formEventService is not null)
+        {
+            _formEventService.OnClearContent -= ClearInput;
+
+            _formEventService.OnSufixContentClicked -= SufixContentClicked;
+        }
     }
 }

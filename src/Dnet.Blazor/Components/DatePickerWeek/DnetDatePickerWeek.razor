@@ -1,5 +1,6 @@
 ﻿@using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Models
 @using Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Services
+@using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Models
@@ -86,6 +87,9 @@ else
 
 @code {
 
+    [CascadingParameter]
+    private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
+
     [Parameter]
     public bool Disabled { get; set; } = false;
 
@@ -147,6 +151,8 @@ else
 
     private string _placeHolder { get; set; }
 
+    private IFormEventService _formEventService { get; set; }
+
     private string _inputTextClass =>
         new CssBuilder("mat-input-element")
             .AddClass("mat-form-field-autofill-control")
@@ -157,6 +163,8 @@ else
 
     protected override void OnInitialized()
     {
+        _formEventService = _formFieldCascadingValues.FormEventService;
+
         _datePickerService = new DatePickerWeekService();
 
         if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
@@ -233,7 +241,7 @@ else
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
             .WithLockedPosition()
             .WithViewportMargin(8)
-            // .SetOrigin(overlayOrigin)
+            .SetOrigin(_formFieldCascadingValues.FormField)
             .WithFlexibleDimensions(false)
             .WithPositions(positions);
 

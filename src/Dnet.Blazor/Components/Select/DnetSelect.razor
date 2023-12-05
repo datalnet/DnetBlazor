@@ -30,25 +30,28 @@
     <div @ref="_menuTrigger"
          class="dnet-plain-select-trigger">
         <div class="dnet-plain-select-value">
-            @if (string.IsNullOrEmpty(_displayValueAsString) && !string.IsNullOrEmpty(_placeHolder))
+            @switch (DisplayData)
             {
-                <span class="mat-select-placeholder mat-select-min-line">@_placeHolder</span>
+                case DataToShow.Placeholder:
+                    <span class="mat-select-placeholder mat-select-min-line">@_placeHolder</span>
+                    break;
+
+                case DataToShow.SingleValue:
+                    <span class="dnet-plain-select-value-text">
+                        <span>@_displayValueAsString</span>
+                    </span>
+                    break;
+
+                case DataToShow.MultiValue:
+                    <div class="dnet-select-multi-value-wrapper">
+                        @foreach (var item in _selectedRowNodes)
+                        {
+                            <span class="dnet-select-multi-value">@DisplayValueConverter(item.RowData) <span> - </span></span>
+                        }
+                    </div>
+                    break;
             }
-            @if (!string.IsNullOrEmpty(_displayValueAsString))
-            {
-                <span class="dnet-plain-select-value-text">
-                    <span>@_displayValueAsString</span>
-                </span>
-            }
-            @if (_selectedRowNodes.Any() && MultiSelect)
-            {
-                <div class="dnet-select-multi-value-wrapper">
-                    @foreach (var item in _selectedRowNodes)
-                    {
-                        <span class="dnet-select-multi-value">@DisplayValueConverter(item.RowData) <span> - </span></span>
-                    }
-                </div>
-            }
+
         </div>
         <div class="dnet-plain-select-arrow-wrapper">
             <div class="dnet-plain-select-arrow"></div>
@@ -196,9 +199,13 @@
 
     private bool _hasInitializedParameters;
 
+    private IFormEventService _formEventService { get; set; }
+
 
     protected override void OnInitialized()
     {
+        _formEventService = _formFieldCascadingValues.FormEventService;
+
         _placeHolder = PlaceHolder;
 
         if (!string.IsNullOrEmpty(CurrentValueAsString))
@@ -221,11 +228,21 @@
             }
         }
 
-        if (!string.IsNullOrEmpty(_displayValueAsString)) _hasFocus = true;
+        if (!string.IsNullOrEmpty(CurrentValueAsString))
+        {
+            _hasFocus = true;
 
-        EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+        }
 
-        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+        if (EditContext is not null)
+        {
+            EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         if (!DisabledClearButton) _clearButtonContent = CreateClearButtonContent();
 
@@ -274,7 +291,12 @@
     {
         if (!firstRender) return;
 
-        if (MultiSelect) _hasFocus = _selectedRowNodes.Any() ? true : false;
+        if (MultiSelect)
+        {
+            _hasFocus = _selectedRowNodes.Any() ? true : false;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+        }
 
         _selectService = new SelectService<TItem>();
 
@@ -346,6 +368,8 @@
                 }
 
                 _hasFocus = _selectedRowNodes.Any() ? true : false;
+
+                if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
             }
 
             _rowNodes.Add(rowNode);
@@ -414,7 +438,12 @@
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        if (!string.IsNullOrEmpty(CurrentValueAsString)) _hasFocus = true;
+        if (!string.IsNullOrEmpty(CurrentValueAsString))
+        {
+            _hasFocus = true;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+        }
 
         await OnItemSelected.InvokeAsync(item);
 
@@ -429,7 +458,21 @@
 
         _selectedRowNodes.AddRange(items);
 
-        if (MultiSelect) _hasFocus = _selectedRowNodes.Any() ? true : false;
+        if(_selectedRowNodes.Any())
+        {
+            _displayValueAsString = "Value";
+        }
+        else
+        {
+            _displayValueAsString = null;
+        }
+
+        if (MultiSelect)
+        {
+            _hasFocus = _selectedRowNodes.Any() ? true : false;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+        }
 
         await OnSelectionChanged.InvokeAsync(_selectedRowNodes.Select(p => p.RowData).ToList());
 
@@ -442,11 +485,18 @@
 
         _displayValueAsString = null;
 
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
+        if (EditContext is not null)
+        {
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        if (EditContext != null) _hasErrors = (EditContext?.GetValidationMessages(FieldIdentifier)).Any();
+            _hasErrors = (EditContext.GetValidationMessages(FieldIdentifier)).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         _hasFocus = false;
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
 
         await ValueChanged.InvokeAsync(Value);
 
@@ -506,7 +556,7 @@
                 MaxWidth = MaxWidth,
                 MinHeight = MinHeight,
                 MaxHeight = MaxHeight,
-                MarginTop = MarginTop 
+                MarginTop = MarginTop
             };
 
         var menuContent = new RenderFragment(x =>
@@ -557,16 +607,14 @@
         _isOpen = false;
     }
 
-    public void Dispose()
-    {
-        if (_menuReference != null) _menuReference.Close -= CloseFilter;
-
-        if (_selectService != null) _selectService.OnItemSelected -= ItemSelected;
-    }
-
     private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
     {
-        if (EditContext != null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Count() > 0;
+        if (EditContext != null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
     }
 
     public void RefreshData(List<TItem> items)
@@ -577,11 +625,18 @@
 
         _displayValueAsString = null;
 
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
+        if (EditContext is not null)
+        {
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        if (EditContext != null) _hasErrors = (EditContext?.GetValidationMessages(FieldIdentifier)).Any();
+            _hasErrors = (EditContext.GetValidationMessages(FieldIdentifier)).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         _hasFocus = false;
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
 
         _items = items;
 
@@ -631,5 +686,38 @@
             default:
                 throw new InvalidOperationException($"Unsupported type {value.GetType()}");
         }
+    }
+
+    private enum DataToShow
+    {
+        Placeholder,
+        SingleValue,
+        MultiValue
+    }
+
+    private DataToShow DisplayData
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_displayValueAsString))
+                return DataToShow.Placeholder;
+
+            if (!string.IsNullOrEmpty(_displayValueAsString) && MultiSelect == false)
+                return DataToShow.SingleValue;
+
+            if (_selectedRowNodes.Any() && MultiSelect)
+                return DataToShow.MultiValue;
+
+            return DataToShow.Placeholder; // Default case
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_menuReference != null) _menuReference.Close -= CloseFilter;
+
+        if (_selectService != null) _selectService.OnItemSelected -= ItemSelected;
+
+        if (EditContext is not null) EditContext.OnFieldChanged -= HandleOnValidationStateChanged;
     }
 }

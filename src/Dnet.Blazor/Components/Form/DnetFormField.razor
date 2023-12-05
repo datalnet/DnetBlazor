@@ -40,7 +40,7 @@
         }
         @if (SufixContent != null)
         {
-            <div class="dnet-form-field-plain-suffix">
+            <div class="dnet-form-field-plain-suffix" @onclick="SufixContentClicked">
                 @SufixContent
             </div>
         }
@@ -152,9 +152,14 @@
         StateHasChanged();
     }
 
-    private async void ClearInput()
+    private void ClearInput()
     {
         FormEventService.RaiseClearContent();
+    }
+
+    private void SufixContentClicked()
+    {
+        FormEventService.RaiseSufixContentClicked();
     }
 
     public void Dispose()
