@@ -146,30 +146,6 @@
             </ErrorContent>
         </DnetFormField>
 
-        <DnetFormField PlaceHolder="67" Label="Participantes" IsRequired="true">
-            <ChildContent>
-                <DnetFloatingDoubleList @bind-Value="_personNameList"
-                                           TItem="Person"
-                                           LeftItems="_leftItems"
-                                           RightItems="_rightItems"
-                                           LeftListOptions="_leftListOptions"
-                                           RightListOptions="_rightListOptions"
-                                           RightText="Participantes"
-                                           LeftText="Contactos"
-                                           OnSelectionChanged="SelectionChanged"
-                                           EqualityComparer="new PersonEqualityComparer()"
-                                           DisplayValueConverter="(value) => value.Name"
-                                           SideForSelections="ListToShow.Right"
-                                           Height="250px"
-                                           OnSearchLeft="SearchLeft"
-                                           OnSearchRight="SearchRight"
-                                           @ref="_floatingDoubleListPerson">
-                </DnetFloatingDoubleList>
-            </ChildContent>
-            <ErrorContent>
-                <ValidationMessage For="@(() => _person.Birthday)" />
-            </ErrorContent>
-        </DnetFormField>
     </EditForm>
 </div>
 

@@ -173,53 +173,6 @@
             </DnetFormField>
         </EditForm>
     </div>
-    <div class="dnet-m-l-30 dnet-m-t-10" style="width: 350px;">
-        <div class="dnet-m-b-10">Generic select string key</div>
-        <EditForm EditContext="@_editContext2" style="display: flex;flex-direction:column">
-            <DataAnnotationsValidator />
-            <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
-                <ChildContent>
-                    <DnetSelect TValue="string"
-                                @bind-Value="_right2.ApiResourceName"
-                                Items="_apiResources"
-                                TItem="ApiResourceDto"
-                                DisplayValueConverter="(value) => (value.Name)"
-                                ValueConverter="(value) => (value.Name)"
-                                OnItemSelected="ApiResource1ItemSelected"
-                                PlaceHolder="Api Resource"
-                                Label="Api Resource">
-                    </DnetSelect>
-                </ChildContent>
-                <ErrorContent>
-                    <ValidationMessage For="@(() => _right2.ApiResourceName)" />
-                </ErrorContent>
-            </DnetFormField>
-        </EditForm>
-    </div>
-    <div class="dnet-m-l-30 dnet-m-t-10" style="width: 350px;">
-        <div class="dnet-m-b-10">Generic select multiselect</div>
-        <EditForm EditContext="@_editContext3" style="display: flex;flex-direction:column">
-            <DataAnnotationsValidator />
-            <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
-                <ChildContent>
-                    <DnetSelect TValue="string"
-                                @bind-Value="person.Name"
-                                Items="_items"
-                                TItem="Person"
-                                DisplayValueConverter="(value) => (value.Name)"
-                                ValueConverter="(value) => (value.Name)"
-                                OnSelectionChanged="SelectionChanged"
-                                PlaceHolder="Name"
-                                Label="Name"
-                                MultiSelect="true">
-                    </DnetSelect>
-                </ChildContent>
-                <ErrorContent>
-                    <ValidationMessage For="@(() => person.Name)" />
-                </ErrorContent>
-            </DnetFormField>
-        </EditForm>
-    </div>
 </div>
 
 
