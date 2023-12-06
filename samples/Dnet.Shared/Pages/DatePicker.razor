@@ -15,7 +15,7 @@
         <span class="dnet-m-r-10 dnet-app-comp-name">DatePicker</span>
     </div>
     <div class="dnet-m-l-30 dnet-m-t-30" style="width: 297px;flex-direction: column">
-        <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+        <DnetFormField PlaceHolder="" Label="Date Format" UseClearButton="true">
             <ChildContent>
                 <DnetInputText @bind-Value="_datepickerFormat" PlaceHolder="Date Format" Label="Date Format" type="text">
                 </DnetInputText>
@@ -25,7 +25,7 @@
         <EditForm Model="@_formData">
             <DataAnnotationsValidator />
             <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
-                <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                <DnetFormField PlaceHolder="" Label="Departure day" UseClearButton="true" IsRequired="true">
                     <ChildContent>
                         <DnetDatePicker @bind-Value="@_formData.DepartureDay"
                                         Disabled="false"
@@ -58,7 +58,7 @@
         <EditForm Model="@_formData1">
             <DataAnnotationsValidator />
             <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
-                <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                <DnetFormField PlaceHolder="" Label="Current week">
                     <ChildContent>
                         <DnetDatePickerWeek @ref="_datepickerWeek"
                                             @bind-Value="_formData1.DepartureDay"
