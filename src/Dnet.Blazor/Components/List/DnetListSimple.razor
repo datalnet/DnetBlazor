@@ -24,16 +24,22 @@
     {
         <form class="dnet-list-form">
             <div class="dnet-list-search">
-
                 <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
                     <ChildContent>
                         <DnetInputText @bind-Value="filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData">
                         </DnetInputText>
                     </ChildContent>
                 </DnetFormField>
-
             </div>
         </form>
+    }
+    @if (ListOptions.ShowHeader)
+    {
+        <div class="dnet-list-header">
+            <div class="dnet-sort-header" @onclick="Sort">
+                <div class="dnet-sort-header-content">@ListOptions.HeaderText</div>
+            </div>
+        </div>
     }
     <div class="dnet-selection-list-wrapper"
          ondragover="event.preventDefault();"

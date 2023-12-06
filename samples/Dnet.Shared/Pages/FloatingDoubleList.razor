@@ -93,12 +93,12 @@
     protected override void OnInitialized()
     {
         _leftListOptions = GetListOptions();
-        _leftListOptions.HeaderText = "Left";
+        _leftListOptions.HeaderText = "Contactos";
         _leftListOptions.ContainerName = "LeftContainer";
         _leftListOptions.ConnectedTo = "RghtContainer";
 
         _rightListOptions = GetListOptions();
-        _rightListOptions.HeaderText = "Right";
+        _rightListOptions.HeaderText = "Participantes";
         _rightListOptions.ContainerName = "RghtContainer";
         _rightListOptions.ConnectedTo = "LeftContainer";
     }
@@ -157,7 +157,7 @@
                 PageSize = 50,
                 EnablePagingination = true,
                 CheckboxSelectionColumn = false,
-                ShowHeader = false,
+                ShowHeader = true,
                 ShowFooter = false,
                 ServerSideSearchColumns = new List<string>() { "Name" },
                 ServerSideSortColumn = "Name"

@@ -23,7 +23,7 @@
     @if (ListOptions.EnableSearching)
     {
         <form class="dnet-list-form">
-            <div class="dnet-list-search dnet-p-r-10">
+            <div class="dnet-list-search">
                 <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
                     <ChildContent>
                         <DnetInputText @bind-Value="filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData">
