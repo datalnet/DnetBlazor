@@ -3,7 +3,7 @@
 @using Dnet.App.Shared.Infrastructure.Models
 @using Dnet.Blazor.Components.Button
 @using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Enums
-@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Components.Select
 @using Dnet.Blazor.Components.Toast.Infrastructure.Enums
 @using Dnet.Blazor.Components.Toast.Infrastructure.Interfaces
@@ -20,21 +20,25 @@
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 250px;">
-                    <DnetSelect Value="@_formData1.Value"
-                                ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                ValueExpression="@( () => _formData1.Value )"
-                                Items="_features"
-                                TItem="KeyValueModel<ToastType>"
-                                DisplayValueConverter="(value) => (value.Value)"
-                                OnItemSelected="ItemSelected"
-                                InputTextToUpper="true"
-                                PlaceHolder="Toast type"
-                                Label="Toast type"
-                                Appearance="Appearance.Fill">
+                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                        <ChildContent>
+                            <DnetSelect Value="@_formData1.Value"
+                                        TValue="string"
+                                        ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                        ValueExpression="@( () => _formData1.Value )"
+                                        Items="_features"
+                                        TItem="KeyValueModel<ToastType>"
+                                        DisplayValueConverter="(value) => (value.Value)"
+                                        OnItemSelected="ItemSelected"
+                                        InputTextToUpper="true"
+                                        PlaceHolder="Toast type"
+                                        Label="Toast type">
+                            </DnetSelect>
+                        </ChildContent>
                         <ErrorContent>
                             <ValidationMessage For="@(() => _formData1.Key)" />
                         </ErrorContent>
-                    </DnetSelect>
+                    </DnetFormField>
                 </div>
             </div>
         </EditForm>

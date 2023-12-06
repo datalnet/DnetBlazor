@@ -10,7 +10,9 @@ public class FormEventService : IFormEventService
 
     public event Action OnClearContent;
 
-    public Action<FormEventData> OnFormEventRaised;
+    public event Action<FormEventData> OnFormEventRaised;
+
+    public event Action OnSufixContentClicked;
 
     public void RaiseError(bool hasError)
     {
@@ -37,6 +39,11 @@ public class FormEventService : IFormEventService
         var eventData = new FormEventData(error, hasFocus, currentValue);
 
         OnFormEventRaised?.Invoke(eventData);
+    }
+
+    public void RaiseSufixContentClicked()
+    {
+        OnSufixContentClicked?.Invoke();
     }
 }
 

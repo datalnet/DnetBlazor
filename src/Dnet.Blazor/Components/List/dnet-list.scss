@@ -44,6 +44,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-radius: 5px;
 }
 
 .dnet-sort-header {
@@ -90,9 +91,9 @@
     .dnet-list-item-content {
         font-size: var(--dnet-list-item-content-font-size);
         color: #5f6368;
-        /*padding: 0 16px;*/
         display: flex;
         align-items: center;
+        padding-left: 10px;
     }
 
     .dnet-pseudo-checkbox {
@@ -129,8 +130,13 @@
     justify-content: space-between;
     align-items: center;
     height: 40px;
-    padding: 10px 15px 10px 15px;
+    padding: 10px 15px 10px 25px;
 }
+
+.dnet-list-form + .dnet-list-header {
+    padding: 0px 15px 10px 25px;
+}
+
 
 .dnet-double-list-wrapper {
     .dnet-checkbox-background,
@@ -156,7 +162,7 @@
 
 .dnet-list-form {
     font-size: .875rem;
-    padding: 15px 15px 0 15px;
+    padding: 15px 20px 0 20px;
     background-color: var(--dnet-list-background-color);
 }
 
@@ -293,15 +299,21 @@
 .dnet-list-item-prefix-content {
     display: flex;
     align-items: center;
-    justify-content: flex-start
+    justify-content: flex-start;
 }
 
 .dnet-list-item-middle-content {
     flex-grow: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-start
+    justify-content: flex-start;
+    padding-left: 10px;
 }
+
+.dnet-list-item-prefix-content + .dnet-list-item-middle-content {
+    padding-left: 0px;
+}
+
 
 .dnet-list-item-sufix-content {
     display: flex;

@@ -5,7 +5,7 @@
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Services
 @using Dnet.Blazor.Components.Select
-@using Dnet.Blazor.Components.FormField
+@using Dnet.Blazor.Components.Form
 @using Dnet.Blazor.Infrastructure.Models.SearchModels
 @using Dnet.Blazor.Infrastructure.Models.SearchModels.FilterModels
 
@@ -53,98 +53,132 @@
                 {
                     if (FilterData.Type == CellDataType.Text)
                     {
-                        <DnetSelect @bind-Value="_operator"
-                        Items="@textValues"
-                        TItem="FilterOperator"
-                        DisplayValueConverter="(value) => (value.ToString())"
-                        InputTextToUpper="true"
-                        PlaceHolder="Operator"
-                        Label="Operator"
-                        Appearance="@_appearance">
-                        </DnetSelect>
+                        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                            <ChildContent>
+                                <DnetSelect @bind-Value="_operator"
+                                            TValue="string"
+                                            Items="@textValues"
+                                            TItem="FilterOperator"
+                                            DisplayValueConverter="(value) => (value.ToString())"
+                                            ValueConverter="(value) => (value.ToString())"
+                                            InputTextToUpper="true"
+                                            PlaceHolder="Operator"
+                                            Label="Operator">
+                                </DnetSelect>
+                            </ChildContent>
+                        </DnetFormField>
                     }
                     else if (FilterData.Type == CellDataType.Number || FilterData.Type == CellDataType.Date)
                     {
-                        <DnetSelect @bind-Value="_operator"
-                        Items="@numberValues"
-                        TItem="FilterOperator"
-                        DisplayValueConverter="(value) => (value.ToString())"
-                        InputTextToUpper="true"
-                        PlaceHolder="Operator"
-                        Label="Operator"
-                        Appearance="@_appearance">
-                        </DnetSelect>
+                        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                            <ChildContent>
+                                <DnetSelect @bind-Value="_operator"
+                                            TValue="string"
+                                            Items="@numberValues"
+                                            TItem="FilterOperator"
+                                            DisplayValueConverter="(value) => (value.ToString())"
+                                            ValueConverter="(value) => (value.ToString())"
+                                            InputTextToUpper="true"
+                                            PlaceHolder="Operator"
+                                            Label="Operator">
+                                </DnetSelect>
+                            </ChildContent>
+                        </DnetFormField>
                     }
                 }
                 if (FilterData.Type == CellDataType.Boolean)
                 {
-                    <DnetSelect @bind-Value="_operator"
-                        Items="@booleansValues"
-                        TItem="string"
-                        DisplayValueConverter="(value) => (value.ToString())"
-                        InputTextToUpper="true"
-                        PlaceHolder="Operator"
-                        Label="Operator"
-                        Appearance="@_appearance">
-                    </DnetSelect>
+                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                        <ChildContent>
+                            <DnetSelect @bind-Value="_operator"
+                                        TValue="string"
+                                        Items="@booleansValues"
+                                        TItem="string"
+                                        DisplayValueConverter="(value) => (value.ToString())"
+                                        ValueConverter="(value) => (value.ToString())"
+                                        InputTextToUpper="true"
+                                        PlaceHolder="Operator"
+                                        Label="Operator">
+                            </DnetSelect>
+                        </ChildContent>
+                    </DnetFormField>
                 }
                 else if (FilterData.Type == CellDataType.Date)
                 {
-                    <DnetDatePicker @bind-Value="@FilterData.Value"
-                            Disabled="false"
-                            Format="@DateFormat"
-                            Appearance="@_appearance"
-                            PlaceHolder="Value"
-                            Label="Value">
-                    </DnetDatePicker>
+                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                        <ChildContent>
+                            <DnetDatePicker @bind-Value="@FilterData.Value"
+                                            Disabled="false"
+                                            Format="@DateFormat"
+                                            PlaceHolder="Value">
+                            </DnetDatePicker>
+                        </ChildContent>
+                    </DnetFormField>
                 }
                 if (FilterData.Type != CellDataType.Boolean)
                 {
-                    <DnetSelect @bind-Value="_operator"
-                        Items="conditionValues"
-                        TItem="FilterCondition"
-                        DisplayValueConverter="(value) => (value.ToString())"
-                        InputTextToUpper="true"
-                        PlaceHolder="Operator"
-                        Label="Operator"
-                        Appearance="@_appearance">
-                    </DnetSelect>
+                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                        <ChildContent>
+                            <DnetSelect @bind-Value="_operator"
+                                        TValue="string"
+                                        Items="conditionValues"
+                                        TItem="FilterCondition"
+                                        DisplayValueConverter="(value) => (value.ToString())"
+                                        ValueConverter="(value) => (value.ToString())"
+                                        InputTextToUpper="true"
+                                        PlaceHolder="Operator"
+                                        Label="Operator">
+                            </DnetSelect>
+                        </ChildContent>
+                    </DnetFormField>
                     if (FilterData.Type != CellDataType.Boolean)
                     {
                         if (FilterData.Type == CellDataType.Text)
                         {
-                            <DnetSelect @bind-Value="_operator"
-                        Items="@textValues"
-                        TItem="FilterOperator"
-                        DisplayValueConverter="(value) => (value.ToString())"
-                        InputTextToUpper="true"
-                        PlaceHolder="Operator"
-                        Label="Operator"
-                        Appearance="@_appearance">
-                            </DnetSelect>
+                            <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                                <ChildContent>
+                                    <DnetSelect @bind-Value="_operator"
+                                                TValue="string"
+                                                Items="@textValues"
+                                                TItem="FilterOperator"
+                                                DisplayValueConverter="(value) => (value.ToString())"
+                                                ValueConverter="(value) => (value.ToString())"
+                                                InputTextToUpper="true"
+                                                PlaceHolder="Operator"
+                                                Label="Operator">
+                                    </DnetSelect>
+                                </ChildContent>
+                            </DnetFormField>
                         }
                         if (FilterData.Type == CellDataType.Number || FilterData.Type == CellDataType.Date)
                         {
-                            <DnetSelect @bind-Value="_operator"
-                        Items="@numberValues"
-                        TItem="FilterOperator"
-                        DisplayValueConverter="(value) => (value.ToString())"
-                        InputTextToUpper="true"
-                        PlaceHolder="Operator"
-                        Label="Operator"
-                        Appearance="@_appearance">
-                            </DnetSelect>
+                            <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                                <ChildContent>
+                                    <DnetSelect @bind-Value="_operator"
+                                                TValue="string"
+                                                Items="@numberValues"
+                                                TItem="FilterOperator"
+                                                DisplayValueConverter="(value) => (value.ToString())"
+                                                ValueConverter="(value) => (value.ToString())"
+                                                InputTextToUpper="true"
+                                                PlaceHolder="Operator"
+                                                Label="Operator">
+                                    </DnetSelect>
+                                </ChildContent>
+                            </DnetFormField>
                         }
                     }
                     if (FilterData.Type == CellDataType.Date)
                     {
-                        <DnetDatePicker @bind-Value="@FilterData.AdditionalValue"
-                            Disabled="false"
-                            Format="@DateFormat"
-                            Appearance="@_appearance"
-                            PlaceHolder="Aditional value"
-                            Label="Aditional value">
-                        </DnetDatePicker>
+                        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                            <ChildContent>
+                                <DnetDatePicker @bind-Value="@FilterData.AdditionalValue"
+                                                Disabled="false"
+                                                Format="@DateFormat"
+                                                PlaceHolder="Aditional value">
+                                </DnetDatePicker>
+                            </ChildContent>
+                        </DnetFormField>
                     }
                 }
             }
@@ -169,8 +203,6 @@
     public AdvancedFilterModel FilterData { get; set; }
 
     private bool _formInvalid = true;
-
-    private Appearance _appearance { get; set; } = Appearance.Standard;
 
     private EditContext _userEditContext;
 

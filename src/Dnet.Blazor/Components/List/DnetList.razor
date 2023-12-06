@@ -9,7 +9,6 @@
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
 @using Dnet.Blazor.Infrastructure.Services
 @using Dnet.Blazor.Infrastructure.Models.SearchModels;
-@using Dnet.Blazor.Components.FormField
 
 @inherits OwningComponentBase
 
@@ -24,23 +23,13 @@
     @if (ListOptions.EnableSearching)
     {
         <form class="dnet-list-form">
-            <div class="dnet-list-search dnet-p-r-10">
-
-                @if (UsePlainControl)
-                {
-                    <DnetFormFieldPlainCmp PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
-                        <ChildContent>
-                            <DnetInputTextCmp @bind-Value="filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData">
-                            </DnetInputTextCmp>
-                        </ChildContent>
-                    </DnetFormFieldPlainCmp>
-                }
-                else
-                {
-                    <DnetInputTextAhead @bind-Value="filter" PlaceHolder="@PlaceHolder" Label="@Label" Appearance="Appearance.Standard" type="text" OnStopTyping="FilterData" FloatLabel="FloatLabel.Always">
-                    </DnetInputTextAhead>
-                }
-
+            <div class="dnet-list-search">
+                <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
+                    <ChildContent>
+                        <DnetInputText @bind-Value="filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData">
+                        </DnetInputText>
+                    </ChildContent>
+                </DnetFormField>
             </div>
         </form>
     }

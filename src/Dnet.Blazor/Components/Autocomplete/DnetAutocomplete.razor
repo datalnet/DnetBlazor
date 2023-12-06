@@ -1,105 +1,55 @@
-﻿@using Dnet.Blazor.Infrastructure.Services
+﻿@using Dnet.Blazor.Components.Form
+@using Dnet.Blazor.Infrastructure.Services
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using System.Timers
 @using System.Diagnostics.CodeAnalysis
 @using Dnet.Blazor.Components.Autocomplete.Infrastructure.Services
-@using Dnet.Blazor.Components.FormField
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Models
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Services
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
-@using Dnet.Blazor.Infrastructure.Enums;
+@using Dnet.Blazor.Infrastructure.Enums
+@using System.Linq.Expressions;
 
 @implements IDisposable
 
 @typeparam TItem
 
-@inherits Dnet.Blazor.Infrastructure.Forms.DnetInputBase<string>
+@typeparam TValue
+
+@inherits Dnet.Blazor.Infrastructure.Forms.DnetInputBase<TValue>
 
 @inject IOverlayService OverlayService
 
-@if (ComponentTheme == ComponentTheme.Material)
-{
-    <DnetFormField CurrentValue="@CurrentValue"
-               Appearance="@Appearance"
-               PlaceHolder="@PlaceHolder"
-               FloatLabel="@FloatLabel"
-               HasFocus="@_hasFocus"
-               Disabled="@Disabled"
-               Label="@Label"
-               PrefixContent="@PrefixContent"
-               SufixContent="@SufixContent"
-               HintContent="@HintContent"
-               ErrorContent="@ErrorContent"
-               ClearButtonContent="@_clearButtonContent"
-               HasErrors="_hasErrors && EditContext.IsModified(FieldIdentifier)"
-               IsRequired="@IsRequired"
-               @ref="_formField">
-        <input @ref="_menuTrigger"
-           @attributes="AdditionalAttributes"
-           class="@_inputTextClass"
-           value="@BindConverter.FormatValue(CurrentValue)"
-           @onfocus=@(() => Focus())
-           @onblur=@(() => Blur())
-           @oninput="@((ChangeEventArgs __e) => CurrentValue = __e.Value.ToString())"
-           @onfocusin=@(() => OpenMenu())
-           @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e))
-           @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
-           @onclick:stopPropagation="true"
-           @onclick:preventDefault="true"
-           placeholder="@_placeHolder"
-           disabled="@Disabled"
-           autocomplete="none" />
-    </DnetFormField>
-}
-else
-{
-    <div @ref="_menuTrigger" class="dnet-autoc-container">
+<input @ref="__inputReference" 
+       @attributes="AdditionalAttributes" 
+       class="@_inputTextClass"
+       value="@BindConverter.FormatValue(CurrentValue)" 
+       @onfocus=@(() => Focus()) @onblur=@(() => Blur())
+       @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" 
+       @onfocusin=@(() => OpenMenu())
+       @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) 
+       @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
+       @onclick:stopPropagation="true" 
+       @onclick:preventDefault="true" 
+       placeholder="@PlaceHolder" 
+       disabled="@Disabled"
+       autocomplete="none" />
 
-        <input @attributes="AdditionalAttributes"
-           class="@_inputTextClassRaw"
-           value="@BindConverter.FormatValue(CurrentValue)"
-           @onfocus=@(() => Focus())
-           @onblur=@(() => Blur())
-           @oninput="@((ChangeEventArgs __e) => CurrentValue = __e.Value.ToString())"
-           @onfocusin=@(() => OpenMenu())
-           @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e))
-           @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
-           @onclick:stopPropagation="true"
-           @onclick:preventDefault="true"
-           placeholder="@PlaceHolder"
-           disabled="@Disabled"
-           autocomplete="none" />
-        @if (!String.IsNullOrEmpty(CurrentValue) && Disabled == false)
-        {
-            <div class="dnet-autoc-clear-input" @onclick="ClearInput">
-                <div class="dnet-autoc-reset-image-wrapper">
-                    <span class="dnet-autoc-icon dnet-autoc-reset-button"></span>
-                </div>
-            </div>
-        }
-        @if (PrefixContent != null && ItemPrefixContent != null && _itemSelected != null)
-        {
-            <div class="dnet-autoc-input-content-wrapper">
-
-                <div class="dnet-autoc-prefix-content">
-
-                    @ItemPrefixContent(_itemSelected)
-                </div>
-
-            </div>
-        }
-    </div>
-
-}
 
 @code {
 
+    [CascadingParameter]
+    private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
+
     [Parameter]
     public EventCallback<TItem> OnItemSelected { get; set; }
+
+    [DisallowNull]
+    public ElementReference __inputReference { get; protected set; }
 
     [Parameter]
     public EventCallback<string> OnStopTyping { get; set; }
@@ -108,7 +58,12 @@ else
     public EventCallback<bool> OnClearInput { get; set; }
 
     [Parameter]
+    [NotNull] 
     public Func<TItem, string> DisplayValueConverter { get; set; }
+
+    [Parameter]
+    [NotNull] 
+    public Expression<Func<TItem, TValue>> ValueConverter { get; set; }
 
     [Parameter]
     public CustomSort<TItem> SortBy { get; set; }
@@ -123,31 +78,13 @@ else
     public RenderFragment<TItem> ItemSufixContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ChildContent { get; set; }
+    public RenderFragment<TItem> ItemChildContent { get; set; }
 
     [Parameter]
     public List<TItem> Items { get; set; } = new();
 
     [Parameter]
     public string OrderBy { get; set; } = "ASC";
-
-    [Parameter]
-    public ComponentTheme ComponentTheme { get; set; } = ComponentTheme.Material;
-
-    [Parameter]
-    public RenderFragment? PrefixContent { get; set; }
-
-    [Parameter]
-    public RenderFragment? SufixContent { get; set; }
-
-    [Parameter]
-    public RenderFragment? HintContent { get; set; }
-
-    [Parameter]
-    public RenderFragment? ErrorContent { get; set; }
-
-    [Parameter]
-    public RenderFragment? FormFieldChildContent { get; set; }
 
     [Parameter]
     public string Width { get; set; }
@@ -168,10 +105,16 @@ else
     public string MaxHeight { get; set; }
 
     [Parameter]
+    public string BorderRadius { get; set; } = "5px";
+
+    [Parameter]
+    public string MarginTop { get; set; } = "5px";
+
+    [Parameter]
     public int ItemHeight { get; set; } = 40;
 
     [Parameter]
-    public int DebounceTime { get; set; } = 250;
+    public int DebounceTime { get; set; } = 300;
 
     [Parameter]
     public bool InputTextToUpper { get; set; }
@@ -186,24 +129,6 @@ else
     public string PlaceHolder { get; set; } = "";
 
     [Parameter]
-    public string AutoSelectIdItem { get; set; } = "";
-
-    [Parameter]
-    public string Hint { get; set; }
-
-    [Parameter]
-    public Appearance Appearance { get; set; } = Appearance.Fill;
-
-    [Parameter]
-    public FloatLabel FloatLabel { get; set; } = FloatLabel.AsUserTypes;
-
-    [Parameter]
-    public string Label { get; set; }
-
-    [Parameter]
-    public bool DisabledClearButton { get; set; }
-
-    [Parameter]
     public bool EnableServerSide { get; set; }
 
     [Parameter]
@@ -211,12 +136,6 @@ else
 
     [Parameter]
     public bool IsRequired { get; set; }
-
-    private string _oldValue;
-
-    private ElementReference _menuTrigger;
-
-    private ElementReference _overlayOrigin;
 
     private bool _isOpen;
 
@@ -234,48 +153,80 @@ else
 
     private string _placeHolder { get; set; }
 
-    private RenderFragment _clearButtonContent { get; set; }
-
-    private DnetFormField _formField { get; set; } = new();
-
-    private ElementReference _formField1 { get; set; } = new();
-
     private TItem _itemSelected { get; set; }
 
-    private string _inputTextClass =>
-                new CssBuilder("mat-input-element")
-                    .AddClass("mat-form-field-autofill-control")
-                    .AddClass("cdk-text-field-autofill-monitored")
-                    .AddClass(CssClass)
-                .Build();
+    private bool _hasInitializedParameters;
 
-    private string _inputTextClassRaw =>
-                new CssBuilder("dnet-input-search")
-                    .AddClass("dnet-autoc-input-autocomplete")
-                    .AddClass(CssClass)
-                .Build();
+    private IFormEventService _formEventService { get; set; }
+
+    private List<TItem> _items { get; set; } = new();
+
+    private string _inputTextClass =>
+    new CssBuilder("mat-input-element")
+    .AddClass(CssClass)
+    .Build();
 
 
     protected override void OnInitialized()
     {
+        _formEventService = _formFieldCascadingValues.FormEventService;
+
         _debounceTimer = new Timer(DebounceTime);
 
-        _debounceTimer.Elapsed += OnUserFinish;
+        _debounceTimer.Elapsed += OnUserFinished;
 
         _debounceTimer.AutoReset = false;
 
-        if (!string.IsNullOrEmpty(CurrentValue)) _hasFocus = true;
-
-        _oldValue = AutoSelectIdItem;
-
-        if (EditContext != null)
+        if (!string.IsNullOrEmpty(CurrentValueAsString))
         {
-            EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+            _hasFocus = true;
 
-            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
 
-        if (!DisabledClearButton) _clearButtonContent = CreateClearButtonContent();
+        EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+
+        _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+
+        if (_formEventService is not null) _formEventService.OnClearContent += ClearInput;
+    }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        parameters.SetParameterProperties(this);
+
+        if (!_hasInitializedParameters)
+        {
+            // This is the first run
+            // Could put this logic in OnInit, but its nice to avoid forcing people who override OnInit to call base.OnInit()
+            if(!EnableServerSide)
+            {
+                if (SortBy == null) throw new NullReferenceException($"SortBy could not be Null");
+
+                if (FilterBy == null) throw new NullReferenceException($"FilterBy could not be Null");
+            }
+          
+            _hasInitializedParameters = true;
+        }
+
+        // For derived components, retain the usual lifecycle with OnInit/OnParametersSet/etc.
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        var dataSourceHasChanged = _items != Items;
+
+        if (dataSourceHasChanged)
+        {
+            _items = Items ?? new List<TItem>();
+        }
+
+        return base.OnParametersSetAsync();
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -285,55 +236,52 @@ else
         _autoCompleteListService = new AutoCompleteListService<TItem>();
 
         _autoCompleteListService.OnItemSelected += ItemSelected;
-
-        if (!String.IsNullOrEmpty(AutoSelectIdItem)) OnAutoSelectedId();
     }
 
-    protected override void OnParametersSet()
+    private void UpdateCurrentValue(object value)
     {
-        if (!_oldValue.Equals(AutoSelectIdItem) && string.IsNullOrEmpty(_oldValue))
+        if (value is string stringValue)
         {
-            _oldValue = AutoSelectIdItem;
-            OnAutoSelectedId();
+            CurrentValue = (TValue)(object)stringValue;
+
+            if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+        }
+        else if (typeof(TValue) == typeof(int) && int.TryParse(value.ToString(), out var parsedValue))
+        {
+            CurrentValue = (TValue)(object)parsedValue;
+
+            if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
         }
     }
 
-    private RenderFragment CreateClearButtonContent()
+    protected override bool TryParseValueFromString(string? value, out TValue result, [NotNullWhen(false)] out string?
+    validationErrorMessage)
     {
-        var inputContent = new RenderFragment(x =>
+        if (typeof(TValue) == typeof(string))
         {
-            x.OpenElement(4, "div");
-            x.AddAttribute(5, "class", "dnet-app-icon-wrapper");
-            x.AddAttribute(3, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, _ => ClearInput()));
-            x.OpenElement(6, "span");
-            x.AddAttribute(7, "class", "dnet-app-icon dnet-autoc-reset-button");
-            x.CloseElement();
-            x.CloseElement();
-        });
+            result = (TValue)(object)value;
+            validationErrorMessage = null;
+            return true;
+        }
+        else if (typeof(TValue) == typeof(int))
+        {
+            if (int.TryParse(value, out var parsedValue))
+            {
+                result = (TValue)(object)parsedValue;
+                validationErrorMessage = null;
+                return true;
+            }
+        }
 
-        return inputContent;
-    }
-
-    private void ValidateComponentInputs()
-    {
-        if (SortBy == null) throw new NullReferenceException($"SortBy could not be Null");
-
-        if (FilterBy == null) throw new NullReferenceException($"FilterBy could not be Null");
-    }
-
-    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
-    {
-        result = InputTextToUpper ? value?.ToUpper() : value;
-        validationErrorMessage = null;
-        return true;
+        result = default;
+        validationErrorMessage = $"The provided value '{value}' is not valid.";
+        return false;
     }
 
     private void HandleKeydown(KeyboardEventArgs data)
     {
         if (data.Key != "Tab") return;
-
         _debounceTimer.Stop();
-
         _isClosing = true;
     }
 
@@ -350,71 +298,44 @@ else
         _debounceTimer.Start();
     }
 
-    private async void OnUserFinish(Object? source, ElapsedEventArgs e)
+    private async void OnUserFinished(Object? source, ElapsedEventArgs e)
     {
-        await InvokeAsync(() =>
+        await InvokeAsync(async () =>
         {
             if (EnableServerSide)
             {
-                OnStopTyping.InvokeAsync(CurrentValue);
+                await OnStopTyping.InvokeAsync(CurrentValueAsString);
             }
             else
             {
-                PrefixContent = null;
-                SufixContent = null;
-
-                var items = new List<TItem>();
-
-                items = FilterAndSort(CurrentValue);
-
-                var item = items.FirstOrDefault();
-
-                if (!string.IsNullOrEmpty(CurrentValue) && ItemAutoSelection && item != null) PreSelecteItem(item);
-
-                _autoCompleteListService.UdateList(items);
-            }
-
-            if (ItemPrefixContent == null && ItemSufixContent == null) return;
-
-            StateHasChanged();
-        });
-    }
-
-    private async void OnAutoSelectedId()
-    {
-        await InvokeAsync(() =>
-        {
-            CurrentValue = null;
-            PrefixContent = null;
-            SufixContent = null;
-
-            var items = new List<TItem>();
-
-            if (!string.IsNullOrEmpty(AutoSelectIdItem))
-            {
-                items = FilterAndSort(AutoSelectIdItem);
-            }
-            else
-            {
-                if (FilterBy != null)
+                if (!string.IsNullOrEmpty(CurrentValueAsString))
                 {
-                    var qItems = Items.AsQueryable();
+                    var items = new List<TItem>();
 
-                    items = FilterBy.Apply(qItems, CurrentValue ?? "").ToList();
+                    items = FilterAndSort(CurrentValueAsString);
+
+                    var item = items.FirstOrDefault();
+
+                    _autoCompleteListService.UdateList(items);
+
+                    if (item == null)
+                    {
+                        _itemSelected = item;
+
+                        await OnItemSelected.InvokeAsync(item);
+                    }
                 }
                 else
                 {
-                    items = Items;
+                    _autoCompleteListService.UdateList(_items);
+
+                    _itemSelected = default;
+
+                    await OnItemSelected.InvokeAsync(_itemSelected);
                 }
             }
 
-            var item = items.FirstOrDefault();
-
-            if (!string.IsNullOrEmpty(AutoSelectIdItem)) PreSelecteItem(item);
-
-            _autoCompleteListService.UdateList(items);
-
-            if (ItemPrefixContent == null && ItemSufixContent == null && ChildContent == null) return;
+            if (ItemPrefixContent is null && ItemSufixContent is null ) return;
 
             StateHasChanged();
         });
@@ -426,7 +347,7 @@ else
 
         if (_isOpen) return;
 
-        await _menuTrigger.FocusAsync();
+        await __inputReference.FocusAsync();
 
         AttachMenu();
 
@@ -442,49 +363,35 @@ else
         }
     }
 
-    public async void PreSelecteItem(TItem item)
-    {
-        var value = DisplayValueConverter(item);
-
-        Value = value;
-        _oldValue = Value;
-        _itemSelected = item;
-
-        await ValueChanged.InvokeAsync(value);
-
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
-
-        await OnItemSelected.InvokeAsync(item);
-
-        if (ItemPrefixContent != null && PrefixContent == null) PrefixContent = ItemPrefixContent(item);
-
-        if (ItemSufixContent != null && SufixContent == null) SufixContent = ItemSufixContent(item);
-
-        if (ChildContent != null && FormFieldChildContent == null) FormFieldChildContent = ChildContent(item);
-
-        StateHasChanged();
-    }
-
     public async void ItemSelected(TItem item)
     {
-        var value = DisplayValueConverter(item);
+        Func<TItem, TValue> func = ValueConverter.Compile();
 
-        Value = value;
-        _oldValue = Value;
+        Value = func(item);
+
         _itemSelected = item;
-        await ValueChanged.InvokeAsync(value);
+
+        await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        if (!string.IsNullOrEmpty(CurrentValue)) _hasFocus = true;
+        if (!string.IsNullOrEmpty(CurrentValueAsString))
+        {
+            _hasFocus = true;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+        }
+
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
         await OnItemSelected.InvokeAsync(item);
-
-        if (ItemPrefixContent != null && PrefixContent == null) PrefixContent = ItemPrefixContent(item);
-
-        if (ItemSufixContent != null && SufixContent == null) SufixContent = ItemSufixContent(item);
-
-        if (ChildContent != null && FormFieldChildContent == null) FormFieldChildContent = ChildContent(item);
 
         DetachMenu();
 
@@ -493,19 +400,22 @@ else
 
     private async void ClearInput()
     {
-        CurrentValue = null;
-
-        PrefixContent = null;
-        SufixContent = null;
-
-        _oldValue = "";
-        AutoSelectIdItem = "";
+        CurrentValue = default(TValue);
 
         EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-        _hasErrors = EditContext?.GetValidationMessages(FieldIdentifier).Count() > 0;
+        if (EditContext is not null)
+        {
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         _hasFocus = false;
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
         await ValueChanged.InvokeAsync(Value);
         await OnClearInput.InvokeAsync(true);
@@ -517,49 +427,44 @@ else
 
     private void AttachMenu()
     {
-        var overlayOrigin = _formField.OverlayOrigin;
-
         var positions = new List<ConnectedPosition>
+        {
+            new()
             {
-                new()
-                {
-                    OriginX = HorizontalConnectionPos.Start,
-                    OriginY = VerticalConnectionPos.Bottom,
-                    OverlayX = HorizontalConnectionPos.Start,
-                    OverlayY = VerticalConnectionPos.Top
-                },
-                new()
-                {
-                    OriginX = HorizontalConnectionPos.Start,
-                    OriginY = VerticalConnectionPos.Top,
-                    OverlayX = HorizontalConnectionPos.Start,
-                    OverlayY = VerticalConnectionPos.Bottom
-                },
-                new()
-                {
-                    OriginX = HorizontalConnectionPos.End,
-                    OriginY = VerticalConnectionPos.Bottom,
-                    OverlayX = HorizontalConnectionPos.End,
-                    OverlayY = VerticalConnectionPos.Top
-                },
-                new()
-                {
-                    OriginX = HorizontalConnectionPos.End,
-                    OriginY = VerticalConnectionPos.Top,
-                    OverlayX = HorizontalConnectionPos.End,
-                    OverlayY = VerticalConnectionPos.Bottom
-                }
-            };
-
-
-        if (ComponentTheme == ComponentTheme.Raw) overlayOrigin = _menuTrigger;
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Bottom
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Bottom
+            }
+        };
 
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
-           .WithLockedPosition()
-           .WithViewportMargin(8)
-           .SetOrigin(overlayOrigin)
-           .WithFlexibleDimensions(false)
-           .WithPositions(positions);
+        .WithLockedPosition()
+        .WithViewportMargin(8)
+        .SetOrigin(_formFieldCascadingValues.FormField)
+        .WithFlexibleDimensions(false)
+        .WithPositions(positions);
 
         var connectedPanelConfig = new OverlayConfig
             {
@@ -571,17 +476,18 @@ else
                 MaxWidth = MaxWidth,
                 MinHeight = MinHeight,
                 MaxHeight = MaxHeight,
+                MarginTop = MarginTop
             };
 
         var items = new List<TItem>();
 
-        if (!string.IsNullOrEmpty(CurrentValue))
+        if (!string.IsNullOrEmpty(CurrentValueAsString))
         {
-            items = FilterAndSort(CurrentValue);
+            items = FilterAndSort(CurrentValueAsString);
         }
         else
         {
-            items = Items;
+            items = _items;
         }
 
         var menuContent = new RenderFragment(x =>
@@ -594,12 +500,13 @@ else
             x.AddAttribute(5, "MaxWidth", MaxWidth);
             x.AddAttribute(6, "MinHeight", MinHeight);
             x.AddAttribute(7, "MaxHeight", MaxHeight);
-            x.AddAttribute(7, "ItemHeight", ItemHeight);
-            x.AddAttribute(8, "AutoCompleteListService", _autoCompleteListService);
-            x.AddAttribute(9, "DisplayValueConverter", DisplayValueConverter);
-            x.AddAttribute(10, "ItemPrefixContent", ItemPrefixContent);
-            x.AddAttribute(10, "ItemSufixContent", ItemSufixContent);
-            x.AddAttribute(10, "ChildContent", ChildContent);
+            x.AddAttribute(8, "ItemHeight", ItemHeight);
+            x.AddAttribute(9, "AutoCompleteListService", _autoCompleteListService);
+            x.AddAttribute(10, "DisplayValueConverter", DisplayValueConverter);
+            x.AddAttribute(11, "ItemPrefixContent", ItemPrefixContent);
+            x.AddAttribute(12, "ItemSufixContent", ItemSufixContent);
+            x.AddAttribute(13, "ChildContent", ItemChildContent);
+            x.AddAttribute(14, "BorderRadius", BorderRadius);
             x.CloseComponent();
         });
 
@@ -629,15 +536,21 @@ else
     private void Focus()
     {
         _hasFocus = true;
+
         _placeHolder = PlaceHolder;
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
         StateHasChanged();
     }
 
     private void Blur()
     {
-        if (string.IsNullOrEmpty(CurrentValue))
+        if (string.IsNullOrEmpty(CurrentValueAsString))
         {
             _hasFocus = false;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
 
         _placeHolder = string.Empty;
@@ -650,10 +563,14 @@ else
     private void HandleOnValidationStateChanged(object? sender, FieldChangedEventArgs? args)
     {
         _hasErrors = EditContext?.GetValidationMessages(FieldIdentifier).Count() > 0;
+
+        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
     }
 
     public void UpdateData(List<TItem> items)
     {
+        _items = items ?? new List<TItem>();
+
         _autoCompleteListService.UdateList(items);
 
         StateHasChanged();
@@ -665,7 +582,7 @@ else
 
         if (FilterBy != null)
         {
-            var qItems = Items.AsQueryable();
+            var qItems = _items.AsQueryable();
 
             try
             {
@@ -678,7 +595,7 @@ else
         }
         else
         {
-            items = Items;
+            items = _items;
         }
 
         if (SortBy != null)
@@ -697,6 +614,8 @@ else
 
         if (_autoCompleteListService != null) _autoCompleteListService.OnItemSelected -= ItemSelected;
 
-        _debounceTimer.Elapsed -= OnUserFinish;
+        _debounceTimer.Elapsed -= OnUserFinished;
+
+        if (_formEventService is not null) _formEventService.OnClearContent -= ClearInput;
     }
 }

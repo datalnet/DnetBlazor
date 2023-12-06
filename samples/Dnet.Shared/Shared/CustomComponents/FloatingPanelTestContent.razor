@@ -1,7 +1,6 @@
 ﻿@using Dnet.App.Shared.Infrastructure.Entities
 @using Dnet.Blazor.Components.Button
 @using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Interfaces
-@using Dnet.Blazor.Components.FormField
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Services
 
@@ -30,8 +29,6 @@
 
     [Parameter]
     public Person Person { get; set; } = new Person();
-
-    private Appearance _appearance { get; set; }
 
     private bool _formInvalid = true;
 

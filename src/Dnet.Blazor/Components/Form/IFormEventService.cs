@@ -10,6 +10,10 @@ public interface IFormEventService
 
     public event Action OnClearContent;
 
+    public event Action<FormEventData> OnFormEventRaised;
+
+    public event Action OnSufixContentClicked;
+
     void RaiseError(bool hasError);
 
     void RaiseFocus(bool hasFocus);
@@ -19,4 +23,6 @@ public interface IFormEventService
     void RaiseClearContent();
 
     void FormRaiseEvent(string error, bool hasFocus, object currentValue);
+
+    void RaiseSufixContentClicked();
 }

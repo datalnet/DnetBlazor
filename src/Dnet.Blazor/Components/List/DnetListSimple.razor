@@ -9,7 +9,6 @@
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
 @using Dnet.Blazor.Infrastructure.Services
 @using Dnet.Blazor.Infrastructure.Models.SearchModels;
-@using Dnet.Blazor.Components.FormField
 
 @inherits OwningComponentBase
 
@@ -25,16 +24,22 @@
     {
         <form class="dnet-list-form">
             <div class="dnet-list-search">
-
-                <DnetFormFieldPlainCmp PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
+                <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
                     <ChildContent>
-                        <DnetInputTextCmp @bind-Value="filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData">
-                        </DnetInputTextCmp>
+                        <DnetInputText @bind-Value="filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData">
+                        </DnetInputText>
                     </ChildContent>
-                </DnetFormFieldPlainCmp>
-
+                </DnetFormField>
             </div>
         </form>
+    }
+    @if (ListOptions.ShowHeader)
+    {
+        <div class="dnet-list-header">
+            <div class="dnet-sort-header" @onclick="Sort">
+                <div class="dnet-sort-header-content">@ListOptions.HeaderText</div>
+            </div>
+        </div>
     }
     <div class="dnet-selection-list-wrapper"
          ondragover="event.preventDefault();"
