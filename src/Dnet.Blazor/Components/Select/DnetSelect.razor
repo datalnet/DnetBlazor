@@ -208,25 +208,7 @@
 
         _placeHolder = PlaceHolder;
 
-        if (!string.IsNullOrEmpty(CurrentValueAsString))
-        {
-            var type = typeof(TItem);
-
-            if (type == typeof(string) || type == typeof(int))
-            {
-                var selectedItem = FindItemByValue<TItem, TValue>(CurrentValue, Items);
-
-                if (selectedItem != null) ItemSelected(selectedItem);
-            }
-            else
-            {
-                var propertyInfo = GetPropertyInfoFromExpression<TItem, TValue>(ValueConverter);
-
-                var selectedItem = FindItemByPropertyValue<TItem, TValue>(propertyInfo.Name, CurrentValue, Items);
-
-                if (selectedItem != null) ItemSelected(selectedItem);
-            }
-        }
+        SetDisplayValue();
 
         if (!string.IsNullOrEmpty(CurrentValueAsString))
         {
@@ -255,9 +237,14 @@
 
         if (!_hasInitializedParameters)
         {
-            if (ValueConverter == null && MultiSelect == false)
+            if (ValueConverter is null && MultiSelect == false)
             {
                 throw new InvalidOperationException($"{GetType()} requires a value for the 'ValueConverter' ");
+            }
+
+            if (IsSelectedFn is null && MultiSelect == true)
+            {
+                throw new InvalidOperationException($"{GetType()} requires a value for the 'IsSelectedFn' ");
             }
 
             _hasInitializedParameters = true;
@@ -268,24 +255,57 @@
 
     protected override void OnParametersSet()
     {
-        if (Items != null)
+        var dataSourceHasChanged = _items != Items;
+
+        if (dataSourceHasChanged)
         {
-            if (_isInitialized && Items.Any())
+            _items = Items ?? new List<TItem>();
+
+            BuildRowNodes();
+
+            SetDisplayValue();
+
+            StateHasChanged();
+        }
+
+        base.OnParametersSet();
+    }
+
+    private void SetDisplayValue()
+    {
+        if (!MultiSelect)
+        {
+            if (!string.IsNullOrEmpty(CurrentValueAsString) && CurrentValue != null)
             {
-                _items.AddRange(Items);
+                var type = typeof(TItem);
 
-                BuildRowNodes();
+                if (type == typeof(string) || type == typeof(int))
+                {
+                    var selectedItem = FindItemByValue<TItem, TValue>(CurrentValue, Items);
 
-                _isInitialized = false;
+                    if (selectedItem != null)
+                    {
+                        _displayValueAsString = DisplayValueConverter?.Invoke(selectedItem) ?? string.Empty;
+                    }
+                }
+                else
+                {
+                    var propertyInfo = GetPropertyInfoFromExpression<TItem, TValue>(ValueConverter);
+
+                    if (propertyInfo != null)
+                    {
+                        var selectedItem = FindItemByPropertyValue<TItem, TValue>(propertyInfo.Name, CurrentValue, Items);
+
+                        if (selectedItem != null)
+                        {
+                            _displayValueAsString = DisplayValueConverter?.Invoke(selectedItem) ?? string.Empty;
+                        }
+                    }
+                }
             }
         }
-        else
-        {
-            throw new InvalidOperationException(
-                $"{GetType()} requires the '{nameof(Items)}'parameters to be specified " +
-                $"and non-null.");
-        }
     }
+
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -346,6 +366,10 @@
 
     private void BuildRowNodes()
     {
+        _rowNodes = new();
+
+        _selectedRowNodes = new();
+
         if (_items == null) return;
 
         foreach (var data in _items)
@@ -436,8 +460,6 @@
 
         await ValueChanged.InvokeAsync(Value);
 
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
-
         if (!string.IsNullOrEmpty(CurrentValueAsString))
         {
             _hasFocus = true;
@@ -446,6 +468,8 @@
         }
 
         await OnItemSelected.InvokeAsync(item);
+
+        EditContext?.NotifyFieldChanged(FieldIdentifier);
 
         DetachMenu();
 
@@ -458,7 +482,7 @@
 
         _selectedRowNodes.AddRange(items);
 
-        if(_selectedRowNodes.Any())
+        if (_selectedRowNodes.Any())
         {
             _displayValueAsString = "Value";
         }
@@ -485,6 +509,12 @@
 
         _displayValueAsString = null;
 
+        _hasFocus = false;
+
+        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
+        await ValueChanged.InvokeAsync(Value);
+
         if (EditContext is not null)
         {
             EditContext?.NotifyFieldChanged(FieldIdentifier);
@@ -493,12 +523,6 @@
 
             if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
         }
-
-        _hasFocus = false;
-
-        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
-
-        await ValueChanged.InvokeAsync(Value);
 
         DetachMenu();
 
@@ -621,18 +645,9 @@
     {
         _isInitialized = false;
 
-        CurrentValueAsString = null;
+        if (!MultiSelect) CurrentValueAsString = null;
 
-        _displayValueAsString = null;
-
-        if (EditContext is not null)
-        {
-            EditContext?.NotifyFieldChanged(FieldIdentifier);
-
-            _hasErrors = (EditContext.GetValidationMessages(FieldIdentifier)).Any();
-
-            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
-        }
+        if (!MultiSelect) _displayValueAsString = null;
 
         _hasFocus = false;
 
@@ -643,6 +658,15 @@
         _rowNodes = new();
 
         _selectedRowNodes = new();
+
+        if (EditContext is not null)
+        {
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+            _hasErrors = (EditContext.GetValidationMessages(FieldIdentifier)).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
 
         BuildRowNodes();
 
@@ -699,7 +723,7 @@
     {
         get
         {
-            if (string.IsNullOrEmpty(_displayValueAsString))
+            if (string.IsNullOrEmpty(_displayValueAsString) && MultiSelect == false)
                 return DataToShow.Placeholder;
 
             if (!string.IsNullOrEmpty(_displayValueAsString) && MultiSelect == false)
@@ -721,3 +745,4 @@
         if (EditContext is not null) EditContext.OnFieldChanged -= HandleOnValidationStateChanged;
     }
 }
+

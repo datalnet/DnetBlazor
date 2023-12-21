@@ -59,7 +59,8 @@
                   OnPaginationChanged="PaginationChanged"
                   OnCheckboxClick="CheckboxClick"
                   OnSelectionChange="SelectionChanged"
-                  ListOptions="@_listOptions">
+                  ListOptions="@_listOptions"
+                  >
             <ListItemContent Context="Person">
                 <div style="display: flex; width: 100%">
                     @Person.Name
@@ -123,7 +124,7 @@
 
         _items.AddRange(items);
 
-        _listComponent.SetRowData(paginatedItems, items.Count, 1);
+        _listComponent.SetRowData(items, items.Count, 1);
 
         _features = GetKeyValueModels();
 
@@ -200,14 +201,16 @@
                 ItemSize = 40f,
                 MultiSelect = true,
                 DebounceTime = 250,
-                EnableServerSide = true,
-                EnableSearching = false,
+                EnableServerSide = false,
+                EnableSearching = true,
                 EnableSorting = false,
-                PageSize = 50,
+                PageSize = 5,
                 EnablePagingination = true,
                 CheckboxSelectionColumn = true,
                 ShowHeader = false,
                 ShowFooter = true,
+                ServerSideSearchColumns = new List<string>() { "Name", "LastName" },
+                ServerSideSortColumn = "Name"
             };
     }
 }

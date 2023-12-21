@@ -28,14 +28,14 @@
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
                     <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
                         <ChildContent>
-                            <DnetSelect Value="@_formData.Name"
+                            <DnetSelect Value="@_formData.Email"
                                         TValue="string"
                                         ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                        ValueExpression="@( () => _formData.Name )"
+                                        ValueExpression="@( () => _formData.Email )"
                                         Items="_items"
                                         TItem="Person"
                                         DisplayValueConverter="(value) => (value.Name)"
-                                        ValueConverter="(value) => (value.Name)"
+                                        ValueConverter="(value) => (value.Email)"
                                         OnItemSelected="ItemSelected"
                                         InputTextToUpper="true"
                                         PlaceHolder="Name"
@@ -73,6 +73,7 @@
                                         ValueChanged="@((string e) => MyValueChangeHandler(e))"
                                         ValueExpression="@( () => _formData1.Name )"
                                         Items="_items"
+                                        SelectedItems="_selectedItems"
                                         TItem="Person"
                                         DisplayValueConverter="(value) => (value.Name)"
                                         ValueConverter="(value) => (value.Name)"
@@ -81,7 +82,8 @@
                                         InputTextToUpper="true"
                                         PlaceHolder="Name"
                                         Label="Name"
-                                        MultiSelect="true">
+                                        MultiSelect="true"
+                                        IsSelectedFn="(item1, item2) => item1.Name == item2.Name">
                             </DnetSelect>
                         </ChildContent>
                         <HintContent>You can add the country prefix</HintContent>
@@ -180,6 +182,8 @@
 
     private List<Person> _items = new();
 
+    private List<Person> _selectedItems = new();
+
     private Person _formData = new();
 
     private Person _formData1 = new();
@@ -218,6 +222,12 @@
     protected override async Task OnInitializedAsync()
     {
         _items = await GetPersons();
+
+        _selectedItems = _items.Take(3).ToList();
+
+        var selectedPerson = _items.FirstOrDefault();
+
+        _formData.Email = selectedPerson.Email;
 
         _apiResources = new List<ApiResourceDto>()
         {
@@ -269,7 +279,6 @@
             StateHasChanged();
         };
 
-        //_right1.ApiResourceId = 2;
         _editContext1 = new EditContext(_right1);
         _editContext1.OnValidationRequested += (data, eventArgs) =>
         {
