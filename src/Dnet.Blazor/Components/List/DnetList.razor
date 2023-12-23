@@ -177,19 +177,19 @@
     public EventCallback<List<TItem>> OnDrop { get; set; }
 
     [Parameter]
-    public ICollection<TItem> Items { get; set; }
+    public ICollection<TItem>? Items { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ListItemContent { get; set; }
+    public RenderFragment<TItem>? ListItemContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemPrefixContent { get; set; }
+    public RenderFragment<TItem>? ItemPrefixContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemSufixContent { get; set; }
+    public RenderFragment<TItem>? ItemSufixContent { get; set; }
 
     [Parameter]
-    public ListOptions<TItem> ListOptions { get; set; }
+    public ListOptions<TItem>? ListOptions { get; set; }
 
     [Parameter]
     public string PlaceHolder { get; set; } = "";
@@ -209,9 +209,9 @@
 
     private List<RowNode<TItem>> _selectedRowNodes = new();
 
-    private RowNode<TItem> _previousSelectedRowNode;
+    private RowNode<TItem>? _previousSelectedRowNode;
 
-    private RenderFragment<TItem> _itemContent { get; set; }
+    private RenderFragment<TItem>? _itemContent { get; set; }
 
     private long _nextId { get; set; } = -1;
 
