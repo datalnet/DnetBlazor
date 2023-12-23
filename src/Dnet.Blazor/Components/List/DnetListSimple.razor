@@ -26,7 +26,7 @@
             <div class="dnet-list-search">
                 <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
                     <ChildContent>
-                        <DnetInputText @bind-Value="filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData">
+                        <DnetInputText @bind-Value="_filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData" OnClearInput="ClearInput">
                         </DnetInputText>
                     </ChildContent>
                 </DnetFormField>
@@ -208,7 +208,7 @@
 
     private string SortIconClass { get; set; }
 
-    private string filter { get; set; }
+    private string _filter { get; set; }
 
     private Timer _debounceTimer;
 
@@ -223,6 +223,8 @@
     private bool _isInitialized { get; set; }
 
     private List<TItem> _items { get; set; } = new();
+
+    private List<RowNode<TItem>> _filteredRowNodes = new List<RowNode<TItem>>();
 
 
     public override async Task SetParametersAsync(ParameterView parameters)
@@ -319,9 +321,29 @@
         {
             var (startIndex, count) = PaginatorService.GetRangePage(_searchModel.PaginationModel.CurrentPage, _searchModel.PaginationModel.PageSize, _searchModel.PaginationModel.ItemsCount);
 
-            var pagingRowNodes = _rowNodesBk.GetRange(startIndex, count);
+            if (_filteredRowNodes.Any())
+            {
+                _rowNodes = _filteredRowNodes.Skip(startIndex).Take(count).ToList();
+            }
+            else
+            {
+                _rowNodes = _rowNodesBk.GetRange(startIndex, count);
+            }
 
-            _rowNodes = pagingRowNodes;
+            StateHasChanged();
+        }
+        else
+        {
+            _rowNodes = new List<RowNode<TItem>>();
+
+            if (_filteredRowNodes.Any())
+            {
+                _rowNodes.AddRange(_filteredRowNodes);
+            }
+            else
+            {
+                _rowNodes.AddRange(_rowNodesBk);
+            }
 
             StateHasChanged();
         }
@@ -394,7 +416,6 @@
 
     private async void Sort()
     {
-
         if (!ListOptions.EnableSorting) return;
 
         UpdateOrder();
@@ -409,9 +430,16 @@
         }
         else
         {
-            var sortedRowNodes = SortTexts(_rowNodes);
+            if (_filteredRowNodes.Any())
+            {
+                _filteredRowNodes = SortTexts(_filteredRowNodes);
+            }
+            else
+            {
+                _rowNodesBk = SortTexts(_rowNodesBk);
+            }
 
-            _rowNodes = sortedRowNodes;
+            AssignRangeRenderedRows();
 
             StateHasChanged();
         }
@@ -489,7 +517,7 @@
                                 FilterLinkCondition = i == 0 ? FilterCondition.None : FilterCondition.Or,
                                 Operator = FilterOperator.Contains,
                                 Type = CellDataType.Text,
-                                Value = filter
+                                Value = _filter == null ? "" : _filter
                             };
 
                         _searchModel.AdvancedFilterModels.Add(advancedFilterModel);
@@ -499,22 +527,53 @@
                 }
                 else
                 {
-                    _rowNodes = new List<RowNode<TItem>>();
-
-                    var items = _rowNodesBk.Where(p => ListOptions.SearchValueConverter(p.RowData).ToUpper().Contains(filter.ToUpper())).ToList();
-
-                    if (SortStatus != SortOrder.None)
+                    if (string.IsNullOrEmpty(_filter))
                     {
-                        var sortedNodes = SortTexts(items);
-                        _rowNodes.AddRange(sortedNodes);
+                        _filteredRowNodes.Clear();
+
+                        if (ListOptions.EnablePagingination)
+                        {
+                            _searchModel = new SearchModel
+                                {
+                                    PaginationModel = new PaginationModel
+                                    {
+                                        CurrentPage = 1,
+                                        ItemsCount = _rowNodesBk.Count,
+                                        PageSize = ListOptions.PageSize
+                                    }
+                                };
+                        }
+
+                        AssignRangeRenderedRows();
                     }
                     else
                     {
-                        _rowNodes.AddRange(items);
+                        _filteredRowNodes = _rowNodesBk.Where(p => ListOptions.SearchValueConverter(p.RowData).ToUpper().Contains(_filter.ToUpper())).ToList();
+
+                        if (SortStatus != SortOrder.None)
+                        {
+                            _filteredRowNodes = SortTexts(_filteredRowNodes);
+                        }
+
+                        if (ListOptions.EnablePagingination)
+                        {
+
+                            _searchModel = new SearchModel
+                                {
+                                    PaginationModel = new PaginationModel
+                                    {
+                                        CurrentPage = 1,
+                                        ItemsCount = _filteredRowNodes.Count,
+                                        PageSize = ListOptions.PageSize
+                                    }
+                                };
+                        }
+
+                        AssignRangeRenderedRows();
                     }
                 }
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 throw new NullReferenceException($"SearchValueConverter could not be Null");
             }
@@ -673,6 +732,11 @@
     private async Task Transfer(TItem item)
     {
         await OnTransfer.InvokeAsync(item);
+    }
+
+    private async void ClearInput()
+    {
+        FilterData();
     }
 
     public void Dispose()
