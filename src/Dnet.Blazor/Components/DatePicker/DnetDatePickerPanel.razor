@@ -345,7 +345,6 @@
 
     private void SelectMonth(int monthNumber)
     {
-        //if ((_minCalendarDay != null && monthNumber < _minCalendarDay.Month) || (_maxCalendarDay != null && monthNumber > _maxCalendarDay.Month)) return;
         if (EvaluateMinMaxMonths(monthNumber, _tempWorkingYear)) return;
 
         _activeView = (int)ActiveViewType.Day;

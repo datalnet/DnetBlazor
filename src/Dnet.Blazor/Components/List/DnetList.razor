@@ -26,7 +26,7 @@
             <div class="dnet-list-search">
                 <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
                     <ChildContent>
-                        <DnetInputText @bind-Value="filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData">
+                        <DnetInputText @bind-Value="_filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData" OnClearInput="ClearInput">
                         </DnetInputText>
                     </ChildContent>
                 </DnetFormField>
@@ -219,7 +219,7 @@
 
     private string SortIconClass { get; set; }
 
-    private string filter { get; set; }
+    private string _filter { get; set; }
 
     private Timer _debounceTimer;
 
@@ -524,7 +524,7 @@
                                 FilterLinkCondition = i == 0 ? FilterCondition.None : FilterCondition.Or,
                                 Operator = FilterOperator.Contains,
                                 Type = CellDataType.Text,
-                                Value = filter
+                                Value = _filter
                             };
 
                         _searchModel.AdvancedFilterModels.Add(advancedFilterModel);
@@ -534,13 +534,12 @@
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(filter))
+                    if (string.IsNullOrEmpty(_filter))
                     {
                         _filteredRowNodes.Clear();
 
                         if (ListOptions.EnablePagingination)
                         {
-
                             _searchModel = new SearchModel
                                 {
                                     PaginationModel = new PaginationModel
@@ -556,7 +555,7 @@
                     }
                     else
                     {
-                        _filteredRowNodes = _rowNodesBk.Where(p => ListOptions.SearchValueConverter(p.RowData).ToUpper().Contains(filter.ToUpper())).ToList();
+                        _filteredRowNodes = _rowNodesBk.Where(p => ListOptions.SearchValueConverter(p.RowData).ToUpper().Contains(_filter.ToUpper())).ToList();
 
                         if (SortStatus != SortOrder.None)
                         {
@@ -713,9 +712,6 @@
 
     private async Task HandleDrop(DragEventArgs eventdrag)
     {
-        //var tt = eventdrag;
-        //var yy = eventdrag.DataTransfer.Items;
-
         if (DnetListDragAndDropService.FromContainer == ListOptions.ConnectedTo)
         {
             var data = DnetListDragAndDropService.TransferData;
@@ -725,12 +721,6 @@
 
     private async Task HandleDragStart(DragEventArgs eventdrag)
     {
-        //var tt = new DataTransferItem();
-        //tt.Kind = "1";
-        //tt.Type = "text/plain";
-
-        //eventdrag.DataTransfer.Items = new DataTransferItem[1] { tt };
-
         var dataToTransfer = _selectedRowNodes.Select(p => p.RowData).ToList();
 
         DnetListDragAndDropService.StartDrag(dataToTransfer, ListOptions.ContainerName);
@@ -744,6 +734,11 @@
         {
             _selectedRowNodes.Add(item);
         }
+    }
+
+    private async void ClearInput()
+    {
+        FilterData();
     }
 
     public void Dispose()

@@ -11,6 +11,7 @@
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Components.Forms
 @using System.Diagnostics.CodeAnalysis
+@using System.Globalization
 
 @inherits DnetInputBase<string>
 
@@ -203,7 +204,7 @@
 
         if (!string.IsNullOrEmpty(CurrentValue))
         {
-            selectedDay = Convert.ToDateTime(CurrentValue);
+            selectedDay = DateTime.ParseExact(CurrentValue, Format ?? "yyyy/MM/dd", CultureInfo.InvariantCulture);
         }
 
         _selectedDay.Year = selectedDay.Year;
@@ -254,7 +255,8 @@
 
         if (!string.IsNullOrEmpty(dayValue))
         {
-            selectedDay = Convert.ToDateTime(dayValue);
+            selectedDay = DateTime.ParseExact(CurrentValue, Format ?? "yyyy/MM/dd", CultureInfo.InvariantCulture);
+
             day = GetCalendarDay((DateTime)selectedDay);
 
             currentValue = !EvaluateMinMaxDates(day) ? dayValue : "";

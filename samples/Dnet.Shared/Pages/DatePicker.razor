@@ -109,6 +109,14 @@
     private DnetDatePickerWeek _datepickerWeek { get; set; }
 
 
+    protected override void OnInitialized()
+	{
+		_datepickerFormat = "dd/MM/yyyy";
+
+        _formData.DepartureDay = DateTimeOffset.UtcNow.ToLocalTime().ToString(_datepickerFormat);
+	}
+
+
     private void MyValueChangeHandler(string item)
     {
         _formData.FilterValue = item;
