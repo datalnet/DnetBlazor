@@ -45,6 +45,7 @@
     justify-content: space-between;
     align-items: center;
     border-radius: 5px;
+    overflow: hidden;
 }
 
 .dnet-sort-header {
@@ -94,6 +95,8 @@
         display: flex;
         align-items: center;
         padding-left: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .dnet-pseudo-checkbox {
@@ -308,6 +311,7 @@
     align-items: center;
     justify-content: flex-start;
     padding-left: 10px;
+    overflow: hidden;
 }
 
 .dnet-list-item-prefix-content + .dnet-list-item-middle-content {
@@ -323,6 +327,8 @@
 
 .dnet-list-item-content-text {
     display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dnet-list-search {

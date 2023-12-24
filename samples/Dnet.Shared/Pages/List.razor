@@ -61,11 +61,11 @@
                   OnSelectionChange="SelectionChanged"
                   ListOptions="@_listOptions"
                   >
-            <ListItemContent Context="Person">
-                <div style="display: flex; width: 100%">
-                    @Person.Name
+            @* <ListItemContent Context="Person">
+                <div style="display: flex; width: 100%; padding-right: 5px">
+                    <span>@Person.Name</span>
                 </div>
-            </ListItemContent>
+            </ListItemContent> *@
             <ItemPrefixContent Context="Person">
                 <div class="dnet-app-icon-wrapper">
                     <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>

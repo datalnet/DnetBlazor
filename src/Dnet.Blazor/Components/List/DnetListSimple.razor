@@ -68,7 +68,6 @@
                                     @if (ListItemContent != null)
                                     {
                                         @ListItemContent(item.RowData)
-                                        ;
                                     }
                                     else
                                     {
@@ -101,8 +100,8 @@
                         var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
                         <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @onclick="(e => Transfer(item.RowData))">
-                            <div class="dnet-list-item dnet-list-item-content">
-                                @ListOptions.DisplayValueConverter(item.RowData)
+                            <div class="dnet-list-item-middle-content">
+                                <span class="dnet-list-item-content-text">@ListOptions.DisplayValueConverter(item.RowData)</span>
                             </div>
                             @if (ListOptions.CheckboxSelectionColumn && disabled == false)
                             {
