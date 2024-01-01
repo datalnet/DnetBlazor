@@ -73,7 +73,7 @@
         Random r = new Random();
         int range = 50;
 
-        foreach (var item in persons)
+        foreach (var item in persons.Take(2))
         {
             int rInt = r.Next(0, 6);
 
@@ -114,6 +114,8 @@
     public void SelectionChanged(List<RowNode<Person>> rowNodes)
     {
         var tt = rowNodes;
+
+        var yy = rowNodes.Select(p => p.RowData).ToList();
     }
 
     private async Task ServerSideOperation(SearchModel searchModel)

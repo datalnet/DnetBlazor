@@ -1326,7 +1326,7 @@
 
         if (_pinnedRight) _blgPinnedRight?.ActiveRender();
 
-        var rowNodes = _rowNodes.Where(p => rowNodeIds.Contains(p.RowNodeId)).Select(p => p).ToList();
+        var rowNodes = _rowNodes.Where(p => p.RowData is not null && rowNodeIds.Contains(p.RowNodeId)).Select(p => p).ToList();
 
         await OnSelectionChanged.InvokeAsync(rowNodes);
     }
@@ -1457,7 +1457,9 @@
 
         if (_pinnedRight) _blgPinnedRight?.ActiveRender();
 
-        await OnSelectionChanged.InvokeAsync(selectedRowNodes);
+        var rowNodes = selectedRowNodes.Where(p => p.RowData is not null).ToList();
+
+        await OnSelectionChanged.InvokeAsync(rowNodes);
     }
 
     private void MouseMove(MouseEventArgs e)

@@ -173,6 +173,14 @@
 
         _rightItems = RightItems;
 
+        for (int i = _leftItems.Count - 1; i >= 0; i--)
+        {
+            if (_leftSelectedItems.Contains(_leftItems[i], EqualityComparer))
+            {
+                _leftItems.RemoveAt(i);
+            }
+        }
+
         _leftBkItems = new List<TItem>(LeftItems);
 
         _rightBkItems = new List<TItem>(RightItems);
