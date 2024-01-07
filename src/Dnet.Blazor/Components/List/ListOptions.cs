@@ -14,6 +14,10 @@ namespace Dnet.Blazor.Components.List
 
         public string HeaderText { get; set; }
 
+        public string SearchInputPlaceHolder { get; set; }
+
+        public string SearchInputLabel { get; set; }
+
         public float ItemSize { get; set; } = 40f;
 
         public bool MultiSelect { get; set; } = true;

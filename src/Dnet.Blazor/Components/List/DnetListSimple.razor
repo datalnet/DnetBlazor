@@ -24,9 +24,9 @@
     {
         <form class="dnet-list-form">
             <div class="dnet-list-search">
-                <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
+                <DnetFormField PlaceHolder="@ListOptions.SearchInputPlaceHolder" Label="@ListOptions.SearchInputLabel" UseClearButton="true" IsRequired="true">
                     <ChildContent>
-                        <DnetInputText @bind-Value="_filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData" OnClearInput="ClearInput">
+                        <DnetInputText @bind-Value="_filter" PlaceHolder="@ListOptions.SearchInputPlaceHolder" type="text" OnStopTyping="FilterData" OnClearInput="ClearInput">
                         </DnetInputText>
                     </ChildContent>
                 </DnetFormField>
@@ -180,15 +180,6 @@
 
     [Parameter]
     public ListOptions<TItem> ListOptions { get; set; }
-
-    [Parameter]
-    public string HeaderText { get; set; }
-
-    [Parameter]
-    public string PlaceHolder { get; set; }
-
-    [Parameter]
-    public string Label { get; set; }
 
 
     private List<RowNode<TItem>> _rowNodes { get; set; } = new();

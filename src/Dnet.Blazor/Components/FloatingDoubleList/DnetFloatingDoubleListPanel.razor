@@ -24,9 +24,6 @@
                                 ListItemContent="ListItemContent"
                                 ItemPrefixContent="ItemPrefixContent"
                                 ItemSufixContent="ItemSufixContent"
-                                HeaderText="@LeftText"
-                                Label="@_leftLabel"
-                                PlaceHolder="@_leftPlaceHolder"
                                 OnSearch="SearchLeft">
                 </DnetListSimple>
             </div>
@@ -43,9 +40,6 @@
                                 ListItemContent="ListItemContent"
                                 ItemPrefixContent="ItemPrefixContent"
                                 ItemSufixContent="ItemSufixContent"
-                                HeaderText="@RightText"
-                                Label="@_rightLabel"
-                                PlaceHolder="@_rightPlaceHolder"
                                 OnSearch="SearchRight">
                 </DnetListSimple>
             </div>
@@ -117,12 +111,6 @@
     public RenderFragment<TItem> ChildContent { get; set; }
 
     [Parameter]
-    public string LeftText { get; set; }
-
-    [Parameter]
-    public string RightText { get; set; }
-
-    [Parameter]
     public SearchControlOptions SearchControlOptions { get; set; }
 
 
@@ -186,12 +174,10 @@
         _rightBkItems = new List<TItem>(RightItems);
 
         _leftListOptions = LeftListOptions;
-        _leftListOptions.HeaderText = "Left";
         _leftListOptions.ContainerName = "LeftContainer";
         _leftListOptions.ConnectedTo = "RghtContainer";
 
         _rightListOptions = RightListOptions;
-        _rightListOptions.HeaderText = "Right";
         _rightListOptions.ContainerName = "RghtContainer";
         _rightListOptions.ConnectedTo = "LeftContainer";
 

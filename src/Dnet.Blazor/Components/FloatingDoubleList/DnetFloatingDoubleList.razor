@@ -138,12 +138,6 @@
     public SearchControlOptions SearchControlOptions { get; set; }
 
     [Parameter]
-    public string LeftText { get; set; }
-
-    [Parameter]
-    public string RightText { get; set; }
-
-    [Parameter]
     public IEqualityComparer<TItem> EqualityComparer { get; set; }
 
     [Parameter]
@@ -440,8 +434,6 @@
             x.AddAttribute(14, "ChildContent", ItemChildContent);
             x.AddAttribute(15, "LeftListOptions", LeftListOptions);
             x.AddAttribute(16, "RightListOptions", RightListOptions);
-            x.AddAttribute(17, "LeftText", LeftText);
-            x.AddAttribute(18, "RightText", RightText);
             x.AddAttribute(19, "EqualityComparer", EqualityComparer);
             x.CloseComponent();
         });
