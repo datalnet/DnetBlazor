@@ -1,0 +1,6 @@
+﻿/*Left column*/
+.left-column {
+    grid-area: left;
+    background-color: var(--left-column-color);
+    border-right: 1px solid var(--general-border-color);
+}

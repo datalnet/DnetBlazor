@@ -1,0 +1,69 @@
+﻿<div class="@("grid-container" +
+            (_isMinified ? " minified" : "") +
+            (_isFooterHidden && !_isHeaderFixed ? " hidden-footer" : "") +
+            (_isHeaderFixed && !_isFooterHidden ? " hidden-header" : "") +
+            (_isHeaderFixed && _isFooterHidden ? " hidden-footer-and-header" : "") +
+            (_isLeftColumnHidden && !_isRightColumnHidden ? " hidden-left-column" : "") +
+            (_isRightColumnHidden && !_isLeftColumnHidden ? " hidden-right-column" : "") +
+            (_isRightColumnHidden && _isLeftColumnHidden ? " hidden-lateral-columns" : "") +
+            (_isDesktopMode ? " destok-layout" : "") +
+            (_isLeftColumnFixed ? " fixed-left-column" : "") +
+            (_isHeaderFixed ? " fixed-header" : "") +
+            (_showMinifier ? " hidden-minifier" : ""))">
+    <CascadingValue Value="this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool IsHeaderFixed { get; set; } = true;
+
+    [Parameter]
+    public bool IsLeftColumnFixed { get; set; } = true;
+
+    [Parameter]
+    public bool ShowMinifier { get; set; } = true;
+
+    [Parameter]
+    public bool IsMinified { get; set; }
+
+    [Parameter]
+    public bool IsHeaderHidden { get; set; } = false;
+
+    [Parameter]
+    public bool IsFooterHidden { get; set; } = true;
+
+    [Parameter]
+    public bool IsLeftColumnHidden { get; set; } = false;
+
+    [Parameter]
+    public bool IsRightColumnHidden { get; set; } = false;
+
+    [Parameter]
+    public bool IsDesktopMode { get; set; } = true;
+
+
+    private bool _isHeaderFixed { get; set; }
+
+    private bool _isLeftColumnFixed { get; set; }
+
+    private bool _showMinifier { get; set; }
+
+    private bool _isMinified { get; set; }
+
+    private bool _isHeaderHidden { get; set; }
+
+    private bool _isFooterHidden { get; set; }
+
+    private bool _isLeftColumnHidden { get; set; }
+
+    private bool _isRightColumnHidden { get; set; }
+
+    private bool _isDesktopMode { get; set; }
+
+}

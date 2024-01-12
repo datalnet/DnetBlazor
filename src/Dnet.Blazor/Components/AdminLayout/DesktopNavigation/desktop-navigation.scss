@@ -1,0 +1,27 @@
+﻿.table {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px calc(100vh - 100px) 50px;
+    height: 100%;
+}
+
+.navigation-row {
+    text-align: center;
+}
+
+.navigation-flex {
+    grid-row: 2 / 3;
+    height: calc(100vh - 100px);
+}
+
+.hidden-left-column {
+    .table {
+        display: none;
+    }
+}
+
+.hidden-lateral-columns {
+    .table {
+        display: none;
+    }
+}

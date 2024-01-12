@@ -1,0 +1,80 @@
+﻿.desktop-minify-menu {
+    flex: 0 0 50px;
+    background-color: var(--dnet-dash-minifyme-bg-color);
+}
+
+
+.hidden-minifier {
+    .desktop-minify-menu {
+        height: 0px;
+    }
+
+    .minifyme {
+        cursor: default;
+
+        span {
+            display: none;
+        }
+    }
+}
+
+.minifyme {
+    height: 50px;
+    width: var(--dnet-dash-asideWidth);
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    min-height: 0;
+    min-width: 0;
+    cursor: pointer;
+    justify-content: flex-end !important;
+    padding: 0 16px;
+    transition: padding 0s;
+    display: flex;
+    align-items: center;
+
+    .img-container {
+        -moz-flex: 0 0 auto;
+        -ms-flex: 0 0 auto;
+        -webkit-box-flex: 0;
+        flex: 0 0 auto;
+        min-height: 0;
+        min-width: 0;
+        padding: 0;
+        color: #fff;
+        text-align: center;
+
+        .dnet-chevron {
+            font-size: 16px;
+            transition: -webkit-transform 167ms linear;
+            transition: transform 167ms linear;
+            transition: transform 167ms linear,-webkit-transform 167ms linear;
+            padding-top: 1px;
+        }
+
+        .dnet-expand-arrow1 {
+            display: block;
+            height: 16px;
+            width: 16px;
+            -webkit-filter: "initial";
+            filter: "initial";
+            transition: -webkit-transform 167ms linear;
+            transition: transform 167ms linear;
+            transition: transform 167ms linear,-webkit-transform 167ms linear;
+        }
+    }
+}
+
+.minified {
+    .minifyme {
+        width: 60px;
+        justify-content: center !important;
+
+        .img-container {
+            .dnet-expand-arrow1 {
+                -webkit-transform: rotate(-180deg);
+                transform: rotate(-180deg);
+            }
+        }
+    }
+}
