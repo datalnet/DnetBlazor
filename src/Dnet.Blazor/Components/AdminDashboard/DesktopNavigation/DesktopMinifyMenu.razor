@@ -57,7 +57,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var localStorageData = await DnetAdminDashboardInterop.GetAsync<LocalStorageData>(JSRuntime, "BlazorTestApp");
+        var localStorageData = await DnetAdminDashboardInterop.GetAsync<LocalStorageData>(JSRuntime, "DnetBlazor");
 
         if (localStorageData != null)
         {

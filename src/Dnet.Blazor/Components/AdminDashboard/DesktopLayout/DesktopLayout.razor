@@ -97,7 +97,7 @@
     {
         if (firstRender)
         {
-            var localStorageData = await DnetAdminDashboardInterop.GetAsync<LocalStorageData>(JSRuntime, "BlazorTestApp");
+            var localStorageData = await DnetAdminDashboardInterop.GetAsync<LocalStorageData>(JSRuntime, "DnetBlazor");
 
             if (localStorageData != null && _showMinifier == true)
             {
@@ -115,7 +115,7 @@
 
                 CssClasses = GetCssClasses();
 
-                await DnetAdminDashboardInterop.SetAsync(JSRuntime, "BlazorTestApp", LocalStorageData);
+                await DnetAdminDashboardInterop.SetAsync(JSRuntime, "DnetBlazor", LocalStorageData);
 
                 StateHasChanged();
             }
@@ -148,7 +148,7 @@
 
             LocalStorageData.IsMinified = themeConfigData.Data.IsMinified;
 
-            await DnetAdminDashboardInterop.SetAsync(JSRuntime, "BlazorTestApp", LocalStorageData);
+            await DnetAdminDashboardInterop.SetAsync(JSRuntime, "DnetBlazor", LocalStorageData);
 
         }
         else
@@ -167,7 +167,7 @@
 
             _showMinifier = themeConfigData.Data.ShowMinifier;
 
-            var localStorageData = await DnetAdminDashboardInterop.GetAsync<LocalStorageData>(JSRuntime, "BlazorTestApp");
+            var localStorageData = await DnetAdminDashboardInterop.GetAsync<LocalStorageData>(JSRuntime, "DnetBlazor");
 
             if (localStorageData != null)
             {

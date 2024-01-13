@@ -1,4 +1,4 @@
-﻿.grid-container {
+﻿.dnet-grid-container {
     display: grid;
     grid-template-columns: minmax(0px, auto) 1fr minmax(250px, auto);
     grid-template-rows: 50px calc(100vh - 100px) 50px;
