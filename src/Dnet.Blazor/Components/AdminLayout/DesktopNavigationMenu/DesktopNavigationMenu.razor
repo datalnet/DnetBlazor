@@ -1,5 +1,17 @@
-﻿<h3>DesktopNavigationMenu</h3>
+﻿@using Dnet.Blazor.Components.AdminLayout.Menu
+<div class="dnet-desktop-navigation-menu">
+    <nav>
+        <ul>
+             @foreach (var item in Menus)
+            {
+                <MenuTree Menu="@item"></MenuTree>
+            }
+        </ul>
+    </nav>
+</div>
 
 @code {
+    [Parameter]
+    public List<NavigationMenu> Menus { get; set; } = new();
 
 }

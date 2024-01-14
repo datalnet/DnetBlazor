@@ -1,5 +1,9 @@
-﻿<h3>DesktopLeftColumn</h3>
+﻿<div class="left-column">
+    @ChildContent
+</div>
 
 @code {
 
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 }

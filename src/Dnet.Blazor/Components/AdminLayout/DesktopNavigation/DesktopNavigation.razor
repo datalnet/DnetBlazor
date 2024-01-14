@@ -1,5 +1,23 @@
-﻿<h3>DesktopNavigation</h3>
+﻿<div class="table">
+    <div class="navigation-row">
+        @CompanyChildContent
+    </div>
+    <div class="navigation-row navigation-flex">
+        @MenuChildContent
+    </div>
+    <div class="navigation-row">
+        @MinifierChildContent
+    </div>
+</div>
 
 @code {
 
+    [Parameter]
+    public RenderFragment? CompanyChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? MenuChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? MinifierChildContent { get; set; }
 }

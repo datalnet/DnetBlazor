@@ -1,5 +1,12 @@
-﻿<h3>DesktopHeader</h3>
+﻿<div class="header">
+    <div class="header-content">
+        @ChildContent
+    </div>
+</div>
 
 @code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
 }

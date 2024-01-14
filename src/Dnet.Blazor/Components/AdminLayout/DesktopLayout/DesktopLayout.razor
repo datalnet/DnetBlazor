@@ -8,6 +8,8 @@
 @inject IThemeMessageService<ThemeConfigData> ThemeMessageService
 @inject IJSRuntime JSRuntime
 
+@implements IDisposable;
+
 <div class="@("dnet-grid-container" +
             (_isMinified ? " minified" : "") +
             (_isFooterHidden && !_isHeaderFixed ? " hidden-footer" : "") +

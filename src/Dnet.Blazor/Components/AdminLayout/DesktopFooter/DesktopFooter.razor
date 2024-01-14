@@ -1,5 +1,12 @@
-﻿<h3>DesktopFooter</h3>
+﻿<div class="footer">
+    <div class="footer-content">
+        @ChildContent
+    </div>
+</div>
 
 @code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
 }

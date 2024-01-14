@@ -1,0 +1,31 @@
+﻿:root {
+    --dnet-dash-font-family-text: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --dnet-dash-font-family-Headline: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --dnet-dash-primary-reset: rgb(66, 176, 213);
+    --dnet-dash-primary-dark: rgb(0, 36, 61);
+    --dnet-dash-primary-light: #ffb2ff;
+    --dnet-dash-secondary-reset: rgb(0, 36, 61);
+    --dnet-dash-secondary-dark: #c25123;
+    --dnet-dash-secondary-light: #ffb17d;
+    --dnet-dash-black: #000;
+    --dnet-dash-red: #d6b7be;
+    --dnet-dash-white: #ffffff;
+    /*--gray-dark: lighten(var(--dnet-dash-black), 20%); // #333*/
+    --dnet-dash-gray-dark: lighten(#000, 20%);
+    --dnet-dash-base-url: "/blazor-admin-dashboard/img";
+    --dnet-dash-body-bg: #fff;
+    /* //** Global textual link color. */
+    --dnet-dash-link-hover-color: darken(rgb(0, 36, 61), 15%);
+    --dnet-dash-html-background-color: white;
+    --dnet-dash-body-background-color: white;
+    --dnet-dash-font-rem-reference: 16px;
+    --dnet-dash-default-font-color: #5f6368;
+    --dnet-dash-header-background: #FAFAFA;
+    --dnet-dash-navbar-color: var(--dnet-dash-primary-reset);
+    --dnet-dash-header-border: 0px solid #ebebeb;
+    --dnet-dash-footer-height: 50px;
+    --dnet-dash-footer-background: #FFFFFF;
+    --dnet-dash-scrollbar-size: .4rem;
+    --dnet-dash-scrollbar-foreground-color: #eee;
+    --dnet-dash-scrollbar-background-color: rgba(0, 0, 0, 0);
+}

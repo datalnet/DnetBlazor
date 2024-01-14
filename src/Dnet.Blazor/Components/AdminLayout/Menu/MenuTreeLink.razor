@@ -1,0 +1,106 @@
+﻿@using Dnet.Blazor.Components.AdminLayout.DesktopLayout
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="@(Menu.HasImage ? $"dnet-tree-cmp-link" : "dnet-tree-cmp-link no-image")" @attributes="AdditionalAttributes">
+    @if (Menu.Children.Count > 0)
+    {
+        <a @onclick="@Toggle" class="@(!string.IsNullOrEmpty(Menu.IconClass) ? "has-image" : null)">
+
+            @if (!string.IsNullOrEmpty(Menu.IconClass))
+            {
+                <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
+                    <span class="@Menu.IconClass"></span>
+                </div>
+                @if (!_desktopLayout.IsMinified || (_desktopLayout.IsMinified && !Menu.IsNode))
+                {
+                    <span class="dnet-menu-text">@Menu.Text</span>
+                }
+                else
+                {
+                    <span class="dnet-menu-text">@Menu.MinifiedText</span>
+                }
+            }
+            else
+            {
+                @if (_desktopLayout is not null && !_desktopLayout.IsMinified)
+                {
+                    <div class="dnet-tree-cmp-link-indicator"></div>
+                    <span class="dnet-menu-text">@Menu.Text</span>
+                }
+                else
+                {
+                    <div class="dnet-tree-cmp-link-indicator"></div>
+                    <span class="dnet-menu-text">@Menu.MinifiedText</span>
+                }
+            }
+
+            <b class="collapse-sign">
+                @if (!_isOpen)
+                {
+                    <span>
+                        <svg class="bi bi-chevron-right" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </span>
+                }
+
+                @if (_isOpen)
+                {
+                    <span>
+                        <svg class="bi bi-chevron-down" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </span>
+                }
+            </b>
+        </a>
+    }
+
+    @if (Menu.Children.Count <= 0)
+    {
+        <NavLink Match="NavLinkMatch.All" href="@Menu.Link" class="@(!string.IsNullOrEmpty(Menu.IconClass) ? "has-image" : null)">
+
+            @if (!string.IsNullOrEmpty(Menu.IconClass))
+            {
+                <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
+                    <span class="@Menu.IconClass"></span>
+                </div>
+                @if (!_desktopLayout.IsMinified || (_desktopLayout.IsMinified && !Menu.IsNode))
+                {
+                    <span class="dnet-menu-text">@Menu.Text</span>
+                }
+            }
+            else
+            {
+                <span class="dnet-menu-text">@Menu.Text</span>
+            }
+        </NavLink>
+    }
+
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private DesktopLayout? _desktopLayout { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AdditionalAttributes { get; set; } = new();
+
+    [Parameter]
+    public NavigationMenu? Menu { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnLinkNodeClick { get; set; }
+
+
+    private bool _isOpen { get; set; } = false;
+
+
+    async Task Toggle()
+    {
+        _isOpen = !_isOpen;
+        await OnLinkNodeClick.InvokeAsync(_isOpen);
+    }
+}
