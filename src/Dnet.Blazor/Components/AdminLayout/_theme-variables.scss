@@ -20,6 +20,7 @@
     --dnet-dash-body-background-color: white;
     --dnet-dash-font-rem-reference: 16px;
     --dnet-dash-default-font-color: #5f6368;
+    --dnet-dash-header-height: 50px;
     --dnet-dash-header-background: #FAFAFA;
     --dnet-dash-navbar-color: var(--dnet-dash-primary-reset);
     --dnet-dash-header-border: 0px solid #ebebeb;
@@ -28,4 +29,6 @@
     --dnet-dash-scrollbar-size: .4rem;
     --dnet-dash-scrollbar-foreground-color: #eee;
     --dnet-dash-scrollbar-background-color: rgba(0, 0, 0, 0);
+    --dnet-dash-left-column-width: 250px;
+    --dnet-dash-right-column-width: 250px;
 }

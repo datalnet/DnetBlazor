@@ -41,7 +41,10 @@
 }
 
 .dnet-desktop-header-left {
+    display: flex;
     flex: 0 0 50%;
+    justify-content: flex-start;
+    padding-left: 20px;
 }
 
 .dnet-desktop-header-right {
@@ -51,9 +54,11 @@
     padding-right: 20px;
 }
 
-.dnet-dashboard-right-container {
+.dnet-dashboard-left-container {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    height: 100%;
 }
 
 .dnet-dashboard-right-container {

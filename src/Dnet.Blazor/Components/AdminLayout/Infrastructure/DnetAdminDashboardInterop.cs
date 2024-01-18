@@ -1,4 +1,4 @@
-﻿using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Models;
+﻿using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 

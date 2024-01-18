@@ -18,7 +18,7 @@
             <MenuTreeLinkHelper Menu="@Menu"></MenuTreeLinkHelper>
         }
 
-        @if (Menu.Children.Count > 0)
+        @if (Menu is not null && Menu.Children.Count > 0)
         {
             <ul>
                 @foreach (var item in Menu.Children)
@@ -34,19 +34,19 @@
 @code {
 
     [Parameter]
-    public NavigationMenu Menu { get; set; }
+    public NavigationMenu? Menu { get; set; }
 
     private bool _isOpen { get; set; } = false;
 
     private ElementReference _parent;
 
-    private string _top;
+    private string? _top;
 
-    private string _left;
+    private string? _left;
 
     private async Task GetParentPosition()
     {
-        if (Menu.IsNode)
+        if (Menu is not null && Menu.IsNode)
         {
             var clientRectValues = await DnetAdminDashboardInterop.GetBoundingClientRect(JSRuntime, _parent);
 

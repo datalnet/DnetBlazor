@@ -1,11 +1,11 @@
-﻿@import "desktop-navigation-menu-var.css";
+﻿@import "_desktop-navigation-menu-var.scss";
 
 .dnet-desktop-navigation-menu {
     flex: 1 1 auto;
-    height: calc(100% - 100px);
+    height: calc(100% - 0px);
 
     nav {
-        height: calc(100vh - 100px);
+        height: calc(100% - 0px);
         padding-bottom: 20px;
         padding-top: 20px;
     }

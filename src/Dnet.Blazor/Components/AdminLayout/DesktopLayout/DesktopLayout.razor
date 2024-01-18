@@ -3,6 +3,7 @@
 @using Dnet.Blazor.Components.AdminLayout.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models
 @using Dnet.Blazor.Components.AdminLayout.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
 @using Microsoft.JSInterop
 
 @inject IThemeMessageService<ThemeConfigData> ThemeMessageService
@@ -11,17 +12,17 @@
 @implements IDisposable;
 
 <div class="@("dnet-grid-container" +
-            (_isMinified ? " minified" : "") +
-            (_isFooterHidden && !_isHeaderFixed ? " hidden-footer" : "") +
-            (_isHeaderFixed && !_isFooterHidden ? " hidden-header" : "") +
-            (_isHeaderFixed && _isFooterHidden ? " hidden-footer-and-header" : "") +
-            (_isLeftColumnHidden && !_isRightColumnHidden ? " hidden-left-column" : "") +
-            (_isRightColumnHidden && !_isLeftColumnHidden ? " hidden-right-column" : "") +
-            (_isRightColumnHidden && _isLeftColumnHidden ? " hidden-lateral-columns" : "") +
-            (_isDesktopMode ? " destok-layout" : "") +
-            (_isLeftColumnFixed ? " fixed-left-column" : "") +
-            (_isHeaderFixed ? " fixed-header" : "") +
-            (_showMinifier ? " hidden-minifier" : ""))">
+    (_isMinified ? " minified" : "") +
+    (_isFooterHidden && !_isHeaderHidden ? " hidden-footer" : "") +
+    (_isHeaderHidden && !_isFooterHidden ? " hidden-header" : "") +
+    (_isHeaderHidden && _isFooterHidden ? " hidden-footer-and-header" : "") +
+    (_isLeftColumnHidden && !_isRightColumnHidden ? " hidden-left-column" : "") +
+    (_isRightColumnHidden && !_isLeftColumnHidden ? " hidden-right-column" : "") +
+    (_isRightColumnHidden && _isLeftColumnHidden ? " hidden-lateral-columns" : "") +
+    (_isDesktopMode ? " desktop-layout" : "") +
+    (_isLeftColumnFixed ? " fixed-left-column" : "") +
+    (_isHeaderFixed ? " fixed-header" : "") +
+    (!_showMinifier ? " hidden-minifier" : ""))">
     <CascadingValue Value="this" IsFixed="true">
         @ChildContent
     </CascadingValue>
@@ -33,31 +34,31 @@
     public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public bool IsHeaderFixed { get; set; } = true;
+    public bool IsHeaderFixed { get; set; }
 
     [Parameter]
-    public bool IsLeftColumnFixed { get; set; } = true;
+    public bool IsLeftColumnFixed { get; set; }
 
     [Parameter]
-    public bool ShowMinifier { get; set; } = true;
+    public bool ShowMinifier { get; set; }
 
     [Parameter]
     public bool IsMinified { get; set; }
 
     [Parameter]
-    public bool IsHeaderHidden { get; set; } = false;
+    public bool IsHeaderHidden { get; set; }
 
     [Parameter]
-    public bool IsFooterHidden { get; set; } = true;
+    public bool IsFooterHidden { get; set; }
 
     [Parameter]
-    public bool IsLeftColumnHidden { get; set; } = false;
+    public bool IsLeftColumnHidden { get; set; }
 
     [Parameter]
-    public bool IsRightColumnHidden { get; set; } = false;
+    public bool IsRightColumnHidden { get; set; }
 
     [Parameter]
-    public bool IsDesktopMode { get; set; } = true;
+    public bool IsDesktopMode { get; set; }
 
 
     private bool _isHeaderFixed { get; set; }
@@ -78,7 +79,9 @@
 
     private bool _isDesktopMode { get; set; }
 
-    public LocalStorageData _localStorageData { get; set; } = new();
+    private string? CssClasses { get; set; }
+
+    private LocalStorageData _localStorageData { get; set; } = new();
 
 
     protected override void OnInitialized()
@@ -88,6 +91,8 @@
         _isFooterHidden = IsFooterHidden;
 
         _isLeftColumnHidden = IsLeftColumnHidden;
+
+        _isRightColumnHidden = IsRightColumnHidden;
 
         _isDesktopMode = IsDesktopMode;
 
@@ -138,7 +143,6 @@
             _localStorageData.IsMinified = themeConfigData.Data.IsMinified;
 
             await DnetAdminDashboardInterop.SetAsync(JSRuntime, "DnetBlazor", _localStorageData);
-
         }
         else
         {

@@ -1,5 +1,5 @@
-﻿using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Interfaces;
-using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Services;
+﻿using Dnet.Blazor.Components.AdminLayout.Infrastructure.Interfaces;
+using Dnet.Blazor.Components.AdminLayout.Infrastructure.Services;
 using Dnet.Blazor.Components.ConnectedPanel.Infrastructure.Interfaces;
 using Dnet.Blazor.Components.ConnectedPanel.Infrastructure.Services;
 using Dnet.Blazor.Components.Dialog.Infrastructure.Interfaces;
