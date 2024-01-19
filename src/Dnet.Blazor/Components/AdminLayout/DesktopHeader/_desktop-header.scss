@@ -12,7 +12,7 @@
 
 .hidden-header {
     .header {
-        border-bottom: none;
+        display: none;
     }
 
     .header-content {
@@ -22,7 +22,7 @@
 
 .hidden-footer-and-header {
     .header {
-        border-bottom: none;
+        display: none;
     }
 
     .header-content {

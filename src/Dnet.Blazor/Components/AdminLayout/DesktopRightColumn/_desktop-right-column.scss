@@ -3,3 +3,15 @@
     background-color: var(--right-column-color);
     border-left: 1px solid var(--general-border-color);
 }
+
+.hidden-right-column {
+    .right-column {
+        display: none;
+    }
+}
+
+.hidden-lateral-columns {
+    .right-column {
+        display: none;
+    }
+}

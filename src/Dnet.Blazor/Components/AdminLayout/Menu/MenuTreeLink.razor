@@ -68,11 +68,13 @@
                 </div>
                 @if (!_desktopLayout.IsMinified || (_desktopLayout.IsMinified && !Menu.IsNode))
                 {
+                    <div class="dnet-tree-cmp-link-indicator"></div>
                     <span class="dnet-menu-text">@Menu.Text</span>
                 }
             }
             else
             {
+                 <div class="dnet-tree-cmp-link-indicator"></div>
                 <span class="dnet-menu-text">@Menu.Text</span>
             }
         </NavLink>

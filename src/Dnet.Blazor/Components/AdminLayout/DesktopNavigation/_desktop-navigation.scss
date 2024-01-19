@@ -1,6 +1,6 @@
 ﻿.table {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 100%;
     grid-template-rows: 50px calc(100vh - 100px) 50px;
     height: 100%;
 }
