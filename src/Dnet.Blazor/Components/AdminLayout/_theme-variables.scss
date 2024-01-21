@@ -1,6 +1,9 @@
 ﻿:root {
+    /*--General--*/
     --dnet-dash-font-family-text: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
     --dnet-dash-font-family-Headline: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --dnet-dash-font-rem-reference: 16px;
+    --dnet-dash-default-font-color: #5f6368;
     --dnet-dash-primary-reset: rgb(66, 176, 213);
     --dnet-dash-primary-dark: rgb(0, 36, 61);
     --dnet-dash-primary-light: #ffb2ff;
@@ -10,25 +13,54 @@
     --dnet-dash-black: #000;
     --dnet-dash-red: #d6b7be;
     --dnet-dash-white: #ffffff;
-    /*--gray-dark: lighten(var(--dnet-dash-black), 20%); // #333*/
     --dnet-dash-gray-dark: lighten(#000, 20%);
     --dnet-dash-base-url: "/blazor-admin-dashboard/img";
-    --dnet-dash-body-bg: #fff;
-    /* //** Global textual link color. */
     --dnet-dash-link-hover-color: darken(rgb(0, 36, 61), 15%);
     --dnet-dash-html-background-color: white;
     --dnet-dash-body-background-color: white;
-    --dnet-dash-font-rem-reference: 16px;
-    --dnet-dash-default-font-color: #5f6368;
+
+    /*--Header--*/
     --dnet-dash-header-height: 50px;
     --dnet-dash-header-background: #FAFAFA;
-    --dnet-dash-navbar-color: var(--dnet-dash-primary-reset);
-    --dnet-dash-header-border: 0px solid #ebebeb;
+    --dnet-header-border-color: #e1e3e1;
+
+    /*--Footer--*/
     --dnet-dash-footer-height: 50px;
     --dnet-dash-footer-background: #FFFFFF;
+    --dnet-footer-border-color: #e1e3e1;
+
+    /*--Columns--*/
+    --dnet-dash-left-column-width: 250px;
+    --dnet-dash-right-column-width: 250px;
+    --dnet-left-column-border-color: #e1e3e1;
+    --dnet-right-column-border-color: #e1e3e1;
+
+    /*--Scrollbar--*/
     --dnet-dash-scrollbar-size: .4rem;
     --dnet-dash-scrollbar-foreground-color: #eee;
     --dnet-dash-scrollbar-background-color: rgba(0, 0, 0, 0);
-    --dnet-dash-left-column-width: 250px;
-    --dnet-dash-right-column-width: 250px;
+
+    /*--Navbar--*/
+    --dnet-dash-navbar-color: var(--dnet-dash-primary-reset);
+    --dnet-dash-navbar-height: 38px;
+    --dnet-dash-asideWidth: 250px;
+    --dnet-dash-asideWidth-minified: 60px;
+
+    /*--Menu--*/
+    --dnet-menu-container-open-bgcolor: white;
+    --dnet-menu-container-bgcolor: #eee;
+    --dnet-dash-menu-left-padding-firts-level: 1em;
+    --dnet-dash-menu-left-padding-firts-level-has-image: 0.6em;
+    --dnet-dash-link-color: var(--dnet-dash-primary-dark);
+    --dnet-dash-navigation-color: #000000;
+    --dnet-dash-menu-text-size: var(--dnet-component-sm-font-size);
+    --dnet-dash-menu-left-padding-second-level: 2em;
+    --dnet-dash-menu-left-padding-third-level: 4em;
+    --dnet-dash-indicator-bgcolor: #42b0d5;
+    --dnet-dash-indicator-width: 3px;
+    --dnet-dash-menu-item-parent-color: white;
+
+    /*--Minifier--*/
+    --dnet-dash-minifyme-bg-color: #eee;
+    --dnet-dash-minifyme-chevron-color: black;
 }

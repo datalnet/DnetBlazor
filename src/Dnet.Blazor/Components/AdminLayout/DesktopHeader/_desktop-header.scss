@@ -1,31 +1,31 @@
-﻿.header {
+﻿.dnet-header {
     grid-area: header;
     background-color: var(--header-color);
     text-align: center;
-    border-bottom: 1px solid var(--general-border-color);
+    border-bottom: 1px solid var(--dnet-header-border-color, --general-border-color);
 }
 
-.header-content {
+.dnet-header-content {
     display: flex;
     height: 100%;
 }
 
 .hidden-header {
-    .header {
+    .dnet-header {
         display: none;
     }
 
-    .header-content {
+    .dnet-header-content {
         display: none;
     }
 }
 
 .hidden-footer-and-header {
-    .header {
+    .dnet-header {
         display: none;
     }
 
-    .header-content {
+    .dnet-header-content {
         display: none;
     }
 }

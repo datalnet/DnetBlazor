@@ -1,33 +1,33 @@
-﻿.footer {
+﻿.dnet-footer {
     grid-area: footer;
     background-color: var(--footer-color);
     text-align: center;
-    border-top: 1px solid var(--general-border-color);
+    border-top: 1px solid var(--dnet-footer-border-color, --general-border-color);
 }
 
-.footer-content {
+.dnet-footer-content {
     display: flex;
     height: 100%;
 }
 
 .hidden-footer {
 
-    .footer {
+    .dnet-footer {
         display: none;
     }
 
-    .footer-content {
+    .dnet-footer-content {
         display: none;
     }
 }
 
 .hidden-footer-and-header {
 
-    .footer {
+    .dnet-footer {
         display: none;
     }
 
-    .footer-content {
+    .dnet-footer-content {
         display: none;
     }
 }

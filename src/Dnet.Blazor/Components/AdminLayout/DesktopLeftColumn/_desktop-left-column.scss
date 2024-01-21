@@ -1,17 +1,17 @@
-﻿.left-column {
+﻿.dnet-left-column {
     grid-area: left;
     background-color: var(--left-column-color);
-    border-right: 1px solid var(--general-border-color);
+    border-right: 1px solid var(--dnet-left-column-border-color, --general-border-color);
 }
 
 .hidden-left-column {
-    .left-column {
+    .dnet-left-column {
         display: none;
     }
 }
 
 .hidden-lateral-columns {
-    .left-column {
+    .dnet-left-column {
         display: none;
     }
 }
