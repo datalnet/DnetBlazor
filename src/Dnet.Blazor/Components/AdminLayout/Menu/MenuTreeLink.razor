@@ -1,6 +1,11 @@
 ﻿@using Dnet.Blazor.Components.AdminLayout.DesktopLayout
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Services
+
+@inject IThemeMessageService<ThemeConfigData> ThemeMessageService
 
 <div class="@(Menu is not null && Menu.HasImage ? $"dnet-tree-cmp-link" : "dnet-tree-cmp-link no-image")"
     @attributes="AdditionalAttributes">
@@ -107,6 +112,10 @@
 
     private bool _isOpen { get; set; } = false;
 
+    protected override void OnInitialized()
+    {
+        ((ThemeMessageService<ThemeConfigData>)ThemeMessageService).OnMessage += MessageReceived;
+    }
 
     async Task Toggle()
     {
@@ -115,5 +124,17 @@
         _isOpen = !_isOpen;
 
         await OnLinkNodeClick.InvokeAsync(_isOpen);
+    }
+
+    private void MessageReceived(ActionMessage<ThemeConfigData> themeConfigData)
+    {
+        _isOpen = false;
+
+        StateHasChanged();
+    }
+
+     public void Dispose()
+    {
+        ((ThemeMessageService<ThemeConfigData>)ThemeMessageService).OnMessage -= MessageReceived;
     }
 }

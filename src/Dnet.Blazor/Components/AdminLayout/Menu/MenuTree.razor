@@ -4,6 +4,13 @@
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
 
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models
+
+@inject IThemeMessageService<ThemeConfigData> ThemeMessageService
+
+@implements IDisposable;
+
 @inject IJSRuntime JSRuntime
 
 <li @onmouseover="GetParentPosition" @ref="_parent">
@@ -43,6 +50,11 @@
 
     private string? _left;
 
+    protected override void OnInitialized()
+    {
+        ((ThemeMessageService<ThemeConfigData>)ThemeMessageService).OnMessage += MessageReceived;
+    }
+
     private async Task GetParentPosition()
     {
         if (Menu is not null && Menu.IsNode)
@@ -72,5 +84,17 @@
     private void OnLinkNodeClicked(bool isNodeOpen)
     {
         _isOpen = isNodeOpen;
+    }
+
+    private void MessageReceived(ActionMessage<ThemeConfigData> themeConfigData)
+    {
+        _isOpen = false;
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        ((ThemeMessageService<ThemeConfigData>)ThemeMessageService).OnMessage -= MessageReceived;
     }
 }

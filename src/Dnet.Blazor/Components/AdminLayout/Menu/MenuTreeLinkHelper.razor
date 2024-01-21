@@ -12,7 +12,7 @@
             }
 
             <b class="collapse-sign">
-                @if (!IsOpen)
+                @if (!_isOpen)
                 {
                     <span>
                         <svg class="bi bi-chevron-right" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -21,7 +21,7 @@
                     </span>
                 }
 
-                @if (IsOpen)
+                @if (_isOpen)
                 {
                     <span>
                         <svg class="bi bi-chevron-down" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -58,13 +58,13 @@
     public EventCallback<bool> OnLinkNodeClick { get; set; }
 
 
-    private bool IsOpen { get; set; } = false;
+    private bool _isOpen { get; set; } = false;
 
 
     async Task Toggle()
     {
-        IsOpen = !IsOpen;
-        await OnLinkNodeClick.InvokeAsync(IsOpen);
+        _isOpen = !_isOpen;
+        await OnLinkNodeClick.InvokeAsync(_isOpen);
     }
 
     private string GetLinkCLass()
