@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Components.Web
 
 <div class="@GetLinkCLass()" @attributes="AdditionalAttributes">
-    @if (Menu.Children.Count > 0)
+    @if (Menu is not null && Menu.Children.Count > 0)
     {
         <a @onclick="@Toggle">
 
@@ -33,7 +33,7 @@
         </a>
     }
 
-    @if (Menu.Children.Count <= 0)
+    @if (Menu is not null && Menu.Children.Count <= 0)
     {
         <NavLink href="@Menu.Link">
 
@@ -49,10 +49,10 @@
 @code {
 
     [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object> AdditionalAttributes { get; set; }
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter]
-    public NavigationMenu Menu { get; set; }
+    public NavigationMenu? Menu { get; set; }
 
     [Parameter]
     public EventCallback<bool> OnLinkNodeClick { get; set; }
@@ -69,6 +69,6 @@
 
     private string GetLinkCLass()
     {
-        return Menu.HasImage ? $"dnet-tree-cmp-link" : "dnet-tree-cmp-link no-image";
+        return Menu is not null && Menu.HasImage ? $"dnet-tree-cmp-link" : "dnet-tree-cmp-link no-image";
     }
 }

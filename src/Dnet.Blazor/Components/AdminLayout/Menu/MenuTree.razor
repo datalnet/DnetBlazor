@@ -10,8 +10,7 @@
 
     <MenuTreeLink Menu="@Menu" OnLinkNodeClick="OnLinkNodeClicked"></MenuTreeLink>
 
-    <div class="@("positioning-helper" +
-    (_isOpen ? " open" : ""))" style="top: @_top; left: @_left">
+    <div class="@("positioning-helper" + (_isOpen ? " open" : ""))" style="top: @_top; left: @_left">
 
         @if (!_isOpen)
         {
@@ -20,7 +19,7 @@
 
         @if (Menu is not null && Menu.Children.Count > 0)
         {
-            <ul>
+            <ul class="width-child">
                 @foreach (var item in Menu.Children)
                 {
                     <MenuTree Menu="@item"></MenuTree>

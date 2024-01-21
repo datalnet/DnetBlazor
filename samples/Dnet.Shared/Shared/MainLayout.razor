@@ -57,7 +57,7 @@
     </DesktopCenterColumn>
 </DesktopLayout> *@
 
-<DesktopLayout IsLeftColumnHidden="false" IsRightColumnHidden="false" IsFooterHidden="false" IsHeaderHidden="false" ShowMinifier="true">
+<DesktopLayout IsLeftColumnHidden="false" IsRightColumnHidden="true" IsFooterHidden="false" IsHeaderHidden="false" ShowMinifier="true">
     <DesktopLeftColumn>
         <DesktopNavigation>
             <CompanyChildContent>
@@ -213,6 +213,7 @@
                 Link = "/BlGrid",
                 ParentId = 0,
                 Text = "BlGrid",
+                MinifiedText = "Blg",
                 IconClass = "",
                 Children = new List<NavigationMenu>()
                 {
@@ -223,7 +224,7 @@
                         Text = "Complex example",
                         IconClass = "",
                         Children = new List<NavigationMenu>(),
-                        IsNode = true,
+                        IsNode = false,
                         Rights = new List<string> {
                             "CanReadDashboard"
                         },
@@ -235,7 +236,7 @@
                         Text = "Filtering Example",
                         IconClass = "",
                         Children = new List<NavigationMenu>(),
-                        IsNode = true,
+                        IsNode = false,
                         Rights = new List<string> {
                             "CanReadDashboard"
                         },
@@ -247,7 +248,7 @@
                         Text = "Row Selection",
                         IconClass = "",
                         Children = new List<NavigationMenu>(),
-                        IsNode = true,
+                        IsNode = false,
                         Rights = new List<string> {
                             "CanReadDashboard"
                         },
@@ -259,7 +260,7 @@
                         Text = "Multiple Row Selection",
                         IconClass = "",
                         Children = new List<NavigationMenu>(),
-                        IsNode = true,
+                        IsNode = false,
                         Rights = new List<string> {
                             "CanReadDashboard"
                         },
@@ -271,7 +272,7 @@
                         Text = "Advanced Filtering",
                         IconClass = "",
                         Children = new List<NavigationMenu>(),
-                        IsNode = true,
+                        IsNode = false,
                         Rights = new List<string> {
                             "CanReadDashboard"
                         },
@@ -283,7 +284,7 @@
                         Text = "Grouping",
                         IconClass = "",
                         Children = new List<NavigationMenu>(),
-                        IsNode = true,
+                        IsNode = false,
                         Rights = new List<string> {
                             "CanReadDashboard"
                         },
@@ -295,7 +296,7 @@
                         Text = "Cell Templates",
                         IconClass = "",
                         Children = new List<NavigationMenu>(),
-                        IsNode = true,
+                        IsNode = false,
                         Rights = new List<string> {
                             "CanReadDashboard"
                         },
@@ -307,23 +308,11 @@
                         Text = "Sorting",
                         IconClass = "",
                         Children = new List<NavigationMenu>(),
-                        IsNode = true,
+                        IsNode = false,
                         Rights = new List<string> {
                             "CanReadDashboard"
                         },
                     },
-                    //new NavigationMenu {
-                    //    MenuId = 11,
-                    //    Link = "/ServerSideOperationsExample",
-                    //    ParentId = 0,
-                    //    Text = "ServerSide operations",
-                    //    IconClass = "",
-                    //    Children = new List<NavigationMenu>(),
-                    //    IsNode = true,
-                    //    Rights = new List<string> {
-                    //        "CanReadDashboard"
-                    //    },
-                    //},
                 },
                 IsNode = true,
                 Rights = new List<string> {
@@ -336,6 +325,7 @@
                 Link = "/Dialog",
                 ParentId = 0,
                 Text = "Dialog",
+                MinifiedText = "Dg",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -343,23 +333,12 @@
                     "CanReadDashboard"
                 },
             },
-            // new NavigationMenu {
-            //     MenuId = 11,
-            //     Link = "/InputText",
-            //     ParentId = 0,
-            //     Text = "Form Fields",
-            //     IconClass = "",
-            //     Children = new List<NavigationMenu>(),
-            //     IsNode = true,
-            //     Rights = new List<string> {
-            //         "CanReadDashboard"
-            //     },
-            // },
             new NavigationMenu {
                 MenuId = 11,
                 Link = "/Forms",
                 ParentId = 0,
                 Text = "Forms",
+                MinifiedText = "Fs",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -372,6 +351,7 @@
                 Link = "/Autocomplete",
                 ParentId = 0,
                 Text = "Autocomplete",
+                MinifiedText = "Au",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -384,6 +364,7 @@
                 Link = "/Select",
                 ParentId = 0,
                 Text = "Select",
+                MinifiedText = "St",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -396,6 +377,7 @@
                 Link = "/ConnectedPanel",
                 ParentId = 0,
                 Text = "ConnectedPanel",
+                MinifiedText = "Cl",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -408,6 +390,7 @@
                 Link = "/FloatingPanel",
                 ParentId = 0,
                 Text = "FloatingPanel",
+                MinifiedText = "Fl",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -420,6 +403,7 @@
                 Link = "/DatePicker",
                 ParentId = 0,
                 Text = "DatePicker",
+                MinifiedText = "Dr",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -432,6 +416,7 @@
                 Link = "/Tabs",
                 ParentId = 0,
                 Text = "Tabs",
+                MinifiedText = "Ts",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -444,6 +429,7 @@
                 Link = "/Stepper",
                 ParentId = 0,
                 Text = "Stepper",
+                MinifiedText = "Sr",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -456,6 +442,7 @@
                 Link = "/Toast",
                 ParentId = 0,
                 Text = "Toast",
+                MinifiedText = "Tt",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -468,6 +455,7 @@
                 Link = "/Tooltip",
                 ParentId = 0,
                 Text = "Tooltip",
+                MinifiedText = "Tp",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -480,6 +468,7 @@
                 Link = "/Spinner",
                 ParentId = 0,
                 Text = "Spinner",
+                MinifiedText = "Sp",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -492,6 +481,7 @@
                 Link = "/List",
                 ParentId = 0,
                 Text = "List",
+                MinifiedText = "Ls",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -504,6 +494,7 @@
                 Link = "/DoubleList",
                 ParentId = 0,
                 Text = "Double list",
+                MinifiedText = "Dt",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -516,6 +507,7 @@
                 Link = "/FloatingDoubleList",
                 ParentId = 0,
                 Text = "Floating Double list",
+                MinifiedText = "Fdl",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -528,6 +520,7 @@
                 Link = "/Tree",
                 ParentId = 0,
                 Text = "Tree",
+                MinifiedText = "T",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -540,6 +533,7 @@
                 Link = "/Expansion",
                 ParentId = 0,
                 Text = "Expansion Panel",
+                MinifiedText = "El",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -552,6 +546,7 @@
                 Link = "/RadioButton",
                 ParentId = 0,
                 Text = "Radio Button",
+                MinifiedText = "Rn",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -564,6 +559,7 @@
                 Link = "/Checkbox",
                 ParentId = 0,
                 Text = "Checkbox",
+                MinifiedText = "Cx",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -576,6 +572,7 @@
                 Link = "/ImageEditor",
                 ParentId = 0,
                 Text = "Image Editor",
+                MinifiedText = "Ir",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
@@ -588,6 +585,7 @@
                 Link = "/Chips",
                 ParentId = 0,
                 Text = "Chips",
+                MinifiedText = "Cs",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),
                 IsNode = true,
