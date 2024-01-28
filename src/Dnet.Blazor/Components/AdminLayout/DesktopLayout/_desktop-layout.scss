@@ -1,9 +1,12 @@
 ﻿.dnet-grid-container {
     display: grid;
     grid-template-columns: minmax(var(--dnet-dash-left-column-width), auto) calc(100dvw - var(--dnet-dash-left-column-width) - var(--dnet-dash-right-column-width)) minmax(var(--dnet-dash-right-column-width), auto);
-    grid-template-rows: var(--dnet-dash-header-height) calc(100dvh - var(--dnet-dash-header-height) - var(--dnet-dash-footer-height)) var(--dnet-dash-footer-height);
+    // grid-template-rows: var(--dnet-dash-header-height) calc(100dvh - var(--dnet-dash-header-height) - var(--dnet-dash-footer-height)) var(--dnet-dash-footer-height);
+    grid-template-rows: var(--dnet-dash-header-height) 1fr var(--dnet-dash-footer-height);
     grid-template-areas:
-        "left header right" "left content right" "left footer right";
+        "left header right"
+        "left content right"
+        "left footer right";
     height: calc(100dvh - 0px);
     /* transition: all 0.3s ease-in-out; */
 
@@ -37,13 +40,33 @@
         &.hidden-right-column {
             grid-template-columns: minmax(var(--dnet-dash-asideWidth-minified), auto) calc(100dvw - var(--dnet-dash-asideWidth-minified));
         }
-    
+
         &.hidden-left-column {
             grid-template-columns: 0px calc(100dvw - var(--dnet-dash-right-column-width)) minmax(var(--dnet-dash-right-column-width), auto);
         }
-    
+
         &.hidden-lateral-columns {
             grid-template-columns: 0px calc(100dvw - 0px) 0px;
+        }
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    .dnet-grid-container {
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: var(--dnet-dash-header-height) calc(100dvh - var(--dnet-dash-header-height) - var(--dnet-dash-footer-height)) var(--dnet-dash-footer-height);
+        grid-template-areas:
+            "header"
+            "content"
+            "footer";
+
+        &.hidden-right-column {
+            grid-template-columns: 100%;
+        }
+
+        &.hidden-left-column {
+            grid-template-columns: 100%;
         }
     }
 }

@@ -24,7 +24,7 @@
             <MenuTreeLinkHelper Menu="@Menu"></MenuTreeLinkHelper>
         }
 
-        @if (Menu is not null && Menu.Children.Count > 0)
+        @if (Menu is not null && Menu.Children.Any())
         {
             <ul class="width-child">
                 @foreach (var item in Menu.Children)
@@ -34,7 +34,6 @@
             </ul>
         }
     </div>
-
 </li>
 
 @code {
