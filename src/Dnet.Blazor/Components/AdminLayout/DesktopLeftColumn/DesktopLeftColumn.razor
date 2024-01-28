@@ -1,0 +1,9 @@
+﻿<div class="dnet-left-column">
+    @ChildContent
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

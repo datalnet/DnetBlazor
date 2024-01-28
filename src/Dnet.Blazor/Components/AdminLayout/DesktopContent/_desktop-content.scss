@@ -1,0 +1,17 @@
+﻿.dnet-desktop-content {
+    grid-area: content;
+    background-color: var(--content-color);
+    height: calc(100% - 0px);
+}
+
+.fixed-header {
+    .dnet-desktop-content {
+        overflow-y: scroll;
+    }
+}
+
+.desktop-layout {
+    .dnet-desktop-content {
+        overflow-y: scroll;
+    }
+}

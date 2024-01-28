@@ -1,0 +1,12 @@
+﻿<footer class="dnet-footer">
+    <div class="dnet-footer-content">
+        @ChildContent
+    </div>
+</footer>
+
+@code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+}

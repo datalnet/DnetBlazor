@@ -1,0 +1,33 @@
+﻿.dnet-footer {
+    grid-area: footer;
+    background-color: var(--footer-color);
+    text-align: center;
+    border-top: 1px solid var(--dnet-footer-border-color, --general-border-color);
+}
+
+.dnet-footer-content {
+    display: flex;
+    height: 100%;
+}
+
+.hidden-footer {
+
+    .dnet-footer {
+        display: none;
+    }
+
+    .dnet-footer-content {
+        display: none;
+    }
+}
+
+.hidden-footer-and-header {
+
+    .dnet-footer {
+        display: none;
+    }
+
+    .dnet-footer-content {
+        display: none;
+    }
+}

@@ -1,0 +1,23 @@
+﻿.dnet-right-column {
+    grid-area: right;
+    background-color: var(--right-column-color);
+    border-left: 1px solid var(--dnet-right-column-border-color, --general-border-color);
+}
+
+.hidden-right-column {
+    .dnet-right-column {
+        display: none;
+    }
+}
+
+.hidden-lateral-columns {
+    .dnet-right-column {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    .dnet-right-column {
+        display: none;
+    }
+}

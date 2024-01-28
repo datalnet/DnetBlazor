@@ -1,0 +1,23 @@
+﻿<aside class="dnet-aside">
+    <div class="-dnet-navigation-row">
+        @CompanyChildContent
+    </div>
+    <div class="-dnet-navigation-row dnet-navigation-flex">
+        @MenuChildContent
+    </div>
+    <div class="dnet-navigation-row">
+        @MinifierChildContent
+    </div>
+</aside>
+
+@code {
+
+    [Parameter]
+    public RenderFragment? CompanyChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? MenuChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? MinifierChildContent { get; set; }
+}

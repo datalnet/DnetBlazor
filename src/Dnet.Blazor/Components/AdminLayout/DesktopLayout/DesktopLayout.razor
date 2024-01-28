@@ -1,9 +1,9 @@
-@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Enums
-@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.HelperClasses
-@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Interfaces
-@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Models
-@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Services
-@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Services.CssBuilder
+﻿@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Enums
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.HelperClasses
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Services
+@using Dnet.Blazor.Infrastructure.Services.CssBuilder
 @using Microsoft.JSInterop
 
 @inject IThemeMessageService<ThemeConfigData> ThemeMessageService
@@ -11,7 +11,18 @@
 
 @implements IDisposable;
 
-<div class="@CssClasses">
+<div class="@("dnet-grid-container" +
+    (_isMinified ? " minified" : "") +
+    (_isFooterHidden && !_isHeaderHidden ? " hidden-footer" : "") +
+    (_isHeaderHidden && !_isFooterHidden ? " hidden-header" : "") +
+    (_isHeaderHidden && _isFooterHidden ? " hidden-footer-and-header" : "") +
+    (_isLeftColumnHidden && !_isRightColumnHidden ? " hidden-left-column" : "") +
+    (_isRightColumnHidden && !_isLeftColumnHidden ? " hidden-right-column" : "") +
+    (_isRightColumnHidden && _isLeftColumnHidden ? " hidden-lateral-columns" : "") +
+    (_isDesktopMode ? " desktop-layout" : "") +
+    (_isLeftColumnFixed ? " fixed-left-column" : "") +
+    (_isHeaderFixed ? " fixed-header" : "") +
+    (!_showMinifier ? " hidden-minifier" : ""))">
     <CascadingValue Value="this" IsFixed="true">
         @ChildContent
     </CascadingValue>
@@ -20,35 +31,34 @@
 @code {
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public bool IsHeaderFixed { get; set; } = true;
+    public bool IsHeaderFixed { get; set; }
 
     [Parameter]
-    public bool IsLeftColumnFixed { get; set; } = true;
+    public bool IsLeftColumnFixed { get; set; }
 
     [Parameter]
-    public bool ShowMinifier { get; set; } = true;
+    public bool ShowMinifier { get; set; }
 
     [Parameter]
     public bool IsMinified { get; set; }
 
     [Parameter]
-    public bool IsHiddenHeader { get; set; } = false;
+    public bool IsHeaderHidden { get; set; }
 
     [Parameter]
-    public bool IsHiddenFooter { get; set; } = true;
+    public bool IsFooterHidden { get; set; }
 
     [Parameter]
-    public bool IsLeftColumnHidden { get; set; } = false;
+    public bool IsLeftColumnHidden { get; set; }
 
     [Parameter]
-    public bool IsDesktopMode { get; set; } = true;
+    public bool IsRightColumnHidden { get; set; }
 
-    public string CssClasses { get; set; }
-
-    public LocalStorageData LocalStorageData { get; set; } = new LocalStorageData();
+    [Parameter]
+    public bool IsDesktopMode { get; set; }
 
 
     private bool _isHeaderFixed { get; set; }
@@ -59,22 +69,30 @@
 
     private bool _isMinified { get; set; }
 
-    private bool _isHiddenHeader { get; set; }
+    private bool _isHeaderHidden { get; set; }
 
-    private bool _isHiddenFooter { get; set; }
+    private bool _isFooterHidden { get; set; }
 
     private bool _isLeftColumnHidden { get; set; }
 
+    private bool _isRightColumnHidden { get; set; }
+
     private bool _isDesktopMode { get; set; }
+
+    private string? CssClasses { get; set; }
+
+    private LocalStorageData _localStorageData { get; set; } = new();
 
 
     protected override void OnInitialized()
     {
-        _isHiddenHeader = IsHiddenHeader;
+        _isHeaderHidden = IsHeaderHidden;
 
-        _isHiddenFooter = IsHiddenFooter;
+        _isFooterHidden = IsFooterHidden;
 
         _isLeftColumnHidden = IsLeftColumnHidden;
+
+        _isRightColumnHidden = IsRightColumnHidden;
 
         _isDesktopMode = IsDesktopMode;
 
@@ -85,8 +103,6 @@
         _showMinifier = ShowMinifier;
 
         if (_showMinifier == false) _isMinified = IsMinified;
-
-        CssClasses = GetCssClasses();
 
         StateHasChanged();
 
@@ -103,39 +119,19 @@
             {
                 _isMinified = localStorageData.IsMinified;
 
-                CssClasses = GetCssClasses();
-
                 StateHasChanged();
             }
             else
             {
-                if (IsMinified != null) _isMinified = IsMinified;
+                _isMinified = IsMinified;
 
-                LocalStorageData.IsMinified = _isMinified;
+                _localStorageData.IsMinified = _isMinified;
 
-                CssClasses = GetCssClasses();
-
-                await DnetAdminDashboardInterop.SetAsync(JSRuntime, "DnetBlazor", LocalStorageData);
+                await DnetAdminDashboardInterop.SetAsync(JSRuntime, "DnetBlazor", _localStorageData);
 
                 StateHasChanged();
             }
         }
-    }
-
-    private string GetCssClasses()
-    {
-        var classes = new CssBuilder()
-            .AddClass("dnet-desktop-layout")
-            .AddClass("minified", when: _isMinified)
-            .AddClass("hidden-header", when: _isHiddenHeader)
-            .AddClass("hidden-footer", when: _isHiddenFooter)
-            .AddClass("hidden-left-column", when: _isLeftColumnHidden)
-            .AddClass("destok-layout", when: _isDesktopMode)
-            .AddClass("fixed-left-column", when: _isLeftColumnFixed)
-            .AddClass("fixed-header", when: _isHeaderFixed)
-            .Build();
-
-        return classes;
     }
 
     private async void MessageReceived(ActionMessage<ThemeConfigData> themeConfigData)
@@ -144,18 +140,15 @@
         {
             _isMinified = themeConfigData.Data.IsMinified;
 
-            CssClasses = GetCssClasses();
+            _localStorageData.IsMinified = themeConfigData.Data.IsMinified;
 
-            LocalStorageData.IsMinified = themeConfigData.Data.IsMinified;
-
-            await DnetAdminDashboardInterop.SetAsync(JSRuntime, "DnetBlazor", LocalStorageData);
-
+            await DnetAdminDashboardInterop.SetAsync(JSRuntime, "DnetBlazor", _localStorageData);
         }
         else
         {
-            _isHiddenHeader = themeConfigData.Data.IsHeaderHidden;
+            _isHeaderHidden = themeConfigData.Data.IsHeaderHidden;
 
-            _isHiddenFooter = themeConfigData.Data.IsFooterHidden;
+            _isFooterHidden = themeConfigData.Data.IsFooterHidden;
 
             _isLeftColumnHidden = themeConfigData.Data.IsLeftColumnHidden;
 
@@ -178,16 +171,18 @@
             {
                 _isMinified = false;
             }
-
-            CssClasses = GetCssClasses();
         }
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    public bool GetIsMinified()
+    {
+        return _isMinified;
     }
 
     public void Dispose()
     {
         ((ThemeMessageService<ThemeConfigData>)ThemeMessageService).OnMessage -= MessageReceived;
     }
-
 }

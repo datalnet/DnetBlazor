@@ -1,0 +1,71 @@
+﻿@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Enums
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.HelperClasses
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Services
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Web
+
+@inject IThemeMessageService<ThemeConfigData> ThemeMessageService
+@inject IJSRuntime JSRuntime
+
+<div class="desktop-minify-menu" @onclick="Toggle">
+    <div class="minifyme">
+        <div class="img-container justify-content-center">
+            <span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill=black class="bi bi-chevron-left dnet-expand-arrow dnet-expand-arrow1" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                </svg>
+            </span>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private DesktopLayout.DesktopLayout? _desktopLayout { get; set; }
+
+    [Parameter]
+    public bool AllowMinified { get; set; }
+
+    private bool _isMinified { get; set; }
+
+    private  LocalStorageData _localStorageData { get; set; } = new LocalStorageData();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var localStorageData = await DnetAdminDashboardInterop.GetAsync<LocalStorageData>(JSRuntime, "DnetBlazor");
+
+        if (localStorageData != null)
+        {
+            _localStorageData = localStorageData;
+
+            _isMinified = _localStorageData.IsMinified;
+        }
+    }
+
+    public async Task Toggle()
+    {
+        if (_desktopLayout is not null && !_desktopLayout.ShowMinifier) return;
+
+        _isMinified = !_isMinified;
+
+        var themeConfigData = new ThemeConfigData { IsMinified = _isMinified };
+
+        var actionMessage = new ActionMessage<ThemeConfigData>
+            {
+                Emitter = ThemeMessageEmitter.DesktopMinifyMenu,
+                Data = themeConfigData
+            };
+
+        _localStorageData.IsMinified = _isMinified;
+
+        await DnetAdminDashboardInterop.SetAsync(JSRuntime, "DnetBlazor", _localStorageData);
+
+        ThemeMessageService.SendMessage(actionMessage);
+    }
+
+    
+}

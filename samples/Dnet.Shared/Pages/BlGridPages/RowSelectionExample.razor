@@ -3,15 +3,15 @@
 @using System.Net.Http.Json
 @using Dnet.App.Shared.Infrastructure.Entities
 @using Dnet.App.Shared.Infrastructure.Services
-@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Enums
-@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Interfaces
-@using Dnet.Blazor.Components.AdminDashboard.Infrastructure.Models
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Enums
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models
 @using Dnet.Blazor.Components.Grid.BlgGrid
 @using Dnet.Blazor.Components.Grid.Infrastructure.Entities
 @using Dnet.Blazor.Components.Grid.Infrastructure.Enums
 @using Dnet.Blazor.Infrastructure.Models.SearchModels
 
-@inject IPersonService PersonService
+@inject IApplicationServiceService ApplicationServiceService
 @inject IGridConfigurationService GridConfigurationService
 
 <div class="container-fluid" style="padding-top: 10px;">
@@ -57,7 +57,7 @@
     {
         GridOptions = GridConfigurationService.GetGridOptions();
 
-        var persons = await PersonService.GetPersons();
+        var persons = await ApplicationServiceService.GetPersons();
 
         GridOptions.NumberOfRows = persons.Count;
 

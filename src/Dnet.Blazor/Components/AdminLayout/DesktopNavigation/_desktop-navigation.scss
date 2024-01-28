@@ -1,0 +1,28 @@
+﻿.dnet-aside {
+    display: grid;
+    grid-template-columns: 100%;
+    // grid-template-rows: 50px calc(100vh - 100px) 50px;
+    grid-template-rows: var(--dnet-dash-header-height) 1fr var(--dnet-dash-footer-height);
+    height: 100%;
+}
+
+.dnet-navigation-row {
+    text-align: center;
+}
+
+.dnet-navigation-flex {
+    grid-row: 2 / 3;
+    height: calc(100vh - 100px);
+}
+
+.hidden-left-column {
+    .dnet-aside {
+        display: none;
+    }
+}
+
+.hidden-lateral-columns {
+    .dnet-aside {
+        display: none;
+    }
+}
