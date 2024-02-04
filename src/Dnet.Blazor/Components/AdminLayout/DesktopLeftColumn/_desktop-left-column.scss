@@ -17,6 +17,13 @@
 }
 
 @media only screen and (max-width: 550px) {
+
+    .responsive-menu {
+        .dnet-left-column {
+            display: block;
+        }
+    }
+
     .dnet-left-column {
         display: none;
     }

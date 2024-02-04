@@ -4,6 +4,7 @@
 @using Dnet.Blazor.Components.AdminLayout.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models
 @using Dnet.Blazor.Components.AdminLayout.Infrastructure.Services
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Enums
 
 @inject IThemeMessageService<ThemeConfigData> ThemeMessageService
 
@@ -69,7 +70,7 @@
 
     @if (Menu is not null && Menu.Children.Count <= 0)
     {
-        <NavLink Match="NavLinkMatch.All" href="@Menu.Link"
+        <NavLink Match="NavLinkMatch.All" href="@Menu.Link" @onclick="CloseMenuNav"
             class="@(!string.IsNullOrEmpty(Menu.IconClass) ? "has-image" : null)">
 
             @if (!string.IsNullOrEmpty(Menu.IconClass))
@@ -131,6 +132,19 @@
         _isOpen = false;
 
         StateHasChanged();
+    }
+
+    public void CloseMenuNav()
+    {
+        var themeConfigData = new ThemeConfigData { IsResponsiveMenu = false };
+
+        var actionMessage = new ActionMessage<ThemeConfigData>
+            {
+                Emitter = ThemeMessageEmitter.DefaultComponent,
+                Data = themeConfigData
+            };
+
+        ThemeMessageService.SendMessage(actionMessage);
     }
 
      public void Dispose()

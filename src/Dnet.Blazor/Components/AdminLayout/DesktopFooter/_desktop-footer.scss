@@ -31,3 +31,13 @@
         display: none;
     }
 }
+
+@media only screen and (max-width: 550px) {
+
+    .responsive-menu {
+        .dnet-footer {
+            display: none;
+        }
+    }
+}
+

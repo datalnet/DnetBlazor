@@ -16,3 +16,113 @@
     background: #fff;
     color: rgba(0,0,0,.87);
 }
+
+/*Denet Panel*/
+.dnet-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100% - 0px);
+    width: 100%;
+    padding: 0 15px 15px 15px;
+
+    &.in-floating-panel {
+        padding: 0 15px 15px 20px;
+    }
+}
+
+.dnet-panel-header {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.dnet-panel-content {
+    flex: 1 0 calc(100% - 100px);
+    overflow: scroll
+}
+
+.dnet-panel-footer {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.dnet-panel-button-list {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-left: 10px;
+    flex-direction: row;
+}
+
+.dnet-panel-button-list-item {
+    color: rgb(0, 120, 212);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &.disabled {
+        color: rgb(161, 159, 157);
+        cursor: default;
+
+        .dnet-panel-button-list-item-text {
+            color: rgb(161, 159, 157);
+        }
+    }
+}
+
+.dnet-panel-button-list-item-text {
+    color: black;
+    font-size: 0.75rem;
+    margin-left: 5px
+}
+
+.dsec-panel-content {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.dsec-panel-content-title {
+    font-size: 1rem;
+    font-weight: 700
+}
+
+.dsec-panel-content-desciption {
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: #db7500
+}
+
+.dsec-panel-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.dsec-panel-info-subject {
+    color: rgb(0, 120, 212);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dsec-panel-info-subject-title {
+    color: black;
+    font-size: 0.75rem;
+    margin-left: 5px;
+    margin-right: 5px
+}
+
+.dsec-panel-info-subject-description {
+    font-size: .75rem
+}
+
+.dsec-panel-info-subject-description-textb {
+    color: #757575
+}
+/*Denet Panel End*/

@@ -68,5 +68,12 @@
         &.hidden-left-column {
             grid-template-columns: 100%;
         }
+
+        &.responsive-menu {
+            grid-template-columns: 100%;
+            grid-template-rows: calc(100dvh - 0px);
+            grid-template-areas:
+                "left";
+        }
     }
 }

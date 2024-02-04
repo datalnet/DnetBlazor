@@ -1,7 +1,20 @@
-﻿<header class="dnet-header">
+﻿@using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Models
+@using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Enums
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.FloatingPanel.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Services
+@using Dnet.Blazor.Components.AdminLayout.Infrastructure.Enums
+@using Microsoft.AspNetCore.Components.Web
+
+@inject IFloatingPanelService FloatingPanelService
+@inject IThemeMessageService<ThemeConfigData> ThemeMessageService
+
+<header class="dnet-header">
     <div class="dnet-header-content-wrapper">
         <div class="dnet-header-menu-button">
-           <button class="dnet-menu-button">☰</button>
+            <button class="dnet-menu-button" @onclick="ShowMenuNav">☰</button>
         </div>
         <div class="dnet-header-content">
             @ChildContent
@@ -14,4 +27,31 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    private OverlayReference? _overlayReference;
+
+    public void ShowMenuNav()
+    {
+        var themeConfigData = new ThemeConfigData { IsResponsiveMenu = true };
+
+        var actionMessage = new ActionMessage<ThemeConfigData>
+            {
+                Emitter = ThemeMessageEmitter.DefaultComponent,
+                Data = themeConfigData
+            };
+
+        ThemeMessageService.SendMessage(actionMessage);
+    }
 }
+
+  @* var floatingPanelConfig = new FloatingPanelConfig
+{
+HasBackdrop = true,
+HasTransparentBackdrop = true,
+Postion = FloatingPanelPostion.TopLeft,
+Width = 400,
+Height = null
+};
+
+var parameters = new Dictionary<string, object>();
+
+_overlayReference = FloatingPanelService.Show(typeof(ResponsiveMenuPanel), parameters, floatingPanelConfig); *@

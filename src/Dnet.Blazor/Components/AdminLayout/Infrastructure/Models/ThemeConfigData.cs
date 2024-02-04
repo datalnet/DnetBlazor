@@ -16,5 +16,7 @@ public class ThemeConfigData
 
     public bool IsLeftColumnFixed { get; set; } = false;
 
+    public bool IsResponsiveMenu { get; set; } = false;
+
     public bool ShowMinifier { get; set; } = true;
 }

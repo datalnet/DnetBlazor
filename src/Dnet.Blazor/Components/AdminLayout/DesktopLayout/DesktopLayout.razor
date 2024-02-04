@@ -11,7 +11,8 @@
 
 @implements IDisposable;
 
-<div class="@("dnet-grid-container" +
+<div class="@("dnet-grid-container " +
+    (_isResponsiveMenu ? " responsive-menu" : "") +
     (_isMinified ? " minified" : "") +
     (_isFooterHidden && !_isHeaderHidden ? " hidden-footer" : "") +
     (_isHeaderHidden && !_isFooterHidden ? " hidden-header" : "") +
@@ -78,6 +79,8 @@
     private bool _isRightColumnHidden { get; set; }
 
     private bool _isDesktopMode { get; set; }
+
+    private bool _isResponsiveMenu { get; set; }
 
     private string? CssClasses { get; set; }
 
@@ -157,6 +160,8 @@
             _isHeaderFixed = themeConfigData.Data.IsHeaderFixed && !themeConfigData.Data.IsHeaderHidden;
 
             _isLeftColumnFixed = themeConfigData.Data.IsLeftColumnFixed && !themeConfigData.Data.IsLeftColumnHidden;
+
+            _isResponsiveMenu = themeConfigData.Data.IsResponsiveMenu;
 
             _showMinifier = themeConfigData.Data.ShowMinifier;
 

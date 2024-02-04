@@ -16,15 +16,15 @@
 	private int OverlayReferenceId { get; set; }
 
 	[Parameter]
-	public Type ComponentType { get; set; } = null;
+	public Type? ComponentType { get; set; } = null;
 
 	[Parameter]
-	public IDictionary<string, object> Parameters { get; set; }
+	public IDictionary<string, object>? Parameters { get; set; }
 
 	[Parameter]
-	public string FloatingPanelClass { get; set; }
+	public string FloatingPanelClass { get; set; }= string.Empty;
 
-	private string _toastCssClasses { get; set; }
+	private string _toastCssClasses { get; set; } = string.Empty;
 
 
 	protected override void OnInitialized()
