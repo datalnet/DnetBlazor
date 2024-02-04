@@ -25,19 +25,19 @@
     [CascadingParameter] private int OverlayReferenceId { get; set; }
 
     [Parameter]
-    public Type ComponentType { get; set; }
+    public Type? ComponentType { get; set; }
 
     [Parameter]
-    public IDictionary<string, object> Parameters { get; set; }
+    public IDictionary<string, object>? Parameters { get; set; }
 
     [Parameter]
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty;
 
     [Parameter]
-    public string DialogClass { get; set; }
+    public string DialogClass { get; set; } = string.Empty;
 
 
-    public string DialogCssClasses { get; set; }
+    public string DialogCssClasses { get; set; } = string.Empty;
 
 
     protected override void OnInitialized()

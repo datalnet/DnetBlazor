@@ -4,7 +4,7 @@ public class ThemeConfigData
 {
     public bool IsDesktopMode { get; set; } = true;
 
-    public bool IsFooterHidden { get; set; } = true;
+    public bool IsFooterHidden { get; set; } = false;
 
     public bool IsHeaderHidden { get; set; } = false;
 

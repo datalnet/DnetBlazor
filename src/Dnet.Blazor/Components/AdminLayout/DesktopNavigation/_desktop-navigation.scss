@@ -26,6 +26,13 @@
     }
 }
 
+.dnet-aside-menu-button {
+    width: 50px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
 @media only screen and (max-width: 550px) {
 
     .dnet-aside {
@@ -40,6 +47,12 @@
 
         .dnet-navigation-flex {
             height: calc(100vh - 50px);
+        }
+    }
+
+    .responsive-menu {
+        .dnet-aside-menu-button {
+            display: flex;
         }
     }
 }
