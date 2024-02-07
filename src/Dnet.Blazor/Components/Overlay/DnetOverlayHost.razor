@@ -14,8 +14,12 @@
 </div>
 
 @code {
+
+    [CascadingParameter] 
+    DnetOverlay? dnetOverlay { get; set; }
+
     [Parameter]
-    public RenderFragment ContentChild { get; set; }
+    public RenderFragment? ContentChild { get; set; }
 
     [Parameter]
     public OverlayConfig OverlayConfig { get; set; }
@@ -24,13 +28,11 @@
 
     private bool _isInitialRender = true;
 
-    private bool _isPushed = false;
+    private string _styles { get; set; } = string.Empty;
 
-    private string _styles { get; set; } = null;
+    private string _cssClasses { get; set; } = string.Empty;
 
-    private string _cssClasses { get; set; }
-
-    private RenderFragment _contentChild { get; set; }
+    private RenderFragment? _contentChild { get; set; }
 
     private int _viewportMargin = 0;
 
@@ -44,10 +46,10 @@
     {
         if (firstRender)
         {
-            var windowWidth = await DnetOverlayInterop.GetWindowWidth();
+           var deviceType = dnetOverlay.GetDeviceType();
 
-            if(windowWidth <= 550) {
-                
+            if(deviceType == DeviceType.Mobile || deviceType == DeviceType.Tablet) {
+
                 OverlayConfig.PositionStrategy = PositionStrategy.Global;
 
                  var globalPositionStrategy = new GlobalPositionStrategyBuilder();

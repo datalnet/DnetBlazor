@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Components.Web
 
 @inject IOverlayService OverlayService
+@inject DnetOverlayInterop DnetOverlayInterop
 
 @implements IDisposable
 
@@ -36,6 +37,8 @@
 
     private int _baseZindex;
 
+    private int _windowWidth { get; set; }
+
 
     protected override void OnInitialized()
     {
@@ -45,6 +48,16 @@
 
         ((OverlayService)OverlayService).OnAttach += AttachOverlay;
         ((OverlayService)OverlayService).OnDetach += DetachOverlay;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _windowWidth = await DnetOverlayInterop.GetWindowWidth();
+
+            StateHasChanged();
+        }
     }
 
     private void AttachOverlay(RenderFragment content, OverlayConfig overlayConfig)
@@ -185,9 +198,11 @@
 
     private string GetBackdropCssClasses(OverlayConfig overlayConfig)
     {
+        var deviceType = GetDeviceType();
+
         var classes = new CssBuilder("cdk-overlay-backdrop cdk-overlay-backdrop-showing")
-            .AddClass("cdk-overlay-transparent-backdrop", when: overlayConfig.HasTransparentBackdrop)
-            .AddClass("cdk-overlay-dark-backdrop", when: !overlayConfig.HasTransparentBackdrop)
+            .AddClass("cdk-overlay-transparent-backdrop", when: overlayConfig.HasTransparentBackdrop && deviceType == DeviceType.Desktop)
+            .AddClass("cdk-overlay-dark-backdrop", when: !overlayConfig.HasTransparentBackdrop || deviceType != DeviceType.Desktop)
             .AddClass(overlayConfig.BackdropClass, when: !string.IsNullOrEmpty(overlayConfig.BackdropClass))
             .Build();
 
@@ -209,6 +224,25 @@
     public ElementReference GeElementReference()
     {
         return _overlayContainerRef;
+    }
+
+    public DeviceType GetDeviceType()
+    {
+        const int mobileWidth = 768; // Ancho máximo para móviles
+        const int tabletWidth = 1024; // Ancho máximo para tablets
+
+        if (_windowWidth <= mobileWidth)
+        {
+            return DeviceType.Mobile;
+        }
+        else if (_windowWidth <= tabletWidth)
+        {
+            return DeviceType.Tablet;
+        }
+        else
+        {
+            return DeviceType.Desktop;
+        }
     }
 
     public void Dispose()

@@ -19,31 +19,31 @@
 </div>
 
 @code {
-    [CascadingParameter] DnetOverlay dnetOverlay { get; set; }
+    [CascadingParameter] DnetOverlay? dnetOverlay { get; set; }
 
-    [CascadingParameter] DnetOverlayHost dnetOverlayHost { get; set; }
+    [CascadingParameter] DnetOverlayHost? dnetOverlayHost { get; set; }
 
     [Parameter]
-    public RenderFragment ContentChild { get; set; }
+    public RenderFragment? ContentChild { get; set; }
 
     [Parameter]
     public OverlayConfig OverlayConfig { get; set; }
 
     public int OverlayReferenceId { get; set; }
 
-    private ElementReference _pane;
+    private ElementReference? _pane;
 
-    private Point _previousPushAmount;
+    private Point? _previousPushAmount;
 
     private bool _positionLocked;
 
     private bool _isPushed = false;
 
-    private RenderFragment _contentChild { get; set; }
+    private RenderFragment? _contentChild { get; set; }
 
-    private string _styles { get; set; } = null;
+    private string? _styles { get; set; }
 
-    private string _cssClasses { get; set; }
+    private string? _cssClasses { get; set; }
 
     private ElementReference _paneReference;
 
@@ -84,9 +84,10 @@
     {
         if (firstRender)
         {
-            var windowWidth = await DnetOverlayInterop.GetWindowWidth();
+            var deviceType = dnetOverlay.GetDeviceType();
 
-            if(windowWidth <= 550) {
+            if(deviceType == DeviceType.Mobile || deviceType == DeviceType.Tablet) {
+
                 OverlayConfig.PositionStrategy = PositionStrategy.Global;
 
                 _overlayConfig = OverlayConfig;

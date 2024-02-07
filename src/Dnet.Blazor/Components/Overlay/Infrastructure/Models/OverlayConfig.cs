@@ -6,7 +6,7 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Models
     {
         public int OverlayReferenceId { get; set; }
 
-        public string PanelClass { get; set; }
+        public string? PanelClass { get; set; }
 
         internal int? PanelZindex { get; set; }
 
@@ -18,21 +18,21 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Models
 
         public bool DisableBackdropClick { get; set; }
 
-        public string BackdropClass { get; set; }
+        public string? BackdropClass { get; set; }
 
-        public string Width { get; set; }
+        public string? Width { get; set; }
 
-        public string Height { get; set; }
+        public string? Height { get; set; }
 
-        public string MinWidth { get; set; }
+        public string? MinWidth { get; set; }
 
-        public string MinHeight { get; set; }
+        public string? MinHeight { get; set; }
 
-        public string MaxWidth { get; set; }
+        public string? MaxWidth { get; set; }
 
-        public string MaxHeight { get; set; }
+        public string? MaxHeight { get; set; }
 
-        public string MarginTop { get; set; }
+        public string? MarginTop { get; set; }
 
         internal int? LastZindex { get; set; } = 0;
 
