@@ -15,7 +15,9 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
 
 
 @mixin cdk-overlay() {
-    .cdk-overlay-container, .cdk-global-overlay-wrapper {
+
+    .cdk-overlay-container,
+    .cdk-global-overlay-wrapper {
         // Disable events from being captured on the overlay container.
         pointer-events: none;
         // The container should be the size of the viewport.
@@ -24,6 +26,7 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
         height: 100%;
         width: 100%;
     }
+
     // The overlay-container is an invisible element which contains all individual overlays.
     .cdk-overlay-container {
         position: fixed;
@@ -35,6 +38,7 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
             display: none;
         }
     }
+
     // We use an extra wrapper element in order to use make the overlay itself a flex item.
     // This makes centering the overlay easy without running into the subpixel rendering
     // problems tied to using `transform` and without interfering with the other position
@@ -44,6 +48,7 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
         position: absolute;
         z-index: $cdk-z-index-overlay;
     }
+
     // A single overlay pane.
     .cdk-overlay-pane {
         // Note: it's important for this one to start off `absolute`,
@@ -75,6 +80,7 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
 
         &.cdk-overlay-backdrop-showing {
             opacity: 1;
+
             // In high contrast mode the rgba background will become solid so we need to fall back
             // to making it opaque using `opacity`. Note that we can't use the `cdk-high-contrast`
             // mixin, because we can't normalize the import path to the _a11y.scss both for the
@@ -90,14 +96,17 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
     }
 
     .cdk-overlay-transparent-backdrop {
+
         // Note: as of Firefox 57, having the backdrop be `background: none` will prevent it from
         // capturing the user's mouse scroll events. Since we also can't use something like
         // `rgba(0, 0, 0, 0)`, we work around the inconsistency by not setting the background at
         // all and using `opacity` to make the element transparent.
-        &, &.cdk-overlay-backdrop-showing {
+        &,
+        &.cdk-overlay-backdrop-showing {
             opacity: 0;
         }
     }
+
     // Overlay parent element used with the connected position strategy. Used to constrain the
     // overlay element's size to fit within the viewport.
     .cdk-overlay-connected-position-bounding-box {
@@ -114,6 +123,7 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
         min-width: 1px;
         min-height: 1px;
     }
+
     // Used when disabling global scrolling.
     .cdk-global-scrollblock {
         position: fixed;
@@ -125,5 +135,13 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
         // potentially result in double scrollbars. It shouldn't be an issue, because we won't
         // block scrolling on a page that doesn't have a scrollbar in the first place.
         overflow-y: scroll;
+    }
+
+    @media only screen and (max-width: 550px) {
+        .cdk-overlay-pane {
+            width: 95%;
+            align-items: center;
+            justify-content: center;
+        }
     }
 }

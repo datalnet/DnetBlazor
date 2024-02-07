@@ -38,21 +38,44 @@
     protected override void OnInitialized()
     {
         _contentChild = ContentChild;
-
-        if (OverlayConfig.PositionStrategy == PositionStrategy.Global)
-        {
-            _cssClasses = GetOverlayCssClasses();
-            _styles = GetStyles();
-        }
-        else
-        {
-            _cssClasses = GetOverlayCssClasses();
-        }
-
-        var builder = OverlayConfig.FlexibleConnectedPositionStrategyBuilder;
-
-        _viewportMargin = builder.ViewportMargin();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var windowWidth = await DnetOverlayInterop.GetWindowWidth();
+
+            if(windowWidth <= 550) {
+                
+                OverlayConfig.PositionStrategy = PositionStrategy.Global;
+
+                 var globalPositionStrategy = new GlobalPositionStrategyBuilder();
+
+                globalPositionStrategy.CenterVertically("");
+                globalPositionStrategy.CenterHorizontally("");
+
+                OverlayConfig.GlobalPositionStrategy = globalPositionStrategy;
+            }
+
+            if (OverlayConfig.PositionStrategy == PositionStrategy.Global)
+            {
+                _cssClasses = GetOverlayCssClasses();
+                _styles = GetStyles();
+            }
+            else
+            {
+                _cssClasses = GetOverlayCssClasses();
+            }
+
+            var builder = OverlayConfig.FlexibleConnectedPositionStrategyBuilder;
+
+            _viewportMargin = builder.ViewportMargin();
+
+            StateHasChanged();
+        }
+    }
+
 
     private string GetOverlayCssClasses()
     {

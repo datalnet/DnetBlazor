@@ -49,6 +49,9 @@
 
     private int _viewportMargin = 0;
 
+    private OverlayConfig? _overlayConfig { get; set; }
+
+
 
     protected override void OnInitialized()
     {
@@ -81,6 +84,14 @@
     {
         if (firstRender)
         {
+            var windowWidth = await DnetOverlayInterop.GetWindowWidth();
+
+            if(windowWidth <= 550) {
+                OverlayConfig.PositionStrategy = PositionStrategy.Global;
+
+                _overlayConfig = OverlayConfig;
+            }
+
             if (OverlayConfig.PositionStrategy == PositionStrategy.Global)
             {
                 _styles = GetStyles();
