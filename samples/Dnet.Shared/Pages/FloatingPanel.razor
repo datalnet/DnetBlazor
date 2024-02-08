@@ -19,15 +19,15 @@
 @implements IDisposable
 
 <div class="container-fluid" style="padding-top: 10px;">
-    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+    <div class="d-flex dnet-m-l-20 dnet-m-t-20">
         <span class="dnet-m-r-10 dnet-app-comp-name">Floating Panel</span>
     </div>
-    <div class="dnet-m-l-30 dnet-m-t-30">
+    <div class="dnet-m-l-20 dnet-m-t-30">
         <EditForm Model="@_formData1">
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 250px;">
-                    <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+                    <DnetFormField PlaceHolder="Panel position" Label="Panel position" IsRequired="true" UseClearButton="true">
                         <ChildContent>
                             <DnetSelect Value="@_formData1.Value"
                                         TValue="string"

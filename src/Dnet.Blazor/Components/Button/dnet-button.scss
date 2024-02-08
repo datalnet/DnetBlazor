@@ -22,10 +22,13 @@
     overflow: visible;
     font-size: var(--dnet-button-font-size);
     background: transparent;
-    background-color: var(--dnet-button-background-color);
+
+    &.dnet-button-initial-focus{
+        background-color: var(--dnet-button-background-color);
+    }
 
     &:hover {
-        background-color: rgba(0,0,0,.07);
+        background-color: rgba(0,0,0,.08);
     }
 
     &:focus {

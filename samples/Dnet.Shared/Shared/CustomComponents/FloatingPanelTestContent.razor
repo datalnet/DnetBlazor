@@ -6,16 +6,16 @@
 
 @inject IFloatingPanelService FloatingPanelService
 
-<div class="" style="display:flex;flex-direction: column;justify-content:space-between; height: calc(100% - 0px); width: 100%; padding: 0 15px 15px 15px">
-    <div class="dnet-panel-header" style="height: 50px">
-        <div style="display: flex;align-items: center;height: 100%">
-            <span style="font-size: 0.875rem;font-weight: 700">Edit user profile</span>
+<div class="dnet-panel in-floating-panel">
+    <div class="dnet-panel-header">
+        <div class="dsec-panel-content">
+            <span class="dsec-panel-content-title">Edit user profile</span>
         </div>
     </div>
-    <div class="dnet-panel-content" style="flex: 1 0 calc(100% - 100px); overflow:scroll">
+    <div class="dnet-panel-content">
         <FormFieldTest Person="@Person"></FormFieldTest>
     </div>
-    <div class="dnet-panel-footer" style="height: 50px;display: flex;align-items: center;justify-content: flex-end;">
+    <div class="dnet-panel-footer">
         <DnetButton OnClick="CancelOverlay" class="dnet-m-r-10">Close</DnetButton>
         <DnetButton OnClick="CloseOverlay" InitialFocus="true" class="dnet-m-r-10">Ok</DnetButton>
     </div>
@@ -36,11 +36,11 @@
     void CloseOverlay()
     {
         var dataResult = new OverlayResult()
-        {
-            CloseReason = CloseReason.Ok,
-            ComponentData = $"Overlay ReferenceId => {OverlayReferenceId}",
-            OverlayReferenceId = OverlayReferenceId
-        };
+            {
+                CloseReason = CloseReason.Ok,
+                ComponentData = $"Overlay ReferenceId => {OverlayReferenceId}",
+                OverlayReferenceId = OverlayReferenceId
+            };
 
         FloatingPanelService.Close(dataResult);
     }
@@ -48,11 +48,11 @@
     void CancelOverlay()
     {
         var dataResult = new OverlayResult()
-        {
-            CloseReason = CloseReason.Cancel,
-            ComponentData = null,
-            OverlayReferenceId = OverlayReferenceId
-        };
+            {
+                CloseReason = CloseReason.Cancel,
+                ComponentData = null,
+                OverlayReferenceId = OverlayReferenceId
+            };
 
         FloatingPanelService.Close(dataResult);
     }
