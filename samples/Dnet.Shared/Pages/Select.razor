@@ -17,163 +17,134 @@
 @inject IApplicationServiceService ApplicationServiceService
 
 <div class="container-fluid" style="padding-top: 10px;">
-    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+    <div class="d-flex dnet-page-content-left-margin dnet-m-t-20">
         <span class="dnet-m-r-10  dnet-app-comp-name">Select</span>
     </div>
 
-    <div class="dnet-m-l-30 dnet-m-t-30">
-        <EditForm Model="@_formData">
-            <DataAnnotationsValidator />
-            <div style="display: flex; flex-direction: column">
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
-                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
-                        <ChildContent>
-                            <DnetSelect Value="@_formData.Email"
-                                        TValue="string"
-                                        ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                        ValueExpression="@( () => _formData.Email )"
-                                        Items="_items"
-                                        TItem="Person"
-                                        DisplayValueConverter="(value) => (value.Name)"
-                                        ValueConverter="(value) => (value.Email)"
-                                        OnItemSelected="ItemSelected"
-                                        InputTextToUpper="true"
-                                        PlaceHolder="Name"
-                                        Label="Name"
-                                        >
-                            </DnetSelect>
-                        </ChildContent>
-                        <HintContent>You can add the country prefix</HintContent>
-                        <ErrorContent>
-                            <ValidationMessage For="@(() => _formData.Name)" />
-                        </ErrorContent>
-                        <SufixContent>
-                            <div class="dnet-app-icon-wrapper">
-                                <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
-                            </div>
-                        </SufixContent>
-                    </DnetFormField>
+    <div class="dnet-page-content-left-margin" style="max-width: 300px;">
+        <div class="dnet-m-t-30">
+            <EditForm Model="@_formData">
+                <DataAnnotationsValidator />
+                <div style="display: flex; flex-direction: column">
+                    <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between">
+                        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                            <ChildContent>
+                                <DnetSelect Value="@_formData.Email" TValue="string"
+                                    ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                    ValueExpression="@( () => _formData.Email )" Items="_items" TItem="Person"
+                                    DisplayValueConverter="(value) => (value.Name)"
+                                    ValueConverter="(value) => (value.Email)" OnItemSelected="ItemSelected"
+                                    InputTextToUpper="true" PlaceHolder="Name" Label="Name">
+                                </DnetSelect>
+                            </ChildContent>
+                            <HintContent>You can add the country prefix</HintContent>
+                            <ErrorContent>
+                                <ValidationMessage For="@(() => _formData.Name)" />
+                            </ErrorContent>
+                            <SufixContent>
+                                <div class="dnet-app-icon-wrapper">
+                                    <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
+                                </div>
+                            </SufixContent>
+                        </DnetFormField>
+                    </div>
+                    <div style="display: flex;align-items: center;">
+                        <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
+                        <span>@_formData.Name</span>
+                    </div>
                 </div>
-                <div style="display: flex;align-items: center;">
-                    <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
-                    <span>@_formData.Name</span>
+            </EditForm>
+        </div>
+        <div class="dnet-m-t-30">
+            <EditForm Model="@_formData1">
+                <DataAnnotationsValidator />
+                <div style="display: flex; flex-direction: column">
+                    <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between">
+                        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                            <ChildContent>
+                                <DnetSelect Value="@_formData1.Name" TValue="string"
+                                    ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                    ValueExpression="@( () => _formData1.Name )" Items="_items"
+                                    SelectedItems="_selectedItems" TItem="Person"
+                                    DisplayValueConverter="(value) => (value.Name)"
+                                    ValueConverter="(value) => (value.Name)" OnItemSelected="ItemSelected"
+                                    OnSelectionChanged="SelectionChanged" InputTextToUpper="true" PlaceHolder="Name"
+                                    Label="Name" MultiSelect="true"
+                                    IsSelectedFn="(item1, item2) => item1.Name == item2.Name">
+                                </DnetSelect>
+                            </ChildContent>
+                            <HintContent>You can add the country prefix</HintContent>
+                            <ErrorContent>
+                                <ValidationMessage For="@(() => _formData1.Name)" />
+                            </ErrorContent>
+                            <PrefixContent>
+                                <div class="dnet-app-icon-wrapper">
+                                    <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
+                                </div>
+                            </PrefixContent>
+                        </DnetFormField>
+                    </div>
+                    <div style="display: flex;align-items: center;">
+                        <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
+                        <span>@multiValue</span>
+                    </div>
                 </div>
-            </div>
-        </EditForm>
-    </div>
-    <div class="dnet-m-l-30 dnet-m-t-30">
-        <EditForm Model="@_formData1">
-            <DataAnnotationsValidator />
-            <div style="display: flex; flex-direction: column">
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
-                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
-                        <ChildContent>
-                            <DnetSelect Value="@_formData1.Name"
-                                        TValue="string"
-                                        ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                        ValueExpression="@( () => _formData1.Name )"
-                                        Items="_items"
-                                        SelectedItems="_selectedItems"
-                                        TItem="Person"
-                                        DisplayValueConverter="(value) => (value.Name)"
-                                        ValueConverter="(value) => (value.Name)"
-                                        OnItemSelected="ItemSelected"
-                                        OnSelectionChanged="SelectionChanged"
-                                        InputTextToUpper="true"
-                                        PlaceHolder="Name"
-                                        Label="Name"
-                                        MultiSelect="true"
-                                        IsSelectedFn="(item1, item2) => item1.Name == item2.Name">
-                            </DnetSelect>
-                        </ChildContent>
-                        <HintContent>You can add the country prefix</HintContent>
-                        <ErrorContent>
-                            <ValidationMessage For="@(() => _formData1.Name)" />
-                        </ErrorContent>
-                        <PrefixContent>
-                            <div class="dnet-app-icon-wrapper">
-                                <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
-                            </div>
-                        </PrefixContent>
-                    </DnetFormField>
-                </div>
-                <div style="display: flex;align-items: center;">
-                    <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
-                    <span>@multiValue</span>
-                </div>
-            </div>
-        </EditForm>
-    </div>
-    <div class="dnet-m-l-30 dnet-m-t-50" style="width: 350px;">
-        <div class="dnet-m-b-10">Nested selects</div>
-        <EditForm EditContext="@_editContext" style="display: flex;flex-direction:column">
-            <DataAnnotationsValidator />
-            <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
-                <ChildContent>
-                    <DnetSelect Value="@_right.ApiResourceName"
-                                TValue="string"
-                                ValueChanged="@((string e) => ApiResourceChangeHandler(e))"
-                                ValueExpression="@( () => _right.ApiResourceName)"
-                                Items="_apiResources"
-                                TItem="ApiResourceDto"
-                                DisplayValueConverter="(value) => (value.Name)"
-                                ValueConverter="(value) => (value.Name)"
-                                OnItemSelected="ApiResourceItemSelected"
-                                InputTextToUpper="true"
-                                PlaceHolder="Api Resource"
-                                Label="Api Resource">
-                    </DnetSelect>
-                </ChildContent>
-                <ErrorContent>
-                    <ValidationMessage For="@(() => _right.ApiResourceName)" />
-                </ErrorContent>
-            </DnetFormField>
-            <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
-                <ChildContent>
-                    <DnetSelect Value="@_right.ResourceType"
-                                TValue="string"
-                                ValueChanged="@((string e) => ApiResourceObjectChangeHandler(e))"
-                                ValueExpression="@( () => _right.ResourceType)"
-                                Items="_apiResourceObjects"
-                                TItem="ApiResourceObjectDto"
-                                DisplayValueConverter="(value) => (value.Name)"
-                                ValueConverter="(value) => (value.Name)"
-                                OnItemSelected="ApiResourceObjectItemSelected"
-                                InputTextToUpper="true"
-                                PlaceHolder="ResourceType"
-                                Label="ResourceType"
-                                @ref="_apiResourceObjectReference">
-                    </DnetSelect>
-                </ChildContent>
-                <ErrorContent>
-                    <ValidationMessage For="@(() => _right.ResourceType)" />
-                </ErrorContent>
-            </DnetFormField>
-        </EditForm>
-    </div>
-    <div class="dnet-m-l-30 dnet-m-t-30" style="width: 350px;">
-        <div class="dnet-m-b-10">Generic select number key</div>
-        <EditForm EditContext="@_editContext1" style="display: flex;flex-direction:column">
-            <DataAnnotationsValidator />
-            <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
-                <ChildContent>
-                    <DnetSelect TValue="int"
-                                @bind-Value="_right1.ApiResourceId"
-                                Items="_apiResources"
-                                TItem="ApiResourceDto"
-                                DisplayValueConverter="(value) => (value.Name)"
-                                ValueConverter="(value) => (value.ApiResourceId)"
-                                OnItemSelected="ApiResource1ItemSelected"
-                                PlaceHolder="Api Resource"
-                                Label="Api Resource">
+            </EditForm>
+        </div>
+        <div class="dnet-m-t-50" style="">
+            <div class="dnet-m-b-10">Nested selects</div>
+            <EditForm EditContext="@_editContext" style="display: flex;flex-direction:column">
+                <DataAnnotationsValidator />
+                <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                    <ChildContent>
+                        <DnetSelect Value="@_right.ApiResourceName" TValue="string"
+                            ValueChanged="@((string e) => ApiResourceChangeHandler(e))"
+                            ValueExpression="@( () => _right.ApiResourceName)" Items="_apiResources"
+                            TItem="ApiResourceDto" DisplayValueConverter="(value) => (value.Name)"
+                            ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResourceItemSelected"
+                            InputTextToUpper="true" PlaceHolder="Api Resource" Label="Api Resource">
+                        </DnetSelect>
+                    </ChildContent>
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _right.ApiResourceName)" />
+                    </ErrorContent>
+                </DnetFormField>
+                <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                    <ChildContent>
+                        <DnetSelect Value="@_right.ResourceType" TValue="string"
+                            ValueChanged="@((string e) => ApiResourceObjectChangeHandler(e))"
+                            ValueExpression="@( () => _right.ResourceType)" Items="_apiResourceObjects"
+                            TItem="ApiResourceObjectDto" DisplayValueConverter="(value) => (value.Name)"
+                            ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResourceObjectItemSelected"
+                            InputTextToUpper="true" PlaceHolder="ResourceType" Label="ResourceType"
+                            @ref="_apiResourceObjectReference">
+                        </DnetSelect>
+                    </ChildContent>
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _right.ResourceType)" />
+                    </ErrorContent>
+                </DnetFormField>
+            </EditForm>
+        </div>
+        <div class="dnet-m-t-30" style="">
+            <div class="dnet-m-b-10">Generic select number key</div>
+            <EditForm EditContext="@_editContext1" style="display: flex;flex-direction:column">
+                <DataAnnotationsValidator />
+                <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                    <ChildContent>
+                        <DnetSelect TValue="int" @bind-Value="_right1.ApiResourceId" Items="_apiResources"
+                            TItem="ApiResourceDto" DisplayValueConverter="(value) => (value.Name)"
+                            ValueConverter="(value) => (value.ApiResourceId)" OnItemSelected="ApiResource1ItemSelected"
+                            PlaceHolder="Api Resource" Label="Api Resource">
 
-                    </DnetSelect>
-                </ChildContent>
-                <ErrorContent>
-                    <ValidationMessage For="@(() => _right1.ApiResourceId)" />
-                </ErrorContent>
-            </DnetFormField>
-        </EditForm>
+                        </DnetSelect>
+                    </ChildContent>
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _right1.ApiResourceId)" />
+                    </ErrorContent>
+                </DnetFormField>
+            </EditForm>
+        </div>
     </div>
 </div>
 
@@ -182,227 +153,407 @@
 
     private List<Person> _items = new();
 
+
+
     private List<Person> _selectedItems = new();
+
+
 
     private Person _formData = new();
 
+
+
     private Person _formData1 = new();
+
+
 
     private Person person = new();
 
+
+
     private EditContext? _editContext;
+
+
 
     private EditContext? _editContext1;
 
+
+
     private EditContext? _editContext2;
+
+
 
     private EditContext? _editContext3;
 
+
+
     private bool _formInvalid = true;
+
+
 
     private ValidationMessageStore? messageStore;
 
+
+
     private RightDto _right { get; set; } = new();
+
+
 
     private RightDto _right1 { get; set; } = new();
 
+
+
     private RightDto _right2 { get; set; } = new();
+
+
 
     private List<ApiResourceDto> _apiResources = new();
 
+
+
     private List<ApiResourceObjectDto> _apiResourceObjects { get; set; } = new();
+
+
 
     private List<ApiResourceObjectDto> _apiResourceObjectsFromDb { get; set; } = new();
 
+
+
     private string multiValue { get; set; }
+
+
 
     private DnetSelect<ApiResourceObjectDto, string> _apiResourceObjectReference;
 
 
+
+
+
     protected override async Task OnInitializedAsync()
+
     {
+
         _items = await GetPersons();
+
+
 
         _selectedItems = _items.Take(3).ToList();
 
+
+
         var selectedPerson = _items.FirstOrDefault();
+
+
 
         _formData.Email = selectedPerson.Email;
 
+
+
         _apiResources = new List<ApiResourceDto>()
-        {
-            new()
-            {
-                ApiResourceId = 1,
-                Name = "APi_1"
-            },
-             new()
-            {
-                ApiResourceId = 2,
-                Name = "APi_2"
-            }
-        };
+{
+new()
+{
+ApiResourceId = 1,
+Name = "APi_1"
+},
+new()
+{
+ApiResourceId = 2,
+Name = "APi_2"
+}
+};
+
+
 
         _apiResourceObjectsFromDb = new List<ApiResourceObjectDto>()
-        {
-            new()
-            {
-                ApiResourceObjectId = 1,
-                Name = "ApiResourceObject1_1",
-                ApiResourceId = 1
-            },
-             new()
-            {
-                ApiResourceObjectId = 2,
-                Name = "ApiResourceObject1_1",
-                ApiResourceId = 1
-            },
-            new()
-            {
-                ApiResourceObjectId = 3,
-                Name = "ApiResourceObject2_1",
-                ApiResourceId = 2
-            },
-             new()
-            {
-                ApiResourceObjectId = 4,
-                Name = "ApiResourceObject2_1",
-                ApiResourceId = 2
-            }
-        };
+{
+new()
+{
+ApiResourceObjectId = 1,
+Name = "ApiResourceObject1_1",
+ApiResourceId = 1
+},
+new()
+{
+ApiResourceObjectId = 2,
+Name = "ApiResourceObject1_1",
+ApiResourceId = 1
+},
+new()
+{
+ApiResourceObjectId = 3,
+Name = "ApiResourceObject2_1",
+ApiResourceId = 2
+},
+new()
+{
+ApiResourceObjectId = 4,
+Name = "ApiResourceObject2_1",
+ApiResourceId = 2
+}
+};
+
+
 
         _editContext = new EditContext(_right);
+
         _editContext.OnValidationRequested += (data, eventArgs) =>
+
         {
+
             messageStore?.Clear();
 
+
+
             StateHasChanged();
+
         };
+
+
 
         _editContext1 = new EditContext(_right1);
+
         _editContext1.OnValidationRequested += (data, eventArgs) =>
+
         {
+
             messageStore?.Clear();
 
+
+
             StateHasChanged();
+
         };
+
+
 
         _editContext2 = new EditContext(_right2);
+
         _editContext2.OnValidationRequested += (data, eventArgs) =>
+
         {
+
             messageStore?.Clear();
 
+
+
             StateHasChanged();
+
         };
 
-        _editContext3 = new EditContext(person);
-        _editContext3.OnValidationRequested += (data, eventArgs) =>
-       {
-           messageStore?.Clear();
 
-           StateHasChanged();
-       };
+
+        _editContext3 = new EditContext(person);
+
+        _editContext3.OnValidationRequested += (data, eventArgs) =>
+
+        {
+
+            messageStore?.Clear();
+
+
+
+            StateHasChanged();
+
+        };
+
     }
+
+
 
     private async Task<List<Person>> GetPersons()
+
     {
+
         var dataPersons = await ApplicationServiceService.GetPersons();
 
+
+
         return dataPersons;
+
     }
+
+
 
     private void ItemSelected(Person item)
+
     {
+
     }
+
+
 
     private void SelectionChanged(List<Person> items)
+
     {
+
         multiValue = String.Join("-", items.Select(p => p.Name).ToList());
+
     }
+
+
 
     private void MyValueChangeHandler(string item)
+
     {
+
         _formData.Name = item;
+
     }
 
+
+
     private void ApiResourceItemSelected(ApiResourceDto item)
+
     {
+
         _right.ApiResourceName = item.Name;
+
+
 
         _apiResourceObjects = new();
 
-        _apiResourceObjects = _apiResourceObjectsFromDb.Where(p => p.ApiResourceId == item.ApiResourceId).Select(p => p).ToList();
+
+
+        _apiResourceObjects = _apiResourceObjectsFromDb.Where(p => p.ApiResourceId == item.ApiResourceId).Select(p =>
+        p).ToList();
+
+
 
         _apiResourceObjectReference.RefreshData(_apiResourceObjects);
+
     }
+
+
 
     private void ApiResource1ItemSelected(ApiResourceDto item)
+
     {
+
         _right1.ApiResourceId = item.ApiResourceId;
+
     }
+
+
 
     private void ApiResource2ItemSelected(ApiResourceDto item)
+
     {
+
         _right1.ApiResourceName = item.Name;
+
     }
+
+
 
     private void ApiResourceChangeHandler(string item)
+
     {
+
         _right.ApiResourceName = item;
+
     }
+
+
 
     private void ApiResourceGenChangeHandler(int item)
+
     {
+
         _right.ApiResourceId = item;
+
     }
+
+
 
     private void ApiResourceObjectItemSelected(ApiResourceObjectDto item)
+
     {
+
         _right.ApiResourceObjectId = item.ApiResourceObjectId;
+
     }
+
+
 
     private void ApiResourceObjectChangeHandler(string item)
+
     {
+
         _right.ResourceType = item;
+
     }
+
+
 
     public class ApiResourceDto
+
     {
+
         public int ApiResourceId { get; set; }
 
+
+
         [Required]
+
         public string Name { get; set; }
+
     }
+
+
 
     public class ApiResourceObjectDto
+
     {
+
         public int ApiResourceObjectId { get; set; }
 
+
+
         [Required]
+
         public string Name { get; set; }
 
+
+
         public int ApiResourceId { get; set; }
+
     }
 
+
+
     public class RightDto
+
     {
+
         public int ApplicationRightId { get; set; }
+
+
 
         public int ApiResourceId { get; set; }
 
+
+
         [Required]
+
         public string ApiResourceName { get; set; }
 
+
+
         [Required]
+
         public string Name { get; set; }
 
+
+
         [Required]
+
         public string ResourceType { get; set; }
 
+
+
         public int? ApiResourceObjectId { get; set; }
+
     }
 
 }
-
-
-

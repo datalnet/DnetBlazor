@@ -21,14 +21,14 @@
 @inject IApplicationServiceService ApplicationServiceService
 
 <div class="container-fluid" style="padding-top: 10px;">
-    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+    <div class="d-flex dnet-page-content-left-margin dnet-m-t-20">
         <span class="dnet-m-r-10  dnet-app-comp-name">AutoCompleteList</span>
     </div>
-    <div class="dnet-m-l-30 dnet-m-t-30">
+    <div class="dnet-page-content-left-margin dnet-m-t-30" style="max-width: 300px;">
         <EditForm Model="@_formData">
             <DataAnnotationsValidator />
-            <div style="display: flex; flex-direction: row">
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
+            <div style="display: flex; flex-direction: column">
+                <div style="display:flex;align-items: center;flex-direction: column; justify-content:space-between;">
                     <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
                         <ChildContent>
                             <DnetAutocomplete TValue="string"
@@ -49,13 +49,13 @@
                         </ErrorContent>
                     </DnetFormField>
                 </div>
-                <div style="display: flex;align-items: center; height: 86px" class="dnet-m-l-20">
+                <div style="display: flex;align-items: center;" class="dnet-m-b-20">
                     <span class="dnet-m-r-10" style="font-size:0.875rem">Value selected:</span>
                     <span>@_formData.Name</span>
                 </div>
             </div>
-            <div style="display: flex; flex-direction: row">
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
+            <div style="display: flex; flex-direction: column">
+                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;">
                     <DnetFormField PlaceHolder="Jhon Doe" Label="Name" UseClearButton="true">
                         <ChildContent>
                             <DnetAutocomplete Value="@_formData.Name"
@@ -89,7 +89,7 @@
                 </div>
             </div>
             <div class="d-flex flex-column">
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
+                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;">
                     <DnetFormField PlaceHolder="Jhon Doe" Label="Name" UseClearButton="true">
                         <ChildContent>
                             <DnetAutocomplete @bind-Value="@_formData2.Name"

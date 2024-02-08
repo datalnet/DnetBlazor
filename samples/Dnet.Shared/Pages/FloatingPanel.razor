@@ -19,10 +19,10 @@
 @implements IDisposable
 
 <div class="container-fluid" style="padding-top: 10px;">
-    <div class="d-flex dnet-m-l-20 dnet-m-t-20">
+    <div class="d-flex dnet-page-content-left-margin dnet-m-t-20">
         <span class="dnet-m-r-10 dnet-app-comp-name">Floating Panel</span>
     </div>
-    <div class="dnet-m-l-20 dnet-m-t-30">
+    <div class="dnet-page-content-left-margin dnet-m-t-30">
         <EditForm Model="@_formData1">
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
@@ -51,10 +51,10 @@
             </div>
         </EditForm>
     </div>
-    <div class="dnet-m-l-20 dnet-m-t-30">
+    <div class="dnet-page-content-left-margin dnet-m-t-30">
         <DnetButton OnClick="ShowFloatingPanel" InitialFocus="true" class="dnet-m-r-10">Show Panel</DnetButton>
     </div>
-    <div class="dnet-m-l-20 dnet-m-t-30">
+    <div class="dnet-page-content-left-margin dnet-m-t-30">
         <span>Dialog Ok result: </span>
         <span>@_floatingPanelResultData</span>
     </div>
