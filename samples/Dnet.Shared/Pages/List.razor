@@ -16,31 +16,30 @@
 @inject IHttpClientFactory ClientFactory
 @inject IApplicationServiceService ApplicationServiceService
 
+<style>
+   
+</style>
+
 <div class="container-fluid" style="padding-top: 10px;">
-    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+    <div class="d-flex dnet-page-content-left-margin dnet-m-t-20">
         <span class="dnet-m-r-10 dnet-app-comp-name">List View</span>
     </div>
-    <div class="dnet-m-l-30 dnet-m-t-30">
+    <div class="dnet-page-content-left-margin dnet-m-t-20">
         <EditForm Model="@_formData1">
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
-                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                <div
+                    style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;max-width: 300px;">
+                    <DnetFormField PlaceHolder="List options" Label="List options" IsRequired="true">
                         <ChildContent>
-                            <DnetSelect Value="@_formData1.Value"
-                                        TValue="string"
-                                        ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                        ValueExpression="@( () => _formData1.Value )"
-                                        Items="_features"
-                                        TItem="KeyValueModel<int>"
-                                        DisplayValueConverter="(value) => (value.Value)"
-                                        OnSelectionChanged="SelectionChanged"
-                                        InputTextToUpper="true"
-                                        PlaceHolder="List features"
-                                        Label="List features"
-                                        MultiSelect="true"
-                                        SelectedItems="@_selectedFeatures"
-                                        IsSelectedFn="@( (item, itemSelected) => item.Key == itemSelected.Key )">
+                            <DnetSelect Value="@_formData1.Value" TValue="string"
+                                ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                ValueExpression="@( () => _formData1.Value )" Items="_features"
+                                TItem="KeyValueModel<int>" DisplayValueConverter="(value) => (value.Value)"
+                                OnSelectionChanged="SelectionChanged" InputTextToUpper="true"
+                                PlaceHolder="List features" Label="List features" MultiSelect="true"
+                                SelectedItems="@_selectedFeatures"
+                                IsSelectedFn="@( (item, itemSelected) => item.Key == itemSelected.Key )">
 
                             </DnetSelect>
                         </ChildContent>
@@ -52,23 +51,18 @@
             </div>
         </EditForm>
     </div>
-    <div class="dnet-m-l-30 dnet-m-t-30" style="height:400px;width:350px;">
-        <DnetList TItem="Person"
-                  @ref="_listComponent"
-                  Items="_items"
-                  OnPaginationChanged="PaginationChanged"
-                  OnCheckboxClick="CheckboxClick"
-                  OnSelectionChange="SelectionChanged"
-                  ListOptions="@_listOptions"
-                  >
+    <div class="dnet-page-content-left-margin dnet-m-t-20 dnet-list-size">
+        <DnetList TItem="Person" @ref="_listComponent" Items="_items" OnPaginationChanged="PaginationChanged"
+            OnCheckboxClick="CheckboxClick" OnSelectionChange="SelectionChanged" ListOptions="@_listOptions">
             @* <ListItemContent Context="Person">
-                <div style="display: flex; width: 100%; padding-right: 5px">
-                    <span>@Person.Name</span>
-                </div>
+            <div style="display: flex; width: 100%; padding-right: 5px">
+            <span>@Person.Name</span>
+            </div>
             </ListItemContent> *@
             <ItemPrefixContent Context="Person">
                 <div class="dnet-app-icon-wrapper">
-                    <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
+                    <span
+                        class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
                 </div>
             </ItemPrefixContent>
         </DnetList>
@@ -120,7 +114,7 @@
         var items = await GetPersons();
 
         var paginatedItems = items.Skip((searchModel.PaginationModel.CurrentPage - 1) * searchModel.PaginationModel.PageSize)
-           .Take(searchModel.PaginationModel.PageSize).ToList();
+        .Take(searchModel.PaginationModel.PageSize).ToList();
 
         _items.AddRange(items);
 
@@ -150,7 +144,7 @@
         var items = await GetPersons();
 
         var paginatedItems = items.Skip((searchModel.PaginationModel.CurrentPage - 1) * searchModel.PaginationModel.PageSize)
-            .Take(searchModel.PaginationModel.PageSize).ToList();
+        .Take(searchModel.PaginationModel.PageSize).ToList();
 
         _listComponent.SetRowData(paginatedItems, items.Count);
     }
@@ -177,14 +171,14 @@
     private List<KeyValueModel<int>> GetKeyValueModels()
     {
         var keyValueModels = new List<KeyValueModel<int>>
-        {
-            new KeyValueModel<int> { Key = 1, Value = "Enable pagination" },
-            new KeyValueModel<int> { Key = 2, Value = "Enable searching" },
-            new KeyValueModel<int> { Key = 3, Value = "Enable checkbox selection" },
-            new KeyValueModel<int> { Key = 4, Value = "Enable sorting" },
-            new KeyValueModel<int> { Key = 5, Value = "Show header" },
-            new KeyValueModel<int> { Key = 6, Value = "Show footer" }
-        };
+{
+new KeyValueModel<int> { Key = 1, Value = "Enable pagination" },
+new KeyValueModel<int> { Key = 2, Value = "Enable searching" },
+new KeyValueModel<int> { Key = 3, Value = "Enable checkbox selection" },
+new KeyValueModel<int> { Key = 4, Value = "Enable sorting" },
+new KeyValueModel<int> { Key = 5, Value = "Show header" },
+new KeyValueModel<int> { Key = 6, Value = "Show footer" }
+};
 
         return keyValueModels;
     }
@@ -214,6 +208,3 @@
             };
     }
 }
-
-
-

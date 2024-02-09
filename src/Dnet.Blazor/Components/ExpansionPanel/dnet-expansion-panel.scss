@@ -96,7 +96,7 @@
     font-size: var(--dnet-accordion-title-font-size);
     display: flex;
     flex: 1;
-    flex-direction: row;
+    flex-direction: column;
     overflow: hidden;
 }
 
@@ -114,6 +114,7 @@
     justify-content: space-between;
     align-items: center;
     flex-basis: 0;
+    font-size: .625rem;
 }
 
 .dnet-expansion-panel-header-description {

@@ -244,8 +244,34 @@ body {
     margin-left: 30px;
 }
 
+.dnet-page-doc-text {
+    width: 500px;
+}
+
+.dnet-page-content-width {
+    width: 600px;
+}
+
+.dnet-list-size {
+    width: 350px;
+    height: 400px;
+}
+
 @media only screen and (max-width: 550px) {
     .dnet-page-content-left-margin {
         margin-left: 5px;
+    }
+
+    .dnet-page-doc-text {
+        width: 90%;
+    }
+
+    .dnet-page-content-width {
+        width: 100%;
+    }
+
+    .dnet-list-size {
+        width: calc(100% - 0px);
+        height: calc(100% - 180px);
     }
 }

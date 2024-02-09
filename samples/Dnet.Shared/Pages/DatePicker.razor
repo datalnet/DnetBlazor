@@ -11,82 +11,75 @@
 @using Dnet.Blazor.Components.DatePickerWeekRaw
 
 <div class="container-fluid" style="padding-top: 10px;">
-    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
-        <span class="dnet-m-r-10 dnet-app-comp-name">DatePicker</span>
-    </div>
-    <div class="dnet-m-l-30 dnet-m-t-30" style="width: 297px;flex-direction: column">
-        <DnetFormField PlaceHolder="" Label="Date Format" UseClearButton="true">
-            <ChildContent>
-                <DnetInputText @bind-Value="_datepickerFormat" PlaceHolder="Date Format" Label="Date Format" type="text">
-                </DnetInputText>
-            </ChildContent>
-        </DnetFormField>
-
-        <EditForm Model="@_formData">
-            <DataAnnotationsValidator />
-            <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
-                <DnetFormField PlaceHolder="" Label="Departure day" UseClearButton="true" IsRequired="true">
-                    <ChildContent>
-                        <DnetDatePicker @bind-Value="@_formData.DepartureDay"
-                                        Disabled="false"
-                                        OnDaySelected="DaySelected"
-                                        PlaceHolder="Departure day"
-                                        Label="Departure day"
-                                        Format="@_datepickerFormat"
-                                        MaxDayValue="DateTime.Now"
-                                        MinDayValue="DateTime.Now.AddDays(-10)"
-                                        FirstDayToShow="DateTime.Now"
-                                        DatepickerFilter="(p) => { return p.DayIndex == 0; }">
-                        </DnetDatePicker>
-                    </ChildContent>
-                    <SufixContent>
-                        <div class="dnet-datepicker-icon-wrapper">
-                            <span class="dnet-datepicker-icon dnet-datepicker-icon-default" unselectable="on"></span>
-                        </div>
-                    </SufixContent>
-                    <ErrorContent>
-                        <ValidationMessage For="@(() => _formData.DepartureDay)" />
-                    </ErrorContent>
-                </DnetFormField>
-            </div>
-        </EditForm>
-        <div>
-            <span>@_dateSelected</span>
+    <div class="dnet-page-content-left-margin" style="max-width: 300px;">
+        <div class="d-flex dnet-page-content-left-margin dnet-m-t-20">
+            <span class="dnet-m-r-10 dnet-app-comp-name">DatePicker</span>
         </div>
-    </div>
-    <div class="dnet-m-l-30 dnet-m-t-30" style="width: 226px;flex-direction: column">
-        <EditForm Model="@_formData1">
-            <DataAnnotationsValidator />
-            <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
-                <DnetFormField PlaceHolder="" Label="Current week">
-                    <ChildContent>
-                        <DnetDatePickerWeek @ref="_datepickerWeek"
-                                            @bind-Value="_formData1.DepartureDay"
-                                            Disabled="false"
-                                            OnWeekSelected="DaySelectedWeek"
-                                            PlaceHolder="Current week"
-                                            Label="Current week"
-                                            Format="@_datepickerFormat"
-                                            FirstDayToShow="DateTime.Now"
-                                            DatepickerFilter="(p) => { return p.DayIndex == 0; }"
-                                            ComponentTheme="@Blazor.Infrastructure.Enums.ComponentTheme.Raw">
-                        </DnetDatePickerWeek>
-                    </ChildContent>
-                    <ErrorContent>
-                        <ValidationMessage For="@(() => _formData1.DepartureDay)" />
-                    </ErrorContent>
-                </DnetFormField>
-            </div>
-        </EditForm>
-    </div>
-    <div class="dnet-m-l-30 dnet-m-t-30" style="width: 226px;flex-direction: column">
-        <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
-            <EditForm Model="@_formData1">
-                <DnetDatePickerWeekRaw @ref="_datepickerWeekRaw"
-                                       OnWeekSelected="DaySelectedWeekRaw">
+        <div class="dnet-m-t-30" style="flex-direction: column">
+            <DnetFormField PlaceHolder="" Label="Date Format" UseClearButton="true">
+                <ChildContent>
+                    <DnetInputText @bind-Value="_datepickerFormat" PlaceHolder="Date Format" Label="Date Format"
+                        type="text">
+                    </DnetInputText>
+                </ChildContent>
+            </DnetFormField>
 
-                </DnetDatePickerWeekRaw>
+            <EditForm Model="@_formData">
+                <DataAnnotationsValidator />
+                <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
+                    <DnetFormField PlaceHolder="" Label="Departure day" UseClearButton="true" IsRequired="true">
+                        <ChildContent>
+                            <DnetDatePicker @bind-Value="@_formData.DepartureDay" Disabled="false"
+                                OnDaySelected="DaySelected" PlaceHolder="Departure day" Label="Departure day"
+                                Format="@_datepickerFormat" MaxDayValue="DateTime.Now"
+                                MinDayValue="DateTime.Now.AddDays(-10)" FirstDayToShow="DateTime.Now"
+                                DatepickerFilter="(p) => { return p.DayIndex == 0; }">
+                            </DnetDatePicker>
+                        </ChildContent>
+                        <SufixContent>
+                            <div class="dnet-datepicker-icon-wrapper">
+                                <span class="dnet-datepicker-icon dnet-datepicker-icon-default"
+                                    unselectable="on"></span>
+                            </div>
+                        </SufixContent>
+                        <ErrorContent>
+                            <ValidationMessage For="@(() => _formData.DepartureDay)" />
+                        </ErrorContent>
+                    </DnetFormField>
+                </div>
             </EditForm>
+            <div>
+                <span>@_dateSelected</span>
+            </div>
+        </div>
+        <div class="dnet-m-t-30" style="flex-direction: column">
+            <EditForm Model="@_formData1">
+                <DataAnnotationsValidator />
+                <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
+                    <DnetFormField PlaceHolder="" Label="Current week">
+                        <ChildContent>
+                            <DnetDatePickerWeek @ref="_datepickerWeek" @bind-Value="_formData1.DepartureDay"
+                                Disabled="false" OnWeekSelected="DaySelectedWeek" PlaceHolder="Current week"
+                                Label="Current week" Format="@_datepickerFormat" FirstDayToShow="DateTime.Now"
+                                DatepickerFilter="(p) => { return p.DayIndex == 0; }"
+                                ComponentTheme="@Blazor.Infrastructure.Enums.ComponentTheme.Raw">
+                            </DnetDatePickerWeek>
+                        </ChildContent>
+                        <ErrorContent>
+                            <ValidationMessage For="@(() => _formData1.DepartureDay)" />
+                        </ErrorContent>
+                    </DnetFormField>
+                </div>
+            </EditForm>
+        </div>
+        <div class="dnet-m-t-30" style="flex-direction: column">
+            <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
+                <EditForm Model="@_formData1">
+                    <DnetDatePickerWeekRaw @ref="_datepickerWeekRaw" OnWeekSelected="DaySelectedWeekRaw">
+
+                    </DnetDatePickerWeekRaw>
+                </EditForm>
+            </div>
         </div>
     </div>
 </div>
@@ -96,66 +89,128 @@
 
     private FormData _formData = new FormData();
 
+
+
     private FormData _formData1 = new FormData();
+
+
 
     private FormData _formData2 = new FormData();
 
+
+
     private string _datepickerFormat { get; set; }
+
+
 
     private string _dateSelected { get; set; }
 
+
+
     private DnetDatePickerWeekRaw _datepickerWeekRaw { get; set; }
+
+
 
     private DnetDatePickerWeek _datepickerWeek { get; set; }
 
 
+
+
+
     protected override void OnInitialized()
-	{
-		_datepickerFormat = "dd/MM/yyyy";
+
+    {
+
+        _datepickerFormat = "dd/MM/yyyy";
+
+
 
         _formData.DepartureDay = DateTimeOffset.UtcNow.ToLocalTime().ToString(_datepickerFormat);
-	}
+
+    }
+
+
+
 
 
     private void MyValueChangeHandler(string item)
+
     {
+
         _formData.FilterValue = item;
+
     }
+
+
 
     private void DaySelected(Blazor.Components.DatePicker.Infrastructure.Models.CalendarDay selecteDay)
+
     {
+
         _dateSelected = selecteDay.FormattedDate;
+
     }
 
+
+
     private void DaySelectedWeek(List<Blazor.Components.DatePickerWeek.Infrastructure.Models.CalendarDay> selecteDays)
+
     {
+
         var firtsDay = selecteDays.FirstOrDefault();
 
+
+
         var day = firtsDay.Date.ToString(_datepickerFormat);
+
+
 
         _datepickerWeekRaw.UpdateValue(day);
 
+
+
         StateHasChanged();
+
     }
 
+
+
     private void DaySelectedWeekRaw(List<Blazor.Components.DatePickerWeekRaw.Infrastructure.Models.CalendarDay> selecteDays)
+
     {
+
         var firtsDay = selecteDays.FirstOrDefault();
+
+
 
         var day = firtsDay.Date.ToString(_datepickerFormat);
 
+
+
         _datepickerWeek.UpdateValue(day);
 
+
+
         StateHasChanged();
+
     }
 
+
+
     protected class FormData
+
     {
-        [Required]
-        public string FilterValue { get; set; } = string.Empty;
 
         [Required]
+
+        public string FilterValue { get; set; } = string.Empty;
+
+
+
+        [Required]
+
         public string DepartureDay { get; set; } = string.Empty;
+
     }
 
 }
