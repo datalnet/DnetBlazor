@@ -24,6 +24,7 @@
     height: calc(100% - 0px);
     overflow-y: auto;
     border: var(--dnet-list-wrapper-border);
+    border-radius: 5px;
 
     .dnet-checkbox {
         .dnet-checkbox-layout {
@@ -46,6 +47,7 @@
     align-items: center;
     border-radius: 5px;
     overflow: hidden;
+    
 }
 
 .dnet-sort-header {

@@ -69,7 +69,7 @@
 
                             var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
-                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))">
+                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))" @onclick="(e => Transfer(item))">
                                 @if (ItemPrefixContent != null)
                                 {
                                     <div class="dnet-list-item-prefix-content">
@@ -111,7 +111,7 @@
 
                         var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
-                        <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable">
+                        <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @onclick="(e => Transfer(item))">
                             <div class="dnet-list-item dnet-list-item-content">
                                 @ListOptions.DisplayValueConverter(item.RowData)
                             </div>
@@ -199,6 +199,9 @@
     [Parameter]
     public bool UsePlainControl { get; set; } = true;
 
+    [Parameter]
+    public EventCallback<TItem> OnTransfer { get; set; }
+
 
     private List<RowNode<TItem>> _rowNodes { get; set; } = new();
 
@@ -216,15 +219,15 @@
 
     private SortOrder SortStatus { get; set; } = SortOrder.None;
 
-    private string SortIconClass { get; set; }
+    private string? SortIconClass { get; set; }
 
-    private string _filter { get; set; }
+    private string? _filter { get; set; }
 
-    private Timer _debounceTimer;
+    private Timer? _debounceTimer;
 
     private DnetPaginator _paginator { get; set; }
 
-    private SearchModel _searchModel { get; set; }
+    private SearchModel? _searchModel { get; set; }
 
     private bool _allNodesSelected { get; set; }
 
@@ -735,9 +738,18 @@
         }
     }
 
+    private async Task Transfer(RowNode<TItem> item)
+    {
+        var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
+
+        if(disabled) return;
+
+        await OnTransfer.InvokeAsync(item.RowData);
+    }
+
     private async void ClearInput()
     {
-        FilterData();
+        await FilterData();
     }
 
     public void Dispose()

@@ -52,8 +52,13 @@
         </div>
         <div class="dnet-split-content-container" style="">
             <div style="height: 500px" class="@($"dnet-split-content-right {(isActive ? "active" : "")}")">
-                <DnetList TItem="Person" @ref="_leftComponent" Items="_leftItems"
-                    OnSelectionChange="LeftSelectionChanged" OnDrop="LeftDrop" ListOptions="@_leftListOptions">
+                <DnetList TItem="Person" 
+                          @ref="_leftComponent" 
+                          Items="_leftItems"
+                          OnSelectionChange="LeftSelectionChanged" 
+                          OnDrop="LeftDrop" 
+                          ListOptions="@_leftListOptions"
+                          OnTransfer="LeftTransfer">
                     @* <ListItemContent Context="Person">
                         <div class="dnet-list-item-content">
                             @Person.Name @Person.IsActive
@@ -90,8 +95,13 @@
                 </div>
             </div>
             <div style="height: 500px" class="@($"dnet-split-content-left {(!isActive ? "active" : "")}")">
-                <DnetList TItem="Person" @ref="_rightComponent" Items="_rightItems"
-                    OnSelectionChange="RightSelectionChanged" OnDrop="RightDrop" ListOptions="@_rightListOptions">
+                <DnetList TItem="Person" 
+                          @ref="_rightComponent" 
+                          Items="_rightItems"
+                          OnSelectionChange="RightSelectionChanged" 
+                          OnDrop="RightDrop" 
+                          ListOptions="@_rightListOptions"
+                          OnTransfer="RightTransfer">
                     @* <ListItemContent Context="Person">
                         <div class="dnet-list-item-content">
                             @Person.Name @Person.IsActive
@@ -215,6 +225,18 @@
     {
         _leftSelectedItems = selectedItems;
         LeftToRight();
+    }
+
+    private void LeftTransfer(Person item)
+    {
+        _leftSelectedItems = new List<Person>() { item };
+        LeftToRight();
+    }
+
+    private void RightTransfer(Person item)
+    {
+        _rightSelectedItems = new List<Person>() { item };
+        RightToLeft();
     }
 
     private void LeftToRight()
