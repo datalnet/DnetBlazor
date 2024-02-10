@@ -44,14 +44,14 @@
             </div>
         </EditForm>
     </div>
-    <div class="dnet-split-content dnet-page-content-left-margin dnet-m-t-10" style="height:calc(100% - 140px);">
+    <div class="dnet-split-content dnet-page-content-left-margin dnet-m-t-10" style="height:calc(100% - 200px);">
         <div class="dnet-split-content-btn-wrapper">
             <button type="button" class="dnet-split-content-btn" @onclick="ToggleListView">
                 @(isActive ? $"Ir a la lista {_rightListOptions.HeaderText} >>" : $"Ir a la lista {_leftListOptions.HeaderText} >>")
             </button>
         </div>
         <div class="dnet-split-content-container" style="">
-            <div style="height: 500px" class="@($"dnet-double-list-right dnet-list {(isActive ? "active" : "")}")">
+            <div style="height: 500px" class="@($"dnet-split-content-right {(isActive ? "active" : "")}")">
                 <DnetList TItem="Person" @ref="_leftComponent" Items="_leftItems"
                     OnSelectionChange="LeftSelectionChanged" OnDrop="LeftDrop" ListOptions="@_leftListOptions">
                     @* <ListItemContent Context="Person">
@@ -89,7 +89,7 @@
                     </button>
                 </div>
             </div>
-            <div style="height: 500px" class="@($"dnet-double-list-left dnet-list {(!isActive ? "active" : "")}")">
+            <div style="height: 500px" class="@($"dnet-split-content-left {(!isActive ? "active" : "")}")">
                 <DnetList TItem="Person" @ref="_rightComponent" Items="_rightItems"
                     OnSelectionChange="RightSelectionChanged" OnDrop="RightDrop" ListOptions="@_rightListOptions">
                     @* <ListItemContent Context="Person">
