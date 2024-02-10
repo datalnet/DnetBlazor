@@ -241,6 +241,7 @@ body {
     }
 }
 
+
 .dnet-page-content-left-margin {
     margin-left: 30px;
 }
@@ -345,4 +346,8 @@ body {
     .dnet-double-list-controls {
         display: none;
     }
+}
+
+.dnet-split-content{
+    width: calc(100dvw - 50px);
 }
