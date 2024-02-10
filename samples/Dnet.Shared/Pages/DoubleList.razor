@@ -16,120 +16,94 @@
 @inject IApplicationServiceService ApplicationServiceService
 
 <div class="container-fluid" style="padding-top: 10px;">
-    <div class="d-flex dnet-m-l-30 dnet-m-t-20">
+    <div class="d-flex dnet-page-content-left-margin dnet-m-t-20">
         <span class="dnet-m-r-10 dnet-app-comp-name">Double list</span>
     </div>
-    <div class="d-flex dnet-m-l-30 dnet-m-t-20 dnet-w-500">
+    <div class="d-flex dnet-page-content-left-margin dnet-m-t-20 dnet-page-doc-text">
         <span class="dnet-m-r-10">Select and use de buttons or Drag&Drop between lists</span>
     </div>
-    <div class="dnet-m-l-30 dnet-m-t-30">
+    <div class="dnet-page-content-left-margin dnet-m-t-20">
         <EditForm Model="@_formData1">
             <DataAnnotationsValidator />
-            <div style="display: flex; flex-direction: column">
-                <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 350px;">
-                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
-                        <ChildContent>
-                            <DnetSelect Value="@_formData1.Value"
-                                        TValue="string"
-                                        ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                        ValueExpression="@( () => _formData1.Value )"
-                                        Items="_features"
-                                        TItem="KeyValueModel<int>"
-                                        DisplayValueConverter="(value) => (value.Value)"
-                                        OnSelectionChanged="SelectionChanged"
-                                        InputTextToUpper="true"
-                                        PlaceHolder="List features"
-                                        Label="List features"
-                                        MultiSelect="true"
-                                        SelectedItems="@_selectedFeatures"
-                                        IsSelectedFn="@( (item, itemSelected) => item.Key == itemSelected.Key )">
-                            </DnetSelect>
-                        </ChildContent>
-                        <ErrorContent>
-                            <ValidationMessage For="@(() => _formData1.Key)" />
-                        </ErrorContent>
-                    </DnetFormField>
-                </div>
+            <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;max-width: 300px;">
+                <DnetFormField PlaceHolder="List options" Label="List options" IsRequired="true">
+                    <ChildContent>
+                        <DnetSelect Value="@_formData1.Value" TValue="string"
+                            ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                            ValueExpression="@( () => _formData1.Value )" Items="_features" TItem="KeyValueModel<int>"
+                            DisplayValueConverter="(value) => (value.Value)" OnSelectionChanged="SelectionChanged"
+                            InputTextToUpper="true" PlaceHolder="List features" Label="List features" MultiSelect="true"
+                            SelectedItems="@_selectedFeatures"
+                            IsSelectedFn="@( (item, itemSelected) => item.Key == itemSelected.Key )">
+                        </DnetSelect>
+                    </ChildContent>
+                    <ErrorContent>
+                        <ValidationMessage For="@(() => _formData1.Key)" />
+                    </ErrorContent>
+                </DnetFormField>
             </div>
         </EditForm>
     </div>
-    <div class="dnet-m-l-30 dnet-m-t-30" style="height:calc(100% - 140px); width: 900px">
-        <div style="display: grid; grid-template-columns: 1fr 50px 1fr; height: calc(100% - 0px);">
-            <div style="height: 500px">
-                <DnetList TItem="Person"
-                          @ref="_leftComponent"
-                          Items="_leftItems"
-                          OnSelectionChange="LeftSelectionChanged"
-                          OnDrop="LeftDrop"
-                          ListOptions="@_leftListOptions">
-                    <ListItemContent Context="Person">
-                        <div style="display: flex; width: 100%">
+    <div class="dnet-split-content dnet-page-content-left-margin dnet-m-t-10" style="height:calc(100% - 140px);">
+        <div class="dnet-split-content-btn-wrapper">
+            <button type="button" class="dnet-split-content-btn" @onclick="ToggleListView">
+                @(isActive ? $"Ir a la lista {_rightListOptions.HeaderText} >>" : $"Ir a la lista {_leftListOptions.HeaderText} >>")
+            </button>
+        </div>
+        <div class="dnet-split-content-container" style="">
+            <div style="height: 500px" class="@($"dnet-double-list-right dnet-list {(isActive ? "active" : "")}")">
+                <DnetList TItem="Person" @ref="_leftComponent" Items="_leftItems"
+                    OnSelectionChange="LeftSelectionChanged" OnDrop="LeftDrop" ListOptions="@_leftListOptions">
+                    @* <ListItemContent Context="Person">
+                        <div class="dnet-list-item-content">
                             @Person.Name @Person.IsActive
                         </div>
-                    </ListItemContent>
+                    </ListItemContent> *@
                     <ItemPrefixContent Context="Person">
                         <div class="dnet-app-icon-wrapper">
-                            <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
+                            <span
+                                class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
                         </div>
                     </ItemPrefixContent>
                 </DnetList>
-                <div class="dnet-m-t-10">
-                    <div class="dnet-m-b-5">
-                        <span>Added: </span>
-                        <span>@_leftAddedItems.Count()</span>
-                    </div>
-                    <div>
-                        <span>Removed: </span>
-                        <span>@_leftRemovedItems.Count()</span>
-                    </div>
-                </div>
             </div>
-            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 50px; height: 500px">
+            <div class="dnet-double-list-controls">
                 <div style="width: 25px">
-                    <button type="button"
-                            class="dnet-app-icon-button"
-                            @onclick="(e => LeftToRight())">
-                        <svg width="1em" height="1.1em" viewBox="0 0 16 16" fill="@(_leftSelectedItems.Any()  ? "#4fc3f7" : "grey" )" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" clip-rule="evenodd" />
+                    <button type="button" class="dnet-app-icon-button" @onclick="(e => LeftToRight())">
+                        <svg width="1em" height="1.1em" viewBox="0 0 16 16"
+                            fill="@(_leftSelectedItems.Any()  ? "#4fc3f7" : "grey" )"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
+                                clip-rule="evenodd" />
                         </svg>
                     </button>
-                    <button type="button"
-                            class="dnet-app-icon-button"
-                            @onclick="(e => RightToLeft())">
-                        <svg width="1em" height="1.1em" viewBox="0 0 16 16" fill="@(_rightSelectedItems.Any() ? "#4fc3f7" : "grey" )" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" clip-rule="evenodd" />
+                    <button type="button" class="dnet-app-icon-button" @onclick="(e => RightToLeft())">
+                        <svg width="1em" height="1.1em" viewBox="0 0 16 16"
+                            fill="@(_rightSelectedItems.Any() ? "#4fc3f7" : "grey" )"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+                                clip-rule="evenodd" />
                         </svg>
                     </button>
                 </div>
             </div>
-            <div style="height: 500px">
-                <DnetList TItem="Person"
-                          @ref="_rightComponent"
-                          Items="_rightItems"
-                          OnSelectionChange="RightSelectionChanged"
-                          OnDrop="RightDrop"
-                          ListOptions="@_rightListOptions">
-                    <ListItemContent Context="Person">
-                        <div style="display: flex; width: 100%">
+            <div style="height: 500px" class="@($"dnet-double-list-left dnet-list {(!isActive ? "active" : "")}")">
+                <DnetList TItem="Person" @ref="_rightComponent" Items="_rightItems"
+                    OnSelectionChange="RightSelectionChanged" OnDrop="RightDrop" ListOptions="@_rightListOptions">
+                    @* <ListItemContent Context="Person">
+                        <div class="dnet-list-item-content">
                             @Person.Name @Person.IsActive
                         </div>
-                    </ListItemContent>
+                    </ListItemContent> *@
                     <ItemPrefixContent Context="Person">
                         <div class="dnet-app-icon-wrapper">
-                            <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
+                            <span
+                                class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
                         </div>
                     </ItemPrefixContent>
                 </DnetList>
-                <div class="dnet-m-t-10">
-                    <div class="dnet-m-b-5">
-                        <span>Added: </span>
-                        <span>@_rightAddedItems.Count()</span>
-                    </div>
-                    <div>
-                        <span>Removed: </span>
-                        <span>@_rightRemovedItems.Count()</span>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -170,6 +144,8 @@
     private ListOptions<Person> _leftListOptions { get; set; } = new();
 
     private ListOptions<Person> _rightListOptions { get; set; } = new();
+
+    private bool isActive { get; set; } = true;
 
 
     protected override void OnInitialized()
@@ -318,9 +294,11 @@
 
     private void SelectionChanged(List<KeyValueModel<int>> items)
     {
-        _leftListOptions.EnablePagingination = _rightListOptions.EnablePagingination = items.FirstOrDefault(p => p.Key == 1) != null;
+        _leftListOptions.EnablePagingination = _rightListOptions.EnablePagingination = items.FirstOrDefault(p => p.Key == 1) !=
+        null;
         _leftListOptions.EnableSearching = _rightListOptions.EnableSearching = items.FirstOrDefault(p => p.Key == 2) != null;
-        _leftListOptions.CheckboxSelectionColumn = _rightListOptions.CheckboxSelectionColumn = items.FirstOrDefault(p => p.Key == 3) != null;
+        _leftListOptions.CheckboxSelectionColumn = _rightListOptions.CheckboxSelectionColumn = items.FirstOrDefault(p => p.Key
+        == 3) != null;
         _leftListOptions.ShowHeader = _rightListOptions.ShowHeader = items.FirstOrDefault(p => p.Key == 5) != null;
         _leftListOptions.ShowFooter = _rightListOptions.ShowFooter = items.FirstOrDefault(p => p.Key == 6) != null;
     }
@@ -328,16 +306,21 @@
     private List<KeyValueModel<int>> GetKeyValueModels()
     {
         var keyValueModels = new List<KeyValueModel<int>>
-        {
-            new KeyValueModel<int> { Key = 1, Value = "Enable pagination" },
-            new KeyValueModel<int> { Key = 2, Value = "Enable searching" },
-            new KeyValueModel<int> { Key = 3, Value = "Enable checkbox selection" },
-            new KeyValueModel<int> { Key = 4, Value = "Enable sorting" },
-            new KeyValueModel<int> { Key = 5, Value = "Show header" },
-            new KeyValueModel<int> { Key = 6, Value = "Show footer" }
-        };
+{
+new KeyValueModel<int> { Key = 1, Value = "Enable pagination" },
+new KeyValueModel<int> { Key = 2, Value = "Enable searching" },
+new KeyValueModel<int> { Key = 3, Value = "Enable checkbox selection" },
+new KeyValueModel<int> { Key = 4, Value = "Enable sorting" },
+new KeyValueModel<int> { Key = 5, Value = "Show header" },
+new KeyValueModel<int> { Key = 6, Value = "Show footer" }
+};
 
         return keyValueModels;
+    }
+
+    private void ToggleListView()
+    {
+        isActive = !isActive;
     }
 
     public class PersonEqualityComparer : IEqualityComparer<Person>
@@ -365,5 +348,24 @@
     }
 }
 
+    @* <div class="dnet-m-t-10">
+                    <div class="dnet-m-b-5">
+                        <span>Added: </span>
+                        <span>@_leftAddedItems.Count()</span>
+                    </div>
+                    <div>
+                        <span>Removed: </span>
+                        <span>@_leftRemovedItems.Count()</span>
+                    </div>
+                </div> *@
 
-
+                   @* <div class="dnet-m-t-10">
+                    <div class="dnet-m-b-5">
+                        <span>Added: </span>
+                        <span>@_rightAddedItems.Count()</span>
+                    </div>
+                    <div>
+                        <span>Removed: </span>
+                        <span>@_rightRemovedItems.Count()</span>
+                    </div>
+                </div> *@

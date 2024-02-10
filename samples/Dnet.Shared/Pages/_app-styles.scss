@@ -41,6 +41,7 @@ body {
     ::-webkit-scrollbar-track {
         background: $background-color;
     }
+
     // For Internet Explorer
     body {
         scrollbar-face-color: $foreground-color;
@@ -120,8 +121,8 @@ body {
 }
 
 .dnet-tree-content {
-    &.active{
-        font-weight:700;
+    &.active {
+        font-weight: 700;
     }
 }
 
@@ -236,7 +237,7 @@ body {
     margin: 0;
 
     &:hover {
-        background-color: rgba(0,0,0,.05);
+        background-color: rgba(0, 0, 0, .05);
     }
 }
 
@@ -257,6 +258,48 @@ body {
     height: 400px;
 }
 
+.dnet-split-content-container {
+    display: grid;
+    grid-template-columns: 1fr 50px 1fr;
+    height: calc(100% - 0px);
+    width: 900px;
+}
+
+.dnet-double-list-left,
+.dnet-double-list-right {
+    display: block;
+}
+
+.dnet-split-content-btn {
+    display: none;
+    margin-bottom: 10px;
+    z-index: 3;
+    position: relative;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-family: inherit;
+    font-size: 1em;
+    cursor: pointer;
+    outline: none;
+}
+
+.dnet-double-list-controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 500px
+}
+
+.dnet-split-content-btn-wrapper{
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 5px;
+}
+
 @media only screen and (max-width: 550px) {
     .dnet-page-content-left-margin {
         margin-left: 5px;
@@ -273,5 +316,33 @@ body {
     .dnet-list-size {
         width: calc(100% - 0px);
         height: calc(100% - 180px);
+    }
+
+    .dnet-split-content-container {
+        width: 100%;
+        grid-template-columns: 1fr;
+    }
+
+    .dnet-content-split-container {
+        display: grid;
+    }
+
+    .dnet-double-list-left,
+    .dnet-double-list-right {
+        display: none;
+    }
+
+    .dnet-double-list-left.active,
+    .dnet-double-list-right.active {
+        display: block;
+        width: calc(100dvw - 50px);
+    }
+
+    .dnet-split-content-btn {
+        display: block;
+    }
+
+    .dnet-double-list-controls {
+        display: none;
     }
 }
