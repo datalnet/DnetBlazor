@@ -41,9 +41,10 @@
 }
 
 .dnet-panel-content {
-    flex: 1 0 calc(100% - 100px);
+    // flex: 1 0 calc(100% - 100px);
     overflow: scroll;
     padding-right: 5px;
+    height: calc(100% - 0px);
 }
 
 .dnet-panel-footer {
