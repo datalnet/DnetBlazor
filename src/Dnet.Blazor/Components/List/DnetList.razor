@@ -69,14 +69,14 @@
 
                             var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
-                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))" @onclick="(e => Transfer(item))">
+                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))">
                                 @if (ItemPrefixContent != null)
                                 {
                                     <div class="dnet-list-item-prefix-content">
                                         @ItemPrefixContent(item.RowData)
                                     </div>
                                 }
-                                <div class="dnet-list-item-middle-content">
+                                <div class="dnet-list-item-middle-content" @onclick="(e => Transfer(item))">
                                     @if (ListItemContent != null)
                                     {
                                         @ListItemContent(item.RowData)
@@ -111,8 +111,8 @@
 
                         var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
-                        <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @onclick="(e => Transfer(item))">
-                            <div class="dnet-list-item dnet-list-item-content">
+                        <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable">
+                            <div class="dnet-list-item dnet-list-item-content" @onclick="(e => Transfer(item))">
                                 @ListOptions.DisplayValueConverter(item.RowData)
                             </div>
                             @if (ListOptions.CheckboxSelectionColumn && disabled == false)

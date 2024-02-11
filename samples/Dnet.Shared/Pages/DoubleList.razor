@@ -51,7 +51,7 @@
             </button>
         </div>
         <div class="dnet-split-content-container" style="">
-            <div style="height: 500px" class="@($"dnet-split-content-right {(isActive ? "active" : "")}")">
+            <div style="height: 500px; padding-bottom: 20px" class="@($"dnet-split-content-right {(isActive ? "active" : "")}")">
                 <DnetList TItem="Person" 
                           @ref="_leftComponent" 
                           Items="_leftItems"
