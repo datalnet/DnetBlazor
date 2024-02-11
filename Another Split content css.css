@@ -1,0 +1,55 @@
+/* Estilo base para el contenedor */
+.dnet-content-split-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    position: relative; /* Posición relativa para contener absolutos */
+}
+
+.dnet-list-left, .dnet-list-right {
+    padding: 20px; /* Añadir algo de padding para mejor visualización */
+    position: absolute;
+    width: 100%;
+    transition: opacity 0.5s ease; /* Transición suave para cambio de visibilidad */
+    opacity: 0; /* Inicialmente invisibles */
+    height: 100%; /* Asegurar que los divs ocupen todo el espacio disponible */
+}
+
+/* Asignar colores de fondo a cada div */
+.dnet-list-left {
+    background-color: #007bff; /* Azul */
+}
+
+.dnet-list-right {
+    background-color: #28a745; /* Verde */
+}
+
+/* Estilo para mostrar el primer div por defecto en modo mobile */
+.dnet-list-left.active, .dnet-list-right.active {
+    opacity: 1; /* Hacer visible el div activo */
+    z-index: 2; /* Asegurarse de que esté por encima del otro */
+}
+
+.toggle-btn {
+    display: block; /* Asegurarse de que el botón sea visible en modo mobile */
+    margin-bottom: 10px;
+    z-index: 3; /* Botón por encima de los divs */
+    position: relative; /* Asegurar que el botón no sea afectado por la posición de los divs */
+}
+
+/* Media query para pantallas grandes (desktop) */
+@media (min-width: 768px) {
+    .dnet-content-split-container {
+        grid-template-columns: repeat(2, 1fr); /* Dos columnas de igual tamaño */
+        position: static; /* Volver a la posición estática en desktop */
+    }
+
+    .dnet-list-left, .dnet-list-right {
+        position: relative; /* Posición relativa para evitar superposición */
+        opacity: 1; /* Asegurar que ambos divs sean visibles */
+    }
+
+    .toggle-btn {
+        display: none; /* Ocultar el botón en modo desktop */
+    }
+}

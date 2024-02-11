@@ -1,10 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
-@using System.Timers
 @using Dnet.Blazor.Components.Autocomplete.Infrastructure.Services
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
 @using Microsoft.JSInterop
+@using Dnet.Blazor.Components.Form
 
 @implements IDisposable
 
@@ -12,14 +12,30 @@
 
 @inject IJSRuntime JSRuntime
 
-<div class="dnet-autoc-menu-container" style="display:flex;flex-direction:column;width:100%;border-radius:@BorderRadius;">
+@* <div>
+<div>
+<input class="mat-input-element" value="@tempInputValue" @oninput="HandleInput" />
+</div>
+</div> *@
+
+<div class="dnet-autoc-menu-container"
+    style="display:flex;flex-direction:column;width:100%;border-radius:@BorderRadius;">
+    <div class="dnet-autoc-resp-input-container">
+        <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true">
+            <ChildContent>
+                <DnetInputText @bind-Value="_tempInputValue" PlaceHolder="" type="text" OnStopTyping="HandleInput">
+                </DnetInputText>
+            </ChildContent>
+        </DnetFormField>
+    </div>
     <div class="dnet-virtual-scroll-viewport dnet-virtual-scroll-orientation-vertical" style="@_styles">
         <div class="dnet-autoc-menu-container-filter-wrapper dnet-virtual-scroll-content-wrapper">
             @if (ItemPrefixContent != null || ItemSufixContent != null || ChildContent != null)
             {
                 <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
                     <ItemContent>
-                        <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))" style="margin-bottom: 2px; height:@(ItemHeight)px">
+                        <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))"
+                            style="margin-bottom: 2px; height:@(ItemHeight)px">
                             <div class="dnet-autoc-content-wrapper">
                                 @if (ItemPrefixContent != null)
                                 {
@@ -35,7 +51,12 @@
                                     else
                                     {
                                         <span class="dnet-autoc-content-text">
-                                            @DisplayValueConverter(item)
+                                            <span class="dnet-autoc-content-text has-content">
+                                                @if (DisplayValueConverter is not null)
+                                                {
+                                                    @DisplayValueConverter(item)
+                                                }
+                                            </span>
                                         </span>
                                     }
                                 </div>
@@ -53,9 +74,16 @@
             else
             {
                 <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
-                    <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))" style="margin-bottom: 2px; height:@(ItemHeight)px">
+                    <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))"
+                        style="margin-bottom: 2px; height:@(ItemHeight)px">
                         <span class="dnet-autoc-content-text has-content">
-                            @DisplayValueConverter(item)
+                            <span class="dnet-autoc-content-text has-content">
+                                @if (DisplayValueConverter is not null)
+                                {
+                                    @DisplayValueConverter(item)
+                                }
+                            </span>
+
                         </span>
                     </div>
                 </Virtualize>
@@ -71,7 +99,7 @@
     private int OverlayReferenceId { get; set; }
 
     [Parameter]
-    public List<TItem> Items { get; set; }
+    public List<TItem> Items { get; set; } = new();
 
     [Parameter]
     public string Width { get; set; } = "200px";
@@ -83,31 +111,31 @@
     public string BorderRadius { get; set; } = "0px";
 
     [Parameter]
-    public string MinWidth { get; set; }
+    public string? MinWidth { get; set; }
 
     [Parameter]
-    public string MinHeight { get; set; }
+    public string? MinHeight { get; set; }
 
     [Parameter]
-    public string MaxWidth { get; set; }
+    public string? MaxWidth { get; set; }
 
     [Parameter]
-    public string MaxHeight { get; set; }
+    public string? MaxHeight { get; set; }
 
     [Parameter]
-    public AutoCompleteListService<TItem> AutoCompleteListService { get; set; }
+    public AutoCompleteListService<TItem>? AutoCompleteListService { get; set; }
 
     [Parameter]
-    public Func<TItem, string> DisplayValueConverter { get; set; }
+    public Func<TItem, string>? DisplayValueConverter { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ChildContent { get; set; }
+    public RenderFragment<TItem>? ChildContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemPrefixContent { get; set; }
+    public RenderFragment<TItem>? ItemPrefixContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemSufixContent { get; set; }
+    public RenderFragment<TItem>? ItemSufixContent { get; set; }
 
     [Parameter]
     public int ItemHeight { get; set; } = 40;
@@ -115,10 +143,23 @@
     [Parameter]
     public int ContainerHeight { get; set; } = 200;
 
+    [Parameter]
+    public string PlaceHolder { get; set; } = string.Empty;
 
-    private string _styles { get; set; } = null;
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter]
+    public string CurrentValue { get; set; } = string.Empty;
+
+
+    private string? _styles { get; set; }
 
     private List<TItem> _items { get; set; } = new List<TItem>();
+
+    private Timer? _inputDelayTimer;
+
+    private string _tempInputValue = string.Empty;
 
 
     protected override void OnInitialized()
@@ -127,20 +168,29 @@
 
         _items = Items;
 
-        AutoCompleteListService.OnUpdateList += ListUpdated;
+        if (AutoCompleteListService is not null) AutoCompleteListService.OnUpdateList += ListUpdated;
+
+        _inputDelayTimer = new Timer(_ => { }, null, Timeout.Infinite, Timeout.Infinite);
+
+        _tempInputValue = CurrentValue;
+    }
+
+    private void HandleInput(string value)
+    {
+        if (AutoCompleteListService is not null) AutoCompleteListService.UpdateCurrentValue(_tempInputValue);
     }
 
     private string GetStyles()
     {
         var styles = new StyleBuilder()
-            .AddStyle("width", Width, when: !string.IsNullOrEmpty(Width))
-            .AddStyle("height", Height, when: !string.IsNullOrEmpty(Height))
-            .AddStyle("min-height", MinHeight, when: !string.IsNullOrEmpty(MinHeight))
-            .AddStyle("min-width", MinWidth, when: !string.IsNullOrEmpty(MinWidth))
-            .AddStyle("max-width", MaxWidth, when: !string.IsNullOrEmpty(MaxWidth))
-            .AddStyle("max-height", MaxHeight, when: !string.IsNullOrEmpty(MaxHeight))
-            .AddStyle("transform", $"transform: translateY(@_transformY)")
-            .Build();
+        .AddStyle("width", Width, when: !string.IsNullOrEmpty(Width))
+        .AddStyle("height", Height, when: !string.IsNullOrEmpty(Height))
+        .AddStyle("min-height", MinHeight, when: !string.IsNullOrEmpty(MinHeight))
+        .AddStyle("min-width", MinWidth, when: !string.IsNullOrEmpty(MinWidth))
+        .AddStyle("max-width", MaxWidth, when: !string.IsNullOrEmpty(MaxWidth))
+        .AddStyle("max-height", MaxHeight, when: !string.IsNullOrEmpty(MaxHeight))
+        .AddStyle("transform", $"transform: translateY(@_transformY)")
+        .Build();
 
         return styles;
     }
@@ -161,12 +211,14 @@
 
     private void SelectItem(TItem item)
     {
-        AutoCompleteListService.UpdateSelectedItem(item);
+        if (AutoCompleteListService is not null) AutoCompleteListService.UpdateSelectedItem(item);
     }
 
     public void Dispose()
     {
-        AutoCompleteListService.OnUpdateList -= ListUpdated;
+        if (AutoCompleteListService is not null) AutoCompleteListService.OnUpdateList -= ListUpdated;
+
+        _inputDelayTimer?.Dispose();
     }
 
 }

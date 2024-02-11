@@ -2,9 +2,11 @@
 {
     public class AutoCompleteListService<TItem>
     {
-        public event Action<List<TItem>> OnUpdateList;
+        public event Action<List<TItem>>? OnUpdateList;
 
-        public event Action<TItem> OnItemSelected;
+        public event Action<TItem>? OnItemSelected;
+
+        public event Action<string>? OnUpdateCurrentValueFrontDialog;
 
         public void UdateList(List<TItem> items)
         {
@@ -15,6 +17,12 @@
         {
             OnItemSelected?.Invoke(item);
         }
+
+        public void UpdateCurrentValue(string currentValue)
+        {
+            OnUpdateCurrentValueFrontDialog?.Invoke(currentValue);
+        }
+
 
     }
 }

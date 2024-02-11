@@ -24,20 +24,12 @@
 
 @inject IOverlayService OverlayService
 
-<input @ref="__inputReference" 
-       @attributes="AdditionalAttributes" 
-       class="@_inputTextClass"
-       value="@BindConverter.FormatValue(CurrentValue)" 
-       @onfocus=@(() => Focus()) @onblur=@(() => Blur())
-       @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" 
-       @onfocusin=@(() => OpenMenu())
-       @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) 
-       @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
-       @onclick:stopPropagation="true" 
-       @onclick:preventDefault="true" 
-       placeholder="@PlaceHolder" 
-       disabled="@Disabled"
-       autocomplete="none" />
+<input @ref="__inputReference" @attributes="AdditionalAttributes" class="@_inputTextClass"
+    value="@BindConverter.FormatValue(CurrentValue)" @onfocus=@(() => Focus()) @onblur=@(() => Blur())
+    @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" @onfocusin=@(() => OpenMenu())
+    @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
+    @onclick:stopPropagation="true" @onclick:preventDefault="true" placeholder="@PlaceHolder" disabled="@Disabled"
+    autocomplete="none" />
 
 
 @code {
@@ -58,27 +50,27 @@
     public EventCallback<bool> OnClearInput { get; set; }
 
     [Parameter]
-    [NotNull] 
-    public Func<TItem, string> DisplayValueConverter { get; set; }
+    [NotNull]
+    public Func<TItem, string>? DisplayValueConverter { get; set; }
 
     [Parameter]
-    [NotNull] 
-    public Expression<Func<TItem, TValue>> ValueConverter { get; set; }
+    [NotNull]
+    public Expression<Func<TItem, TValue>>? ValueConverter { get; set; }
 
     [Parameter]
-    public CustomSort<TItem> SortBy { get; set; }
+    public CustomSort<TItem>? SortBy { get; set; }
 
     [Parameter]
-    public CustomFilter<TItem> FilterBy { get; set; }
+    public CustomFilter<TItem>? FilterBy { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemPrefixContent { get; set; }
+    public RenderFragment<TItem>? ItemPrefixContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemSufixContent { get; set; }
+    public RenderFragment<TItem>? ItemSufixContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemChildContent { get; set; }
+    public RenderFragment<TItem>? ItemChildContent { get; set; }
 
     [Parameter]
     public List<TItem> Items { get; set; } = new();
@@ -87,22 +79,22 @@
     public string OrderBy { get; set; } = "ASC";
 
     [Parameter]
-    public string Width { get; set; }
+    public string? Width { get; set; }
 
     [Parameter]
-    public string Height { get; set; }
+    public string? Height { get; set; }
 
     [Parameter]
-    public string MinWidth { get; set; }
+    public string? MinWidth { get; set; }
 
     [Parameter]
-    public string MinHeight { get; set; }
+    public string? MinHeight { get; set; }
 
     [Parameter]
-    public string MaxWidth { get; set; }
+    public string? MaxWidth { get; set; }
 
     [Parameter]
-    public string MaxHeight { get; set; }
+    public string? MaxHeight { get; set; }
 
     [Parameter]
     public string BorderRadius { get; set; } = "5px";
@@ -126,7 +118,10 @@
     public bool Disabled { get; set; }
 
     [Parameter]
-    public string PlaceHolder { get; set; } = "";
+    public string PlaceHolder { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
 
     [Parameter]
     public bool EnableServerSide { get; set; }
@@ -141,19 +136,19 @@
 
     private bool _isClosing;
 
-    private OverlayReference _menuReference;
+    private OverlayReference? _menuReference;
 
-    private Timer _debounceTimer;
+    private Timer? _debounceTimer;
 
-    private AutoCompleteListService<TItem> _autoCompleteListService;
+    private AutoCompleteListService<TItem>? _autoCompleteListService;
 
     private bool _hasFocus { get; set; }
 
     private bool _hasErrors { get; set; }
 
-    private string _placeHolder { get; set; }
+    private string? _placeHolder { get; set; }
 
-    private TItem _itemSelected { get; set; }
+    private TItem? _itemSelected { get; set; }
 
     private bool _hasInitializedParameters;
 
@@ -201,9 +196,7 @@
 
         if (!_hasInitializedParameters)
         {
-            // This is the first run
-            // Could put this logic in OnInit, but its nice to avoid forcing people who override OnInit to call base.OnInit()
-            if(!EnableServerSide)
+            if (!EnableServerSide)
             {
                 if (SortBy == null) throw new NullReferenceException($"SortBy could not be Null");
 
@@ -213,7 +206,6 @@
             _hasInitializedParameters = true;
         }
 
-        // For derived components, retain the usual lifecycle with OnInit/OnParametersSet/etc.
         return base.SetParametersAsync(ParameterView.Empty);
     }
 
@@ -236,6 +228,50 @@
         _autoCompleteListService = new AutoCompleteListService<TItem>();
 
         _autoCompleteListService.OnItemSelected += ItemSelected;
+
+        _autoCompleteListService.OnUpdateCurrentValueFrontDialog += UpdateCurrentValueFrontDialog;
+    }
+
+    private async void UpdateCurrentValueFrontDialog(string currentValue)
+    {
+        UpdateCurrentValue(currentValue);
+
+        if (EnableServerSide)
+        {
+            await OnStopTyping.InvokeAsync(CurrentValueAsString);
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(CurrentValueAsString))
+            {
+                var items = new List<TItem>();
+
+                items = FilterAndSort(CurrentValueAsString);
+
+                var item = items.FirstOrDefault();
+
+                if(_autoCompleteListService is not null) _autoCompleteListService.UdateList(items);
+
+                if (item == null)
+                {
+                    _itemSelected = item;
+
+                    await OnItemSelected.InvokeAsync(item);
+                }
+            }
+            else
+            {
+                if(_autoCompleteListService is not null) _autoCompleteListService.UdateList(_items);
+
+                _itemSelected = default;
+
+                await OnItemSelected.InvokeAsync(_itemSelected);
+            }
+        }
+
+        if (ItemPrefixContent is null && ItemSufixContent is null) return;
+
+        StateHasChanged();
     }
 
     private void UpdateCurrentValue(object value)
@@ -316,7 +352,7 @@
 
                     var item = items.FirstOrDefault();
 
-                    _autoCompleteListService.UdateList(items);
+                    if(_autoCompleteListService is not null) _autoCompleteListService.UdateList(items);
 
                     if (item == null)
                     {
@@ -327,7 +363,7 @@
                 }
                 else
                 {
-                    _autoCompleteListService.UdateList(_items);
+                    if(_autoCompleteListService is not null) _autoCompleteListService.UdateList(_items);
 
                     _itemSelected = default;
 
@@ -335,7 +371,7 @@
                 }
             }
 
-            if (ItemPrefixContent is null && ItemSufixContent is null ) return;
+            if (ItemPrefixContent is null && ItemSufixContent is null) return;
 
             StateHasChanged();
         });
@@ -429,36 +465,36 @@
     private void AttachMenu()
     {
         var positions = new List<ConnectedPosition>
-        {
-            new()
-            {
-                OriginX = HorizontalConnectionPos.Start,
-                OriginY = VerticalConnectionPos.Bottom,
-                OverlayX = HorizontalConnectionPos.Start,
-                OverlayY = VerticalConnectionPos.Top
-            },
-            new()
-            {
-                OriginX = HorizontalConnectionPos.Start,
-                OriginY = VerticalConnectionPos.Top,
-                OverlayX = HorizontalConnectionPos.Start,
-                OverlayY = VerticalConnectionPos.Bottom
-            },
-            new()
-            {
-                OriginX = HorizontalConnectionPos.End,
-                OriginY = VerticalConnectionPos.Bottom,
-                OverlayX = HorizontalConnectionPos.End,
-                OverlayY = VerticalConnectionPos.Top
-            },
-            new()
-            {
-                OriginX = HorizontalConnectionPos.End,
-                OriginY = VerticalConnectionPos.Top,
-                OverlayX = HorizontalConnectionPos.End,
-                OverlayY = VerticalConnectionPos.Bottom
-            }
-        };
+{
+new()
+{
+OriginX = HorizontalConnectionPos.Start,
+OriginY = VerticalConnectionPos.Bottom,
+OverlayX = HorizontalConnectionPos.Start,
+OverlayY = VerticalConnectionPos.Top
+},
+new()
+{
+OriginX = HorizontalConnectionPos.Start,
+OriginY = VerticalConnectionPos.Top,
+OverlayX = HorizontalConnectionPos.Start,
+OverlayY = VerticalConnectionPos.Bottom
+},
+new()
+{
+OriginX = HorizontalConnectionPos.End,
+OriginY = VerticalConnectionPos.Bottom,
+OverlayX = HorizontalConnectionPos.End,
+OverlayY = VerticalConnectionPos.Top
+},
+new()
+{
+OriginX = HorizontalConnectionPos.End,
+OriginY = VerticalConnectionPos.Top,
+OverlayX = HorizontalConnectionPos.End,
+OverlayY = VerticalConnectionPos.Bottom
+}
+};
 
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
         .WithLockedPosition()
@@ -508,6 +544,9 @@
             x.AddAttribute(12, "ItemSufixContent", ItemSufixContent);
             x.AddAttribute(13, "ChildContent", ItemChildContent);
             x.AddAttribute(14, "BorderRadius", BorderRadius);
+            x.AddAttribute(15, "PlaceHolder", PlaceHolder);
+            x.AddAttribute(15, "Label", Label);
+            x.AddAttribute(16, "CurrentValue", CurrentValue);
             x.CloseComponent();
         });
 
