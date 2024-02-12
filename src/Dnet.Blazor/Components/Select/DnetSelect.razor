@@ -44,10 +44,32 @@
 
                 case DataToShow.MultiValue:
                     <div class="dnet-select-multi-value-wrapper">
-                        @foreach (var item in _selectedRowNodes)
+                        @* @foreach (var item in _selectedRowNodes)
                         {
                             <span class="dnet-select-multi-value">@DisplayValueConverter(item.RowData) <span> - </span></span>
-                        }
+                        } *@
+
+                        <span class="dnet-select-multi-value">
+                            @{
+                                var stringBuilder = new System.Text.StringBuilder();
+                                foreach (var item in _selectedRowNodes)
+                                {
+                                    if(DisplayValueConverter is not null)
+                                    {
+                                        var value = DisplayValueConverter(item.RowData);
+                                        if (stringBuilder.Length > 0) // Verificar si ya se agregó algo al StringBuilder
+                                        {
+                                            stringBuilder.Append(", "); // Agregar coma y espacio antes del siguiente valor si no es el primero
+                                        }
+                                        stringBuilder.Append(value); // Agregar el valor convertido
+                                    }
+                                }
+
+                                // Obtener la cadena resultante y mostrarla
+                                var concatenatedValues = stringBuilder.ToString();
+                                @concatenatedValues
+                            }
+                       </span>
                     </div>
                     break;
             }

@@ -88,7 +88,9 @@
     flex-grow: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-start
+    justify-content: flex-start;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dnet-autoc-sufix-content {
@@ -99,6 +101,8 @@
 
 .dnet-autoc-content-text {
     display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     /*  &.has-content {
         margin-left: var(--dnet-autoc-content-text-margin);

@@ -118,4 +118,6 @@ $swift-ease-out-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
 
 .dnet-select-multi-value {
     margin-right: 5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
