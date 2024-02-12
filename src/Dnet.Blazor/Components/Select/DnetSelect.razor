@@ -72,22 +72,22 @@
     public EventCallback<List<TItem>> OnSelectionChanged { get; set; }
 
     [Parameter]
-    public Func<TItem, string> DisplayValueConverter { get; set; }
+    public Func<TItem, string>? DisplayValueConverter { get; set; }
 
     [Parameter]
-    public Expression<Func<TItem, TValue>> ValueConverter { get; set; }
+    public Expression<Func<TItem, TValue>>? ValueConverter { get; set; }
 
     [Parameter]
-    public Func<TItem, TItem, bool> IsSelectedFn { get; set; }
+    public Func<TItem, TItem, bool>? IsSelectedFn { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemPrefixContent { get; set; }
+    public RenderFragment<TItem>? ItemPrefixContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemSufixContent { get; set; }
+    public RenderFragment<TItem>? ItemSufixContent { get; set; }
 
     [Parameter]
-    public RenderFragment ItemChildContent { get; set; }
+    public RenderFragment? ItemChildContent { get; set; }
 
     [Parameter]
     public List<TItem> Items { get; set; } = new();
@@ -96,22 +96,22 @@
     public List<TItem> SelectedItems { get; set; } = new();
 
     [Parameter]
-    public string Width { get; set; }
+    public string? Width { get; set; }
 
     [Parameter]
-    public string Height { get; set; }
+    public string? Height { get; set; }
 
     [Parameter]
-    public string MinWidth { get; set; }
+    public string? MinWidth { get; set; }
 
     [Parameter]
-    public string MinHeight { get; set; }
+    public string? MinHeight { get; set; }
 
     [Parameter]
-    public string MaxWidth { get; set; }
+    public string? MaxWidth { get; set; }
 
     [Parameter]
-    public string MaxHeight { get; set; }
+    public string? MaxHeight { get; set; }
 
     [Parameter]
     public int ItemHeight { get; set; } = 40;
@@ -138,10 +138,10 @@
     public string PlaceHolder { get; set; } = "";
 
     [Parameter]
-    public string Hint { get; set; }
+    public string? Hint { get; set; }
 
     [Parameter]
-    public string Label { get; set; }
+    public string? Label { get; set; }
 
     [Parameter]
     public bool DisabledClearButton { get; set; }
@@ -162,17 +162,17 @@
 
     private bool _isClosing;
 
-    private OverlayReference _menuReference;
+    private OverlayReference? _menuReference;
 
-    private SelectService<TItem> _selectService;
+    private SelectService<TItem>? _selectService;
 
     private bool _hasFocus { get; set; }
 
     private bool _hasErrors { get; set; }
 
-    private string _placeHolder { get; set; }
+    private string? _placeHolder { get; set; }
 
-    private RenderFragment _clearButtonContent { get; set; }
+    private RenderFragment? _clearButtonContent { get; set; }
 
     private List<RowNode<TItem>> _selectedRowNodes { get; set; } = new();
 
@@ -602,6 +602,7 @@
             x.AddAttribute(14, "ChildContent", ItemChildContent);
             x.AddAttribute(15, "MultiSelect", MultiSelect);
             x.AddAttribute(16, "SelectedRowNodes", _selectedRowNodes);
+            x.AddAttribute(16, "Label", Label);
             x.CloseComponent();
         });
 

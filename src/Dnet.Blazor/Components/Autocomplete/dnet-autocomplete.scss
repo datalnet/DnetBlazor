@@ -25,7 +25,7 @@
     overflow-y: scroll;
     overflow-x: hidden;
     cursor: pointer;
-    /*    padding: 15px 10px;*/
+    padding-bottom: 15px;
 }
 
 .dnet-autoc-menu-container-filter-wrapper {
@@ -188,5 +188,6 @@
         display: block;
         margin-top: 15px;
         margin-left: 10px;
+        margin-right: 5px;
     }
 }

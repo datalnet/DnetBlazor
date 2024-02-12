@@ -1,0 +1,33 @@
+﻿<style>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+
+        .form-group .property-value {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 1);
+            display: block;
+        }
+
+        .form-group .property-name {
+            font-size: 11px;
+            color: #757575;
+            display: block;
+        }
+</style>
+
+
+<div class="form-group">
+    <span class="property-name">@Property</span>
+    <span class="property-value">@ChildContent</span>
+</div>
+
+@code {
+    [Parameter]
+    public string? Property { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

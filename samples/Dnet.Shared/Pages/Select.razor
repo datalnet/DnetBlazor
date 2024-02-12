@@ -27,7 +27,7 @@
                 <DataAnnotationsValidator />
                 <div style="display: flex; flex-direction: column">
                     <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between">
-                        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                        <DnetFormField PlaceHolder="Name" Label="Name" IsRequired="true">
                             <ChildContent>
                                 <DnetSelect Value="@_formData.Email" TValue="string"
                                     ValueChanged="@((string e) => MyValueChangeHandler(e))"
@@ -60,7 +60,7 @@
                 <DataAnnotationsValidator />
                 <div style="display: flex; flex-direction: column">
                     <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between">
-                        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                        <DnetFormField PlaceHolder="Name" Label="Name" IsRequired="true">
                             <ChildContent>
                                 <DnetSelect Value="@_formData1.Name" TValue="string"
                                     ValueChanged="@((string e) => MyValueChangeHandler(e))"
@@ -95,7 +95,7 @@
             <div class="dnet-m-b-10">Nested selects</div>
             <EditForm EditContext="@_editContext" style="display: flex;flex-direction:column">
                 <DataAnnotationsValidator />
-                <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                <DnetFormField PlaceHolder="Api Resource" Label="Api Resource" IsRequired="true">
                     <ChildContent>
                         <DnetSelect Value="@_right.ApiResourceName" TValue="string"
                             ValueChanged="@((string e) => ApiResourceChangeHandler(e))"
@@ -109,7 +109,7 @@
                         <ValidationMessage For="@(() => _right.ApiResourceName)" />
                     </ErrorContent>
                 </DnetFormField>
-                <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                <DnetFormField PlaceHolder="ResourceType" Label="ResourceType" IsRequired="true">
                     <ChildContent>
                         <DnetSelect Value="@_right.ResourceType" TValue="string"
                             ValueChanged="@((string e) => ApiResourceObjectChangeHandler(e))"
@@ -130,7 +130,7 @@
             <div class="dnet-m-b-10">Generic select number key</div>
             <EditForm EditContext="@_editContext1" style="display: flex;flex-direction:column">
                 <DataAnnotationsValidator />
-                <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                <DnetFormField PlaceHolder="Api Resource" Label="Api Resource" IsRequired="true">
                     <ChildContent>
                         <DnetSelect TValue="int" @bind-Value="_right1.ApiResourceId" Items="_apiResources"
                             TItem="ApiResourceDto" DisplayValueConverter="(value) => (value.Name)"

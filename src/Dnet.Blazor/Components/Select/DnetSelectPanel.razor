@@ -12,19 +12,25 @@
 
 @inject IJSRuntime JSRuntime
 
-<div class="dnet-autoc-menu-container" style="display:flex;flex-direction:column;width:100%;border-radius:@BorderRadius;">
+<div class="dnet-autoc-menu-container"
+    style="display:flex;flex-direction:column;width:100%;border-radius:@BorderRadius;">
+    <div class="dnet-autoc-resp-input-container">
+        <PropertyDisplay Property="@Label"></PropertyDisplay>
+    </div>
     <div class="dnet-virtual-scroll-viewport dnet-virtual-scroll-orientation-vertical" style="@_styles">
         <div class="dnet-autoc-menu-container-filter-wrapper dnet-virtual-scroll-content-wrapper">
             @if (ItemPrefixContent != null || ItemSufixContent != null || ChildContent != null)
             {
                 <Virtualize Items="@Items" TItem="RowNode<TItem>" Context="item" ItemSize="@ItemHeight">
                     <ItemContent>
-                        <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))" @onclick:preventDefault="true" style="margin-bottom: 2px; height:@(ItemHeight)px">
+                        <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))"
+                            @onclick:preventDefault="true" style="margin-bottom: 2px; height:@(ItemHeight)px">
                             <div class="dnet-autoc-content-wrapper">
                                 @if (MultiSelect)
                                 {
                                     <div class="dnet-autoc-prefix-content">
-                                        <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)" ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                                        <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
+                                            ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
                                     </div>
                                 }
                                 @if (ItemPrefixContent != null)
@@ -41,7 +47,10 @@
                                     else
                                     {
                                         <span class="dnet-autoc-content-text">
-                                            @DisplayValueConverter(item.RowData)
+                                            @if (DisplayValueConverter is not null)
+                                            {
+                                                @DisplayValueConverter(item.RowData)
+                                            }
                                         </span>
                                     }
                                 </div>
@@ -59,17 +68,22 @@
             else
             {
                 <Virtualize Items="@Items" TItem="RowNode<TItem>" Context="item" ItemSize="@ItemHeight">
-                    <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))" @onclick:preventDefault="true" style="margin-bottom: 2px; height:@(ItemHeight)px">
+                    <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))" @onclick:preventDefault="true"
+                        style="margin-bottom: 2px; height:@(ItemHeight)px">
                         <div class="dnet-autoc-content-wrapper">
                             @if (MultiSelect)
                             {
                                 <div class="dnet-autoc-prefix-content">
-                                    <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)" ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                                    <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
+                                        ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
                                 </div>
                             }
                             <div class="dnet-autoc-middle-content">
                                 <span class="dnet-autoc-content-text has-content">
-                                    @DisplayValueConverter(item.RowData)
+                                    @if (DisplayValueConverter is not null)
+                                    {
+                                        @DisplayValueConverter(item.RowData)
+                                    }
                                 </span>
                             </div>
                         </div>
@@ -93,7 +107,7 @@
     private int OverlayReferenceId { get; set; }
 
     [Parameter]
-    public List<RowNode<TItem>> Items { get; set; }
+    public List<RowNode<TItem>>? Items { get; set; }
 
     [Parameter]
     public string Width { get; set; } = "200px";
@@ -102,34 +116,34 @@
     public string Height { get; set; } = "200px";
 
     [Parameter]
-    public string MinWidth { get; set; } = null;
+    public string? MinWidth { get; set; }
 
     [Parameter]
-    public string MinHeight { get; set; } = null;
+    public string? MinHeight { get; set; }
 
     [Parameter]
-    public string MaxWidth { get; set; } = null;
+    public string? MaxWidth { get; set; }
 
     [Parameter]
-    public string MaxHeight { get; set; } = null;
+    public string? MaxHeight { get; set; }
 
     [Parameter]
     public string BorderRadius { get; set; } = "0px";
 
     [Parameter]
-    public SelectService<TItem> SelectService { get; set; }
+    public SelectService<TItem>? SelectService { get; set; }
 
     [Parameter]
-    public Func<TItem, string> DisplayValueConverter { get; set; }
+    public Func<TItem, string>? DisplayValueConverter { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ChildContent { get; set; }
+    public RenderFragment<TItem>? ChildContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemPrefixContent { get; set; }
+    public RenderFragment<TItem>? ItemPrefixContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemSufixContent { get; set; }
+    public RenderFragment<TItem>? ItemSufixContent { get; set; }
 
     [Parameter]
     public int ItemHeight { get; set; } = 40;
@@ -144,9 +158,13 @@
     public bool ConfirmButtons { get; set; }
 
     [Parameter]
-    public List<RowNode<TItem>> SelectedRowNodes { get; set; }
+    public List<RowNode<TItem>>? SelectedRowNodes { get; set; }
 
-    private string _styles { get; set; } = null;
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+
+    private string _styles { get; set; } = string.Empty;
 
 
     protected override void OnInitialized()
@@ -157,14 +175,14 @@
     private string GetStyles()
     {
         var styles = new StyleBuilder()
-            .AddStyle("width", Width, when: !string.IsNullOrEmpty(Width))
-            .AddStyle("height", Height, when: !string.IsNullOrEmpty(Height))
-            .AddStyle("min-height", MinHeight, when: !string.IsNullOrEmpty(MinHeight))
-            .AddStyle("min-width", MinWidth, when: !string.IsNullOrEmpty(MinWidth))
-            .AddStyle("max-width", MaxWidth, when: !string.IsNullOrEmpty(MaxWidth))
-            .AddStyle("max-height", MaxHeight, when: !string.IsNullOrEmpty(MaxHeight))
-            .AddStyle("transform", $"transform: translateY(@_transformY)")
-            .Build();
+        .AddStyle("width", Width, when: !string.IsNullOrEmpty(Width))
+        .AddStyle("height", Height, when: !string.IsNullOrEmpty(Height))
+        .AddStyle("min-height", MinHeight, when: !string.IsNullOrEmpty(MinHeight))
+        .AddStyle("min-width", MinWidth, when: !string.IsNullOrEmpty(MinWidth))
+        .AddStyle("max-width", MaxWidth, when: !string.IsNullOrEmpty(MaxWidth))
+        .AddStyle("max-height", MaxHeight, when: !string.IsNullOrEmpty(MaxHeight))
+        .AddStyle("transform", $"transform: translateY(@_transformY)")
+        .Build();
 
         return styles;
     }

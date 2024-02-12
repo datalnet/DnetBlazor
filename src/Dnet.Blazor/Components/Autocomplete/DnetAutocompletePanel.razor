@@ -23,7 +23,7 @@
     <div class="dnet-autoc-resp-input-container">
         <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true">
             <ChildContent>
-                <DnetInputText @bind-Value="_tempInputValue" PlaceHolder="" type="text" OnStopTyping="HandleInput">
+                <DnetInputText @bind-Value="_tempInputValue" PlaceHolder="" type="text" OnStopTyping="HandleInput" OnClearInput="ClearInput">
                 </DnetInputText>
             </ChildContent>
         </DnetFormField>
@@ -178,6 +178,11 @@
     private void HandleInput(string value)
     {
         if (AutoCompleteListService is not null) AutoCompleteListService.UpdateCurrentValue(_tempInputValue);
+    }
+
+    private async void ClearInput()
+    {
+         if (AutoCompleteListService is not null) AutoCompleteListService.UpdateCurrentValue(string.Empty);
     }
 
     private string GetStyles()
