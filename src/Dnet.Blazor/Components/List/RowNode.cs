@@ -12,6 +12,8 @@
 
         public bool Selectable { get; set; } = true;
 
+         public bool IsFadingOut { get; set; }
+
         public bool Selected
         {
             get => _selected;

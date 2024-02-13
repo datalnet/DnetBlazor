@@ -25,6 +25,7 @@
     overflow-y: auto;
     border: var(--dnet-list-wrapper-border);
     border-radius: 5px;
+    transition: opacity 0.5s ease-in-out;
 
     .dnet-checkbox {
         .dnet-checkbox-layout {
@@ -34,6 +35,10 @@
         .dnet-checkbox-background {
             border-radius: 0;
         }
+    }
+
+    .dnet-item-fadeout {
+        opacity: 0 !important;
     }
 
     .dnet-checkbox:not(.dnet-checkbox-disabled).dnet-accent .dnet-checkbox-ripple .dnet-ripple-element {

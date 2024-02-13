@@ -69,7 +69,7 @@
 
                             var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
-                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))">
+                            <div style="@style" class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))">
                                 @if (ItemPrefixContent != null)
                                 {
                                     <div class="dnet-list-item-prefix-content">
@@ -237,6 +237,8 @@
 
     private List<TItem> _items { get; set; } = new();
 
+    private string style = "cursor: pointer; transition: opacity 0.5s;";
+
 
     public override async Task SetParametersAsync(ParameterView parameters)
     {
@@ -362,6 +364,7 @@
     {
         var classes = new CssBuilder()
             .AddClass("dnet-row-selected", when: rowNode.Selected)
+            .AddClass("dnet-item-fadeout", when: rowNode.IsFadingOut)
             .Build();
 
         return classes;
@@ -743,6 +746,14 @@
         var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
         if(disabled) return;
+
+        item.IsFadingOut = true;
+
+        GetRowCssClasses(item);
+
+        await InvokeAsync(StateHasChanged);
+
+        await Task.Delay(500);
 
         await OnTransfer.InvokeAsync(item.RowData);
     }
