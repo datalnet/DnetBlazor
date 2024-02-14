@@ -2,13 +2,13 @@
 {
     public class DialogConfig
     {
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        public string DialogClass { get; set; }
+        public string? DialogClass { get; set; }
 
         public int OverlayReferenceId { get; set; }
 
-        public string PanelClass { get; set; } = null;
+        public string? PanelClass { get; set; }
 
         public bool HasBackdrop { get; set; } = true;
 
@@ -16,7 +16,7 @@
 
         public bool DisableBackdropClick { get; set; }
 
-        public string BackdropClass { get; set; } = null;
+        public string? BackdropClass { get; set; }
 
         public string Width { get; set; } = "100%";
 

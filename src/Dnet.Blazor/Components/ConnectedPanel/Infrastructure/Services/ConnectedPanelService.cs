@@ -102,6 +102,7 @@ namespace Dnet.Blazor.Components.ConnectedPanel.Infrastructure.Services
                 Width = config.Width,
                 Height = config.Height,
                 FlexibleConnectedPositionStrategyBuilder = flexibleConnectedPositionStrategyBuilder,
+                ComponentType = ComponentType.ConnectedPanel
             };
 
             var connectedPanel = new RenderFragment(x =>

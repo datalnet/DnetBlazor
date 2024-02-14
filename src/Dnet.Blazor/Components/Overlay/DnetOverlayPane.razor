@@ -55,10 +55,12 @@
 
     protected override void OnInitialized()
     {
+         @* var width = GetResponsiveWidthByComponent(OverlayConfig);
+
         _styles = new StyleBuilder("pointer-events", "auto")
             .AddStyle("position", "absolute")
             .AddStyle("visibility", "hidden")
-            .AddStyle("width", OverlayConfig.Width, when: !string.IsNullOrEmpty(OverlayConfig.Width))
+            .AddStyle("width", width, when: !string.IsNullOrEmpty(width))
             .AddStyle("height", OverlayConfig.Height, when: !string.IsNullOrEmpty(OverlayConfig.Height))
             .AddStyle("min-height", OverlayConfig.MinHeight, when: !string.IsNullOrEmpty(OverlayConfig.MinHeight))
             .AddStyle("min-width", OverlayConfig.MinWidth, when: !string.IsNullOrEmpty(OverlayConfig.MinWidth))
@@ -67,7 +69,7 @@
             .AddStyle("margin-top", OverlayConfig.MarginTop, when: !string.IsNullOrEmpty(OverlayConfig.MarginTop))
             .AddStyle("margin-bottom", OverlayConfig.MarginTop, when: !string.IsNullOrEmpty(OverlayConfig.MarginTop))
             .AddStyle("z-index", $"{OverlayConfig.PanelZindex}", when: OverlayConfig.PanelZindex != null)
-            .Build();
+            .Build(); *@
 
         _contentChild = ContentChild;
 
@@ -128,6 +130,8 @@
     private string GetStyles()
     {
 
+        var width = GetResponsiveWidthByComponent(OverlayConfig);
+
         var globalPositionStrategy = OverlayConfig.GlobalPositionStrategy;
 
         var shouldBeFlushHorizontally = (OverlayConfig.Width == "100%" || OverlayConfig.Width == "100vw") &&
@@ -148,7 +152,7 @@
             .AddStyle("margin-top", marginTop, when: !string.IsNullOrEmpty(marginTop))
             .AddStyle("margin-bottom", marginBottom, when: !string.IsNullOrEmpty(marginBottom))
             .AddStyle("margin-right", marginRight, when: !string.IsNullOrEmpty(marginRight))
-            .AddStyle("width", OverlayConfig.Width, when: !string.IsNullOrEmpty(OverlayConfig.Width))
+            .AddStyle("width", width, when: !string.IsNullOrEmpty(width))
             .AddStyle("height", OverlayConfig.Height, when: !string.IsNullOrEmpty(OverlayConfig.Height))
             .AddStyle("min-height", OverlayConfig.MinHeight, when: !string.IsNullOrEmpty(OverlayConfig.MinHeight))
             .AddStyle("min-width", OverlayConfig.MinWidth, when: !string.IsNullOrEmpty(OverlayConfig.MinWidth))
@@ -160,6 +164,39 @@
             .Build();
 
         return styles;
+    }
+
+    private string? GetResponsiveWidthByComponent(OverlayConfig overlayConfig) 
+    {
+        var width = string.Empty;
+
+        var deviceType = dnetOverlay.GetDeviceType();
+
+        if(deviceType == DeviceType.Mobile) {
+
+            switch (overlayConfig.ComponentType)
+            {
+                case ComponentType.Select:
+                case ComponentType.Dialog:
+                case ComponentType.Autocomplete:
+                case ComponentType.FloatingDoubleList:
+                case ComponentType.ConnectedPanel:
+                case ComponentType.DatePicker:
+                case ComponentType.DatePickerWeek:
+                    width = "95%";
+                    break;
+
+                case ComponentType.FloatingPanel:
+                    width = "100%";
+                    break;
+            }
+
+        }
+        else{
+            width = overlayConfig.Width;
+        }
+
+        return width;
     }
 
 

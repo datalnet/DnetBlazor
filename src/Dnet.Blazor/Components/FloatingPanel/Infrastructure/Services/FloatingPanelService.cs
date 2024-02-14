@@ -107,6 +107,7 @@ namespace Dnet.Blazor.Components.FloatingPanel.Infrastructure.Services
                 Width = floatingPanelConfig.Width == null ? "100vw" : floatingPanelConfig.Width + "px",
                 Height = floatingPanelConfig.Height == null ? "100vh" : floatingPanelConfig.Height + "px",
                 GlobalPositionStrategy = globalPositionStrategy,
+                ComponentType = ComponentType.FloatingPanel
             };
 
             var floatingPanel = new RenderFragment(x =>

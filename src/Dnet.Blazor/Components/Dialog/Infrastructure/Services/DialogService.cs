@@ -38,7 +38,8 @@ namespace Dnet.Blazor.Components.Dialog.Infrastructure.Services
                 Height = dialogConfig.Height,
                 MaxHeight = dialogConfig.MaxHeight,
                 MaxWidth = dialogConfig.MaxWidth,
-                GlobalPositionStrategy = globalPositionStrategy
+                GlobalPositionStrategy = globalPositionStrategy,
+                ComponentType = ComponentType.Dialog
             };
 
             var dialog = new RenderFragment(x =>

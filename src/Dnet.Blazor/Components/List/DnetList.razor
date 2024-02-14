@@ -26,7 +26,8 @@
             <div class="dnet-list-search">
                 <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
                     <ChildContent>
-                        <DnetInputText @bind-Value="_filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData" OnClearInput="ClearInput">
+                        <DnetInputText @bind-Value="_filter" PlaceHolder="@PlaceHolder" type="text"
+                            OnStopTyping="FilterData" OnClearInput="ClearInput">
                         </DnetInputText>
                     </ChildContent>
                 </DnetFormField>
@@ -49,27 +50,29 @@
             </div>
             @if (ListOptions.CheckboxSelectionColumn)
             {
-                <DnetInputCheckbox Value="@_allNodesSelected" ValueChanged="(eventArgs =>ChangeSelectAllNodes((bool)eventArgs))" ValueExpression="() => _allNodesSelected" class="dnet-m-r-5"></DnetInputCheckbox>
+                <DnetInputCheckbox Value="@_allNodesSelected" ValueChanged="(eventArgs =>ChangeSelectAllNodes((bool)eventArgs))"
+                    ValueExpression="() => _allNodesSelected" class="dnet-m-r-5"></DnetInputCheckbox>
             }
         </div>
     }
-    <div class="dnet-selection-list-wrapper"
-         ondragover="event.preventDefault();"
-         @ondragstart="(dragEventArgs => HandleDragStart(dragEventArgs))"
-         @ondrop="(dragEventArgs => HandleDrop(dragEventArgs))"
-         @ondragenter="HandleDragEnter"
-         @ondragleave="HandleDragLeave">
+    <div class="dnet-selection-list-wrapper" ondragover="event.preventDefault();"
+        @ondragstart="(dragEventArgs => HandleDragStart(dragEventArgs))"
+        @ondrop="(dragEventArgs => HandleDrop(dragEventArgs))" @ondragenter="HandleDragEnter"
+        @ondragleave="HandleDragLeave">
         <div class="dnet-list-base">
             @if (ItemPrefixContent != null || ItemSufixContent != null || ListItemContent != null)
             {
                 <Virtualize Items="@_rowNodes" TItem="RowNode<TItem>" Context="item">
                     <ItemContent>
                         @{
-                            var draggable = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? "false" : "true";
+                            var draggable = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ?
+                            "false" : "true";
 
-                            var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
+                            var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ?
+                            true : false;
 
-                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))">
+                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable"
+                                @ondragstart="@(() => HandleItemDragStart(item))">
                                 @if (ItemPrefixContent != null)
                                 {
                                     <div class="dnet-list-item-prefix-content">
@@ -83,7 +86,7 @@
                                     }
                                     else
                                     {
-                                        <span class="dnet-list-item-content-text">
+                                        <span class="@($"dnet-list-item-content-text {(disabled ? "disabled" : "")}")">
                                             @ListOptions.DisplayValueConverter(item.RowData)
                                         </span>
                                     }
@@ -96,7 +99,8 @@
                                 }
                                 @if (ListOptions.CheckboxSelectionColumn && disabled == false)
                                 {
-                                    <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)" ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                                    <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
+                                        ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
                                 }
                             </div>
                         }
@@ -107,17 +111,22 @@
             {
                 <Virtualize Items="@_rowNodes" TItem="RowNode<TItem>" Context="item">
                     @{
-                        var draggable = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? "false" : "true";
+                        var draggable = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ?
+                        "false" : "true";
 
-                        var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
+                        var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true
+                        : false;
 
                         <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable">
-                            <div class="dnet-list-item dnet-list-item-content" @onclick="(e => Transfer(item))">
-                                @ListOptions.DisplayValueConverter(item.RowData)
+                            <div class="dnet-list-item-middle-content" @onclick="(e => Transfer(item))">
+                                <span class="@($"dnet-list-item-content-text {(disabled ? "disabled" : "")}")">
+                                    @ListOptions.DisplayValueConverter(item.RowData)
+                                </span>
                             </div>
                             @if (ListOptions.CheckboxSelectionColumn && disabled == false)
                             {
-                                <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)" ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                                <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
+                                    ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
                             }
                         </div>
                     }
@@ -130,15 +139,10 @@
         <div class="dnet-paginator-wrapper">
             @if (ListOptions.EnablePagingination == true)
             {
-                <DnetPaginator @ref="_paginator"
-                               OnGoToFirstPage="GoToFirstPage"
-                               OnGoToPreviousPage="GoToPreviousPage"
-                               OnGoToNextPage="GoToNextPage"
-                               OnGoToLastPage="GoToLastPage"
-                               OnGoToSpecificPage="GoToSpecificPage"
-                               CurrentPage="_searchModel.PaginationModel.CurrentPage"
-                               PageSize="_searchModel.PaginationModel.PageSize"
-                               TotalItems="_searchModel.PaginationModel.ItemsCount">
+                <DnetPaginator @ref="_paginator" OnGoToFirstPage="GoToFirstPage" OnGoToPreviousPage="GoToPreviousPage"
+                    OnGoToNextPage="GoToNextPage" OnGoToLastPage="GoToLastPage" OnGoToSpecificPage="GoToSpecificPage"
+                    CurrentPage="_searchModel.PaginationModel.CurrentPage" PageSize="_searchModel.PaginationModel.PageSize"
+                    TotalItems="_searchModel.PaginationModel.ItemsCount">
                 </DnetPaginator>
             }
             else
@@ -247,7 +251,7 @@
         if (ListItemContent == null && ListOptions.DisplayValueConverter == null)
         {
             throw new InvalidOperationException(
-                        $"{nameof(DnetList<TItem>)} You must supply a value for ComponentType or for DisplayValueConverter.");
+            $"{nameof(DnetList<TItem>)} You must supply a value for ComponentType or for DisplayValueConverter.");
         }
     }
 
@@ -301,8 +305,8 @@
         else
         {
             throw new InvalidOperationException(
-                $"{GetType()} requires the '{nameof(Items)}'parameters to be specified " +
-                $"and non-null.");
+            $"{GetType()} requires the '{nameof(Items)}'parameters to be specified " +
+            $"and non-null.");
         }
     }
 
@@ -330,7 +334,8 @@
     {
         if (_searchModel.PaginationModel.ItemsCount > 0)
         {
-            var (startIndex, count) = PaginatorService.GetRangePage(_searchModel.PaginationModel.CurrentPage, _searchModel.PaginationModel.PageSize, _searchModel.PaginationModel.ItemsCount);
+            var (startIndex, count) = PaginatorService.GetRangePage(_searchModel.PaginationModel.CurrentPage,
+            _searchModel.PaginationModel.PageSize, _searchModel.PaginationModel.ItemsCount);
 
             if (_filteredRowNodes.Any())
             {
@@ -363,9 +368,9 @@
     private string GetRowCssClasses(RowNode<TItem> rowNode)
     {
         var classes = new CssBuilder()
-            .AddClass("dnet-row-selected", when: rowNode.Selected)
-            .AddClass("dnet-item-fadeout", when: rowNode.IsFadingOut)
-            .Build();
+        .AddClass("dnet-row-selected", when: rowNode.Selected)
+        .AddClass("dnet-item-fadeout", when: rowNode.IsFadingOut)
+        .Build();
 
         return classes;
     }
@@ -488,7 +493,8 @@
     private int TextCellComparer(RowNode<TItem> a, RowNode<TItem> b)
     {
         var sortOrder = SortStatus == SortOrder.Descending ? -1 : 1;
-        return string.Compare(ListOptions.SortedData(a.RowData), ListOptions.SortedData(b.RowData), StringComparison.Ordinal) * sortOrder;
+        return string.Compare(ListOptions.SortedData(a.RowData), ListOptions.SortedData(b.RowData), StringComparison.Ordinal) *
+        sortOrder;
     }
 
     private List<RowNode<TItem>> SortTexts(List<RowNode<TItem>> nodes)
@@ -560,7 +566,8 @@
                     }
                     else
                     {
-                        _filteredRowNodes = _rowNodesBk.Where(p => ListOptions.SearchValueConverter(p.RowData).ToUpper().Contains(_filter.ToUpper())).ToList();
+                        _filteredRowNodes = _rowNodesBk.Where(p =>
+            ListOptions.SearchValueConverter(p.RowData).ToUpper().Contains(_filter.ToUpper())).ToList();
 
                         if (SortStatus != SortOrder.None)
                         {
@@ -674,9 +681,11 @@
 
         _rowNodesBk = new List<RowNode<TItem>>();
 
-        if (ListOptions.EnablePagingination && ListOptions.EnableServerSide && totalItems != null) _searchModel.PaginationModel.ItemsCount = (int)totalItems;
+        if (ListOptions.EnablePagingination && ListOptions.EnableServerSide && totalItems != null)
+            _searchModel.PaginationModel.ItemsCount = (int)totalItems;
 
-        if (ListOptions.EnablePagingination && ListOptions.EnableServerSide && currentPage != null) _searchModel.PaginationModel.CurrentPage = (int)currentPage;
+        if (ListOptions.EnablePagingination && ListOptions.EnableServerSide && currentPage != null)
+            _searchModel.PaginationModel.CurrentPage = (int)currentPage;
 
         _searchModel.PaginationModel.PageSize = ListOptions.PageSize;
 
@@ -745,7 +754,7 @@
     {
         var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
-        if(disabled) return;
+        if (disabled) return;
 
         item.IsFadingOut = true;
 

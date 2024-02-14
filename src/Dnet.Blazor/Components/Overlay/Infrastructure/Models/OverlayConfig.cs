@@ -36,6 +36,8 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Models
 
         internal int? LastZindex { get; set; } = 0;
 
+        internal ComponentType? ComponentType { get; set; }
+
         public PositionStrategy PositionStrategy { get; set; } = PositionStrategy.Global;
 
         public GlobalPositionStrategyBuilder GlobalPositionStrategy { get; set; }

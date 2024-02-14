@@ -113,6 +113,7 @@ namespace Dnet.Blazor.Components.Tooltip.Infrastructure.Services
                 MinWidth = tooltipConfig.MinWidth,
                 MaxHeight = tooltipConfig.MaxHeight,
                 MaxWidth = tooltipConfig.MaxWidth,
+                ComponentType = ComponentType.ToolTip
             };
 
             var userContent = new RenderFragment(x => { });
