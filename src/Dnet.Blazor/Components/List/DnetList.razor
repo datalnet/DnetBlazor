@@ -69,7 +69,7 @@
 
                             var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
-                            <div style="@style" class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))">
+                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))">
                                 @if (ItemPrefixContent != null)
                                 {
                                     <div class="dnet-list-item-prefix-content">

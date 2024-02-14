@@ -4,10 +4,13 @@
 @using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models
 @using Dnet.Blazor.Components.AdminLayout.Infrastructure.Services
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Microsoft.JSInterop
 
 @inject IThemeMessageService<ThemeConfigData> ThemeMessageService
 @inject IJSRuntime JSRuntime
+@inject DnetOverlayInterop DnetOverlayInterop
 
 @implements IDisposable;
 
@@ -86,6 +89,8 @@
 
     private LocalStorageData _localStorageData { get; set; } = new();
 
+    private int _windowWidth { get; set; }
+
 
     protected override void OnInitialized()
     {
@@ -116,6 +121,8 @@
     {
         if (firstRender)
         {
+             _windowWidth = await DnetOverlayInterop.GetWindowWidth();
+
             var localStorageData = await DnetAdminDashboardInterop.GetAsync<LocalStorageData>(JSRuntime, "DnetBlazor");
 
             if (localStorageData != null && _showMinifier == true)
@@ -184,6 +191,25 @@
     public bool GetIsMinified()
     {
         return _isMinified;
+    }
+
+    public DeviceType GetDeviceType()
+    {
+        const int mobileWidth = 768; // Ancho máximo para móviles
+        const int tabletWidth = 1024; // Ancho máximo para tablets
+
+        if (_windowWidth <= mobileWidth)
+        {
+            return DeviceType.Mobile;
+        }
+        else if (_windowWidth <= tabletWidth)
+        {
+            return DeviceType.Tablet;
+        }
+        else
+        {
+            return DeviceType.Desktop;
+        }
     }
 
     public void Dispose()

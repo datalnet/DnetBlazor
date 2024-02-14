@@ -3,6 +3,8 @@
 @using Dnet.Blazor.Components.AdminLayout.Menu
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
+@using Dnet.Blazor.Components.AdminLayout.DesktopLayout
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 
 @using Dnet.Blazor.Components.AdminLayout.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.AdminLayout.Infrastructure.Models
@@ -37,6 +39,9 @@
 </li>
 
 @code {
+
+    [CascadingParameter]
+    private DesktopLayout? _desktopLayout { get; set; }
 
     [Parameter]
     public NavigationMenu? Menu { get; set; }
@@ -87,7 +92,10 @@
 
     private void MessageReceived(ActionMessage<ThemeConfigData> themeConfigData)
     {
-        _isOpen = false;
+        //verificar si se esta en modo movile para cerrar
+         var deviceType = _desktopLayout.GetDeviceType();
+
+        if(deviceType != DeviceType.Desktop)_isOpen = false;
 
         StateHasChanged();
     }

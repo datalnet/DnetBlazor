@@ -57,7 +57,7 @@
 
                             var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
-                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))" @onclick="(e => Transfer(item.RowData))">
+                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @ondragstart="@(() => HandleItemDragStart(item))" @onclick="(e => Transfer(item))">
                                 @if (ItemPrefixContent != null)
                                 {
                                     <div class="dnet-list-item-prefix-content">
@@ -99,7 +99,7 @@
 
                         var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
 
-                        <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @onclick="(e => Transfer(item.RowData))">
+                        <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable" @onclick="(e => Transfer(item))">
                             <div class="dnet-list-item-middle-content">
                                 <span class="dnet-list-item-content-text">@ListOptions.DisplayValueConverter(item.RowData)</span>
                             </div>
@@ -343,6 +343,7 @@
     {
         var classes = new CssBuilder()
             .AddClass("dnet-row-selected", when: rowNode.Selected)
+            .AddClass("dnet-item-fadeout", when: rowNode.IsFadingOut)
             .Build();
 
         return classes;
@@ -719,9 +720,21 @@
         }
     }
 
-    private async Task Transfer(TItem item)
+    private async Task Transfer(RowNode<TItem> item)
     {
-        await OnTransfer.InvokeAsync(item);
+        var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true : false;
+
+        if(disabled) return;
+        
+        item.IsFadingOut = true;
+
+        GetRowCssClasses(item);
+
+        await InvokeAsync(StateHasChanged);
+
+        await Task.Delay(500);
+
+        await OnTransfer.InvokeAsync(item.RowData);
     }
 
     private async void ClearInput()
