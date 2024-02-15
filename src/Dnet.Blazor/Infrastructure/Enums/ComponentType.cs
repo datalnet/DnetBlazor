@@ -11,4 +11,5 @@ public enum ComponentType
     FloatingDoubleList = 7,
     FloatingPanel = 8,
     ToolTip = 9,
+    Toast = 10,
 }

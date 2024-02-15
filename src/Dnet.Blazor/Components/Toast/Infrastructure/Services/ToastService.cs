@@ -120,7 +120,8 @@ namespace Dnet.Blazor.Components.Toast.Infrastructure.Services
                 Width = toastConfig.Width + "px",
                 Height = toastConfig.Height + "px",
                 GlobalPositionStrategy = globalPositionStrategy,
-                MaxHeight = "170px"
+                MaxHeight = "170px",
+                ComponentType = ComponentType.Toast
             };
 
             var toast = new RenderFragment(x =>

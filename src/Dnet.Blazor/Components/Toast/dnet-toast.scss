@@ -4,6 +4,7 @@
     --dnet-toast-bg-warning: #FFD029;
     --dnet-toast-bg-danger: #B80012;
     --dnet-toast-margin: 5px 5px 5px 5px;
+    --dnet-toast-border-radius: var(--dnet-component-border-radius)
 }
 
 .dnet-toast-container {
@@ -15,6 +16,7 @@
     height: 100%;
     color: #FFFFFF;
     margin: var(--dnet-toast-margin);
+    border-radius: var(--dnet-toast-border-radius);
 
     &.success {
         background-color: var(--dnet-toast-bg-success);
@@ -57,12 +59,6 @@
     flex: 1 1 auto;
     padding: 5px 0 10px 0;
 }
-
-/*.dnet-toast-container {
-    box-shadow: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12);
-    background: #fff;
-    color: rgba(0,0,0,.87);
-}*/
 
 .dnet-toast-right-column {
     padding: 5px 0 5px 0;

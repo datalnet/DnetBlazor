@@ -20,7 +20,7 @@
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 250px;">
-                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                    <DnetFormField PlaceHolder="Toast type" Label="Toast type" IsRequired="true">
                         <ChildContent>
                             <DnetSelect Value="@_formData1.Value"
                                         TValue="string"
@@ -29,6 +29,7 @@
                                         Items="_features"
                                         TItem="KeyValueModel<ToastType>"
                                         DisplayValueConverter="(value) => (value.Value)"
+                                        ValueConverter="(value) => (value.Value)"
                                         OnItemSelected="ItemSelected"
                                         InputTextToUpper="true"
                                         PlaceHolder="Toast type"
@@ -73,7 +74,7 @@
                 HasTransparentBackdrop = false,
                 ToastType = _formData1.Key,
                 ToastPostion = ToastPostion.BottomRight,
-                ExcutionTime = 5,
+                ExcutionTime = 100000,
                 ShowExcutionTime = true,
                 Height = 80
             };

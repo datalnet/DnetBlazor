@@ -50,14 +50,25 @@
 
             if(deviceType == DeviceType.Mobile || deviceType == DeviceType.Tablet) {
 
-                OverlayConfig.PositionStrategy = PositionStrategy.Global;
+                 switch (OverlayConfig.ComponentType)
+                 {
+                     case ComponentType.Select:
+                     case ComponentType.Dialog:
+                     case ComponentType.Autocomplete:
+                     case ComponentType.FloatingDoubleList:
+                     case ComponentType.ConnectedPanel:
+                     case ComponentType.DatePicker:
+                     case ComponentType.DatePickerWeek:
+                         OverlayConfig.PositionStrategy = PositionStrategy.Global;
 
-                 var globalPositionStrategy = new GlobalPositionStrategyBuilder();
+                         var globalPositionStrategy = new GlobalPositionStrategyBuilder();
 
-                globalPositionStrategy.CenterVertically("");
-                globalPositionStrategy.CenterHorizontally("");
+                         globalPositionStrategy.CenterVertically("");
+                         globalPositionStrategy.CenterHorizontally("");
 
-                OverlayConfig.GlobalPositionStrategy = globalPositionStrategy;
+                        OverlayConfig.GlobalPositionStrategy = globalPositionStrategy;
+                         break;
+                 }
             }
 
             if (OverlayConfig.PositionStrategy == PositionStrategy.Global)

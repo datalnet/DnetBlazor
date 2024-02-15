@@ -118,10 +118,12 @@
 
     private string GetCssClasses()
     {
+        var componentcssclass = GetComponentCssClass(OverlayConfig);
 
         var classes = new CssBuilder()
             .AddClass("cdk-overlay-pane")
             .AddClass(OverlayConfig.PanelClass, when: !string.IsNullOrEmpty(OverlayConfig.PanelClass))
+            .AddClass(componentcssclass, when: !string.IsNullOrEmpty(componentcssclass))
             .Build();
 
         return classes;
@@ -197,6 +199,49 @@
         }
 
         return width;
+    }
+
+    private string? GetComponentCssClass(OverlayConfig overlayConfig) 
+    {
+        var componentclass = string.Empty;
+
+        var deviceType = dnetOverlay.GetDeviceType();
+
+        if(deviceType == DeviceType.Mobile) {
+
+            switch (overlayConfig.ComponentType)
+            {
+                case ComponentType.Select:
+                  componentclass = "dnet-select-mobile";
+                    break;
+                case ComponentType.Dialog:
+                  componentclass = "dnet-dialog-mobile";
+                    break;
+                case ComponentType.Autocomplete:
+                  componentclass = "dnet-autocomplete-mobile";
+                    break;
+                case ComponentType.FloatingDoubleList:
+                  componentclass = "dnet-floatingdoubleList-mobile";
+                    break;
+                case ComponentType.ConnectedPanel:
+                  componentclass = "dnet-connectedpanel-mobile";
+                    break;
+                case ComponentType.DatePicker:
+                  componentclass = "dnet-datepicker-mobile";
+                    break;
+                case ComponentType.DatePickerWeek:
+                  componentclass = "dnet-datepickerWeek-mobile";
+                    break;
+                case ComponentType.FloatingPanel:
+                  componentclass = "dnet-floatingpanel-mobile";
+                    break;
+            }
+        }
+        else{
+            componentclass = string.Empty;
+        }
+
+        return componentclass;
     }
 
 

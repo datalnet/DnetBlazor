@@ -139,8 +139,28 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
 
     @media only screen and (max-width: 550px) {
         .cdk-overlay-pane {
-            align-items: center;
-            justify-content: center;
+
+            &.dnet-autocomplete-mobile {
+                align-self: flex-start;
+                padding-top: 50px;
+            }
+
+            &.dnet-select-mobile,
+            &.dnet-dialog-mobile,
+            &.dnet-floatingdoubleList-mobile,
+            &.dnet-connectedpanel-mobile,
+            &.dnet-datepicker-mobile,
+            &.dnet-datepickerWeek-mobile {
+                align-items: center;
+                justify-content: center;
+            }
+
+            &.dnet-select-mobile,
+            &.dnet-dialog-mobile,
+            &.dnet-floatingdoubleList-mobile,
+            &.dnet-autocomplete-mobile {
+                height: 65dvh;
+            }
         }
     }
 }
