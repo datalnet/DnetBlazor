@@ -18,8 +18,8 @@
             </button>
         </div>
         <div class="dnet-split-content-container-dl">
-            <div style="height: @Height" class="@($"dnet-split-content-right-dl {(isActive ? "active" : "")}")">
-                <DnetListSimple TItem="TItem"
+            <div class="@($"dnet-split-content-right-dl {(isActive ? "active" : "")}")">
+                <DnetList TItem="TItem"
                                 @ref="_leftComponent"
                                 Items="_leftItems"
                                 OnSelectionChange="LeftSelectionChanged"
@@ -30,12 +30,12 @@
                                 ItemPrefixContent="ItemPrefixContent"
                                 ItemSufixContent="ItemSufixContent"
                                 OnSearch="SearchLeft">
-                </DnetListSimple>
+                </DnetList>
             </div>
-            <div class="dnet-double-list-controls-dl" style="height: @Height">
+            <div class="dnet-double-list-controls-dl">
             </div>
-            <div style="height: @Height" class="@($"dnet-split-content-left-dl {(!isActive ? "active" : "")}")">
-                <DnetListSimple TItem="TItem"
+            <div class="@($"dnet-split-content-left-dl {(!isActive ? "active" : "")}")">
+                <DnetList TItem="TItem"
                                 @ref="_rightComponent"
                                 Items="_rightItems"
                                 OnSelectionChange="RightSelectionChanged"
@@ -46,7 +46,7 @@
                                 ItemPrefixContent="ItemPrefixContent"
                                 ItemSufixContent="ItemSufixContent"
                                 OnSearch="SearchRight">
-                </DnetListSimple>
+                </DnetList>
             </div>
         </div>
         <div class="dnet-panel-footer-dl">
@@ -59,13 +59,13 @@
 @code {
 
     [Parameter]
-    public ListOptions<TItem> LeftListOptions { get; set; }
+    public ListOptions<TItem>? LeftListOptions { get; set; }
 
     [Parameter]
-    public ListOptions<TItem> RightListOptions { get; set; }
+    public ListOptions<TItem>? RightListOptions { get; set; }
 
     [Parameter]
-    public IEqualityComparer<TItem> EqualityComparer { get; set; }
+    public IEqualityComparer<TItem>? EqualityComparer { get; set; }
 
     [Parameter]
     public List<TItem>? RightItems { get; set; }
@@ -75,21 +75,6 @@
 
     [Parameter]
     public string? Width { get; set; }
-
-    [Parameter]
-    public string? Height { get; set; }
-
-    [Parameter]
-    public string? MinWidth { get; set; }
-
-    [Parameter]
-    public string? MinHeight { get; set; }
-
-    [Parameter]
-    public string? MaxWidth { get; set; }
-
-    [Parameter]
-    public string? MaxHeight { get; set; }
 
     [Parameter]
     public string BorderRadius { get; set; } = "0px";
@@ -139,9 +124,9 @@
 
     private List<TItem> _rightRemovedItems = new();
 
-    private DnetListSimple<TItem>? _leftComponent { get; set; }
+    private DnetList<TItem>? _leftComponent { get; set; }
 
-    private DnetListSimple<TItem>? _rightComponent { get; set; }
+    private DnetList<TItem>? _rightComponent { get; set; }
 
     private ListOptions<TItem> _leftListOptions { get; set; } = new();
 

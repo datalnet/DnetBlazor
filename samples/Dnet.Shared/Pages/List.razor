@@ -51,9 +51,9 @@
         <DnetList TItem="Person" @ref="_listComponent" Items="_items" OnPaginationChanged="PaginationChanged"
             OnCheckboxClick="CheckboxClick" OnSelectionChange="SelectionChanged" ListOptions="@_listOptions">
             @* <ListItemContent Context="Person">
-            <div style="display: flex; width: 100%; padding-right: 5px">
-            <span>@Person.Name</span>
-            </div>
+                <div style="display: flex; width: 100%; padding-right: 5px">
+                    <span>@Person.Name</span>
+                </div>
             </ListItemContent> *@
             <ItemPrefixContent Context="Person">
                 <div class="dnet-app-icon-wrapper">
@@ -184,6 +184,7 @@ new KeyValueModel<int> { Key = 6, Value = "Show footer" }
         return new ListOptions<Person>()
             {
                 DisplayValueConverter = (value) => value.Name,
+                SupportTextValueConverter = (value) => value.Address,
                 SortedData = (value) => value.Name,
                 SearchValueConverter = (value) => value.Name,
                 DisableItem = (value) => value.IsActive,

@@ -4,19 +4,21 @@ namespace Dnet.Blazor.Components.List
 {
     public class ListOptions<TItem>
     {
-        public Func<TItem, string> DisplayValueConverter { get; set; }
+        public Func<TItem, string>? DisplayValueConverter { get; set; }
 
-        public Func<TItem, string> SortedData { get; set; }
+        public Func<TItem, string>? SupportTextValueConverter { get; set; }
 
-        public Func<TItem, string> SearchValueConverter { get; set; }
+        public Func<TItem, string>? SortedData { get; set; }
 
-        public Func<TItem, bool> DisableItem { get; set; }
+        public Func<TItem, string>? SearchValueConverter { get; set; }
 
-        public string HeaderText { get; set; }
+        public Func<TItem, bool>? DisableItem { get; set; }
 
-        public string SearchInputPlaceHolder { get; set; }
+        public string? HeaderText { get; set; }
 
-        public string SearchInputLabel { get; set; }
+        public string? SearchInputPlaceHolder { get; set; }
+
+        public string? SearchInputLabel { get; set; }
 
         public float ItemSize { get; set; } = 40f;
 
@@ -40,13 +42,13 @@ namespace Dnet.Blazor.Components.List
 
         public bool ShowFooter { get; set; }
 
-        public string ContainerName { get; set; }
+        public string? ContainerName { get; set; }
 
-        public string ConnectedTo { get; set; }
+        public string? ConnectedTo { get; set; }
 
-        public string ServerSideSortColumn { get; set; }
+        public string? ServerSideSortColumn { get; set; }
 
-        public List<string> ServerSideSearchColumns { get; set; }
+        public List<string>? ServerSideSearchColumns { get; set; }
 
         public SortOrder ServerSideSortOrder { get; set; } = SortOrder.Ascending;
     }

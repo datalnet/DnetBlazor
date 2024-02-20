@@ -23,120 +23,136 @@
     @if (ListOptions.EnableSearching)
     {
         <form class="dnet-list-form">
-            <div class="dnet-list-search">
-                <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
-                    <ChildContent>
-                        <DnetInputText @bind-Value="_filter" PlaceHolder="@PlaceHolder" type="text"
-                            OnStopTyping="FilterData" OnClearInput="ClearInput">
-                        </DnetInputText>
-                    </ChildContent>
-                </DnetFormField>
-            </div>
+            <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true" IsRequired="true">
+                <PrefixContent>
+                    <span class="dnet-list-search-icon dnet-list-search-icon-default" unselectable="on"></span>
+                </PrefixContent>
+                <ChildContent>
+                    <DnetInputText @bind-Value="_filter" PlaceHolder="@PlaceHolder" type="text" OnStopTyping="FilterData"
+                        OnClearInput="ClearInput">
+                    </DnetInputText>
+                </ChildContent>
+            </DnetFormField>
         </form>
     }
     @if (ListOptions.ShowHeader)
     {
         <div class="dnet-list-header">
-            <div class="dnet-sort-header" @onclick="Sort">
-                <div class="dnet-sort-header-content">@ListOptions.HeaderText</div>
+            <div class="dnet-list-header-content" @onclick="Sort">
+                <span class="dnet-list-header-text">@ListOptions.HeaderText</span>
                 @if (ListOptions.EnableSorting)
                 {
                     if (IsSortAscending()) { SortIconClass = "dnet-icon-asc"; }
                     if (IsSortDescending()) { SortIconClass = "dnet-icon-desc"; }
                     if (IsSortNone()) { SortIconClass = ""; }
 
-                    <span class="dnet-list-search-icon @SortIconClass" unselectable="on"></span>
+                    <span class="dnet-list-header-sort-icon @SortIconClass" unselectable="on"></span>
                 }
             </div>
             @if (ListOptions.CheckboxSelectionColumn)
             {
-                <DnetInputCheckbox Value="@_allNodesSelected" ValueChanged="(eventArgs =>ChangeSelectAllNodes((bool)eventArgs))"
-                    ValueExpression="() => _allNodesSelected" class="dnet-m-r-5"></DnetInputCheckbox>
+                <div class="dnet-list-header-checkall">
+                    <DnetInputCheckbox Value="@_allNodesSelected"
+                        ValueChanged="(eventArgs =>ChangeSelectAllNodes((bool)eventArgs))"
+                        ValueExpression="() => _allNodesSelected" class="dnet-m-r-5"></DnetInputCheckbox>
+                </div>
             }
         </div>
     }
-    <div class="dnet-selection-list-wrapper" ondragover="event.preventDefault();"
+    <div class="dnet-list-items" ondragover="event.preventDefault();"
         @ondragstart="(dragEventArgs => HandleDragStart(dragEventArgs))"
         @ondrop="(dragEventArgs => HandleDrop(dragEventArgs))" @ondragenter="HandleDragEnter"
         @ondragleave="HandleDragLeave">
-        <div class="dnet-list-base">
-            @if (ItemPrefixContent != null || ItemSufixContent != null || ListItemContent != null)
-            {
-                <Virtualize Items="@_rowNodes" TItem="RowNode<TItem>" Context="item">
-                    <ItemContent>
-                        @{
-                            var draggable = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ?
-                            "false" : "true";
-
-                            var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ?
-                            true : false;
-
-                            <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable"
-                                @ondragstart="@(() => HandleItemDragStart(item))">
-                                @if (ItemPrefixContent != null)
-                                {
-                                    <div class="dnet-list-item-prefix-content">
-                                        @ItemPrefixContent(item.RowData)
-                                    </div>
-                                }
-                                <div class="dnet-list-item-middle-content" @onclick="(e => Transfer(item))">
-                                    @if (ListItemContent != null)
-                                    {
-                                        @ListItemContent(item.RowData)
-                                    }
-                                    else
-                                    {
-                                        <span class="@($"dnet-list-item-content-text {(disabled ? "disabled" : "")}")">
-                                            @ListOptions.DisplayValueConverter(item.RowData)
-                                        </span>
-                                    }
-                                </div>
-                                @if (ItemSufixContent != null)
-                                {
-                                    <div class="dnet-list-item-sufix-content">
-                                        @ItemSufixContent(item.RowData)
-                                    </div>
-                                }
-                                @if (ListOptions.CheckboxSelectionColumn && disabled == false)
-                                {
-                                    <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
-                                        ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
-                                }
-                            </div>
-                        }
-                    </ItemContent>
-                </Virtualize>
-            }
-            else
-            {
-                <Virtualize Items="@_rowNodes" TItem="RowNode<TItem>" Context="item">
+        @if (ItemPrefixContent != null || ItemSufixContent != null || ListItemContent != null)
+        {
+            <Virtualize Items="@_rowNodes" TItem="RowNode<TItem>" Context="item">
+                <ItemContent>
                     @{
                         var draggable = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ?
                         "false" : "true";
 
-                        var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true
-                        : false;
+                        var disabled = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ?
+                        true : false;
 
-                        <div class="dnet-list-item-wrapper @GetRowCssClasses(item)" draggable="@draggable">
-                            <div class="dnet-list-item-middle-content" @onclick="(e => Transfer(item))">
-                                <span class="@($"dnet-list-item-content-text {(disabled ? "disabled" : "")}")">
-                                    @ListOptions.DisplayValueConverter(item.RowData)
-                                </span>
+                        <div class="dnet-list-item @GetRowCssClasses(item)" draggable="@draggable"
+                            @ondragstart="@(() => HandleItemDragStart(item))">
+                            @if (ItemPrefixContent != null)
+                            {
+                                <div class="dnet-list-item-prefix">
+                                    @ItemPrefixContent(item.RowData)
+                                </div>
+                            }
+                            <div class="dnet-list-item-content" @onclick="(e => Transfer(item))">
+                                @if (ListItemContent != null)
+                                {
+                                    @ListItemContent(item.RowData)
+                                }
+                                else
+                                {
+                                    <span class="@($"dnet-list-item-headline {(disabled ? "disabled" : "")}")">
+                                        @ListOptions.DisplayValueConverter(item.RowData)
+                                    </span>
+                                    @if (ListOptions.SupportTextValueConverter is not null)
+                                    {
+                                        <span class="@($"dnet-list-item-supporting-text {(disabled ? "disabled" : "")}")">
+                                            @ListOptions.SupportTextValueConverter(item.RowData)
+                                        </span>
+                                    }
+                                }
                             </div>
+                            @if (ItemSufixContent != null)
+                            {
+                                <div class="dnet-list-item-sufix">
+                                    @ItemSufixContent(item.RowData)
+                                </div>
+                            }
                             @if (ListOptions.CheckboxSelectionColumn && disabled == false)
                             {
-                                <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
-                                    ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                                <div class="dnet-list-item-check">
+                                    <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
+                                        ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                                </div>
                             }
                         </div>
                     }
-                </Virtualize>
-            }
-        </div>
+                </ItemContent>
+            </Virtualize>
+        }
+        else
+        {
+            <Virtualize Items="@_rowNodes" TItem="RowNode<TItem>" Context="item">
+                @{
+                    var draggable = ListOptions.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ?
+                    "false" : "true";
+
+                    var disabled = ListOptions?.DisableItem != null && ListOptions?.DisableItem(item.RowData) == true ? true
+                    : false;
+
+                    <div class="dnet-list-item @GetRowCssClasses(item)" draggable="@draggable">
+                        <div class="dnet-list-item-content" @onclick="(e => Transfer(item))">
+                            <span class="@($"dnet-list-item-headline {(disabled ? "disabled" : "")}")">
+                                @ListOptions.DisplayValueConverter(item.RowData)
+                            </span>
+                            @if (ListOptions.SupportTextValueConverter is not null)
+                            {
+                                <span class="@($"dnet-list-item-supporting-text {(disabled ? "disabled" : "")}")">
+                                    @ListOptions.SupportTextValueConverter(item.RowData)
+                                </span>
+                            }
+                        </div>
+                        @if (ListOptions.CheckboxSelectionColumn && disabled == false)
+                        {
+                            <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
+                                ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                        }
+                    </div>
+                }
+            </Virtualize>
+        }
     </div>
     @if (ListOptions.ShowFooter)
     {
-        <div class="dnet-paginator-wrapper">
+        <div class="dnet-list-footer">
             @if (ListOptions.EnablePagingination == true)
             {
                 <DnetPaginator @ref="_paginator" OnGoToFirstPage="GoToFirstPage" OnGoToPreviousPage="GoToPreviousPage"

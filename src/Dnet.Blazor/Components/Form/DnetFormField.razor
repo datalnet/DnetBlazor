@@ -66,28 +66,28 @@
 @code {
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public RenderFragment PrefixContent { get; set; }
+    public RenderFragment? PrefixContent { get; set; }
 
     [Parameter]
-    public RenderFragment SufixContent { get; set; }
+    public RenderFragment? SufixContent { get; set; }
 
     [Parameter]
-    public RenderFragment HintContent { get; set; }
+    public RenderFragment? HintContent { get; set; }
 
     [Parameter]
-    public RenderFragment ErrorContent { get; set; }
+    public RenderFragment? ErrorContent { get; set; }
 
     [Parameter]
     public bool UseClearButton { get; set; } = false;
 
     [Parameter]
-    public string Label { get; set; }
+    public string? Label { get; set; }
 
     [Parameter]
-    public string PlaceHolder { get; set; }
+    public string? PlaceHolder { get; set; }
 
     [Parameter]
     public bool IsRequired { get; set; }
@@ -95,7 +95,7 @@
     [Parameter]
     public FormAppearance Appearance { get; set; }
 
-    private string _currentValue { get; set; }
+    private string? _currentValue { get; set; }
 
     private bool _hasErrors { get; set; }
 
@@ -105,7 +105,7 @@
 
     private ElementReference _formField;
 
-    private FormFieldCascadingValues _formFieldCascadingValues { get; set; }
+    private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
 
 
     protected override void OnInitialized()

@@ -60,49 +60,48 @@
     public EventCallback<SearchModel> OnSort { get; set; }
 
     [Parameter]
-    public List<TItem> RightItems { get; set; }
+    public List<TItem>? RightItems { get; set; }
 
     [Parameter]
-    public List<TItem> LeftItems { get; set; }
+    public List<TItem>? LeftItems { get; set; }
 
     [Parameter]
     public EventCallback<TransferredItems<TItem>> OnSelectionChanged { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ListItemContent { get; set; }
+    public RenderFragment<TItem>? ListItemContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemPrefixContent { get; set; }
+    public RenderFragment<TItem>? ItemPrefixContent { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemSufixContent { get; set; }
+    public RenderFragment<TItem>? ItemSufixContent { get; set; }
 
     [Parameter]
-    public ListOptions<TItem> LeftListOptions { get; set; }
+    public ListOptions<TItem>? LeftListOptions { get; set; }
 
     [Parameter]
-    public ListOptions<TItem> RightListOptions { get; set; }
+    public ListOptions<TItem>? RightListOptions { get; set; }
 
     [Parameter]
-    public RenderFragment ItemChildContent { get; set; }
+    public RenderFragment? ItemChildContent { get; set; }
 
     [Parameter]
-    public string Width { get; set; }
+    public string? Width { get; set; }
+    [Parameter]
+    public string? Height { get; set; } = "300px";
 
     [Parameter]
-    public string Height { get; set; }
+    public string? MinWidth { get; set; }
 
     [Parameter]
-    public string MinWidth { get; set; }
+    public string? MinHeight { get; set; }
 
     [Parameter]
-    public string MinHeight { get; set; }
+    public string? MaxWidth { get; set; }
 
     [Parameter]
-    public string MaxWidth { get; set; }
-
-    [Parameter]
-    public string MaxHeight { get; set; }
+    public string? MaxHeight { get; set; }
 
     [Parameter]
     public int ItemHeight { get; set; } = 40;
@@ -135,13 +134,13 @@
     public bool IsRequired { get; set; }
 
     [Parameter]
-    public SearchControlOptions SearchControlOptions { get; set; }
+    public SearchControlOptions? SearchControlOptions { get; set; }
 
     [Parameter]
-    public IEqualityComparer<TItem> EqualityComparer { get; set; }
+    public IEqualityComparer<TItem>? EqualityComparer { get; set; }
 
     [Parameter]
-    public Func<TItem, string> DisplayValueConverter { get; set; }
+    public Func<TItem, string>? DisplayValueConverter { get; set; }
 
     [Parameter]
     public ListToShow SideForSelections { get; set; }
@@ -151,17 +150,17 @@
 
     private bool _isOpen;
 
-    private OverlayReference _menuReference;
+    private OverlayReference? _menuReference;
 
-    private FloatingDoubleListService<TItem> _floatingDoubleListService;
+    private FloatingDoubleListService<TItem>? _floatingDoubleListService;
 
     private bool _hasFocus { get; set; }
 
     private bool _hasErrors { get; set; }
 
-    private string _placeHolder { get; set; }
+    private string? _placeHolder { get; set; }
 
-    private RenderFragment _clearButtonContent { get; set; }
+    private RenderFragment? _clearButtonContent { get; set; }
 
     private long _nextId { get; set; } = -1;
 
@@ -413,6 +412,7 @@
                 MinHeight = MinHeight,
                 MaxHeight = MaxHeight,
                 MarginTop = MarginTop,
+                Width = Width,
                 ComponentType = ComponentType.FloatingDoubleList
             };
 
@@ -421,12 +421,6 @@
             x.OpenComponent(0, typeof(DnetFloatingDoubleListPanel<TItem>));
             x.AddAttribute(1, "RightItems", RightItems);
             x.AddAttribute(2, "LeftItems", LeftItems);
-            x.AddAttribute(3, "Width", Width ?? "450px");
-            x.AddAttribute(4, "Height", Height ?? "calc(100% - 50px)");
-            x.AddAttribute(5, "MinWidth", MinWidth);
-            x.AddAttribute(6, "MaxWidth", MaxWidth);
-            x.AddAttribute(7, "MinHeight", MinHeight);
-            x.AddAttribute(8, "MaxHeight", MaxHeight);
             x.AddAttribute(9, "ItemHeight", ItemHeight);
             x.AddAttribute(10, "BorderRadius", BorderRadius);
             x.AddAttribute(11, "FloatingDoubleListService", _floatingDoubleListService);
