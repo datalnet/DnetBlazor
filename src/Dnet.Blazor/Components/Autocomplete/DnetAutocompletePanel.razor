@@ -5,6 +5,9 @@
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
 @using Microsoft.JSInterop
 @using Dnet.Blazor.Components.Form
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
 
 @implements IDisposable
 
@@ -12,86 +15,100 @@
 
 @inject IJSRuntime JSRuntime
 
-@* <div>
-<div>
-<input class="mat-input-element" value="@tempInputValue" @oninput="HandleInput" />
-</div>
-</div> *@
+@inject IOverlayService OverlayService
 
-<div class="dnet-autoc-menu-container"
-    style="display:flex;flex-direction:column;width:100%;border-radius:@BorderRadius;">
-    <div class="dnet-autoc-resp-input-container">
-        <DnetFormField PlaceHolder="@PlaceHolder" Label="@Label" UseClearButton="true">
+<div class="dnet-autocomplete-list-wrapper">
+    <div class="dnet-autocomplete-list-header">
+        <div class="dnet-autocomplete-list-header-content">
+            <span class="dnet-autocomplete-list-header-text">
+                @Label
+            </span>
+        </div>
+        <div class="dnet-autocomplete-list-header-checkall">
+            <span @onclick="CancelOverlay" class="dnet-dialog-icon-wrapper">
+                <span class="dnet-dialog-icon dnet-dialog-close-icon" unselectable="on"></span>
+            </span>
+        </div>
+    </div>
+    <div class="dnet-autocomplete-list-form">
+        <DnetFormField PlaceHolder="" Label="" UseClearButton="true">
+            <PrefixContent>
+                <span class="dnet-list-search-icon dnet-list-search-icon-default" unselectable="on"></span>
+            </PrefixContent>
             <ChildContent>
                 <DnetInputText @bind-Value="_tempInputValue" PlaceHolder="" type="text" OnStopTyping="HandleInput" OnClearInput="ClearInput">
                 </DnetInputText>
             </ChildContent>
         </DnetFormField>
     </div>
-    <div class="dnet-virtual-scroll-viewport dnet-virtual-scroll-orientation-vertical" style="@_styles">
-        <div class="dnet-autoc-menu-container-filter-wrapper dnet-virtual-scroll-content-wrapper">
-            @if (ItemPrefixContent != null || ItemSufixContent != null || ChildContent != null)
-            {
-                <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
-                    <ItemContent>
-                        <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))"
-                            style="margin-bottom: 2px; height:@(ItemHeight)px">
-                            <div class="dnet-autoc-content-wrapper">
-                                @if (ItemPrefixContent != null)
-                                {
-                                    <div class="dnet-autoc-prefix-content">
-                                        @ItemPrefixContent(item)
-                                    </div>
-                                }
-                                <div class="dnet-autoc-middle-content">
-                                    @if (ChildContent != null)
-                                    {
-                                        @ChildContent(item)
-                                    }
-                                    else
-                                    {
-                                        <span class="dnet-autoc-content-text">
-                                            <span class="dnet-autoc-content-text has-content">
-                                                @if (DisplayValueConverter is not null)
-                                                {
-                                                    @DisplayValueConverter(item)
-                                                }
-                                            </span>
-                                        </span>
-                                    }
-                                </div>
-                                @if (ItemSufixContent != null)
-                                {
-                                    <div class="dnet-autoc-sufix-content">
-                                        @ItemSufixContent(item)
-                                    </div>
-                                }
+    <div class="dnet-autocomplete-list-items">
+        @if (ItemPrefixContent != null || ItemSufixContent != null || ChildContent != null)
+        {
+            <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
+                <ItemContent>
+                    <div class="dnet-autocomplete-list-item" @onclick="@(() => SelectItem(item))"
+                         style="margin-bottom: 2px; height:@(ItemHeight)px">
+                        @if (ItemPrefixContent != null)
+                        {
+                            <div class="dnet-autocomplete-list-item-prefix">
+                                @ItemPrefixContent(item)
                             </div>
-                        </div>
-                    </ItemContent>
-                </Virtualize>
-            }
-            else
-            {
-                <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
-                    <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))"
-                        style="margin-bottom: 2px; height:@(ItemHeight)px">
-                        <span class="dnet-autoc-content-text has-content">
-                            <span class="dnet-autoc-content-text has-content">
-                                @if (DisplayValueConverter is not null)
+                        }
+                        <div class="dnet-autocomplete-list-item-content">
+                            @if (ChildContent != null)
+                            {
+                                @ChildContent(item)
+                            }
+                            else
+                            {
+                                <span class="dnet-autocomplete-list-item-headline">
+                                    @if (DisplayValueConverter is not null)
+                                    {
+                                        @DisplayValueConverter(item)
+                                    }
+                                </span>
+                                @if (SupportTextValueConverter is not null)
                                 {
-                                    @DisplayValueConverter(item)
+                                    <span class="dnet-list-item-supporting-text">
+                                        @SupportTextValueConverter(item)
+                                    </span>
                                 }
-                            </span>
-
-                        </span>
+                            }
+                        </div>
+                        @if (ItemSufixContent != null)
+                        {
+                            <div class="dnet-autocomplete-list-item-sufix">
+                                @ItemSufixContent(item)
+                            </div>
+                        }
                     </div>
-                </Virtualize>
-            }
-        </div>
+                </ItemContent>
+            </Virtualize>
+        }
+        else
+        {
+            <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
+                <div class="dnet-autocomplete-list-item" @onclick="@(() => SelectItem(item))"
+                     style="margin-bottom: 2px; height:@(ItemHeight)px">
+                    <span class="dnet-autocomplete-list-item-headline">
+                        @if (DisplayValueConverter is not null)
+                        {
+                            @DisplayValueConverter(item)
+                        }
+                    </span>
+                    @if (SupportTextValueConverter is not null)
+                    {
+                        <span class="dnet-list-item-supporting-text">
+                            @SupportTextValueConverter(item)
+                        </span>
+                    }
+                </div>
+            </Virtualize>
+        }
+    </div>
+    <div class="dnet-autocomplete-list-footer">
     </div>
 </div>
-
 
 @code {
 
@@ -102,13 +119,10 @@
     public List<TItem> Items { get; set; } = new();
 
     [Parameter]
-    public string Width { get; set; } = "200px";
+    public string? Width { get; set; }
 
     [Parameter]
-    public string Height { get; set; } = "200px";
-
-    [Parameter]
-    public string BorderRadius { get; set; } = "0px";
+    public string? Height { get; set; }
 
     [Parameter]
     public string? MinWidth { get; set; }
@@ -127,6 +141,9 @@
 
     [Parameter]
     public Func<TItem, string>? DisplayValueConverter { get; set; }
+
+    [Parameter]
+    public Func<TItem, string>? SupportTextValueConverter { get; set; }
 
     [Parameter]
     public RenderFragment<TItem>? ChildContent { get; set; }
@@ -182,7 +199,7 @@
 
     private async void ClearInput()
     {
-         if (AutoCompleteListService is not null) AutoCompleteListService.UpdateCurrentValue(string.Empty);
+        if (AutoCompleteListService is not null) AutoCompleteListService.UpdateCurrentValue(string.Empty);
     }
 
     private string GetStyles()
@@ -217,6 +234,11 @@
     private void SelectItem(TItem item)
     {
         if (AutoCompleteListService is not null) AutoCompleteListService.UpdateSelectedItem(item);
+    }
+
+    void CancelOverlay()
+    {
+        OverlayService.Detach(new OverlayResult { OverlayReferenceId = OverlayReferenceId });
     }
 
     public void Dispose()

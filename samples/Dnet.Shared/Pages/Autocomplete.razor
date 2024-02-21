@@ -31,11 +31,21 @@
                 <div style="display:flex;align-items: center;flex-direction: column; justify-content:space-between;">
                     <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
                         <ChildContent>
-                            <DnetAutocomplete TValue="string" @bind-Value="@_formData.Name" Items="_items"
-                                TItem="Person" DisplayValueConverter="(value) => value.Name"
-                                ValueConverter="(value) => (value.Name)" OnItemSelected="OnAutocompleteFilter"
-                                InputTextToUpper="true" PlaceHolder="Name" Label="Name" SortBy="@sortBy"
-                                FilterBy="@filterBy">
+                            <DnetAutocomplete TValue="string" 
+                                            @bind-Value="@_formData.Name" 
+                                            Items="_items"
+                                            TItem="Person" 
+                                            DisplayValueConverter="(value) => value.Name"
+                                            ValueConverter="(value) => (value.Name)" 
+                                            OnItemSelected="OnAutocompleteFilter"
+                                            InputTextToUpper="true" 
+                                            Height="300px"
+                                            Width="300px"
+                                            ItemHeight="50"
+                                            PlaceHolder="Name" 
+                                            Label="Name" 
+                                            SortBy="@sortBy"
+                                            FilterBy="@filterBy">
                             </DnetAutocomplete>
                         </ChildContent>
                         <ErrorContent>
@@ -52,19 +62,30 @@
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;">
                     <DnetFormField PlaceHolder="Jhon Doe" Label="Name" UseClearButton="true">
                         <ChildContent>
-                            <DnetAutocomplete Value="@_formData.Name" TValue="string"
-                                ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                ValueExpression="@( () => _formData.Name )" Items="_items" TItem="Person"
-                                DisplayValueConverter="(value) => value.Name" ValueConverter="(value) => (value.Name)"
-                                OnItemSelected="OnAutocompleteFilter" InputTextToUpper="true" PlaceHolder="Name"
-                                SortBy="@sortBy" FilterBy="@filterBy">
+                            <DnetAutocomplete Value="@_formData.Name" 
+                                              TValue="string"
+                                              ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                              ValueExpression="@( () => _formData.Name )" 
+                                              Items="_items" 
+                                              TItem="Person"
+                                              DisplayValueConverter="(value) => value.Name" 
+                                              ValueConverter="(value) => (value.Name)"
+                                              OnItemSelected="OnAutocompleteFilter" 
+                                              InputTextToUpper="true" 
+                                              PlaceHolder="Name" 
+                                              Label="Name" 
+                                              Height="300px"
+                                              Width="300px"
+                                              SortBy="@sortBy" 
+                                              FilterBy="@filterBy">
                                 <ItemChildContent Context="Person">
                                     <div style="width:100%;display:flex;justify-content:center;flex-direction:column">
-                                        <div style="font-size:.875rem;height:20px;display:flex;align-items:center">
-                                            @Person.Name</div>
-                                        <div
-                                            style="font-size:.625rem;height:15px;display:flex;align-items:center;color:#757575">
-                                            @Person.Address</div>
+                                        <div style="font-size:.875rem;height:20px;display:flex;align-items:center;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+                                            @Person.Name
+                                        </div>
+                                        <div style="font-size:.625rem;height:15px;display:flex;align-items:center;color:#757575;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+                                            @Person.Address
+                                        </div>
                                     </div>
                                 </ItemChildContent>
                             </DnetAutocomplete>
@@ -82,11 +103,21 @@
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;">
                     <DnetFormField PlaceHolder="Jhon Doe" Label="Name" UseClearButton="true">
                         <ChildContent>
-                            <DnetAutocomplete @bind-Value="@_formData2.Name" TValue="string" Items="_items"
-                                TItem="Person" DisplayValueConverter="(value) => value.Name"
-                                ValueConverter="(value) => (value.Name)" OnItemSelected="OnAutocompleteFilter"
-                                ItemAutoSelection="_itemAutoSelection" Disabled="false" PlaceHolder="Name"
-                                SortBy="@sortBy" FilterBy="@filterBy">
+                            <DnetAutocomplete @bind-Value="@_formData2.Name" 
+                                              TValue="string" 
+                                              Items="_items"
+                                              TItem="Person" 
+                                              DisplayValueConverter="(value) => value.Name"
+                                              ValueConverter="(value) => (value.Name)" 
+                                              OnItemSelected="OnAutocompleteFilter"
+                                              ItemAutoSelection="_itemAutoSelection" 
+                                              Disabled="false" 
+                                              PlaceHolder="Name" 
+                                              Label="Name" 
+                                              Height="300px"
+                                              Width="300px"
+                                              SortBy="@sortBy" 
+                                              FilterBy="@filterBy">
                                 <ItemSufixContent Context="Person">
                                     <span
                                         style="width: 20px; height: 20px; display: block; background-color: @Person.EyeColor; margin-right:10px"></span>

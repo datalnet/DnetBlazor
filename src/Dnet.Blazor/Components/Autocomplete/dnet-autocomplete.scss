@@ -1,197 +1,204 @@
 ﻿:root {
-    --dnet-autoc-input-padding-lef: 35px;
-    --dnet-autoc-input-border: 1px solid #eee;
-    --dnet-autoc-input-border-radius: 0px;
-    --dnet-autoc-input-conten-wrapper-width: 30px;
-    --dnet-autoc-input-conten-wrapper-height: 30px;
-    --dnet-autoc-content-text-margin: 5px;
-    --dnet-auto-hover-color: rgba(0, 0, 0, .04);
-    --dnet-auto-item-height: 34px;
-    --dnet-autoc-input-height: 30px;
+    --dnet-autocomplete-list-border-color: #ebebeb;
+    --dnet-autocomplete-list-border-radius: 10px;
+    --dnet-autocomplete-list-item-height: 50px;
+    --dnet-autocomplete-list-padding-vertical: 4px;
+    --dnet-autocomplete-list-padding-horizontal: 5px;
+    --dnet-autocomplete-list-header-footer-height: 50px;
+    --dnet-autocomplete-list-check-width: 24px;
+    --dnet-autocomplete-list-prefix-suffix-min-width: 40px;
+    --dnet-autocomplete-list-headline-font-size: 0.875rem;
+    --dnet-autocomplete-list-supporting-text-font-size: 0.75rem;
+    --dnet-autocomplete-list-supporting-text-color: #666666;
+    --dnet-autocomplete-list-hover-background-color: #f2f2f2;
+    --dnet-autocomplete-list-hover-border-radius: 10px;
+    --dnet-autocomplete-list-wrapper-horizontal-padding: 15px;
 }
 
-.dnet-autoc-container {
-    position: relative;
-    width: 100%;
-    height: var(--dnet-autoc-input-height)
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
-.dnet-autoc-menu-container {
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0.1);
-    background: #fff;
-    color: rgba(0, 0, 0, .87);
+.dnet-autocomplete-list-wrapper {
+    display: flex;
+    flex-direction: column;
     height: 100%;
     width: 100%;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    cursor: pointer;
-    padding-bottom: 15px;
-}
+    border: 1px solid var(--dnet-autocomplete-list-border-color);
+    border-radius: var(--dnet-autocomplete-list-border-radius);
+    padding-top: var(--dnet-autocomplete-list-wrapper-horizontal-padding);
+    padding-bottom: var(--dnet-autocomplete-list-wrapper-horizontal-padding);
+    transition: opacity 0.5s ease-in-out;
+    background-color: #ffffff;
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .1), 0 1px 10px 0 rgba(0, 0, 0, .1);
 
-.dnet-autoc-menu-container-filter-wrapper {
-    width: 100%;
-    text-overflow: ellipsis;
-}
-
-.dnet-autoc-input-autocomplete {
-    width: 100%;
-    border-radius: var(--dnet-autoc-input-border-radius);
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    background-color: #FFFFFF;
-    -webkit-transition: none;
-    transition: none;
-    box-shadow: none;
-    color: #38455b;
-    border: var(--dnet-autoc-input-border);
-    padding: 2px 5px;
-
-    &.padding-left {
-        padding-left: var(--dnet-autoc-input-padding-lef);
-    }
-
-    &:focus {
-        box-shadow: 0 0 0 0rem rgba(0, 123, 255, .25);
-        outline: none;
+    .dnet-item-fadeout {
+        opacity: 0 !important;
     }
 }
 
-.dnet-autoc-input-content-wrapper {
-    width: var(--dnet-autoc-input-conten-wrapper-width);
-    height: var(--dnet-autoc-input-conten-wrapper-height);
-    position: absolute;
-    top: 0px;
-    padding: 2px;
+.dnet-autocomplete-list-wrapper:has(.dnet-autocomplete-list-footer) {
+    padding-bottom: 0px;
+}
+
+.dnet-autocomplete-list-wrapper:has(.dnet-autocomplete-list-header) {
+    padding-top: 0px;
+}
+
+.dnet-autocomplete-list-wrapper:has(.dnet-autocomplete-list-form + .dnet-autocomplete-list-header) {
+    padding-top: var(--dnet-autocomplete-list-wrapper-horizontal-padding);
+}
+
+.dnet-autocomplete-list-form,
+.dnet-autocomplete-list-header,
+.dnet-autocomplete-list-footer {
+    min-height: var(--dnet-autocomplete-list-header-footer-height);
+    height: var(--dnet-autocomplete-list-header-footer-height);
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-
-    &.hide {
-        display: none;
-    }
+    padding: var(--dnet-autocomplete-list-padding-vertical) var(--dnet-autocomplete-list-padding-horizontal);
 }
 
-.dnet-autoc-content-wrapper {
-    display: flex;
-    width: 100%
-}
-
-.dnet-autoc-prefix-content {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start
-}
-
-.dnet-autoc-middle-content {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.dnet-autoc-sufix-content {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end
-}
-
-.dnet-autoc-content-text {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    /*  &.has-content {
-        margin-left: var(--dnet-autoc-content-text-margin);
-    }*/
-}
-
-.dnet-autoc-menu-item {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-    line-height: var(--dnet-auto-item-height);
-    height: var(--dnet-auto-item-height);
-    padding: 0 12px;
-    text-align: left;
-    text-decoration: none;
-    max-width: 100%;
-    position: relative;
-    cursor: pointer;
-    outline: none;
-    display: flex;
-    flex-direction: row;
-    max-width: 100%;
-    box-sizing: border-box;
-    align-items: center;
-    -webkit-tap-highlight-color: transparent;
-
-    &:hover {
-        background-color: var(--dnet-auto-hover-color);
-        cursor: pointer;
-    }
-}
-
-.dnet-virtual-scroll-viewport {
-    display: block;
-    position: relative;
-    overflow: auto;
-    contain: strict;
-    transform: translateZ(0);
-    will-change: scroll-position;
-    -webkit-overflow-scrolling: touch;
-}
-
-.dnet-autoc-clear-input {
-    width: var(--dnet-autoc-input-conten-wrapper-width);
-    height: var(--dnet-autoc-input-conten-wrapper-height);
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    padding: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    background-color: transparent;
-}
-
-.dnet-autoc-reset-image-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 1.2em;
-    width: 1.2em;
-    padding-top: 2px;
-}
-
-.dnet-autoc-icon {
-    display: block;
-    background-repeat: no-repeat;
-    background-size: 1em 1em;
-    height: 1em;
-    width: 1em;
-    cursor: pointer;
-    color: #5f6368;
-}
-
-.dnet-autoc-reset-button {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/></svg>");
-}
-
-.dnet-autoc-resp-input-container {
+.dnet-autocomplete-list-form {
     display: none;
 }
 
+.dnet-autocomplete-list-form {
+    padding: var(--dnet-autocomplete-list-padding-vertical) 20px;
+
+    .dnet-form-field-plain-wrapper {
+        margin-bottom: 0px;
+    }
+
+    .dnet-form-field-plain-control-container {
+        border-radius: 15px;
+    }
+}
+
+.dnet-autocomplete-list-header {
+    padding-left: 20px;
+    padding-right: 15px;
+}
+
+.dnet-autocomplete-list-header-content {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dnet-autocomplete-list-header-text {
+    font-weight: 500;
+    font-size: small;
+}
+
+.dnet-autocomplete-list-items {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0 var(--dnet-autocomplete-list-padding-horizontal);
+}
+
+.dnet-autocomplete-list-item {
+    display: flex;
+    align-items: center;
+    height: var(--dnet-autocomplete-list-item-height);
+    padding-left: 15px;
+    padding-right: var(--dnet-autocomplete-list-padding-vertical);
+    padding-top: var(--dnet-autocomplete-list-padding-horizontal);
+    padding-bottom: var(--dnet-autocomplete-list-padding-horizontal);
+    overflow: hidden;
+    transition: background-color 0.3s, border-radius 0.3s;
+
+    &[draggable="false"] {
+        user-drag: none;
+        -webkit-user-drag: none;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        cursor: not-allowed;
+    }
+}
+
+.dnet-autocomplete-list-item:has(.dnet-autocomplete-list-item-prefix) {
+    padding-left: 0px;
+}
+
+.dnet-autocomplete-list-item:hover {
+    background-color: var(--dnet-autocomplete-list-hover-background-color);
+    border-radius: var(--dnet-autocomplete-list-hover-border-radius);
+}
+
+.dnet-autocomplete-list-item-prefix,
+.dnet-autocomplete-list-item-sufix,
+.dnet-autocomplete-list-header-sufix {
+    min-width: var(--dnet-autocomplete-list-prefix-suffix-min-width);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .dnet-checkbox-layout {
+        margin-bottom: 2px;
+    }
+}
+
+.dnet-autocomplete-list-item-check,
+.dnet-autocomplete-list-header-checkall {
+    width: var(--dnet-autocomplete-list-check-width);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dnet-autocomplete-list-item-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding-right: 10px;
+
+    &.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}
+
+.dnet-autocomplete-list-item-headline {
+    font-size: var(--dnet-autocomplete-list-headline-font-size);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}
+
+.dnet-autocomplete-list-item-supporting-text {
+    font-size: var(--dnet-autocomplete-list-supporting-text-font-size);
+    color: var(--dnet-autocomplete-list-supporting-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}
+
+.dnet-autocomplete-list-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
 @media only screen and (max-width: 550px) {
-    .dnet-autoc-resp-input-container {
-        display: block;
-        margin-top: 15px;
-        margin-left: 10px;
-        margin-right: 5px;
+    .dnet-autocomplete-list-form {
+        display: flex;
     }
 }

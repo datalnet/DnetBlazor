@@ -24,13 +24,20 @@
 
 @inject IOverlayService OverlayService
 
-<input @ref="__inputReference" @attributes="AdditionalAttributes" class="@_inputTextClass"
-    value="@BindConverter.FormatValue(CurrentValue)" @onfocus=@(() => Focus()) @onblur=@(() => Blur())
-    @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" @onfocusin=@(() => OpenMenu())
-    @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
-    @onclick:stopPropagation="true" @onclick:preventDefault="true" placeholder="@PlaceHolder" disabled="@Disabled"
-    autocomplete="none" />
-
+<input @ref="__inputReference" 
+       @attributes="AdditionalAttributes" 
+       class="@_inputTextClass"
+       value="@BindConverter.FormatValue(CurrentValue)"
+       @onfocus=@(() => Focus()) @onblur=@(() => Blur())
+       @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" 
+       @onfocusin=@(() => OpenMenu())
+       @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) 
+       @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
+       @onclick:stopPropagation="true" 
+       @onclick:preventDefault="true" 
+       placeholder="@PlaceHolder" 
+       disabled="@Disabled"
+       autocomplete="none" />
 
 @code {
 
@@ -82,10 +89,10 @@
     public string? Width { get; set; }
 
     [Parameter]
-    public string? Height { get; set; }
+    public string? Height { get; set; } = "300px";
 
     [Parameter]
-    public string? MinWidth { get; set; }
+    public string? MinWidth { get; set; } = "300px";
 
     [Parameter]
     public string? MinHeight { get; set; }
@@ -97,13 +104,10 @@
     public string? MaxHeight { get; set; }
 
     [Parameter]
-    public string BorderRadius { get; set; } = "5px";
-
-    [Parameter]
     public string MarginTop { get; set; } = "5px";
 
     [Parameter]
-    public int ItemHeight { get; set; } = 40;
+    public int ItemHeight { get; set; } = 50;
 
     [Parameter]
     public int DebounceTime { get; set; } = 300;
@@ -514,6 +518,8 @@ OverlayY = VerticalConnectionPos.Bottom
                 MinHeight = MinHeight,
                 MaxHeight = MaxHeight,
                 MarginTop = MarginTop,
+                Height = Height,
+                Width = Width,
                 ComponentType = ComponentType.Autocomplete
             };
 
@@ -544,7 +550,6 @@ OverlayY = VerticalConnectionPos.Bottom
             x.AddAttribute(11, "ItemPrefixContent", ItemPrefixContent);
             x.AddAttribute(12, "ItemSufixContent", ItemSufixContent);
             x.AddAttribute(13, "ChildContent", ItemChildContent);
-            x.AddAttribute(14, "BorderRadius", BorderRadius);
             x.AddAttribute(15, "PlaceHolder", PlaceHolder);
             x.AddAttribute(15, "Label", Label);
             x.AddAttribute(16, "CurrentValue", CurrentValue);

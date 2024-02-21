@@ -55,22 +55,6 @@
 
     protected override void OnInitialized()
     {
-         @* var width = GetResponsiveWidthByComponent(OverlayConfig);
-
-        _styles = new StyleBuilder("pointer-events", "auto")
-            .AddStyle("position", "absolute")
-            .AddStyle("visibility", "hidden")
-            .AddStyle("width", width, when: !string.IsNullOrEmpty(width))
-            .AddStyle("height", OverlayConfig.Height, when: !string.IsNullOrEmpty(OverlayConfig.Height))
-            .AddStyle("min-height", OverlayConfig.MinHeight, when: !string.IsNullOrEmpty(OverlayConfig.MinHeight))
-            .AddStyle("min-width", OverlayConfig.MinWidth, when: !string.IsNullOrEmpty(OverlayConfig.MinWidth))
-            .AddStyle("max-width", OverlayConfig.MaxWidth, when: !string.IsNullOrEmpty(OverlayConfig.MaxWidth))
-            .AddStyle("max-height", OverlayConfig.MaxHeight, when: !string.IsNullOrEmpty(OverlayConfig.MaxHeight))
-            .AddStyle("margin-top", OverlayConfig.MarginTop, when: !string.IsNullOrEmpty(OverlayConfig.MarginTop))
-            .AddStyle("margin-bottom", OverlayConfig.MarginTop, when: !string.IsNullOrEmpty(OverlayConfig.MarginTop))
-            .AddStyle("z-index", $"{OverlayConfig.PanelZindex}", when: OverlayConfig.PanelZindex != null)
-            .Build(); *@
-
         _contentChild = ContentChild;
 
         OverlayReferenceId = OverlayConfig.OverlayReferenceId;
@@ -131,8 +115,7 @@
 
     private string GetStyles()
     {
-
-        var width = GetResponsiveWidthByComponent(OverlayConfig);
+        var responsiveData = GetResponsiveDataByComponent(OverlayConfig);
 
         var globalPositionStrategy = OverlayConfig.GlobalPositionStrategy;
 
@@ -154,8 +137,8 @@
             .AddStyle("margin-top", marginTop, when: !string.IsNullOrEmpty(marginTop))
             .AddStyle("margin-bottom", marginBottom, when: !string.IsNullOrEmpty(marginBottom))
             .AddStyle("margin-right", marginRight, when: !string.IsNullOrEmpty(marginRight))
-            .AddStyle("width", width, when: !string.IsNullOrEmpty(width))
-            .AddStyle("height", OverlayConfig.Height, when: !string.IsNullOrEmpty(OverlayConfig.Height))
+            .AddStyle("width", responsiveData.Width, when: !string.IsNullOrEmpty(responsiveData.Width))
+            .AddStyle("height", responsiveData.Height, when: !string.IsNullOrEmpty(responsiveData.Height))
             .AddStyle("min-height", OverlayConfig.MinHeight, when: !string.IsNullOrEmpty(OverlayConfig.MinHeight))
             .AddStyle("min-width", OverlayConfig.MinWidth, when: !string.IsNullOrEmpty(OverlayConfig.MinWidth))
             .AddStyle("max-width", OverlayConfig.MaxWidth, when: !string.IsNullOrEmpty(OverlayConfig.MaxWidth))
@@ -168,9 +151,9 @@
         return styles;
     }
 
-    private string? GetResponsiveWidthByComponent(OverlayConfig overlayConfig) 
+    private ResponsiveData GetResponsiveDataByComponent(OverlayConfig overlayConfig) 
     {
-        var width = string.Empty;
+        var responsiveData = new ResponsiveData();
 
         var deviceType = dnetOverlay.GetDeviceType();
 
@@ -182,23 +165,28 @@
                 case ComponentType.Dialog:
                 case ComponentType.Autocomplete:
                 case ComponentType.FloatingDoubleList:
+                    responsiveData.Width = "95%";
+                    responsiveData.Height = "65dvh";
+                    break;
+
                 case ComponentType.ConnectedPanel:
                 case ComponentType.DatePicker:
                 case ComponentType.DatePickerWeek:
-                    width = "95%";
+                    responsiveData.Width = "95%";
                     break;
 
                 case ComponentType.FloatingPanel:
-                    width = "100%";
+                    responsiveData.Width = "100%";
                     break;
             }
 
         }
         else{
-            width = overlayConfig.Width;
+            responsiveData.Width = overlayConfig.Width;
+            responsiveData.Height = overlayConfig.Height;
         }
 
-        return width;
+        return responsiveData;
     }
 
     private string? GetComponentCssClass(OverlayConfig overlayConfig) 
@@ -697,4 +685,12 @@
             ViewportRuler.OnResized -= ApplyFlexibleStyles;
         }
     }
+
+    internal class ResponsiveData 
+    {
+        public string? Height { get; set; }
+
+        public string? Width { get; set; }
+    }
 }
+
