@@ -64,6 +64,12 @@
                                         @DisplayValueConverter(item.RowData)
                                     }
                                 </span>
+                                 @if (SupportTextValueConverter is not null)
+                                    {
+                                        <span class="dnet-list-item-supporting-text">
+                                            @SupportTextValueConverter(item.RowData)
+                                        </span>
+                                    }
                             }
                         </div>
                         @if (ItemSufixContent != null)
@@ -95,6 +101,12 @@
                                     @DisplayValueConverter(item.RowData)
                                 }
                             </span>
+                               @if (SupportTextValueConverter is not null)
+                                    {
+                                        <span class="dnet-list-item-supporting-text">
+                                            @SupportTextValueConverter(item.RowData)
+                                        </span>
+                                    }
                         </div>
                     </div>
             </Virtualize>
@@ -138,6 +150,9 @@
 
     [Parameter]
     public Func<TItem, string>? DisplayValueConverter { get; set; }
+
+    [Parameter]
+    public Func<TItem, string>? SupportTextValueConverter { get; set; }
 
     [Parameter]
     public RenderFragment<TItem>? ChildContent { get; set; }

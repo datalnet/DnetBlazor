@@ -92,6 +92,9 @@
     public Func<TItem, string>? DisplayValueConverter { get; set; }
 
     [Parameter]
+    public Func<TItem, string>? SupportTextValueConverter { get; set; }
+
+    [Parameter]
     public Expression<Func<TItem, TValue>>? ValueConverter { get; set; }
 
     [Parameter]
@@ -622,7 +625,8 @@
             x.AddAttribute(14, "ChildContent", ItemChildContent);
             x.AddAttribute(15, "MultiSelect", MultiSelect);
             x.AddAttribute(16, "SelectedRowNodes", _selectedRowNodes);
-            x.AddAttribute(16, "Label", Label);
+            x.AddAttribute(17, "Label", Label);
+            x.AddAttribute(18, "SupportTextValueConverter", SupportTextValueConverter);
             x.CloseComponent();
         });
 

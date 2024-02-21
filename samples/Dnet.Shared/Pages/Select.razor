@@ -33,8 +33,10 @@
                                     ValueChanged="@((string e) => MyValueChangeHandler(e))"
                                     ValueExpression="@( () => _formData.Email )" Items="_items" TItem="Person"
                                     DisplayValueConverter="(value) => (value.Name)"
+                                    SupportTextValueConverter="(value) => (value.Address)"
                                     ValueConverter="(value) => (value.Email)" OnItemSelected="ItemSelected"
-                                    InputTextToUpper="true" PlaceHolder="Name" Label="Name">
+                                    InputTextToUpper="true" PlaceHolder="Name" Label="Name"
+                                    ItemHeight="50">
                                 </DnetSelect>
                             </ChildContent>
                             <HintContent>You can add the country prefix</HintContent>

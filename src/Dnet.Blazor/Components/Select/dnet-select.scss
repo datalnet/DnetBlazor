@@ -32,7 +32,7 @@
     padding-bottom: var(--dnet-select-list-wrapper-horizontal-padding);
     transition: opacity 0.5s ease-in-out;
     background-color: #ffffff;
-    box-shadow: 0 2px 1px -1px rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.1), 0 1px 10px 0 rgba(0,0,0,.1);
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .1), 0 1px 10px 0 rgba(0, 0, 0, .1);
 
     .dnet-item-fadeout {
         opacity: 0 !important;
@@ -62,7 +62,7 @@
     padding: var(--dnet-select-list-padding-vertical) var(--dnet-select-list-padding-horizontal);
 }
 
-.dnet-select-list-form {  
+.dnet-select-list-form {
     padding: var(--dnet-select-list-padding-vertical) 20px;
 
     .dnet-form-field-plain-wrapper {
@@ -79,13 +79,13 @@
     padding-right: 15px;
 }
 
-.dnet-select-list-header-content{
+.dnet-select-list-header-content {
     display: flex;
     align-items: center;
     cursor: pointer;
 }
 
-.dnet-select-list-header-text{
+.dnet-select-list-header-text {
     font-weight: 500;
     font-size: small;
 }
@@ -134,6 +134,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    .dnet-checkbox-layout {
+        margin-bottom: 2px;
+    }
 }
 
 .dnet-select-list-item-check,
@@ -189,11 +193,4 @@
     align-items: center;
 }
 
-@media only screen and (max-width: 550px) {
-    .dnet-select-list-wrapper {
-    
-        .dnet-checkbox {
-          display: none;
-        }
-    }
-}
+@media only screen and (max-width: 550px) {}
