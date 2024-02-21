@@ -1,6 +1,6 @@
 ﻿:root {
     --dnet-list-border-color: #ebebeb;
-    --dnet-list-border-radius: 5px;
+    --dnet-list-border-radius: 10px;
     --dnet-list-item-height: 50px;
     --dnet-list-padding-vertical: 4px;
     --dnet-list-padding-horizontal: 5px;
@@ -83,6 +83,11 @@
     cursor: pointer;
 }
 
+.dnet-list-header-text{
+    font-weight: 500;
+    font-size: small;
+}
+
 .dnet-list-items {
     flex-grow: 1;
     overflow-y: auto;
@@ -93,7 +98,7 @@
     display: flex;
     align-items: center;
     height: var(--dnet-list-item-height);
-    padding-left: 20px;
+    padding-left: 15px;
     padding-right: var(--dnet-list-padding-vertical);
     padding-top: var(--dnet-list-padding-horizontal);
     padding-bottom: var(--dnet-list-padding-horizontal);

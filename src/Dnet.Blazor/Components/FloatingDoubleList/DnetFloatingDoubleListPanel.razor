@@ -12,46 +12,37 @@
 
 <div class="dnet-connected-panel-container-dl">
     <div class="dnet-split-content-dl" style="height:calc(100% - 0px);">
-        <div class="dnet-split-content-btn-wrapper-dl">
-            <button type="button" class="dnet-split-content-btn-dl" @onclick="ToggleListView">
-                @(isActive ? $"{_rightListOptions.HeaderText} >>" : $"{_leftListOptions.HeaderText} >>")
-            </button>
+        <div style="display: flex; justify-content: space-between; padding: 10px 5px 10px 10px;">
+            <div class="dnet-split-content-btn-wrapper-dl">
+                <button type="button" class="dnet-split-content-btn-dl" @onclick="ToggleListView">
+                    @(isActive ? $"{_rightListOptions.HeaderText} >>" : $"{_leftListOptions.HeaderText} >>")
+                </button>
+            </div>
+            <span @onclick="Close" class="dnet-dialog-icon-wrapper">
+                <span class="dnet-dialog-icon dnet-dialog-close-icon" unselectable="on"></span>
+            </span>
         </div>
         <div class="dnet-split-content-container-dl">
             <div class="@($"dnet-split-content-right-dl {(isActive ? "active" : "")}")">
-                <DnetList TItem="TItem"
-                                @ref="_leftComponent"
-                                Items="_leftItems"
-                                OnSelectionChange="LeftSelectionChanged"
-                                OnDrop="LeftDrop"
-                                OnTransfer="LeftTransfer"
-                                ListOptions="@_leftListOptions"
-                                ListItemContent="ListItemContent"
-                                ItemPrefixContent="ItemPrefixContent"
-                                ItemSufixContent="ItemSufixContent"
-                                OnSearch="SearchLeft">
+                <DnetList TItem="TItem" @ref="_leftComponent" Items="_leftItems"
+                    OnSelectionChange="LeftSelectionChanged" OnDrop="LeftDrop" OnTransfer="LeftTransfer"
+                    ListOptions="@_leftListOptions" ListItemContent="ListItemContent"
+                    ItemPrefixContent="ItemPrefixContent" ItemSufixContent="ItemSufixContent" OnSearch="SearchLeft">
                 </DnetList>
             </div>
             <div class="dnet-double-list-controls-dl">
             </div>
             <div class="@($"dnet-split-content-left-dl {(!isActive ? "active" : "")}")">
-                <DnetList TItem="TItem"
-                                @ref="_rightComponent"
-                                Items="_rightItems"
-                                OnSelectionChange="RightSelectionChanged"
-                                OnDrop="RightDrop"
-                                OnTransfer="RightTransfer"
-                                ListOptions="@_rightListOptions"
-                                ListItemContent="ListItemContent"
-                                ItemPrefixContent="ItemPrefixContent"
-                                ItemSufixContent="ItemSufixContent"
-                                OnSearch="SearchRight">
+                <DnetList TItem="TItem" @ref="_rightComponent" Items="_rightItems"
+                    OnSelectionChange="RightSelectionChanged" OnDrop="RightDrop" OnTransfer="RightTransfer"
+                    ListOptions="@_rightListOptions" ListItemContent="ListItemContent"
+                    ItemPrefixContent="ItemPrefixContent" ItemSufixContent="ItemSufixContent" OnSearch="SearchRight">
                 </DnetList>
             </div>
         </div>
-        <div class="dnet-panel-footer-dl">
-            <DnetButton OnClick="Close" InitialFocus="true" class="dnet-m-r-10 dnet-m-b-5">Cerrar</DnetButton>
-        </div>
+        @* <div class="dnet-panel-footer-dl">
+        <DnetButton OnClick="Close" InitialFocus="true" class="dnet-m-r-10 dnet-m-b-5">Cerrar</DnetButton>
+        </div> *@
     </div>
 </div>
 
@@ -144,7 +135,7 @@
 
     private string? _rightLabel { get; set; }
 
-      private bool isActive { get; set; } = true;
+    private bool isActive { get; set; } = true;
 
 
     protected override void OnInitialized()
@@ -382,6 +373,3 @@
         }
     }
 }
-
-
-

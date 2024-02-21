@@ -48,8 +48,10 @@
 
 .dnet-split-content-container-dl {
     display: grid;
-    grid-template-columns: 49% 5px 49%;
-    height: calc(100% - 0px);
+    grid-template-columns: 49% 8px 49%;
+    height: calc(100% - 50px);
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .dnet-split-content-btn-wrapper-dl {
@@ -80,13 +82,15 @@
 .dnet-split-content-left-dl,
 .dnet-split-content-right-dl {
     display: block;
-    height: 450px;
+    height: calc(100% - 0px);
+    overflow-y: hidden;
 }
 
 @media only screen and (max-width: 550px) {
     .dnet-split-content-container-dl {
         width: 100%;
         grid-template-columns: 1fr;
+        height: calc(100% - 60px);
     }
 
     .dnet-content-split-container-dl {
