@@ -1,36 +1,18 @@
-﻿@use 'private';
-@use 'variables';
-
-
-$arrow-size: 5px !default;
-$arrow-margin: 4px !default;
-$panel-max-height: 256px !default;
-$item-height: 3em !default;
-
-$placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
-
-$swift-ease-out-duration: 400ms !default;
-$swift-ease-out-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
-
-.mat-select {
+﻿.dnet-plain-select {
     display: inline-block;
     width: 100%;
     outline: none;
+    padding-right: 5px;
 }
 
-.mat-select-trigger {
+.dnet-plain-select-trigger {
     display: inline-table;
     cursor: pointer;
     position: relative;
     box-sizing: border-box;
-
-    .mat-select-disabled & {
-        /*@include vendor-prefixes.user-select(none);*/
-        cursor: default;
-    }
 }
 
-.mat-select-value {
+.dnet-plain-select-value {
     display: table-cell;
     max-width: 0;
     width: 100%;
@@ -39,69 +21,24 @@ $swift-ease-out-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
     white-space: nowrap;
 }
 
-.mat-select-value-text {
+.dnet-plain-select-arrow-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.dnet-plain-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid rgba(0,0,0,0);
+    border-right: 5px solid rgba(0,0,0,0);
+    border-top: 5px solid;
+    margin: 0 4px;
+}
+
+.dnet-plain-select-value-text {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.mat-select-arrow-wrapper {
-    display: table-cell;
-    vertical-align: middle;
-
-    .mat-form-field-appearance-fill & {
-        transform: translateY(-50%);
-    }
-
-    .mat-form-field-appearance-outline & {
-        transform: translateY(-25%);
-    }
-
-    .mat-form-field-appearance-standard.mat-form-field-has-label .mat-select:not(.mat-select-empty) & {
-        transform: translateY(-50%);
-    }
-
-    .mat-form-field-appearance-standard .mat-select.mat-select-empty & {
-        transition: transform variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function;
-    }
-
-    ._mat-animation-noopable.mat-form-field-appearance-standard .mat-select.mat-select-empty & {
-        transition: none;
-    }
-}
-
-.mat-select-arrow {
-    width: 0;
-    height: 0;
-    border-left: $arrow-size solid transparent;
-    border-right: $arrow-size solid transparent;
-    border-top: $arrow-size solid;
-    margin: 0 $arrow-margin;
-}
-
-.mat-form-field-type-mat-select {
-    &:not(.mat-form-field-disabled) .mat-form-field-flex {
-        cursor: pointer;
-    }
-
-    .mat-form-field-label {
-        width: calc(100% - #{$placeholder-arrow-space});
-    }
-}
-
-.mat-select-placeholder {
-    transition: color variables.$swift-ease-out-duration private.private-div(variables.$swift-ease-out-duration, 3) variables.$swift-ease-out-timing-function;
-
-    ._mat-animation-noopable & {
-        transition: none;
-    }
-
-    .mat-form-field-hide-placeholder & {
-        color: transparent;
-        -webkit-text-fill-color: transparent;
-        transition: none;
-        display: block;
-    }
 }
 
 .dnet-select-multi-value-wrapper {

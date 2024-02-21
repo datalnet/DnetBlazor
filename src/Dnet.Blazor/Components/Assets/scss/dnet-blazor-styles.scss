@@ -16,7 +16,6 @@
 @use "../../Overlay/dnet-overlay-prebuilt.scss";
 @use "../../Paginator/dnet-paginator.scss";
 @use "../../RadioButton/dnet-radio-button.scss";
-@use "../../Select/dnet-select.scss";
 @use "../../Spinner/dnet-spinner.scss";
 @use "../../Stepper/dnet-stepper.scss";
 @use "../../Tabs/dnet-tabs.scss";
@@ -27,5 +26,5 @@
 @use "../../DatePickerWeekRaw/dnet-datepicker-week-raw.scss";
 @use "../../FloatingDoubleList/dnet-floating-double-list.scss";
 @use "../../Form/dnet-form-field-plain-cmp.scss";
-@use "../../Select/dnet-generic-select-cmp.scss";
+@use "../../Select/dnet-select.scss";
 @use "../../Button/dnet-button.scss";
