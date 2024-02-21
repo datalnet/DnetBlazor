@@ -1,60 +1,199 @@
-﻿.dnet-plain-select {
-    display: inline-block;
-    width: 100%;
-    outline: none;
-    padding-right: 5px;
+﻿:root {
+    --dnet-select-list-border-color: #ebebeb;
+    --dnet-select-list-border-radius: 10px;
+    --dnet-select-list-item-height: 50px;
+    --dnet-select-list-padding-vertical: 4px;
+    --dnet-select-list-padding-horizontal: 5px;
+    --dnet-select-list-header-footer-height: 50px;
+    --dnet-select-list-check-width: 24px;
+    --dnet-select-list-prefix-suffix-min-width: 40px;
+    --dnet-select-list-headline-font-size: 0.875rem;
+    --dnet-select-list-supporting-text-font-size: 0.75rem;
+    --dnet-select-list-supporting-text-color: #666666;
+    --dnet-select-list-hover-background-color: #f2f2f2;
+    --dnet-select-list-hover-border-radius: 10px;
+    --dnet-select-list-wrapper-horizontal-padding: 15px;
 }
 
-.dnet-plain-select-trigger {
-    display: inline-table;
-    cursor: pointer;
-    position: relative;
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
-.dnet-plain-select-value {
-    display: table-cell;
-    max-width: 0;
-    width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.dnet-plain-select-arrow-wrapper {
-    display: table-cell;
-    vertical-align: middle;
-}
-
-.dnet-plain-select-arrow {
-    width: 0;
-    height: 0;
-    border-left: 5px solid rgba(0,0,0,0);
-    border-right: 5px solid rgba(0,0,0,0);
-    border-top: 5px solid;
-    margin: 0 4px;
-}
-
-.dnet-plain-select-value-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.dnet-select-multi-value-wrapper {
+.dnet-select-list-wrapper {
     display: flex;
-    align-items: center;
-    overflow: hidden;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    border: 1px solid var(--dnet-select-list-border-color);
+    border-radius: var(--dnet-select-list-border-radius);
+    padding-top: var(--dnet-select-list-wrapper-horizontal-padding);
+    padding-bottom: var(--dnet-select-list-wrapper-horizontal-padding);
+    transition: opacity 0.5s ease-in-out;
+    background-color: #ffffff;
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.1), 0 1px 10px 0 rgba(0,0,0,.1);
 
-    span:last-child {
-        span {
-            display: none;
-        }
+    .dnet-item-fadeout {
+        opacity: 0 !important;
     }
 }
 
-.dnet-select-multi-value {
-    margin-right: 5px;
-    text-overflow: ellipsis;
+.dnet-select-list-wrapper:has(.dnet-select-list-footer) {
+    padding-bottom: 0px;
+}
+
+.dnet-select-list-wrapper:has(.dnet-select-list-header) {
+    padding-top: 0px;
+}
+
+.dnet-select-list-wrapper:has(.dnet-select-list-form + .dnet-select-list-header) {
+    padding-top: var(--dnet-select-list-wrapper-horizontal-padding);
+}
+
+.dnet-select-list-form,
+.dnet-select-list-header,
+.dnet-select-list-footer {
+    min-height: var(--dnet-select-list-header-footer-height);
+    height: var(--dnet-select-list-header-footer-height);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--dnet-select-list-padding-vertical) var(--dnet-select-list-padding-horizontal);
+}
+
+.dnet-select-list-form {  
+    padding: var(--dnet-select-list-padding-vertical) 20px;
+
+    .dnet-form-field-plain-wrapper {
+        margin-bottom: 0px;
+    }
+
+    .dnet-form-field-plain-control-container {
+        border-radius: 15px;
+    }
+}
+
+.dnet-select-list-header {
+    padding-left: 20px;
+    padding-right: 15px;
+}
+
+.dnet-select-list-header-content{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dnet-select-list-header-text{
+    font-weight: 500;
+    font-size: small;
+}
+
+.dnet-select-list-items {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0 var(--dnet-select-list-padding-horizontal);
+}
+
+.dnet-select-list-item {
+    display: flex;
+    align-items: center;
+    height: var(--dnet-select-list-item-height);
+    padding-left: 15px;
+    padding-right: var(--dnet-select-list-padding-vertical);
+    padding-top: var(--dnet-select-list-padding-horizontal);
+    padding-bottom: var(--dnet-select-list-padding-horizontal);
     overflow: hidden;
+    transition: background-color 0.3s, border-radius 0.3s;
+
+    &[draggable="false"] {
+        user-drag: none;
+        -webkit-user-drag: none;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        cursor: not-allowed;
+    }
+}
+
+.dnet-select-list-item:has(.dnet-select-list-item-prefix) {
+    padding-left: 0px;
+}
+
+.dnet-select-list-item:hover {
+    background-color: var(--dnet-select-list-hover-background-color);
+    border-radius: var(--dnet-select-list-hover-border-radius);
+}
+
+.dnet-select-list-item-prefix,
+.dnet-select-list-item-sufix,
+.dnet-select-list-header-sufix {
+    min-width: var(--dnet-select-list-prefix-suffix-min-width);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dnet-select-list-item-check,
+.dnet-select-list-header-checkall {
+    width: var(--dnet-select-list-check-width);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dnet-select-list-item-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding-right: 10px;
+
+    &.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}
+
+.dnet-select-list-item-headline {
+    font-size: var(--dnet-select-list-headline-font-size);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}
+
+.dnet-select-list-item-supporting-text {
+    font-size: var(--dnet-select-list-supporting-text-font-size);
+    color: var(--dnet-select-list-supporting-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}
+
+.dnet-select-list-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+@media only screen and (max-width: 550px) {
+    .dnet-select-list-wrapper {
+    
+        .dnet-checkbox {
+          display: none;
+        }
+    }
 }

@@ -8,98 +8,100 @@
 @using Dnet.Blazor.Components.Select.Infrastructure.Services
 @using Dnet.Blazor.Infrastructure.Services.CssBuilder
 @using Microsoft.JSInterop
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Models
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
 
 @typeparam TItem
 
 @inject IJSRuntime JSRuntime
 
-<div class="dnet-autoc-menu-container"
-    style="display:flex;flex-direction:column;width:100%;border-radius:@BorderRadius;">
-    <div class="dnet-autoc-resp-input-container">
-        <PropertyDisplay Property="@Label"></PropertyDisplay>
+@inject IOverlayService OverlayService
+
+<div class="dnet-select-list-wrapper">
+    <div class="dnet-select-list-header">
+        <div class="dnet-select-list-header-content">
+            <span class="dnet-select-list-header-text">
+                @Label
+            </span>
+        </div>
+        <div class="dnet-select-list-header-checkall">
+              <span @onclick="CancelOverlay" class="dnet-dialog-icon-wrapper">
+                <span class="dnet-dialog-icon dnet-dialog-close-icon" unselectable="on"></span>
+            </span>
+        </div>
     </div>
-    <div class="dnet-virtual-scroll-viewport dnet-virtual-scroll-orientation-vertical" style="@_styles">
-        <div class="dnet-autoc-menu-container-filter-wrapper dnet-virtual-scroll-content-wrapper">
-            @if (ItemPrefixContent != null || ItemSufixContent != null || ChildContent != null)
-            {
-                <Virtualize Items="@Items" TItem="RowNode<TItem>" Context="item" ItemSize="@ItemHeight">
-                    <ItemContent>
-                        <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))"
-                            @onclick:preventDefault="true" style="margin-bottom: 2px; height:@(ItemHeight)px">
-                            <div class="dnet-autoc-content-wrapper">
-                                @if (MultiSelect)
-                                {
-                                    <div class="dnet-autoc-prefix-content">
-                                        <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
-                                            ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
-                                    </div>
-                                }
-                                @if (ItemPrefixContent != null)
-                                {
-                                    <div class="dnet-autoc-prefix-content">
-                                        @ItemPrefixContent(item.RowData)
-                                    </div>
-                                }
-                                <div class="dnet-autoc-middle-content">
-                                    @if (ChildContent != null)
-                                    {
-                                        @ChildContent(item.RowData)
-                                    }
-                                    else
-                                    {
-                                        <span class="dnet-autoc-content-text">
-                                            @if (DisplayValueConverter is not null)
-                                            {
-                                                @DisplayValueConverter(item.RowData)
-                                            }
-                                        </span>
-                                    }
-                                </div>
-                                @if (ItemSufixContent != null)
-                                {
-                                    <div class="dnet-autoc-sufix-content">
-                                        @ItemSufixContent(item.RowData)
-                                    </div>
-                                }
+    <div class="dnet-select-list-items">
+        @if (ItemPrefixContent != null || ItemSufixContent != null || ChildContent != null)
+        {
+            <Virtualize Items="@Items" TItem="RowNode<TItem>" Context="item" ItemSize="@ItemHeight">
+                <ItemContent>
+                    <div class="dnet-select-list-item" @onclick="@(() => SelectItem(item))"
+                         @onclick:preventDefault="true" style="margin-bottom: 2px; height:@(ItemHeight)px">
+                        @if (MultiSelect)
+                        {
+                            <div class="dnet-autoc-prefix-content">
+                                <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
+                                                   ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
                             </div>
-                        </div>
-                    </ItemContent>
-                </Virtualize>
-            }
-            else
-            {
-                <Virtualize Items="@Items" TItem="RowNode<TItem>" Context="item" ItemSize="@ItemHeight">
-                    <div class="dnet-autoc-menu-item" @onclick="@(() => SelectItem(item))" @onclick:preventDefault="true"
-                        style="margin-bottom: 2px; height:@(ItemHeight)px">
-                        <div class="dnet-autoc-content-wrapper">
-                            @if (MultiSelect)
+                        }
+                        @if (ItemPrefixContent != null)
+                        {
+                            <div class="dnet-select-list-item-prefix">
+                                @ItemPrefixContent(item.RowData)
+                            </div>
+                        }
+                        <div class="dnet-select-list-item-content">
+                            @if (ChildContent != null)
                             {
-                                <div class="dnet-autoc-prefix-content">
-                                    <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
-                                        ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
-                                </div>
+                                @ChildContent(item.RowData)
                             }
-                            <div class="dnet-autoc-middle-content">
-                                <span class="dnet-autoc-content-text has-content">
+                            else
+                            {
+                                <span class="dnet-select-list-item-headline">
                                     @if (DisplayValueConverter is not null)
                                     {
                                         @DisplayValueConverter(item.RowData)
                                     }
                                 </span>
+                            }
+                        </div>
+                        @if (ItemSufixContent != null)
+                        {
+                            <div class="dnet-select-list-item-sufix">
+                                @ItemSufixContent(item.RowData)
                             </div>
+                        }
+                    </div>
+                </ItemContent>
+            </Virtualize>
+        }
+        else
+        {
+            <Virtualize Items="@Items" TItem="RowNode<TItem>" Context="item" ItemSize="@ItemHeight">
+                <div class="dnet-select-list-item" @onclick="@(() => SelectItem(item))" @onclick:preventDefault="true"
+                     style="margin-bottom: 2px; height:@(ItemHeight)px">
+                        @if (MultiSelect)
+                        {
+                            <div class="dnet-select-list-item-prefix">
+                                <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
+                                                   ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                            </div>
+                        }
+                        <div class="dnet-select-list-item-content">
+                            <span class="dnet-select-list-item-headline">
+                                @if (DisplayValueConverter is not null)
+                                {
+                                    @DisplayValueConverter(item.RowData)
+                                }
+                            </span>
                         </div>
                     </div>
-                </Virtualize>
-            }
-        </div>
+            </Virtualize>
+        }
     </div>
-    @if (ConfirmButtons)
-    {
-        <div style="height: 50px;display: flex;align-items: center;justify-content: flex-end;">
-            <DnetButton OnClick="CancelOverlay" class="dnet-m-r-10">Close</DnetButton>
-            <DnetButton OnClick="CloseOverlay" InitialFocus="true" class="dnet-m-r-10">Ok</DnetButton>
-        </div>
-    }
+    <div class="dnet-select-list-footer">
+    </div>
 </div>
 
 @code {
@@ -230,7 +232,7 @@
 
     void CancelOverlay()
     {
-
+        OverlayService.Detach(new OverlayResult { OverlayReferenceId = OverlayReferenceId});
     }
 
     void CloseOverlay()
