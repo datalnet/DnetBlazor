@@ -2,17 +2,17 @@
 
 public class FormEventService : IFormEventService
 {
-    public event Action<bool> OnError;
+    public event Action<bool>? OnError;
 
-    public event Action<bool> OnFocus;
+    public event Action<bool>? OnFocus;
 
-    public event Action<string?> OnCurrentValue;
+    public event Action<string?>? OnCurrentValue;
 
-    public event Action OnClearContent;
+    public event Action? OnClearContent;
 
-    public event Action<FormEventData> OnFormEventRaised;
+    public event Action<FormEventData>? OnFormEventRaised;
 
-    public event Action OnSufixContentClicked;
+    public event Action? OnSufixContentClicked;
 
     public void RaiseError(bool hasError)
     {

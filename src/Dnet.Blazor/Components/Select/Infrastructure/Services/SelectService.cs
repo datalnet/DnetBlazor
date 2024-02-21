@@ -2,11 +2,11 @@
 {
     public class SelectService<TItem>
     {
-        public event Action<List<TItem>> OnUpdateList;
+        public event Action<List<TItem>>? OnUpdateList;
 
-        public event Action<TItem> OnItemSelected;
+        public event Action<TItem>? OnItemSelected;
 
-        public event Action<List<RowNode<TItem>>> OnSelectionChange;
+        public event Action<List<RowNode<TItem>>>? OnSelectionChange;
 
         public void UdateList(List<TItem> items)
         {

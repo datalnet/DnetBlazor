@@ -20,50 +20,6 @@
 
 @inject IOverlayService OverlayService
 
-@* @if (ComponentTheme == ComponentTheme.Material)
-{
-    <DnetFormField CurrentValue="@CurrentValue"
-               Appearance="@Appearance"
-               PlaceHolder="@PlaceHolder"
-               FloatLabel="@FloatLabel"
-               HasFocus="@_hasFocus"
-               Disabled="@Disabled"
-               Label="@Label"
-               PrefixContent="@PrefixContent"
-               HintContent="@HintContent"
-               ErrorContent="@ErrorContent"
-               HasErrors="@(_hasErrors  && EditContext.IsModified(FieldIdentifier))"
-               IsRequired="@IsRequired"
-               @ref="_formField">
-        <ChildContent>
-            <div class="mat-select" @onclick="ToggleMenu">
-                <div @ref="_menuTrigger"
-                     class="mat-select-trigger">
-                    <div class="mat-select-value">
-                        @if (string.IsNullOrEmpty(CurrentValue) && !string.IsNullOrEmpty(_placeHolder))
-                        {
-                            <span class="mat-select-placeholder mat-select-min-line">@_placeHolder</span>
-                        }
-                        @if (!string.IsNullOrEmpty(CurrentValue))
-                        {
-                            <span class="mat-select-value-text">
-                                <span class="mat-select-min-line">@BindConverter.FormatValue(CurrentValue)</span>
-                            </span>
-                        }
-                    </div>
-                    <div class="mat-select-arrow-wrapper" @onclick="ToggleMenu">
-                        <span class="dnet-datepickerweek-icon dnet-datepickerweek-icon-default" unselectable="on"></span>
-                    </div>
-                </div>
-            </div>
-        </ChildContent>
-    </DnetFormField>
-}
-else
-{
-   
-} *@
-
 <div class="mat-select" @onclick="ToggleMenu">
     <div @ref="_menuTrigger"
          class="mat-select-trigger">
@@ -109,22 +65,22 @@ else
     public DateTime? FirstDayToShow { get; set; }
 
     [Parameter]
-    public Func<CalendarDay, bool> DatepickerFilter { get; set; }
+    public Func<CalendarDay, bool>? DatepickerFilter { get; set; }
 
     [Parameter]
     public EventCallback<List<CalendarDay>> OnWeekSelected { get; set; }
 
     [Parameter]
-    public RenderFragment PrefixContent { get; set; }
+    public RenderFragment? PrefixContent { get; set; }
 
     [Parameter]
-    public RenderFragment HintContent { get; set; }
+    public RenderFragment? HintContent { get; set; }
 
     [Parameter]
-    public RenderFragment ErrorContent { get; set; }
+    public RenderFragment? ErrorContent { get; set; }
 
     [Parameter]
-    public string Label { get; set; }
+    public string? Label { get; set; }
 
     [Parameter]
     public ComponentTheme ComponentTheme { get; set; } = ComponentTheme.Material;
@@ -137,9 +93,9 @@ else
 
     private bool _isOpen = false;
 
-    private OverlayReference _menuReference;
+    private OverlayReference? _menuReference;
 
-    private DatePickerWeekService _datePickerService;
+    private DatePickerWeekService? _datePickerService;
 
     private CalendarDay _selectedDay = new();
 
@@ -149,9 +105,9 @@ else
 
     private bool _hasErrors { get; set; }
 
-    private string _placeHolder { get; set; }
+    private string? _placeHolder { get; set; }
 
-    private IFormEventService _formEventService { get; set; }
+    private IFormEventService? _formEventService { get; set; }
 
     private string _inputTextClass =>
         new CssBuilder("mat-input-element")

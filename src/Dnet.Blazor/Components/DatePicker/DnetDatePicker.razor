@@ -59,7 +59,7 @@
     public DateTime? FirstDayToShow { get; set; }
 
     [Parameter]
-    public Func<CalendarDay, bool> DatepickerFilter { get; set; }
+    public Func<CalendarDay, bool>? DatepickerFilter { get; set; }
 
     [Parameter]
     public EventCallback<CalendarDay> OnDaySelected { get; set; }
@@ -76,9 +76,9 @@
 
     private bool _isOpen = false;
 
-    private OverlayReference _menuReference;
+    private OverlayReference? _menuReference;
 
-    private DatePickerService _datePickerService;
+    private DatePickerService? _datePickerService;
 
     private CalendarDay _selectedDay = new CalendarDay();
 
@@ -86,9 +86,9 @@
 
     private bool _hasErrors { get; set; }
 
-    private string _placeHolder { get; set; }
+    private string? _placeHolder { get; set; }
 
-    private IFormEventService _formEventService { get; set; }
+    private IFormEventService? _formEventService { get; set; }
 
     private string _inputTextClass =>
         new CssBuilder("mat-input-element")

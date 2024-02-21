@@ -22,7 +22,7 @@
 @code {
 
     [Parameter]
-    public AdvancedFilterModel FilterData { get; set; }
+    public AdvancedFilterModel? FilterData { get; set; }
 
     [Parameter]
     public bool IsFiltered { get; set; }
@@ -34,14 +34,14 @@
     public EventCallback<bool> OnFilter { get; set; }
 
     [Parameter]
-    public string DateFormat { get; set; }
+    public string? DateFormat { get; set; }
 
 
     private ElementReference _menuTrigger;
 
     private bool _isOpen = false;
 
-    private OverlayReference _menuReference;
+    private OverlayReference? _menuReference;
 
 
     private async Task ToggleMenu()

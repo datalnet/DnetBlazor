@@ -19,17 +19,17 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Entities
 
         public bool AdvShow { get; set; }
 
-        public string GroupValue { get; set; }
+        public string? GroupValue { get; set; }
 
-        public TItem RowData { get; set; }
+        public TItem? RowData { get; set; }
 
-        public object RowDataValue { get; set; }
+        public object? RowDataValue { get; set; }
 
-        public List<TItem> GroupData { get; set; }
+        public List<TItem>? GroupData { get; set; }
 
-        public List<TItem> AggregatedData { get; set; }
+        public List<TItem>? AggregatedData { get; set; }
 
-        public RowNode<TItem> Parent { get; set; }
+        public RowNode<TItem>? Parent { get; set; }
 
         public int? Level { get; set; }
 
@@ -47,21 +47,21 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Entities
 
         public int? ChildIndex { get; set; }
 
-        public List<GridColumn<TItem>> RowGroupColumn { get; set; }
+        public List<GridColumn<TItem>>? RowGroupColumn { get; set; }
 
-        public GridColumn<TItem> RowGridColumn { get; set; }
+        public GridColumn<TItem>? RowGridColumn { get; set; }
 
-        public string KeyRowGroupColumn { get; set; }
+        public string? KeyRowGroupColumn { get; set; }
 
-        public List<RowNode<TItem>> ChildrenAfterGroup { get; set; }
+        public List<RowNode<TItem>>? ChildrenAfterGroup { get; set; }
 
-        public List<RowNode<TItem>> ChildrenAfterFilter { get; set; }
+        public List<RowNode<TItem>>? ChildrenAfterFilter { get; set; }
 
-        public List<RowNode<TItem>> ChildrenAfterSort { get; set; }
+        public List<RowNode<TItem>>? ChildrenAfterSort { get; set; }
 
-        public Dictionary<GridColumn<TItem>, bool> RowSpanSkippedCells { get; set; }
+        public Dictionary<GridColumn<TItem>, bool>? RowSpanSkippedCells { get; set; }
 
-        public Dictionary<GridColumn<TItem>, uint> RowSpanTargetCells { get; set; }
+        public Dictionary<GridColumn<TItem>, uint>? RowSpanTargetCells { get; set; }
 
         public int? AllChildrenCount { get; set; }
 
@@ -73,9 +73,9 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Entities
 
         public bool First { get; set; }
 
-        public Dictionary<GridColumn<TItem>, uint> FirstSpanRow { get; set; }
+        public Dictionary<GridColumn<TItem>, uint>? FirstSpanRow { get; set; }
 
-        public Dictionary<GridColumn<TItem>, object> FirstSpanRowData { get; set; }
+        public Dictionary<GridColumn<TItem>, object>? FirstSpanRowData { get; set; }
 
        
         public bool IsSelected() {

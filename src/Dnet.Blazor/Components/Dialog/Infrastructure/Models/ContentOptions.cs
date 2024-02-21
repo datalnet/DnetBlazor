@@ -4,6 +4,6 @@
     {
         public int OverlayReferenceId { get; set; }
 
-        public TItem Options { get; set; }
+        public TItem? Options { get; set; }
     }
 }

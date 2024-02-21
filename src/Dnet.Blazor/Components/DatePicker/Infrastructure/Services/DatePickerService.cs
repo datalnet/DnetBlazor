@@ -4,11 +4,11 @@ namespace Dnet.Blazor.Components.DatePicker.Infrastructure.Services
 {
     public class DatePickerService
     {
-        public event Action<List<CalendarDay>> OnUpdateList;
+        public event Action<List<CalendarDay>>? OnUpdateList;
 
-        public event Action<CalendarDay> OnDaySelected;
+        public event Action<CalendarDay>? OnDaySelected;
 
-        public event Action OnResetCalendar;
+        public event Action? OnResetCalendar;
 
         public void UdateDays(List<CalendarDay> days)
         {

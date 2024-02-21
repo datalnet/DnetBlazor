@@ -6,7 +6,7 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Models
     {
         public BlGridMessageEmitter Emitter { get; set; }
 
-        public T Data { get; set; }
+        public T? Data { get; set; }
 
         public long RowNodeId { get; set; }
 

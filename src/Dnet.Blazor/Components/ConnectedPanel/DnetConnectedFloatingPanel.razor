@@ -14,15 +14,15 @@
 	private int OverlayReferenceId { get; set; }
 
 	[Parameter]
-	public string ConnectedPanelClasses { get; set; }
+	public string? ConnectedPanelClasses { get; set; }
 
 	[Parameter]
-	public Type ComponentType { get; set; }
+	public Type? ComponentType { get; set; }
 
 	[Parameter]
-	public IDictionary<string, object> Parameters { get; set; }
+	public IDictionary<string, object>? Parameters { get; set; }
 
-	private  string _connectedPanelClasses { get; set; }
+	private  string? _connectedPanelClasses { get; set; }
 
 
 	protected override void OnInitialized()

@@ -6,7 +6,7 @@ namespace Dnet.Blazor.Components.DatePicker.Infrastructure.Models
     {
         public int DayNumber { get; set; }
 
-        public string DayName { get; set; }
+        public string? DayName { get; set; }
 
         public int DayWeek { get; set; }
 
@@ -22,6 +22,6 @@ namespace Dnet.Blazor.Components.DatePicker.Infrastructure.Models
 
         public DateTime Date { get; set; }
 
-        public string FormattedDate { get; set; }
+        public string? FormattedDate { get; set; }
     }
 }

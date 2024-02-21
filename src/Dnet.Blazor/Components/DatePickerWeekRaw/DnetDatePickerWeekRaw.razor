@@ -97,14 +97,6 @@
                 </div>
                 break;
         }
-      @*  <div class="dnet-datepickerweekca-raw-header-footer">
-            <div class="dnet-datepickerweek-raw-reset-button-wrapper" @onclick="ResetCalendar">
-                <div class="dnet-datepickerweek-raw-reset-image-wrapper">
-                    <span class="dnet-datepickerweek-raw-icon dnet-datepickerweek-raw-reset-button" unselectable="on"></span>
-                </div>
-                <span class="dnet-datepickerweek-raw-reset-test">Reset</span>
-            </div>
-        </div>*@
     </div>
 </div>
 
@@ -118,8 +110,6 @@
 
     public List<CalendarDay> _days { get; set; } = new();
 
-    private int _dayColumnSpan = 0;
-
     private List<string> _dayNameCaptionsShort = new List<string> { "M", "T", "W", "T", "F", "S", "S" };
 
     private List<string> _dayNameCaptionsLarge = new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
@@ -130,21 +120,21 @@
 
     private int _workingMonth { get; set; }
 
-    private string _workingMonthName { get; set; }
+    private string? _workingMonthName { get; set; }
 
-    private List<int> _years { get; set; }
+    private List<int>? _years { get; set; }
 
-    private Dictionary<int, string> _months { get; set; }
+    private Dictionary<int, string>? _months { get; set; }
 
     private int _activeView { get; set; } = (int)ActiveViewType.Day;
 
-    private string _yearRange { get; set; }
+    private string? _yearRange { get; set; }
 
     private int _yearLabelInMonths { get; set; }
 
-    private CalendarDay _minCalendarDay { get; set; }
+    private CalendarDay? _minCalendarDay { get; set; }
 
-    private CalendarDay _maxCalendarDay { get; set; }
+    private CalendarDay? _maxCalendarDay { get; set; }
 
     private int? hoveredWeek { get; set; }
 

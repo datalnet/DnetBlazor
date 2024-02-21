@@ -109,9 +109,6 @@
             }
         }
 
-        @*  var data = cell.CellDataType != CellDataType.Date ? cell.CellDataFn(cellParams)
-                                                  : Convert.ToDateTime(cell.CellDataFn(cellParams)).ToString(cell.DateFormat, CultureInfo.InvariantCulture);*@
-
         if (RowNode.RowSpanTargetCells.ContainsKey(cell))
             spanRowBy = (int)Math.Max(spanRowBy, RowNode.RowSpanTargetCells[cell]);
 
@@ -229,22 +226,22 @@ else
     public EventCallback<long> OnMouseOver { get; set; }
 
     [Parameter]
-    public RowNode<TItem> RowNode { get; set; }
+    public RowNode<TItem>? RowNode { get; set; }
 
     [Parameter]
     public int RowId { get; set; }
 
     [Parameter]
-    public List<GridColumn<TItem>> GridColumns { get; set; }
+    public List<GridColumn<TItem>>? GridColumns { get; set; }
 
     [Parameter]
-    public GridColumn<TItem> GroupGridColumn { get; set; }
+    public GridColumn<TItem>? GroupGridColumn { get; set; }
 
     [Parameter]
-    public GridOptions<TItem> GridOptions { get; set; }
+    public GridOptions<TItem>? GridOptions { get; set; }
 
     [Parameter]
-    public GridApi<TItem> GridApi { get; set; }
+    public GridApi<TItem>? GridApi { get; set; }
 
     [Parameter]
     public bool HasGrouping { get; set; }
@@ -258,19 +255,15 @@ else
     [Parameter]
     public BlGridMessageEmitter ComponentName { get; set; }
 
-    private string _rowCssClasses { get; set; }
+    private string? _rowCssClasses { get; set; }
 
-    private string _cellStyles { get; set; }
+    private string? _cellStyles { get; set; }
 
     private long _hoverRowId { get; set; } = -1;
 
     private long _selectedRowId { get; set; }
 
     private bool _disabledRow { get; set; }
-
-    //private Timer _debounceTimer;
-
-    //private int _debounceTime { get; set; } = 250;
 
 
     public override Task SetParametersAsync(ParameterView parameters)
@@ -352,12 +345,6 @@ else
 
     protected override void OnInitialized()
     {
-        //_debounceTimer = new Timer(_debounceTime);
-
-        //_debounceTimer.Elapsed += OnUserFinishDiscard;
-
-        //_debounceTimer.AutoReset = false;
-
         _rowCssClasses = GetRowCssClasses(RowNode, RowId);
     }
 
@@ -473,11 +460,6 @@ else
 
         return disabledRow;
     }
-
-    //public void OnUserFinishDiscard(Object source, ElapsedEventArgs e)
-    //{
-    //    _ = MouseOver();
-    //}
 
     private void MouseOver(RowNode<TItem> rowNode)
     {

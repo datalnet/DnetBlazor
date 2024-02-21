@@ -4,6 +4,6 @@ public class FloatingDoubleListSelectData<TItem>
 {
     public int SelectDataId { get; set; }
 
-    public TItem Item { get; set; }
+    public TItem? Item { get; set; }
 
 }

@@ -6,7 +6,7 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Models
     {
         public GroupOperation Operation { get; set; }
 
-        public string ColumnName { get; set; }
+        public string? ColumnName { get; set; }
 
     }
 }

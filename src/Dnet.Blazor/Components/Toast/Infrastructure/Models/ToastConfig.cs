@@ -4,27 +4,27 @@ namespace Dnet.Blazor.Components.Toast.Infrastructure.Models
 {
     public class ToastConfig
     {
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         public ToastType ToastType { get; set; }
 
-        public string ToastTypeIconClass { get; set; }
+        public string? ToastTypeIconClass { get; set; }
 
-        public string ToastCloseIconClass { get; set; }
+        public string? ToastCloseIconClass { get; set; }
 
-        public string ToastTypeColor { get; set; } = null;
+        public string? ToastTypeColor { get; set; }
 
-        public string ToastClass { get; set; } = null;
+        public string? ToastClass { get; set; }
 
-        public string PanelClass { get; set; } = null;
+        public string? PanelClass { get; set; }
 
         public bool HasBackdrop { get; set; } = true;
 
         public bool HasTransparentBackdrop { get; set; }
 
-        public string BackdropClass { get; set; } = null;
+        public string? BackdropClass { get; set; }
 
         public int Width { get; set; } = 300;
 

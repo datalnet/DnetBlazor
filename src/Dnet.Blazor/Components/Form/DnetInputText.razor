@@ -38,7 +38,7 @@ else
     public bool Disabled { get; set; }
 
     [Parameter]
-    public string PlaceHolder { get; set; }
+    public string? PlaceHolder { get; set; }
 
     [Parameter]
     public bool ImmediateResponse { get; set; } = true;
@@ -53,11 +53,11 @@ else
 
     private bool _hasErrors { get; set; }
 
-    private string _placeHolder { get; set; }
+    private string? _placeHolder { get; set; }
 
-    private Timer _debounceTimer;
+    private Timer? _debounceTimer;
 
-    private IFormEventService _formEventService { get; set; }
+    private IFormEventService? _formEventService { get; set; }
 
     private string _inputTextClass =>
     new CssBuilder("mat-input-element")

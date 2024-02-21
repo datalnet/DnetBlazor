@@ -1,6 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 
-
 @if (Orientation == (int) StepperOrientation.Horizontal)
 {
     <div class="dnet-stepper-horizontal" @attributes=AllOtherAttributes>
@@ -86,10 +85,10 @@ else
     public EventCallback<Tuple<int, int>> OnSelectionChange { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object> AllOtherAttributes { get; set; }
+    public Dictionary<string, object>? AllOtherAttributes { get; set; }
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
     public int SelectedStepId { get; set; }
@@ -110,7 +109,7 @@ else
 
     private int _selectedId;
 
-    private RenderFragment _activeStepContent;
+    private RenderFragment? _activeStepContent;
 
     private List<int> stepIds = new();
 

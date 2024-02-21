@@ -113,10 +113,10 @@
 @code {
 
     [Parameter]
-    public DatePickerService DatePickerService { get; set; }
+    public DatePickerService? DatePickerService { get; set; }
 
     [Parameter]
-    public CalendarDay SelectedDay { get; set; }
+    public CalendarDay? SelectedDay { get; set; }
 
     [Parameter]
     public DateTime? MaxDayValue { get; set; }
@@ -128,7 +128,7 @@
     public DateTime? FirstDayToShow { get; set; }
 
     [Parameter]
-    public Func<CalendarDay, bool> DatepickerFilter { get; set; }
+    public Func<CalendarDay, bool>? DatepickerFilter { get; set; }
 
     [Parameter]
     public string BorderRadius { get; set; } = "0px";
@@ -148,21 +148,21 @@
 
     private int _workingMonth { get; set; }
 
-    private string _workingMonthName { get; set; }
+    private string? _workingMonthName { get; set; }
 
-    private List<int> _years { get; set; }
+    private List<int> _years { get; set; } = new();
 
-    private Dictionary<int, string> _months { get; set; }
+    private Dictionary<int, string> _months { get; set; } = new();
 
     private int _activeView { get; set; } = (int)ActiveViewType.Day;
 
-    private string _yearRange { get; set; }
+    private string? _yearRange { get; set; }
 
     private int _yearLabelInMonths { get; set; }
 
-    private CalendarDay _minCalendarDay { get; set; }
+    private CalendarDay? _minCalendarDay { get; set; }
 
-    private CalendarDay _maxCalendarDay { get; set; }
+    private CalendarDay? _maxCalendarDay { get; set; }
 
 
     protected override void OnInitialized()

@@ -22,12 +22,12 @@
 
         public string Height { get; set; } = "100%";
 
-        public string MinWidth { get; set; } = null;
+        public string? MinWidth { get; set; }
 
-        public string MinHeight { get; set; } = null;
+        public string? MinHeight { get; set; }
 
-        public string MaxWidth { get; set; } = null;
+        public string? MaxWidth { get; set; }
 
-        public string MaxHeight { get; set; } = null;
+        public string? MaxHeight { get; set; }
     }
 }

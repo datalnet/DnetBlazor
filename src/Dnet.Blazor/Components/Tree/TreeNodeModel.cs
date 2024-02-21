@@ -12,9 +12,9 @@
 
         public long RowNodeId { get; set; }
 
-        public TNode TreeNodeData { get; set; }
+        public TNode? TreeNodeData { get; set; }
 
-        public List<TreeNodeModel<TNode>> Children { get; set; }
+        public List<TreeNodeModel<TNode>>? Children { get; set; }
 
         public bool Selectable { get; set; } = true;
 
