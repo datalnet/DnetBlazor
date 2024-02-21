@@ -44,11 +44,6 @@
 
                 case DataToShow.MultiValue:
                     <div class="dnet-select-multi-value-wrapper">
-                        @* @foreach (var item in _selectedRowNodes)
-                        {
-                            <span class="dnet-select-multi-value">@DisplayValueConverter(item.RowData) <span> - </span></span>
-                        } *@
-
                         <span class="dnet-select-multi-value">
                             @{
                                 var stringBuilder = new System.Text.StringBuilder();
