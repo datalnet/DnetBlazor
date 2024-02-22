@@ -12,10 +12,10 @@
 	public EventCallback<DnetExpansionPanelItem> OnExpandedChanged { get; set; }
 
 	[Parameter(CaptureUnmatchedValues = true)]
-	public Dictionary<string, object> AllOtherAttributes { get; set; }
+	public Dictionary<string, object>? AllOtherAttributes { get; set; }
 
 	[Parameter]
-	public RenderFragment ChildContent { get; set; }
+	public RenderFragment? ChildContent { get; set; }
 
 	[Parameter]
 	public ExpansionPanelDisplayMode ExpansionPanelDisplayMode { get; set; } = ExpansionPanelDisplayMode.Flat;
@@ -26,8 +26,6 @@
 	internal List<DnetExpansionPanelItem> expansionPanelItems = new();
 
 	internal DnetExpansionPanelItem lastOpenedPanel { get; set; } = new();
-
-	private int _selectedExpansionPanelItemId;
 
 	internal List<int> expansionPanelItemIds = new();
 

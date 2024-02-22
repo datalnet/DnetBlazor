@@ -4,9 +4,9 @@ namespace Dnet.Blazor.Components.FloatingPanel.Infrastructure.Models
 {
     public class FloatingPanelConfig
     {
-        public string? FloatingPanelClass { get; set; } = null;
+        public string? FloatingPanelClass { get; set; }
 
-        public string? PanelClass { get; set; } = null;
+        public string? PanelClass { get; set; }
 
         public bool HasBackdrop { get; set; } = true;
 
@@ -14,11 +14,11 @@ namespace Dnet.Blazor.Components.FloatingPanel.Infrastructure.Models
 
         public bool DisableBackdropClick { get; set; }
 
-        public string? BackdropClass { get; set; } = null;
+        public string? BackdropClass { get; set; }
 
-        public int? Width { get; set; } = null;
+        public int? Width { get; set; }
 
-        public int? Height { get; set; } = null;
+        public int? Height { get; set; }
 
         public int Margin { get; set; } = 0;
 

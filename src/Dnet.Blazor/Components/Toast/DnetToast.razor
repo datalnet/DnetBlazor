@@ -50,37 +50,37 @@
     [CascadingParameter] private int OverlayReferenceId { get; set; }
 
     [Parameter]
-    public Type ComponentType { get; set; }
+    public Type? ComponentType { get; set; }
 
     [Parameter]
-    public RenderFragment ContentChild { get; set; }
+    public RenderFragment? ContentChild { get; set; }
 
     [Parameter]
-    public IDictionary<string, object> Parameters { get; set; }
+    public IDictionary<string, object>? Parameters { get; set; }
 
     [Parameter]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     [Parameter]
-    public string Text { get; set; }
+    public string? Text { get; set; }
 
     [Parameter]
     public ToastType ToastType { get; set; }
 
     [Parameter]
-    public string TypeIconClass { get; set; }
+    public string? TypeIconClass { get; set; }
 
     [Parameter]
-    public string ToastTypeIconClass { get; set; }
+    public string? ToastTypeIconClass { get; set; }
 
     [Parameter]
-    public string CloseIconClass { get; set; }
+    public string? CloseIconClass { get; set; }
 
     [Parameter]
-    public string ToastTypeColor { get; set; }
+    public string? ToastTypeColor { get; set; }
 
     [Parameter]
-    public string ToastClass { get; set; }
+    public string? ToastClass { get; set; }
 
     [Parameter]
     public int ExcutionTime { get; set; }
@@ -89,15 +89,15 @@
     public bool ShowExcutionTime { get; set; }
 
 
-    private string _toastCssClasses { get; set; }
+    private string? _toastCssClasses { get; set; }
 
-    private string _backgroundColor { get; set; }
+    private string? _backgroundColor { get; set; }
 
-    private string _typeIconClass { get; set; }
+    private string? _typeIconClass { get; set; }
 
-    private string _closeIconClass { get; set; }
+    private string? _closeIconClass { get; set; }
 
-    private Timer _timer;
+    private Timer? _timer;
 
     private int _excutionTime = 0;
 

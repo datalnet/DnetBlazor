@@ -15,13 +15,13 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Entities
 
         public List<string> RowStyle { get; set; } = new();
 
-        public Func<CellParams<TItem>, List<string>> RowStyleFn { get; set; }
+        public Func<CellParams<TItem>, List<string>>? RowStyleFn { get; set; }
 
         public List<string> RowClasses { get; set; } = new();
 
-        public Func<CellParams<TItem>, List<string>> RowClassFn { get; set; }
+        public Func<CellParams<TItem>, List<string>>? RowClassFn { get; set; }
 
-        public string GridClass { get; set; }
+        public string? GridClass { get; set; }
 
         public bool EnableGrouping { get; set; }
 
@@ -85,7 +85,7 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Entities
 
         public bool UseVirtualization { get; set; } = true;
 
-        public Func<TItem, bool> DisableRow { get; set; }
+        public Func<TItem, bool>? DisableRow { get; set; }
 
         public bool ShowExpandCollapseButtons { get; set; } = true;
     }

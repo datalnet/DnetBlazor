@@ -60,7 +60,7 @@
 	public DnetTree<TNode> DnetTreeComponent { get; set; }
 
 	[Parameter]
-	public RenderFragment<TNode> NodeContent { get; set; }
+	public RenderFragment<TNode>? NodeContent { get; set; }
 
 	[Parameter]
 	public EventCallback<bool> OnTreeNodeParentToggle { get; set; }
@@ -75,13 +75,13 @@
 	public EventCallback<List<TNode>> OnSelectionChange { get; set; }
 
 	[Parameter]
-	public TreeNodeModel<TNode> Node { get; set; }
+	public TreeNodeModel<TNode>? Node { get; set; }
 
 	[Parameter]
-	public Func<TNode, List<TNode>> ChildNodes { get; set; }
+	public Func<TNode, List<TNode>>? ChildNodes { get; set; }
 
 	[Parameter]
-	public IDictionary<string, object> Parameters { get; set; }
+	public IDictionary<string, object>? Parameters { get; set; }
 
 	[Parameter]
 	public Func<TNode, string> DisplayValueConverter { get; set; }

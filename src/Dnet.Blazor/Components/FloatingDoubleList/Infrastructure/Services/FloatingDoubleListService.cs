@@ -5,17 +5,17 @@ namespace Dnet.Blazor.Components.FloatingDoubleList.Infrastructure.Services;
 
 public class FloatingDoubleListService<TItem>
 {
-    public event Action<TransferredItems<TItem>> OnSelectionChange;
+    public event Action<TransferredItems<TItem>>? OnSelectionChange;
 
-    public event Action<SearchModel> OnSearchLeft;
+    public event Action<SearchModel>? OnSearchLeft;
 
-    public event Action<SearchModel> OnSearchRight;
+    public event Action<SearchModel>? OnSearchRight;
 
-    public event Action<List<TItem>> OnRefreshDataLeft;
+    public event Action<List<TItem>>? OnRefreshDataLeft;
 
-    public event Action<List<TItem>> OnRefreshDataRight;
+    public event Action<List<TItem>>? OnRefreshDataRight;
 
-    public event Action OnClose;
+    public event Action? OnClose;
 
     public void UpdateTransferredItems(TransferredItems<TItem> item)
     {

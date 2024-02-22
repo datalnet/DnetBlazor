@@ -200,7 +200,7 @@
 
     private long _nextId { get; set; } = -1;
 
-    private DnetChipList _listComponent { get; set; }
+    private DnetChipList? _listComponent { get; set; }
 
     private ElementReference _formField { get; set; } = new();
 
@@ -219,7 +219,7 @@
 
     private bool _hasInitializedParameters;
 
-    private IFormEventService _formEventService { get; set; }
+    private IFormEventService? _formEventService { get; set; }
 
 
     protected override void OnInitialized()

@@ -4,7 +4,7 @@
     {
         public int SelectDataId { get; set; }
 
-        public TItem Item { get; set; }
+        public TItem? Item { get; set; }
 
     }
 }

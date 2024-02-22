@@ -17,11 +17,6 @@
 
 /*Denet Panel*/
 .dnet-panel {
-    // display: flex;
-    // flex-direction: column;
-    // justify-content: space-between;
-    // height: calc(100% - 0px);
-    // width: 100%;
     display: grid;
     grid-template-rows: 50px auto 50px;
     height: 100dvh;

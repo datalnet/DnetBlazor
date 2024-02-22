@@ -32,15 +32,6 @@
 		_cssClasses = GetCssClasses();
 	}
 
-	@* protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender && InitialFocus)
-		{
-			await _focusElement.FocusAsync();
-			StateHasChanged();
-		}
-	} *@
-
 	private string GetCssClasses()
 	{
 		var classes = new CssBuilder("dnet-button")

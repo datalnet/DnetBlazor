@@ -36,10 +36,10 @@
     public bool Disabled { get; set; }
 
     [Parameter]
-    public string PlaceHolder { get; set; }
+    public string? PlaceHolder { get; set; }
 
     [Parameter]
-    public string Label { get; set; }
+    public string? Label { get; set; }
 
     [DisallowNull] public ElementReference? __inputReference { get; protected set; }
 
@@ -56,11 +56,11 @@
 
     private bool _hasErrors { get; set; }
 
-    private string _placeHolder { get; set; }
+    private string? _placeHolder { get; set; }
 
-    private Timer _debounceTimer;
+    private Timer? _debounceTimer;
 
-    private IFormEventService _formEventService { get; set; }
+    private IFormEventService? _formEventService { get; set; }
 
     private string _textareaClass =>
                 new CssBuilder("mat-input-element")

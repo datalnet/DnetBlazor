@@ -8,7 +8,7 @@
 
         public long RowNodeId { get; set; }
 
-        public TItem RowData { get; set; }
+        public TItem? RowData { get; set; }
 
         public bool Selectable { get; set; } = true;
 

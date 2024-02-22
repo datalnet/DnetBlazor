@@ -43,7 +43,7 @@
 	public EventCallback<DnetChip> OnRemoved { get; set; }
 
 	[Parameter]
-	public RenderFragment ChildContent { get; set; }
+	public RenderFragment? ChildContent { get; set; }
 
 	[Parameter]
 	public string BackgroungColor { get; set; } = "#e0e0e0";
@@ -64,7 +64,7 @@
 	public bool Removable { get; set; } = true;
 
 	[Parameter]
-	public string Value { get; set; }
+	public string? Value { get; set; }
 
 	[Parameter]
 	public ChipSize ChipSize { get; set; } = ChipSize.Small;
@@ -73,10 +73,10 @@
 	public bool Disabled { get; set; }
 
 	[Parameter]
-	public string RemoveIcon { get; set; }
+	public string? RemoveIcon { get; set; }
 
 	[Parameter]
-	public string AvatarIcon { get; set; }
+	public string? AvatarIcon { get; set; }
 
 	internal int Id { get; set; }
 
@@ -93,7 +93,6 @@
 			.AddStyle("background-color", BackgroungColorSelected, when: IsSelected())
 			.AddStyle("color", ColorSelected,  when: IsSelected())
 		.Build();
-
 
 	protected override void OnInitialized()
 	{

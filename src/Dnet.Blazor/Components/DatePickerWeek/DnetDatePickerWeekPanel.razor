@@ -112,10 +112,10 @@
 @code {
 
     [Parameter]
-    public DatePickerWeekService DatePickerService { get; set; }
+    public DatePickerWeekService? DatePickerService { get; set; }
 
     [Parameter]
-    public CalendarDay SelectedDay { get; set; }
+    public CalendarDay? SelectedDay { get; set; }
 
     [Parameter]
     public DateTime? MaxDayValue { get; set; }
@@ -127,12 +127,10 @@
     public DateTime? FirstDayToShow { get; set; }
 
     [Parameter]
-    public Func<CalendarDay, bool> DatepickerFilter { get; set; }
+    public Func<CalendarDay, bool>? DatepickerFilter { get; set; }
 
 
     public List<CalendarDay> _days { get; set; } = new List<CalendarDay>();
-
-    private int _dayColumnSpan = 0;
 
     private List<string> _dayNameCaptionsShort = new List<string> { "M", "T", "W", "T", "F", "S", "S" };
 
@@ -144,21 +142,21 @@
 
     private int _workingMonth { get; set; }
 
-    private string _workingMonthName { get; set; }
+    private string? _workingMonthName { get; set; }
 
-    private List<int> _years { get; set; }
+    private List<int>? _years { get; set; }
 
-    private Dictionary<int, string> _months { get; set; }
+    private Dictionary<int, string>? _months { get; set; }
 
     private int _activeView { get; set; } = (int)ActiveViewType.Day;
 
-    private string _yearRange { get; set; }
+    private string? _yearRange { get; set; }
 
     private int _yearLabelInMonths { get; set; }
 
-    private CalendarDay _minCalendarDay { get; set; }
+    private CalendarDay? _minCalendarDay { get; set; }
 
-    private CalendarDay _maxCalendarDay { get; set; }
+    private CalendarDay? _maxCalendarDay { get; set; }
 
     private int? hoveredWeek { get; set; }
 

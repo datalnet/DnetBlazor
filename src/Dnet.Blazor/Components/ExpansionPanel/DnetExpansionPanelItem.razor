@@ -46,25 +46,25 @@
 @code {
 
 	[CascadingParameter]
-	private DnetExpansionPanel Parent { get; set; }
+	private DnetExpansionPanel? Parent { get; set; }
 
 	[Parameter]
-	public RenderFragment ChildContent { get; set; }
+	public RenderFragment? ChildContent { get; set; }
 
 	[Parameter]
 	public RenderFragment? ItemHeaderTemplate { get; set; }
 
 	[Parameter]
-	public string Title { get; set; }
+	public string? Title { get; set; }
 
 	[Parameter]
-	public RenderFragment TitleContent { get; set; }
+	public RenderFragment? TitleContent { get; set; }
 
 	[Parameter]
-	public string Description { get; set; }
+	public string? Description { get; set; }
 
 	[Parameter]
-	public RenderFragment DescriptionContent { get; set; }
+	public RenderFragment? DescriptionContent { get; set; }
 
 	[Parameter]
 	public int Order { get; set; } = 0;

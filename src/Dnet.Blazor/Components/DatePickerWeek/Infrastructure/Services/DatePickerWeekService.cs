@@ -4,9 +4,9 @@ namespace Dnet.Blazor.Components.DatePickerWeek.Infrastructure.Services;
 
 public class DatePickerWeekService
 {
-    public event Action<List<CalendarDay>> OnUpdateList;
+    public event Action<List<CalendarDay>>? OnUpdateList;
 
-    public event Action<List<CalendarDay>> OnDaySelected;
+    public event Action<List<CalendarDay>>? OnDaySelected;
 
     public void UdateDays(List<CalendarDay> days)
     {

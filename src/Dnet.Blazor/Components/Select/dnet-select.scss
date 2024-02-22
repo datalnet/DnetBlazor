@@ -15,12 +15,6 @@
     --dnet-select-list-wrapper-horizontal-padding: 15px;
 }
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
 .dnet-select-list-wrapper {
     display: flex;
     flex-direction: column;
@@ -106,16 +100,6 @@
     padding-bottom: var(--dnet-select-list-padding-horizontal);
     overflow: hidden;
     transition: background-color 0.3s, border-radius 0.3s;
-
-    &[draggable="false"] {
-        user-drag: none;
-        -webkit-user-drag: none;
-        user-select: none;
-        -moz-user-select: none;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-        cursor: not-allowed;
-    }
 }
 
 .dnet-select-list-item:has(.dnet-select-list-item-prefix) {

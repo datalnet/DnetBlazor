@@ -14,42 +14,6 @@
 
 @inject IJSRuntime JSRuntime
 
-@* <style>
-    /* Ocultar las flechas en los navegadores que usan Webkit (Chrome, Safari, etc.) */
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    /* Para Firefox */
-    input[type="number"] {
-        -moz-appearance: textfield;
-    }
-
-    .custom-spin-button {
-        background: transparent; /* Sin fondo */
-        border: none; /* Sin bordes */
-        cursor: pointer;
-        /* Otras personalizaciones */
-    }
-
-    /* Ajustar la posición y el tamaño según sea necesario */
-    .custom-spin-button-up {
-        /* Estilos para el botón de incremento */
-    }
-
-    .custom-spin-button-down {
-        /* Estilos para el botón de decremento */
-    }
-</style>
-
-<div class="number-input-container">
-    <input type="number" class="custom-number-input">
-    <button class="custom-spin-button custom-spin-button-up">▲</button>
-    <button class="custom-spin-button custom-spin-button-down">▼</button>
-</div> *@
-
 @if (!ImmediateResponse)
 {
     <input @ref="__inputReference "
@@ -100,7 +64,7 @@ else
     public bool Disabled { get; set; }
 
     [Parameter]
-    public string PlaceHolder { get; set; }
+    public string? PlaceHolder { get; set; }
 
     [Parameter]
     public bool ImmediateResponse { get; set; } = true;
@@ -121,18 +85,18 @@ else
 
     private bool _hasErrors { get; set; }
 
-    private string _placeHolder { get; set; }
+    private string? _placeHolder { get; set; }
 
-    private Timer _debounceTimer;
+    private Timer? _debounceTimer;
 
-    private IFormEventService _formEventService { get; set; }
+    private IFormEventService? _formEventService { get; set; }
 
     private string _inputTextClass =>
                 new CssBuilder("mat-input-element")
                     .AddClass(CssClass)
                 .Build();
 
-    private string _stepAttributeValue { get; set; }
+    private string? _stepAttributeValue { get; set; }
 
     private static string GetStepAttributeValue()
     {
@@ -154,8 +118,7 @@ else
         }
     }
 
-    private string _styles { get; set; } = null;
-
+    private string? _styles { get; set; }
 
     protected override void OnInitialized()
     {
