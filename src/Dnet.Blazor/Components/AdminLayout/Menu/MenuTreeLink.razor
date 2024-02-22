@@ -14,7 +14,20 @@
     {
         <a @onclick="@Toggle" class="@(!string.IsNullOrEmpty(Menu.IconClass) ? "has-image" : null)">
 
-            @if (!string.IsNullOrEmpty(Menu.IconClass))
+            @if (string.IsNullOrEmpty(Menu.IconClass))
+            {
+                @if (_desktopLayout is not null && !_desktopLayout.GetIsMinified())
+                {
+                    <div class="dnet-tree-cmp-link-indicator"></div>
+                    <span class="dnet-menu-text">@Menu.Text</span>
+                }
+                else
+                {
+                    <div class="dnet-tree-cmp-link-indicator"></div>
+                    <span class="dnet-menu-text">@Menu.MinifiedText</span>
+                }
+            }
+            else
             {
                 <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
                     <span class="@Menu.IconClass"></span>
@@ -27,19 +40,6 @@
                         <span class="dnet-menu-text">@Menu.MinifiedText</span>
                     }
                 </div>
-            }
-            else
-            {
-                @if (_desktopLayout is not null && !_desktopLayout.GetIsMinified())
-                {
-                    <div class="dnet-tree-cmp-link-indicator"></div>
-                    <span class="dnet-menu-text">@Menu.Text</span>
-                }
-                else
-                {
-                    <div class="dnet-tree-cmp-link-indicator"></div>
-                    <span class="dnet-menu-text">@Menu.MinifiedText</span>
-                }
             }
 
             <b class="collapse-sign">
@@ -73,22 +73,26 @@
         <NavLink Match="NavLinkMatch.All" href="@Menu.Link" @onclick="CloseMenuNav"
             class="@(!string.IsNullOrEmpty(Menu.IconClass) ? "has-image" : null)">
 
-            @if (!string.IsNullOrEmpty(Menu.IconClass))
-            {
-                <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
-                    <span class="@Menu.IconClass"></span>
-                </div>
-
-            }
-
             @if (_desktopLayout is not null && (!_desktopLayout.GetIsMinified() || (_desktopLayout.GetIsMinified() && !Menu.IsNode)))
             {
                 <div class="dnet-tree-cmp-link-indicator no-minified"></div>
+                 @if (!string.IsNullOrEmpty(Menu.IconClass))
+                {
+                    <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
+                        <span class="@Menu.IconClass"></span>
+                    </div>
+                }
                 <span class="dnet-menu-text">@Menu.Text</span>
             }
             else
             {
                 <div class="dnet-tree-cmp-link-indicator yes-minified"></div>
+                @if (!string.IsNullOrEmpty(Menu.IconClass))
+                {
+                    <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
+                        <span class="@Menu.IconClass"></span>
+                    </div>
+                }
                 <span class="dnet-menu-text">@Menu.MinifiedText</span>
             }
         </NavLink>

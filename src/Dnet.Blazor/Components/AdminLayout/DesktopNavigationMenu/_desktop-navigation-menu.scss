@@ -94,7 +94,6 @@ nav {
     ul {
         li {
             a {
-                /* padding: 0 .925em 0 var(--dnet-dash-menu-left-padding-firts-level); */
                 padding: 0 .925em 0 0;
                 display: flex;
                 flex-direction: row;
@@ -108,8 +107,12 @@ nav {
                 font-size: var(--dnet-dash-menu-text-size);
                 text-overflow: ellipsis;
 
+                // &.has-image {
+                //     padding-left: var(--dnet-dash-menu-left-padding-firts-level-has-image);
+                // }
+
                 &.has-image {
-                    padding-left: var(--dnet-dash-menu-left-padding-firts-level-has-image);
+                    justify-content: flex-start;
                 }
 
                 &:not([href]):not([tabindex]) {
@@ -239,7 +242,7 @@ nav {
                     &.has-image {
                         justify-content: center !important;
                         padding: 0;
-                        display: block;
+                        display: flex;
                     }
                 }
             }
