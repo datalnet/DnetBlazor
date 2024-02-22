@@ -17,7 +17,34 @@
         return findClosestScrollContainer(element.parentElement);
     };
 
+    function addTouchListeners(elementRef, scrollElementRef, dotNetReference) {
+        let startX;
+
+        elementRef.addEventListener('touchstart', function(e) {
+            const touch = e.touches[0];
+            startX = touch.clientX; // Guarda la posición inicial del toque
+        }, false);
+
+        elementRef.addEventListener('touchmove', function(e) {
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - startX;
+
+            scrollElementRef.scrollLeft -= deltaX;
+
+            // Llama a un método en tu componente Blazor con el deltaX
+            dotNetReference.invokeMethodAsync('OnTouchMove', deltaX);
+
+            // Previene el desplazamiento predeterminado para que no interfiera con el desplazamiento de la página
+            e.preventDefault();
+        }, false);
+    };
+
     return {
+
+        addTouchListeners: function (elementRef, scrollElementRef, dotNetReference) {
+            addTouchListeners(elementRef, scrollElementRef, dotNetReference);
+            return true;
+        },
 
         addWindowEventListeners: function (elementRef, dotnetClass) {
 

@@ -637,8 +637,9 @@
         {
             _firstRender = true;
 
-            //var result = await BlGridInterop<TItem>.AddWindowEventListeners(JSRuntime, _eGridContainer, DotNetObjectReference.Create(this));
             var result = await BlGridInterop.AddWindowEventListeners(_eGridContainer, DotNetObjectReference.Create(this));
+
+            var result1 = await BlGridInterop.AddTouchListeners(_eCenterContainer, _eBodyHorizontalScrollViewport, DotNetObjectReference.Create(this));
 
             if (GridOptions.UseVirtualization)
             {
@@ -1405,7 +1406,6 @@
 
     private async void OnScroll()
     {
-        //var result = await BlGridInterop<TItem>.GetElementScrollLeft(JSRuntime, _eBodyHorizontalScrollViewport);
         var result = await BlGridInterop.GetElementScrollLeft(_eBodyHorizontalScrollViewport);
 
         _transformX = $"-{Math.Floor(result)}px";
@@ -1841,6 +1841,18 @@
     private ValueTask<ItemsProviderResult<RowNode<TItem>>> DefaultItemsProvider(ItemsProviderRequest request)
     {
         return ValueTask.FromResult(new ItemsProviderResult<RowNode<TItem>>(_renderedRowNodes!.Skip(request.StartIndex).Take(request.Count), _renderedRowNodes!.Count));
+    }
+
+    [JSInvokable]
+    public Task OnTouchMove(double deltaX)
+    {
+        // Maneja el deltaX aquí, por ejemplo, actualizando algún estado o realizando una acción
+        Console.WriteLine($"Movimiento horizontal detectado: {deltaX}");
+         _transformX = $"{Math.Floor(deltaX)}px";
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
     }
 
     public async ValueTask DisposeAsync()

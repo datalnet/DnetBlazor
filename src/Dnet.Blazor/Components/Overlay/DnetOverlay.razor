@@ -7,6 +7,7 @@
 
 @inject IOverlayService OverlayService
 @inject DnetOverlayInterop DnetOverlayInterop
+@inject IViewportRuler ViewportRuler
 
 @implements IDisposable
 
@@ -56,8 +57,15 @@
         {
             _windowWidth = await DnetOverlayInterop.GetWindowWidth();
 
+             ViewportRuler.OnResized += UpdateWindowsSize;
+
             StateHasChanged();
         }
+    }
+
+    private async void UpdateWindowsSize (object _, Size size) 
+    {
+        _windowWidth = await DnetOverlayInterop.GetWindowWidth();
     }
 
     private void AttachOverlay(RenderFragment content, OverlayConfig overlayConfig)

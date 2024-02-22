@@ -16,6 +16,8 @@ public interface IBlGridInterop<TItem>
     ValueTask<int> GetHeaderWidth(string id);
 
     ValueTask<bool> AddWindowEventListeners(ElementReference element, DotNetObjectReference<BlgGrid<TItem>> dotNetClass);
+
+    ValueTask<bool> AddTouchListeners(ElementReference element, ElementReference scrollElement, DotNetObjectReference<BlgGrid<TItem>> dotNetClass);
 }
 
 public class BlGridInterop<TItem> : IBlGridInterop<TItem>
@@ -50,6 +52,11 @@ public class BlGridInterop<TItem> : IBlGridInterop<TItem>
     public ValueTask<bool> AddWindowEventListeners(ElementReference element, DotNetObjectReference<BlgGrid<TItem>> dotNetClass)
     {
         return this.jsRuntime.InvokeAsync<bool>("blginterop.addWindowEventListeners", element, dotNetClass);
+    }
+
+    public ValueTask<bool> AddTouchListeners(ElementReference element, ElementReference scrollElement, DotNetObjectReference<BlgGrid<TItem>> dotNetClass)
+    {
+        return this.jsRuntime.InvokeAsync<bool>("blginterop.addTouchListeners", element, scrollElement, dotNetClass);
     }
 }
 
