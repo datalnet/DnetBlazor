@@ -2,6 +2,7 @@
 using Dnet.Blazor.Components.Grid.Infrastructure.Interfaces;
 using Dnet.Blazor.Infrastructure.Models.SearchModels;
 using Dnet.Blazor.Infrastructure.Models.SearchModels.FilterModels;
+using System;
 
 namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
 {
@@ -9,13 +10,13 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
     {
         public List<GridColumn<TItem>> InitAdvancedFilterModels(List<GridColumn<TItem>> gridColumns, FilterOperator defaultAdvancedFilterOperator)
         {
-            foreach (var gridColumn in gridColumns) 
-            { 
-                if (gridColumn.AdvancedFilterModel.Column is null && gridColumn.CellDataType != CellDataType.None && gridColumn.EnableAdvancedFilter)
+            foreach (var gridColumn in gridColumns)
+            {
+                if (gridColumn.AdvancedFilterModel.Column == null && gridColumn.CellDataType != CellDataType.None && gridColumn.EnableAdvancedFilter)
                 {
                     gridColumn.AdvancedFilterModel = new AdvancedFilterModel
                     {
-                        Operator = FilterOperator.None,
+                        Operator = gridColumn.CellDataType == CellDataType.Text ? defaultAdvancedFilterOperator : FilterOperator.None,
                         AdditionalOperator = FilterOperator.None,
                         Type = gridColumn.CellDataType,
                         Column = gridColumn.DataField,
@@ -23,177 +24,142 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
                         AdditionalValue = ""
                     };
                 }
-
-                if (gridColumn.CellDataType == CellDataType.Text)
-                {
-                    if (gridColumn.AdvancedFilterModel.Operator == FilterOperator.None)
-                        gridColumn.AdvancedFilterModel.Operator = defaultAdvancedFilterOperator;
-                }
             }
-
             return gridColumns;
         }
 
-        public TreeRowNode<TItem> FilterBy(TreeRowNode<TItem> tree, 
-                                           List<AdvancedFilterModel> advancedFilterList, 
-                                           List<GridColumn<TItem>> gridColumns, 
-                                           CellParams<TItem> cellParams)
+        public TreeRowNode<TItem> FilterBy(TreeRowNode<TItem> tree, List<AdvancedFilterModel> advancedFilterList, List<GridColumn<TItem>> gridColumns, CellParams<TItem> cellParams)
         {
+            // Preprocess to avoid repetitive Find operation inside Check
+            var columnDictionary = gridColumns.ToDictionary(col => col.DataField, col => col);
+
             foreach (var child in tree.Children)
-                Show(child, advancedFilterList, gridColumns, cellParams);
+                Show(child, advancedFilterList, columnDictionary, cellParams);
             return tree;
         }
 
-        private bool IsValidModelFirstPart(AdvancedFilterModel filterModel)
+        private bool Check(TreeRowNode<TItem> tree, string filterValue, FilterOperator filterOperator, AdvancedFilterModel filterModel, Dictionary<string, GridColumn<TItem>> columnDictionary, CellParams<TItem> cellParams)
         {
-            if (filterModel.Operator == FilterOperator.None && filterModel.Type != CellDataType.Boolean) return false;
-            return true;
-        }
-
-        private bool IsValidModelSecondPart(AdvancedFilterModel filterModel)
-        {
-            if (filterModel.AdditionalOperator == FilterOperator.None && filterModel.Type != CellDataType.Boolean) return false;
-            return true;
-        }
-
-        private bool Check(TreeRowNode<TItem> tree, 
-                           string filterValue, 
-                           FilterOperator filterOperator, 
-                           AdvancedFilterModel filterModel, 
-                           List<GridColumn<TItem>> gridColumns,
-                           CellParams<TItem> cellParams)
-        {
-            var gridColumn = gridColumns.Find(e => e.DataField == filterModel.Column);
+            if (!columnDictionary.TryGetValue(filterModel.Column, out var gridColumn))
+                return true;
 
             cellParams.RowData = tree.Data.RowData;
             cellParams.GridColumn = gridColumn;
             cellParams.RowNode = tree.Data;
+
+            var cellData = gridColumn.CellDataFn(cellParams)?.ToString();
             
-            if (gridColumn != null && gridColumn.CellDataFn(cellParams) is null) return false;
+            if (cellData == null) return false;
 
-            var cellData = gridColumn.CellDataFn(cellParams).ToString();
-
-            if (filterModel.Type == CellDataType.Text)
+            // Switch based on type to avoid repetitive type checks
+            switch (filterModel.Type)
             {
-                cellData = cellData.ToLower();
-
-                filterValue = filterValue.ToLower();
-
-                return filterOperator switch
-                {
-                    FilterOperator.Contains => cellData.Contains(filterValue),
-
-                    FilterOperator.Equals => (cellData == filterValue),
-
-                    FilterOperator.NotContains => !cellData.Contains(filterValue),
-
-                    FilterOperator.NotEquals => (cellData != filterValue),
-
-                    FilterOperator.StartsWith => cellData.StartsWith(filterValue),
-
-                    FilterOperator.EndsWith => cellData.EndsWith(filterValue),
-
-                    _ => true
-                };
+                case CellDataType.Text:
+                    return ApplyTextFilter(cellData, filterValue, filterOperator);
+                case CellDataType.Number:
+                    return ApplyNumberFilter(cellData, filterValue, filterOperator);
+                case CellDataType.Boolean:
+                    return ApplyBooleanFilter(cellData, filterValue);
+                case CellDataType.Date:
+                    return ApplyDateFilter(cellData, filterValue, filterOperator, gridColumn.DateFormat);
+                default:
+                    return true;
             }
-
-            if (filterModel.Type == CellDataType.Number)
-            {
-                if (!int.TryParse(cellData, out var cellNumber) || !int.TryParse(filterValue, out var filterNumber))
-                    return false;
-
-                return filterOperator switch
-                {
-                    FilterOperator.Equals => (cellNumber == filterNumber),
-
-                    FilterOperator.NotEquals => (cellNumber != filterNumber),
-
-                    FilterOperator.GreaterThan => (cellNumber > filterNumber),
-
-                    FilterOperator.LessThan => (cellNumber < filterNumber),
-
-                    _ => true
-                };
-            }
-
-            if (filterModel.Type == CellDataType.Boolean)
-            {
-                cellData = cellData.ToLower();
-
-                filterValue = filterValue.ToLower();
-
-                return cellData.Contains(filterValue);
-            }
-
-            if (filterModel.Type == CellDataType.Date)
-            {
-                if (!DateTime.TryParse(cellData, out _) || !DateTime.TryParse(filterValue, out _))
-                    return false;
-
-                var columnData = Convert.ToDateTime(cellData).ToString(gridColumn.DateFormat);
-                var columnFilter = Convert.ToDateTime(filterValue).ToString(gridColumn.DateFormat);
-
-                var result = columnData.CompareTo(columnFilter);
-
-                return filterOperator switch
-                {
-                    FilterOperator.Equals => result == 0,
-
-                    FilterOperator.NotEquals => result != 0,
-
-                    FilterOperator.GreaterThan => result > 0,
-
-                    FilterOperator.LessThan => result < 0,
-
-                    _ => true
-                };
-            }
-
-            return true;
         }
 
-        private bool CheckFirstPart(TreeRowNode<TItem> tree, AdvancedFilterModel filterModel, List<GridColumn<TItem>> gridColumns, CellParams<TItem> cellParams)
+        private bool ApplyTextFilter(string cellData, string filterValue, FilterOperator filterOperator)
         {
-            if (!IsValidModelFirstPart(filterModel)) return true;
+            cellData = cellData.ToLower();
 
-            return Check(tree, filterModel.Value, filterModel.Operator, filterModel, gridColumns, cellParams);
+            filterValue = filterValue.ToLower();
+
+            return filterOperator switch
+            {
+                FilterOperator.Contains => cellData.Contains(filterValue),
+                FilterOperator.Equals => cellData == filterValue,
+                FilterOperator.NotContains => !cellData.Contains(filterValue),
+                FilterOperator.NotEquals => cellData != filterValue,
+                FilterOperator.StartsWith => cellData.StartsWith(filterValue),
+                FilterOperator.EndsWith => cellData.EndsWith(filterValue),
+                _ => true,
+            };
         }
 
-        private bool CheckSecondPart(TreeRowNode<TItem> tree, AdvancedFilterModel filterModel, List<GridColumn<TItem>> gridColumns, CellParams<TItem> cellParams)
+        private bool ApplyNumberFilter(string cellData, string filterValue, FilterOperator filterOperator)
         {
-            if (!IsValidModelSecondPart(filterModel)) return true;
+            if (!int.TryParse(cellData, out var cellNumber) || !int.TryParse(filterValue, out var filterNumber))
+                return false;
 
-            return Check(tree, filterModel.AdditionalValue, filterModel.AdditionalOperator, filterModel, gridColumns, cellParams);
+            return filterOperator switch
+            {
+                FilterOperator.Equals => cellNumber == filterNumber,
+                FilterOperator.NotEquals => cellNumber != filterNumber,
+                FilterOperator.GreaterThan => cellNumber > filterNumber,
+                FilterOperator.LessThan => cellNumber < filterNumber,
+                _ => true,
+            };
         }
 
-        private bool Show(TreeRowNode<TItem> tree, List<AdvancedFilterModel> advancedFilterList, List<GridColumn<TItem>> gridColumns, CellParams<TItem> cellParams)
+        private bool ApplyBooleanFilter(string cellData, string filterValue)
+        {
+            return cellData.ToLower().Contains(filterValue.ToLower());
+        }
+
+        private bool ApplyDateFilter(string cellData, string filterValue, FilterOperator filterOperator, string dateFormat)
+        {
+            if (!DateTime.TryParse(cellData, out var cellDate) || !DateTime.TryParse(filterValue, out var filterDate))
+                return false;
+
+            int result = DateTime.Compare(cellDate, filterDate);
+
+            return filterOperator switch
+            {
+                FilterOperator.Equals => result == 0,
+                FilterOperator.NotEquals => result != 0,
+                FilterOperator.GreaterThan => result > 0,
+                FilterOperator.LessThan => result < 0,
+                _ => true,
+            };
+        }
+
+        private bool Show(TreeRowNode<TItem> tree, List<AdvancedFilterModel> advancedFilterList, Dictionary<string, GridColumn<TItem>> columnDictionary, CellParams<TItem> cellParams)
         {
             if (!tree.Data.IsGroup)
             {
-                tree.Data.AdvShow = true;
-                foreach (var filterModel in advancedFilterList)
+                tree.Data.AdvShow = advancedFilterList.All(filterModel =>
                 {
-                    var valueFirstPart = CheckFirstPart(tree, filterModel, gridColumns, cellParams);
-                    var valueSecondPart = CheckSecondPart(tree, filterModel, gridColumns, cellParams);
+                    bool firstPartResult = CheckPart(tree, filterModel, columnDictionary, cellParams, true);
 
-                    if (filterModel.Condition == FilterCondition.None)
-                        tree.Data.AdvShow = valueFirstPart;
-                    if (filterModel.Condition == FilterCondition.And)
-                        tree.Data.AdvShow = valueFirstPart && valueSecondPart;
-                    if (filterModel.Condition == FilterCondition.Or)
-                        tree.Data.AdvShow = valueFirstPart || valueSecondPart;
+                    bool secondPartResult = CheckPart(tree, filterModel, columnDictionary, cellParams, false);
 
-                    if (!tree.Data.AdvShow) break;
-                }
+                    switch (filterModel.Condition)
+                    {
+                        case FilterCondition.None:
+                            return firstPartResult;
+                        case FilterCondition.And:
+                            return firstPartResult && secondPartResult;
+                        case FilterCondition.Or:
+                            return firstPartResult || secondPartResult;
+                        default:
+                            return true;
+                    };
+                });
             }
             else
             {
-                tree.Data.AdvShow = false;
-                foreach (var child in tree.Children)
-                    if (Show(child, advancedFilterList, gridColumns, cellParams))
-                        tree.Data.AdvShow = true;
+                tree.Data.AdvShow = tree.Children.Any(child => Show(child, advancedFilterList, columnDictionary, cellParams));
             }
+
             return tree.Data.AdvShow;
+        }
+
+        private bool CheckPart(TreeRowNode<TItem> tree, AdvancedFilterModel filterModel, Dictionary<string, GridColumn<TItem>> columnDictionary, CellParams<TItem> cellParams, bool isFirstPart)
+        {
+            var partValue = isFirstPart ? filterModel.Value : filterModel.AdditionalValue;
+
+            var partOperator = isFirstPart ? filterModel.Operator : filterModel.AdditionalOperator;
+
+            return Check(tree, partValue, partOperator, filterModel, columnDictionary, cellParams);
         }
     }
 }
