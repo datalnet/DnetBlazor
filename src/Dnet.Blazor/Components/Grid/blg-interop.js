@@ -2,6 +2,8 @@
 
     const observersByDotNetId = {};
 
+    let startX;
+
     function findClosestScrollContainer(element) {
 
         if (!element) {
@@ -17,26 +19,57 @@
         return findClosestScrollContainer(element.parentElement);
     };
 
-    function addTouchListeners(elementRef, scrollElementRef, dotNetReference) {
-        let startX;
+    // e1: MouseEvent | Touch, e2: MouseEvent | Touch, pixelCount: number
+    function areEventsNear(e1, e2, pixelCount) {
+        // by default, we wait 4 pixels before starting the drag
+        if (pixelCount === 0) { return false; }
+    
+        const diffX = Math.abs(e1.clientX - e2.clientX);
+        const diffY = Math.abs(e1.clientY - e2.clientY);
+    
+        return Math.max(diffX, diffY) <= pixelCount;
+    }
 
+    function addTouchListeners(elementRef, scrollElementRef, dotNetReference) {
+       
         elementRef.addEventListener('touchstart', function(e) {
+
             const touch = e.touches[0];
-            startX = touch.clientX; // Guarda la posición inicial del toque
-        }, false);
+
+            startX = touch.clientX;
+
+            console.log("Aqui empieza", startX);
+
+        }, { passive: true } );
 
         elementRef.addEventListener('touchmove', function(e) {
-            const touch = e.touches[0];
-            const deltaX = touch.clientX - startX;
-
-            scrollElementRef.scrollLeft -= deltaX;
-
-            // Llama a un método en tu componente Blazor con el deltaX
+            const touch = e.touches[0]; // Obtiene la primera posición táctil
+            console.log("touch.clientX", touch.clientX);
+        
+            const deltaX = touch.clientX - startX; // Calcula el cambio en la posición X desde el toque inicial
+            console.log("deltaX", deltaX); // Sería bueno también imprimir deltaX para depurar
+        
+            var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth; // Calcula el máximo scrollLeft
+            console.log("maxScrollLeft", maxScrollLeft);
+        
+            var elementScrollLeft = scrollElementRef.scrollLeft; // Obtiene el scrollLeft actual del elemento
+            console.log("elementScrollLeft", elementScrollLeft);
+        
+           // Comprueba si se intenta desplazar más allá del inicio o el final y previene el desplazamiento del contenido
+            if ((elementScrollLeft === 0 && deltaX > 0) || (elementScrollLeft >= maxScrollLeft && deltaX < 0)) {
+                // e.preventDefault(); // Esto previene el desplazamiento adicional y el desplazamiento de la página
+                return; // Detiene la ejecución adicional para evitar ajustar scrollLeft innecesariamente
+            }
+        
+            scrollElementRef.scrollLeft -= deltaX; // Actualiza el scrollLeft del elemento basado en el movimiento táctil
+        
+            // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
             dotNetReference.invokeMethodAsync('OnTouchMove', deltaX);
-
-            // Previene el desplazamiento predeterminado para que no interfiera con el desplazamiento de la página
-            e.preventDefault();
-        }, false);
+        
+            // Si quieres prevenir el desplazamiento predeterminado de la página, puedes descomentar la siguiente línea.
+            // Pero ten en cuenta que esto puede afectar la capacidad de desplazamiento natural de la página.
+            // e.preventDefault();
+        }, { passive: true }); // Cambia a passive: false si estás llamando a preventDefault().
     };
 
     return {
