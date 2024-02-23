@@ -1846,16 +1846,11 @@
     [JSInvokable]
     public async Task OnTouchMove(double deltaX)
     {
-        // Maneja el deltaX aquí, por ejemplo, actualizando algún estado o realizando una acción
-        Console.WriteLine($"Movimiento horizontal detectado: {deltaX}");
-
         var result = await BlGridInterop.GetElementScrollLeft(_eBodyHorizontalScrollViewport);
 
          _transformX = $"{Math.Floor(result)}px";
 
         StateHasChanged();
-
-        @* return Task.CompletedTask; *@
     }
 
     public async ValueTask DisposeAsync()

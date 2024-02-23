@@ -152,7 +152,6 @@
             } else {
                 if (Math.abs(deltaY) > umbral) {
                     // Movimiento vertical
-                    // Aquí puedes agregar tu lógica para manejar movimientos verticales
                     if (deltaY < 0) {
                         // console.log('Movimiento hacia arriba');
                         return;
