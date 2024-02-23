@@ -2,7 +2,7 @@
 
     const observersByDotNetId = {};
 
-    let startX;
+
 
     function findClosestScrollContainer(element) {
 
@@ -23,53 +23,122 @@
     function areEventsNear(e1, e2, pixelCount) {
         // by default, we wait 4 pixels before starting the drag
         if (pixelCount === 0) { return false; }
-    
+
         const diffX = Math.abs(e1.clientX - e2.clientX);
         const diffY = Math.abs(e1.clientY - e2.clientY);
-    
+
         return Math.max(diffX, diffY) <= pixelCount;
     }
 
     function addTouchListeners(elementRef, scrollElementRef, dotNetReference) {
-       
-        elementRef.addEventListener('touchstart', function(e) {
+
+        let startX;
+
+        let startY;
+
+        elementRef.addEventListener('touchstart', function (e) {
 
             const touch = e.touches[0];
 
             startX = touch.clientX;
 
+            startY = e.touches[0].clientY;
+
             console.log("Aqui empieza", startX);
 
-        }, { passive: true } );
+        }, { passive: true });
 
-        elementRef.addEventListener('touchmove', function(e) {
+        elementRef.addEventListener('touchmove', function (e) {
             const touch = e.touches[0]; // Obtiene la primera posición táctil
             console.log("touch.clientX", touch.clientX);
-        
+
             const deltaX = touch.clientX - startX; // Calcula el cambio en la posición X desde el toque inicial
             console.log("deltaX", deltaX); // Sería bueno también imprimir deltaX para depurar
-        
-            var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth; // Calcula el máximo scrollLeft
-            console.log("maxScrollLeft", maxScrollLeft);
-        
-            var elementScrollLeft = scrollElementRef.scrollLeft; // Obtiene el scrollLeft actual del elemento
-            console.log("elementScrollLeft", elementScrollLeft);
-        
-           // Comprueba si se intenta desplazar más allá del inicio o el final y previene el desplazamiento del contenido
-            if ((elementScrollLeft === 0 && deltaX > 0) || (elementScrollLeft >= maxScrollLeft && deltaX < 0)) {
-                // e.preventDefault(); // Esto previene el desplazamiento adicional y el desplazamiento de la página
-                return; // Detiene la ejecución adicional para evitar ajustar scrollLeft innecesariamente
+
+            const deltaY = touch.clientY - startY; // Calcula el cambio en Y
+
+            const absDeltaX = Math.abs(deltaX);
+            const absDeltaY = Math.abs(deltaY);
+
+            const umbral = 10; // Umbral para diferenciar entre movimientos leves y significativos
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (Math.abs(deltaX) > umbral) {
+                    // El movimiento es principalmente horizontal
+                    console.log('Movimiento principalmente horizontal');
+
+                    var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth; // Calcula el máximo scrollLeft
+                    console.log("maxScrollLeft", maxScrollLeft);
+
+                    var elementScrollLeft = scrollElementRef.scrollLeft; // Obtiene el scrollLeft actual del elemento
+                    console.log("elementScrollLeft", elementScrollLeft);
+
+                    // Comprueba si se intenta desplazar más allá del inicio o el final y previene el desplazamiento del contenido
+                    if ((elementScrollLeft === 0 && deltaX > 0) || (elementScrollLeft >= maxScrollLeft && deltaX < 0)) {
+                        return; // Detiene la ejecución adicional para evitar ajustar scrollLeft innecesariamente
+                    }
+
+                    scrollElementRef.scrollLeft -= deltaX; // Actualiza el scrollLeft del elemento basado en el movimiento táctil
+
+                    // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
+                    dotNetReference.invokeMethodAsync('OnTouchMove', deltaX);
+                }
+            } else {
+                if (Math.abs(deltaY) > umbral) {
+                    // Movimiento vertical
+                    console.log('Movimiento vertical');
+                    // Aquí puedes agregar tu lógica para manejar movimientos verticales
+                    if (deltaY < 0) {
+                        console.log('Movimiento hacia arriba');
+                    } else {
+                        console.log('Movimiento hacia abajo');
+                    }
+                }
             }
-        
-            scrollElementRef.scrollLeft -= deltaX; // Actualiza el scrollLeft del elemento basado en el movimiento táctil
-        
-            // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
-            dotNetReference.invokeMethodAsync('OnTouchMove', deltaX);
-        
-            // Si quieres prevenir el desplazamiento predeterminado de la página, puedes descomentar la siguiente línea.
-            // Pero ten en cuenta que esto puede afectar la capacidad de desplazamiento natural de la página.
-            // e.preventDefault();
-        }, { passive: true }); // Cambia a passive: false si estás llamando a preventDefault().
+
+            // Considera el movimiento como diagonal si no es claramente horizontal o vertical
+            if (Math.abs(deltaX) > umbral && Math.abs(deltaY) > umbral) {
+                console.log('Movimiento diagonal');
+                // Aquí puedes agregar tu lógica para manejar movimientos diagonales
+            }
+
+            // if (absDeltaX > absDeltaY) {
+            //     // El movimiento es principalmente horizontal
+            //     console.log('Movimiento principalmente horizontal');
+
+            //     var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth; // Calcula el máximo scrollLeft
+            //     console.log("maxScrollLeft", maxScrollLeft);
+
+            //     var elementScrollLeft = scrollElementRef.scrollLeft; // Obtiene el scrollLeft actual del elemento
+            //     console.log("elementScrollLeft", elementScrollLeft);
+
+            //     // Comprueba si se intenta desplazar más allá del inicio o el final y previene el desplazamiento del contenido
+            //     if ((elementScrollLeft === 0 && deltaX > 0) || (elementScrollLeft >= maxScrollLeft && deltaX < 0)) {
+            //         return; // Detiene la ejecución adicional para evitar ajustar scrollLeft innecesariamente
+            //     }
+
+            //     scrollElementRef.scrollLeft -= deltaX; // Actualiza el scrollLeft del elemento basado en el movimiento táctil
+
+            //     // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
+            //     dotNetReference.invokeMethodAsync('OnTouchMove', deltaX);
+
+            // } else if (absDeltaY > absDeltaX) {
+            //     // El movimiento es principalmente vertical
+            //     console.log('Movimiento principalmente vertical');
+
+            //     if (deltaY < 0) {
+            //         console.log('Movimiento hacia arriba');
+            //         // Maneja el movimiento hacia arriba
+            //     } else if (deltaY > 0) {
+            //         console.log('Movimiento hacia abajo');
+            //         // Maneja el movimiento hacia abajo
+            //         if (scrollElementRef.scrollTop === 0) {
+            //             console.log('Movimiento hacia abajo es válido');
+            //         }
+            //     }
+            // }
+
+        }, { passive: true });
     };
 
     return {
