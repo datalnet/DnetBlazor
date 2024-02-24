@@ -182,8 +182,8 @@
             }
 
             // stops the tap from also been processed as a mouse click
-            // if (preventMouseClick && touchEvent.cancelable) {
-            //     touchEvent.preventDefault();
+            // if (preventMouseClick && e.cancelable) {
+            //     e.preventDefault();
             // }
 
             // Realiza una verificación final del estado de desplazamiento aquí si es necesario
@@ -191,8 +191,9 @@
             var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth;
 
             // Puedes verificar aquí si el desplazamiento final está en el límite y manejarlo como sea necesario
-            if (elementScrollLeft >= maxScrollLeft) {
+            if (elementScrollLeft > maxScrollLeft) {
                 elementScrollLeft = maxScrollLeft;
+                dotNetReference.invokeMethodAsync('OnTouchMove', deltaX);
             }
 
             touching = false;
