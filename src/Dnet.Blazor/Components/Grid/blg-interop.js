@@ -125,9 +125,13 @@
 
             const touch = e.touches[0]; // Obtiene la primera posición táctil
 
-            const deltaX = touch.clientX - startX; // Calcula el cambio en la posición X desde el toque inicial
+            console.log("startX", startX);
 
-            const deltaY = touch.clientY - startY; // Calcula el cambio en Y
+            console.log("touch.clientX", touch.clientX);
+
+            const deltaX = startX - touch.clientX; // Calcula el cambio en la posición X desde el toque inicial
+
+            const deltaY = startY - touch.clientY; // Calcula el cambio en Y
 
             const umbral = 10; // Umbral para diferenciar entre movimientos leves y significativos
 
@@ -137,12 +141,18 @@
 
                     var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth; // Calcula el máximo scrollLeft
 
-                    scrollElementRef.scrollLeft -= deltaX; // Actualiza el scrollLeft del elemento basado en el movimiento táctil
+                    console.log("deltaX",deltaX);
+
+                    scrollElementRef.scrollBy({left: deltaX }); //deltaX positivo desplaza hacia la derecha
 
                     var elementScrollLeft = scrollElementRef.scrollLeft; // Obtiene el scrollLeft actual del elemento
 
+                    console.log("elementScrollLeft", elementScrollLeft);
+
                     // Comprueba si se intenta desplazar más allá del inicio o el final y previene el desplazamiento del contenido
-                    if ((elementScrollLeft === 0 && deltaX > 0) || (elementScrollLeft >= maxScrollLeft && deltaX < 0)) {
+                    if ((elementScrollLeft === 0 && deltaX < 0) || (elementScrollLeft >= maxScrollLeft && deltaX > 0)) {
+
+                        console.log("Ejecucion detnida");
                         return; // Detiene la ejecución adicional para evitar ajustar scrollLeft innecesariamente
                     }
                     else {

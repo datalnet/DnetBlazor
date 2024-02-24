@@ -1848,15 +1848,9 @@
     {
         var result = await BlGridInterop.GetElementScrollLeft(_eBodyHorizontalScrollViewport);
 
-         if ((scrollInfo.ElementScrollLeft == 0 && scrollInfo.DeltaX > 0) || (scrollInfo.ElementScrollLeft >= scrollInfo.MaxScrollLeft && scrollInfo.DeltaX < 0)) {
-            return; 
-        }
-        else
-        {
-            _transformX = $"{Math.Floor(result)}px";
+        _transformX = $"-{Math.Floor(result)}px";
 
-            StateHasChanged();
-        }
+        StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()
