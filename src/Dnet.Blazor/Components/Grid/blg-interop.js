@@ -186,6 +186,15 @@
             //     touchEvent.preventDefault();
             // }
 
+            // Realiza una verificación final del estado de desplazamiento aquí si es necesario
+            var elementScrollLeft = scrollElementRef.scrollLeft;
+            var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth;
+
+            // Puedes verificar aquí si el desplazamiento final está en el límite y manejarlo como sea necesario
+            if (elementScrollLeft >= maxScrollLeft) {
+                elementScrollLeft = maxScrollLeft;
+            }
+
             touching = false;
 
         }, { passive: true });
