@@ -10,12 +10,13 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>4.2.0</PackageVersion>
+		<PackageVersion>4.2.1</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Complete redesign of select, list, double list, floating double list, autocomplete.
+			- Navigation menu styling.
+			- Add Grid Horizontal scroling in movil device 
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
