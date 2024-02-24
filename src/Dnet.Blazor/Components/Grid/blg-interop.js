@@ -152,7 +152,7 @@
                     // Comprueba si se intenta desplazar más allá del inicio o el final y previene el desplazamiento del contenido
                     if ((elementScrollLeft === 0 && deltaX < 0) || (elementScrollLeft >= maxScrollLeft && deltaX > 0)) {
 
-                        console.log("Ejecucion detnida");
+                        console.log("Ejecucion detenida");
                         return; // Detiene la ejecución adicional para evitar ajustar scrollLeft innecesariamente
                     }
                     else {
@@ -163,6 +163,8 @@
                         };
 
                         // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
+                        e.preventDefault();
+
                         dotNetReference.invokeMethodAsync('OnTouchMove', scrollInfo);
                     }
                 }
@@ -185,7 +187,7 @@
                 return;
             }
 
-        }, { passive: true });
+        }, { passive: false });
 
         elementRef.addEventListener('touchend', function (e) {
 
