@@ -137,17 +137,24 @@
 
                     var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth; // Calcula el máximo scrollLeft
 
+                    scrollElementRef.scrollLeft -= deltaX; // Actualiza el scrollLeft del elemento basado en el movimiento táctil
+
                     var elementScrollLeft = scrollElementRef.scrollLeft; // Obtiene el scrollLeft actual del elemento
 
                     // Comprueba si se intenta desplazar más allá del inicio o el final y previene el desplazamiento del contenido
                     if ((elementScrollLeft === 0 && deltaX > 0) || (elementScrollLeft >= maxScrollLeft && deltaX < 0)) {
                         return; // Detiene la ejecución adicional para evitar ajustar scrollLeft innecesariamente
                     }
+                    else {
+                        var scrollInfo = {
+                            maxScrollLeft: maxScrollLeft,
+                            deltaX: deltaX,
+                            elementScrollLeft: elementScrollLeft
+                        };
 
-                    scrollElementRef.scrollLeft -= deltaX; // Actualiza el scrollLeft del elemento basado en el movimiento táctil
-
-                    // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
-                    dotNetReference.invokeMethodAsync('OnTouchMove', deltaX);
+                        // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
+                        dotNetReference.invokeMethodAsync('OnTouchMove', scrollInfo);
+                    }
                 }
             } else {
                 if (Math.abs(deltaY) > umbral) {
@@ -182,8 +189,8 @@
             }
 
             // stops the tap from also been processed as a mouse click
-            // if (preventMouseClick && touchEvent.cancelable) {
-            //     touchEvent.preventDefault();
+            // if (preventMouseClick && e.cancelable) {
+            //     e.preventDefault();
             // }
 
             touching = false;
