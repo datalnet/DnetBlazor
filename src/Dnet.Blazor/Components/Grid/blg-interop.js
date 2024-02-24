@@ -137,15 +137,15 @@
 
                     var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth; // Calcula el máximo scrollLeft
 
+                    scrollElementRef.scrollLeft -= deltaX; // Actualiza el scrollLeft del elemento basado en el movimiento táctil
+
                     var elementScrollLeft = scrollElementRef.scrollLeft; // Obtiene el scrollLeft actual del elemento
 
                     // Comprueba si se intenta desplazar más allá del inicio o el final y previene el desplazamiento del contenido
                     if ((elementScrollLeft === 0 && deltaX > 0) || (elementScrollLeft >= maxScrollLeft && deltaX < 0)) {
                         return; // Detiene la ejecución adicional para evitar ajustar scrollLeft innecesariamente
                     }
-
-                    scrollElementRef.scrollLeft -= deltaX; // Actualiza el scrollLeft del elemento basado en el movimiento táctil
-
+                    
                     // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
                     dotNetReference.invokeMethodAsync('OnTouchMove', deltaX);
                 }
@@ -185,16 +185,6 @@
             // if (preventMouseClick && e.cancelable) {
             //     e.preventDefault();
             // }
-
-            // Realiza una verificación final del estado de desplazamiento aquí si es necesario
-            var elementScrollLeft = scrollElementRef.scrollLeft;
-            var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth;
-
-            // Puedes verificar aquí si el desplazamiento final está en el límite y manejarlo como sea necesario
-            if (elementScrollLeft > maxScrollLeft) {
-                elementScrollLeft = maxScrollLeft;
-                dotNetReference.invokeMethodAsync('OnTouchMove', deltaX);
-            }
 
             touching = false;
 
