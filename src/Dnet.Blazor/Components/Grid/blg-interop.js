@@ -145,9 +145,16 @@
                     if ((elementScrollLeft === 0 && deltaX > 0) || (elementScrollLeft >= maxScrollLeft && deltaX < 0)) {
                         return; // Detiene la ejecución adicional para evitar ajustar scrollLeft innecesariamente
                     }
-                    
-                    // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
-                    dotNetReference.invokeMethodAsync('OnTouchMove', deltaX);
+                    else {
+                        var scrollInfo = {
+                            maxScrollLeft: maxScrollLeft,
+                            deltaX: deltaX,
+                            elementScrollLeft: elementScrollLeft
+                        };
+
+                        // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
+                        dotNetReference.invokeMethodAsync('OnTouchMove', scrollInfo);
+                    }
                 }
             } else {
                 if (Math.abs(deltaY) > umbral) {
