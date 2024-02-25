@@ -70,9 +70,7 @@
 
     function addTouchListeners(elementRef, scrollElementRef, dotNetReference) {
 
-        let startX;
-
-        let startY;
+        let startX, startY, scrollStartX;
 
         elementRef.addEventListener('touchstart', function (e) {
 
@@ -83,6 +81,8 @@
             startX = e.touches[0].clientX;
 
             startY = e.touches[0].clientY;
+
+            scrollStartX = scrollElementRef.scrollLeft;
 
             touching = true;
 
@@ -129,7 +129,8 @@
 
             console.log("touch.clientX", touch.clientX);
 
-            const deltaX = startX - touch.clientX; // Calcula el cambio en la posición X desde el toque inicial
+            // const deltaX = startX - touch.clientX; // Calcula el cambio en la posición X desde el toque inicial
+            const deltaX = touch.clientX - startX;
 
             const deltaY = startY - touch.clientY; // Calcula el cambio en Y
 
@@ -137,13 +138,17 @@
 
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
                 if (Math.abs(deltaX) > umbral) {
+                    e.preventDefault();
+
                     // El movimiento es principalmente horizontal
 
                     var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth; // Calcula el máximo scrollLeft
 
                     console.log("deltaX",deltaX);
 
-                    scrollElementRef.scrollBy({left: deltaX }); //deltaX positivo desplaza hacia la derecha
+                    scrollElementRef.scrollLeft = scrollStartX - deltaX;
+
+                    // scrollElementRef.scrollBy({left: deltaX }); //deltaX positivo desplaza hacia la derecha
 
                     var elementScrollLeft = scrollElementRef.scrollLeft; // Obtiene el scrollLeft actual del elemento
 
@@ -163,7 +168,7 @@
                         };
 
                         // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
-                        e.preventDefault();
+                        
 
                         dotNetReference.invokeMethodAsync('OnTouchMove', scrollInfo);
                     }
