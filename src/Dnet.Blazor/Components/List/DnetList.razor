@@ -237,7 +237,7 @@
 
     private long _nextId { get; set; } = -1;
 
-    private SortOrder SortStatus { get; set; } = SortOrder.None;
+    private SortOrder _sortStatus { get; set; } = SortOrder.None;
 
     private string? SortIconClass { get; set; }
 
@@ -457,7 +457,7 @@
         {
             _searchModel.PaginationModel.CurrentPage = 1;
             _searchModel.SortModel.ColumnName = null;
-            _searchModel.SortModel.Order = SortStatus;
+            _searchModel.SortModel.Order = _sortStatus;
 
             await OnSort.InvokeAsync(_searchModel);
         }
@@ -480,35 +480,35 @@
 
     private bool IsSortAscending()
     {
-        return SortStatus == SortOrder.Ascending;
+        return _sortStatus == SortOrder.Ascending;
     }
 
     private bool IsSortDescending()
     {
-        return SortStatus == SortOrder.Descending;
+        return _sortStatus == SortOrder.Descending;
     }
 
     private bool IsSortNone()
     {
-        return SortStatus == SortOrder.None;
+        return _sortStatus == SortOrder.None;
     }
 
     private void UpdateOrder()
     {
-        var sortStatus = SortStatus;
+        var sortStatus = _sortStatus;
 
-        SortStatus = sortStatus switch
+        _sortStatus = sortStatus switch
         {
             SortOrder.None => SortOrder.Ascending,
             SortOrder.Ascending => SortOrder.Descending,
             SortOrder.Descending => SortOrder.None,
-            _ => SortStatus
+            _ => _sortStatus
         };
     }
 
     private int TextCellComparer(RowNode<TItem> a, RowNode<TItem> b)
     {
-        var sortOrder = SortStatus == SortOrder.Descending ? -1 : 1;
+        var sortOrder = _sortStatus == SortOrder.Descending ? -1 : 1;
         return string.Compare(ListOptions.SortedData(a.RowData), ListOptions.SortedData(b.RowData), StringComparison.Ordinal) *
         sortOrder;
     }
@@ -585,7 +585,7 @@
                         _filteredRowNodes = _rowNodesBk.Where(p =>
             ListOptions.SearchValueConverter(p.RowData).ToUpper().Contains(_filter.ToUpper())).ToList();
 
-                        if (SortStatus != SortOrder.None)
+                        if (_sortStatus != SortOrder.None)
                         {
                             _filteredRowNodes = SortTexts(_filteredRowNodes);
                         }

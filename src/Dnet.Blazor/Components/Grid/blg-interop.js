@@ -70,7 +70,7 @@
 
     function addTouchListeners(elementRef, scrollElementRef, dotNetReference) {
 
-        let startX, startY, scrollStartX;
+        let startX, startY, scrollStartX, scrollStartY;
 
         elementRef.addEventListener('touchstart', function (e) {
 
@@ -83,6 +83,8 @@
             startY = e.touches[0].clientY;
 
             scrollStartX = scrollElementRef.scrollLeft;
+
+            scrollStartY = scrollElementRef.scrollTop;
 
             touching = true;
 
@@ -97,10 +99,8 @@
                 const touchesMatch = touchStart === touchStartCopy;
 
                 if (touching && touchesMatch && !moved) {
-
                     //long tap
                     moved = true;
-
                 }
             }, 500);
 
@@ -132,17 +132,17 @@
             // const deltaX = startX - touch.clientX; // Calcula el cambio en la posición X desde el toque inicial
             const deltaX = touch.clientX - startX;
 
-            const deltaY = startY - touch.clientY; // Calcula el cambio en Y
+            const deltaY = touch.clientY - startY; // Calcula el cambio en Y
 
             const umbral = 10; // Umbral para diferenciar entre movimientos leves y significativos
 
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
                 if (Math.abs(deltaX) > umbral) {
-                    e.preventDefault();
 
+                    e.preventDefault();
                     // El movimiento es principalmente horizontal
 
-                    var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth; // Calcula el máximo scrollLeft
+                    var maxScrollLeft = scrollElementRef.scrollWidth - scrollElementRef.clientWidth;
 
                     console.log("deltaX",deltaX);
 
@@ -156,8 +156,6 @@
 
                     // Comprueba si se intenta desplazar más allá del inicio o el final y previene el desplazamiento del contenido
                     if ((elementScrollLeft === 0 && deltaX < 0) || (elementScrollLeft >= maxScrollLeft && deltaX > 0)) {
-
-                        console.log("Ejecucion detenida");
                         return; // Detiene la ejecución adicional para evitar ajustar scrollLeft innecesariamente
                     }
                     else {
@@ -166,9 +164,6 @@
                             deltaX: deltaX,
                             elementScrollLeft: elementScrollLeft
                         };
-
-                        // Llama a un método .NET si es necesario. Asegúrate de que dotNetReference está definido y es válido.
-                        
 
                         dotNetReference.invokeMethodAsync('OnTouchMove', scrollInfo);
                     }
@@ -188,7 +183,6 @@
 
             // Considera el movimiento como diagonal si no es claramente horizontal o vertical
             if (Math.abs(deltaX) > umbral && Math.abs(deltaY) > umbral) {
-                // console.log('Movimiento diagonal');
                 return;
             }
 
@@ -204,11 +198,6 @@
                 //Tap event
                 checkForDoubleTap();
             }
-
-            // stops the tap from also been processed as a mouse click
-            // if (preventMouseClick && e.cancelable) {
-            //     e.preventDefault();
-            // }
 
             touching = false;
 

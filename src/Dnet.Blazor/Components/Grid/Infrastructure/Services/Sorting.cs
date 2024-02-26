@@ -21,39 +21,33 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
             };
         }
 
-        private class NumberCell
+        private class GenericCell<T>
         {
-            public long Value { get; set; }
-
+            public T? Value { get; set; }
             public int SortOrder { get; set; }
-
             public int Position { get; set; }
+
+             public void SetValue(T value)
+             {
+                Value = value;
+             }
         }
 
-        private int NumberCellComparer(NumberCell a, NumberCell b)
+        private class GenericCellComparer<T> : IComparer<GenericCell<T>> where T : IComparable<T>
         {
-            return a.Value.CompareTo(b.Value) * a.SortOrder;
-        }
-
-        private class DecimalNumberCell
-        {
-            public decimal Value { get; set; }
-
-            public int SortOrder { get; set; }
-
-            public int Position { get; set; }
-        }
-
-        private int DecimalNumberCellComparer(DecimalNumberCell a, DecimalNumberCell b)
-        {
-            return a.Value.CompareTo(b.Value) * a.SortOrder;
+            public int Compare(GenericCell<T> x, GenericCell<T> y)
+            {
+                int result = x.Value.CompareTo(y.Value);
+                return result * x.SortOrder;
+            }
         }
 
         private List<TreeRowNode<TItem>> SortNumbers(List<TreeRowNode<TItem>> nodes, GridColumn<TItem> gridColumn, bool isGroup, CellParams<TItem> cellParams)
         {
+
             if (gridColumn.IsDecimalCellDataType)
             {
-                List<DecimalNumberCell> numberCells = new();
+                List<GenericCell<decimal>> numberCells = new();
 
                 cellParams.GridColumn = gridColumn;
 
@@ -70,7 +64,7 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
                         dataString = data.ToString().Replace(',', '.');
                     }
 
-                    var numberCell = new DecimalNumberCell
+                    var numberCell = new GenericCell<decimal>
                     {
                         Position = i,
                         SortOrder = gridColumn.SortStatus == SortOrder.Descending ? -1 : 1,
@@ -80,7 +74,8 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
                     numberCells.Add(numberCell);
                 }
 
-                numberCells.Sort(DecimalNumberCellComparer);
+                var cellComparer = new GenericCellComparer<decimal>();
+                numberCells.Sort(cellComparer);
 
                 List<TreeRowNode<TItem>> sortedChildren = new();
 
@@ -91,7 +86,7 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
             }
             else
             {
-                List<NumberCell> numberCells = new();
+                List<GenericCell<long>> numberCells = new();
 
                 cellParams.GridColumn = gridColumn;
 
@@ -101,7 +96,7 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
 
                     var data = isGroup ? nodes[i].Value : gridColumn.CellDataFn(cellParams);
 
-                    var numberCell = new NumberCell
+                    var numberCell = new GenericCell<long>
                     {
                         Position = i,
                         SortOrder = gridColumn.SortStatus == SortOrder.Descending ? -1 : 1,
@@ -111,7 +106,8 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
                     numberCells.Add(numberCell);
                 }
 
-                numberCells.Sort(NumberCellComparer);
+                var cellComparer = new GenericCellComparer<long>();
+                numberCells.Sort(cellComparer);
 
                 List<TreeRowNode<TItem>> sortedChildren = new();
 
@@ -122,33 +118,21 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
             }
         }
 
-        private class TextCell
-        {
-            public string Value { get; set; }
-            public int SortOrder { get; set; }
-            public int Position { get; set; }
-        }
-
-        private int TextCellComparer(TextCell a, TextCell b)
-        {
-            return a.Value.CompareTo(b.Value) * a.SortOrder;
-        }
-
         private List<TreeRowNode<TItem>> SortTexts(List<TreeRowNode<TItem>> nodes, GridColumn<TItem> gridColumn, bool isGroup, CellParams<TItem> cellParams)
         {
-            List<TextCell> textCells = new();
-            
+            List<GenericCell<string>> textCells = new();
+
             cellParams.GridColumn = gridColumn;
 
             for (var i = 0; i < nodes.Count; ++i)
             {
                 cellParams.RowData = nodes[i].Data.RowData;
-                
+
                 var data = isGroup ? nodes[i].Value : gridColumn.CellDataFn(cellParams);
 
-                var textCell = new TextCell
+                var textCell = new GenericCell<string>
                 {
-                    Position = i, 
+                    Position = i,
                     SortOrder = gridColumn.SortStatus == SortOrder.Descending ? -1 : 1,
                     Value = data is null ? string.Empty : data.ToString()
                 };
@@ -156,7 +140,8 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
                 textCells.Add(textCell);
             }
 
-            textCells.Sort(TextCellComparer);
+            var cellComparer = new GenericCellComparer<string>();
+            textCells.Sort(cellComparer);
 
             List<TreeRowNode<TItem>> sortedChildren = new();
 
@@ -166,33 +151,22 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
             return sortedChildren;
         }
 
-        private class DateCell
-        {
-            public DateTime Value { get; set; }
-            public int SortOrder { get; set; }
-            public int Position { get; set; }
-        }
-
-        private int DateCellComparer(DateCell a, DateCell b)
-        {
-            return a.Value.CompareTo(b.Value) * a.SortOrder;
-        }
 
         private List<TreeRowNode<TItem>> SortDates(List<TreeRowNode<TItem>> nodes, GridColumn<TItem> gridColumn, bool isGroup, CellParams<TItem> cellParams)
         {
-            List<DateCell> dateCells = new();
+            List<GenericCell<DateTime>> dateCells = new();
 
             cellParams.GridColumn = gridColumn;
 
             for (var i = 0; i < nodes.Count; ++i)
             {
                 cellParams.RowData = nodes[i].Data.RowData;
-                
+
                 var data = isGroup ? nodes[i].Value : gridColumn.CellDataFn(cellParams);
 
-                var dateCell = new DateCell
+                var dateCell = new GenericCell<DateTime>
                 {
-                    Position = i, 
+                    Position = i,
                     SortOrder = gridColumn.SortStatus == SortOrder.Descending ? -1 : 1,
                     Value = data is null ? DateTime.MinValue : DateTime.Parse(data.ToString())
                 };
@@ -200,7 +174,8 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
                 dateCells.Add(dateCell);
             }
 
-            dateCells.Sort(DateCellComparer);
+            var cellComparer = new GenericCellComparer<DateTime>();
+            dateCells.Sort(cellComparer);
 
             List<TreeRowNode<TItem>> sortedChildren = new();
 
@@ -210,33 +185,21 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
             return sortedChildren;
         }
 
-        private class BooleanCell
-        {
-            public bool Value { get; set; }
-            public int SortOrder { get; set; }
-            public int Position { get; set; }
-        }
-
-        private int BooleanCellComparer(BooleanCell a, BooleanCell b)
-        {
-            return a.Value.CompareTo(b.Value) * a.SortOrder;
-        }
-
         private List<TreeRowNode<TItem>> SortBooleans(List<TreeRowNode<TItem>> nodes, GridColumn<TItem> gridColumn, bool isGroup, CellParams<TItem> cellParams)
         {
-            List<BooleanCell> booleanCells = new();
+            List<GenericCell<bool>> booleanCells = new();
 
             cellParams.GridColumn = gridColumn;
 
             for (var i = 0; i < nodes.Count; ++i)
             {
                 cellParams.RowData = nodes[i].Data.RowData;
-                    
+
                 var data = isGroup ? nodes[i].Value : gridColumn.CellDataFn(cellParams);
 
-                var booleanCell = new BooleanCell
+                var booleanCell = new GenericCell<bool>
                 {
-                    Position = i, 
+                    Position = i,
                     SortOrder = gridColumn.SortStatus == SortOrder.Descending ? -1 : 1,
                     Value = data is not null && bool.Parse(data.ToString())
                 };
@@ -244,7 +207,8 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
                 booleanCells.Add(booleanCell);
             }
 
-            booleanCells.Sort(BooleanCellComparer);
+            var cellComparer = new GenericCellComparer<bool>();
+            booleanCells.Sort(cellComparer);
 
             List<TreeRowNode<TItem>> sortedChildren = new();
 
@@ -275,7 +239,6 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Services
 
             return tree;
         }
-
 
         public TreeRowNode<TItem> SortGroupingBy(TreeRowNode<TItem> tree, GridColumn<TItem> gridColumn, CellParams<TItem> cellParams)
         {
