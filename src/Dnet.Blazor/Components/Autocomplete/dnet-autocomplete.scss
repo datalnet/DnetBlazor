@@ -1,22 +1,24 @@
 ﻿:root {
     --dnet-autocomplete-list-border-color: #ebebeb;
-    --dnet-autocomplete-list-border-radius: 10px;
+    --dnet-autocomplete-list-background-color: #ffffff;
+    --dnet-autocomplete-list-border-radius: var(--dnet-component-border-radius);
     --dnet-autocomplete-list-item-height: 50px;
     --dnet-autocomplete-list-padding-vertical: 4px;
     --dnet-autocomplete-list-padding-horizontal: 5px;
     --dnet-autocomplete-list-header-footer-height: 50px;
     --dnet-autocomplete-list-check-width: 24px;
     --dnet-autocomplete-list-prefix-suffix-min-width: 40px;
-    --dnet-autocomplete-list-headline-font-size: 0.875rem;
-    --dnet-autocomplete-list-supporting-text-font-size: 0.75rem;
+    --dnet-autocomplete-list-headline-font-size: var(--dnet-component-sm-font-size);
+    --dnet-autocomplete-list-supporting-text-font-size: var(--dnet-component-xs-font-size);
     --dnet-autocomplete-list-supporting-text-color: #666666;
     --dnet-autocomplete-list-hover-background-color: #f2f2f2;
     --dnet-autocomplete-list-hover-border-radius: 10px;
     --dnet-autocomplete-list-wrapper-horizontal-padding: 15px;
+    --dnet-autocomplete-list-box-shadow: var(--dnet-component-box-shadow);
 }
 
 .dnet-autocomplete-list-wrapper {
-    display: flex;
+    display: flex; 
     flex-direction: column;
     height: 100%;
     width: 100%;
@@ -25,8 +27,8 @@
     padding-top: var(--dnet-autocomplete-list-wrapper-horizontal-padding);
     padding-bottom: var(--dnet-autocomplete-list-wrapper-horizontal-padding);
     transition: opacity 0.5s ease-in-out;
-    background-color: #ffffff;
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .1), 0 1px 10px 0 rgba(0, 0, 0, .1);
+    background-color: var(--dnet-autocomplete-list-background-color);
+    box-shadow: var(--dnet-autocomplete-list-box-shadow);
 
     .dnet-item-fadeout {
         opacity: 0 !important;
