@@ -538,21 +538,15 @@ OverlayY = VerticalConnectionPos.Bottom
         {
             x.OpenComponent(0, typeof(DnetAutocompletePanel<TItem>));
             x.AddAttribute(1, "Items", items);
-            x.AddAttribute(2, "Width", Width ?? "100%");
-            x.AddAttribute(3, "Height", Height ?? "200px");
-            x.AddAttribute(4, "MinWidth", MinWidth);
-            x.AddAttribute(5, "MaxWidth", MaxWidth);
-            x.AddAttribute(6, "MinHeight", MinHeight);
-            x.AddAttribute(7, "MaxHeight", MaxHeight);
-            x.AddAttribute(8, "ItemHeight", ItemHeight);
-            x.AddAttribute(9, "AutoCompleteListService", _autoCompleteListService);
-            x.AddAttribute(10, "DisplayValueConverter", DisplayValueConverter);
-            x.AddAttribute(11, "ItemPrefixContent", ItemPrefixContent);
-            x.AddAttribute(12, "ItemSufixContent", ItemSufixContent);
-            x.AddAttribute(13, "ChildContent", ItemChildContent);
-            x.AddAttribute(15, "PlaceHolder", PlaceHolder);
-            x.AddAttribute(15, "Label", Label);
-            x.AddAttribute(16, "CurrentValue", CurrentValue);
+            x.AddAttribute(2, "ItemHeight", ItemHeight);
+            x.AddAttribute(3, "AutoCompleteListService", _autoCompleteListService);
+            x.AddAttribute(4, "DisplayValueConverter", DisplayValueConverter);
+            x.AddAttribute(5, "ItemPrefixContent", ItemPrefixContent);
+            x.AddAttribute(6, "ItemSufixContent", ItemSufixContent);
+            x.AddAttribute(7, "ChildContent", ItemChildContent);
+            x.AddAttribute(8, "PlaceHolder", PlaceHolder);
+            x.AddAttribute(9, "Label", Label);
+            x.AddAttribute(10, "CurrentValue", CurrentValue);
             x.CloseComponent();
         });
 

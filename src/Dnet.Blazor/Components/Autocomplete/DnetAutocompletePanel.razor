@@ -119,24 +119,6 @@
     public List<TItem> Items { get; set; } = new();
 
     [Parameter]
-    public string? Width { get; set; }
-
-    [Parameter]
-    public string? Height { get; set; }
-
-    [Parameter]
-    public string? MinWidth { get; set; }
-
-    [Parameter]
-    public string? MinHeight { get; set; }
-
-    [Parameter]
-    public string? MaxWidth { get; set; }
-
-    [Parameter]
-    public string? MaxHeight { get; set; }
-
-    [Parameter]
     public AutoCompleteListService<TItem>? AutoCompleteListService { get; set; }
 
     [Parameter]
@@ -170,8 +152,6 @@
     public string CurrentValue { get; set; } = string.Empty;
 
 
-    private string? _styles { get; set; }
-
     private List<TItem> _items { get; set; } = new List<TItem>();
 
     private Timer? _inputDelayTimer;
@@ -181,8 +161,6 @@
 
     protected override void OnInitialized()
     {
-        _styles = GetStyles();
-
         _items = Items;
 
         if (AutoCompleteListService is not null) AutoCompleteListService.OnUpdateList += ListUpdated;
@@ -200,21 +178,6 @@
     private async void ClearInput()
     {
         if (AutoCompleteListService is not null) AutoCompleteListService.UpdateCurrentValue(string.Empty);
-    }
-
-    private string GetStyles()
-    {
-        var styles = new StyleBuilder()
-        .AddStyle("width", Width, when: !string.IsNullOrEmpty(Width))
-        .AddStyle("height", Height, when: !string.IsNullOrEmpty(Height))
-        .AddStyle("min-height", MinHeight, when: !string.IsNullOrEmpty(MinHeight))
-        .AddStyle("min-width", MinWidth, when: !string.IsNullOrEmpty(MinWidth))
-        .AddStyle("max-width", MaxWidth, when: !string.IsNullOrEmpty(MaxWidth))
-        .AddStyle("max-height", MaxHeight, when: !string.IsNullOrEmpty(MaxHeight))
-        .AddStyle("transform", $"transform: translateY(@_transformY)")
-        .Build();
-
-        return styles;
     }
 
     private RenderFragment CreateCellTemplateComponent(TItem item, Type componeType) => builder =>
