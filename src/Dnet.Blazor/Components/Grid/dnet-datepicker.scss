@@ -10,67 +10,6 @@
     color: rgba(0,0,0,.87);
 }
 
-.dnet-datepicker-input-container {
-    display: flex;
-    border: var(--dnet-datepicker-input-container-border);
-    justify-content: space-between;
-}
-
-.dnet-datepicker-input-search {
-    width: 100%;
-    border-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    background-color: #FFFFFF;
-    -webkit-transition: none;
-    transition: none;
-    box-shadow: none;
-    font-size: 0.875rem;
-    color: #5f6368;
-    border: 0px solid #eee !important;
-    height: var(--dnet-datepicker-input-height);
-    outline: none;
-
-    &:focus {
-        box-shadow: 0 0 0 0rem rgba(0,123,255,.25);
-    }
-}
-
-.dnet-datepicker-icon-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    height: var(--dnet-datepicker-input-height);
-    width: var(--dnet-datepicker-input-height);
-}
-
-.dnet-datepicker-icon {
-    display: block;
-    background-repeat: no-repeat;
-    background-size: 1em 1em;
-    height: 1em;
-    width: 1em;
-    cursor: pointer;
-    color: #5f6368;
-}
-
-.dnet-datepicker-icon-default {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z'/><path fill-rule='evenodd' clip-rule='evenodd' d='M3.5 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zm9 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5z'/></svg>");
-}
-
-.dnet-datepicker-disable {
-    .dnet-datepicker-icon-default {
-        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='grey'><path fill-rule='evenodd' clip-rule='evenodd' d='M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z'/><path fill-rule='evenodd' clip-rule='evenodd' d='M3.5 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zm9 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5z'/></svg>");
-    }
-
-    .dnet-datepicker-icon-wrapper {
-        background-color: #e9ecef;
-    }
-}
-
 .dnet-calendar-header {
     padding: 0 8px 0 8px;
 }

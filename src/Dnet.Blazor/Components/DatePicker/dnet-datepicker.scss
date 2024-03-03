@@ -3,13 +3,14 @@
     --dnet-datepicker-input-height: 28px;
     --dnet-calendar-day-height: 40px;
     --dnet-calendar-day-disabled-color: rgba(0,0,0,.38);
-    --dnet-calendar-selected-bg-color: #42b0d5;
+    --dnet-calendar-selected-bg-color: var(--dnet-primary-color);
     --dnet-calendar-today-bg-color: rgba(0,0,0,.1);
+    --dnet-calendar-background: #FFFFFF;
 }
 
 .dnet-datepicker-content {
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0.1);
-    background: #fff;
+    box-shadow: var(--dnet-component-box-shadow);
+    background: var(--dnet-calendar-background);
     color: rgba(0,0,0,.87);
 }
 

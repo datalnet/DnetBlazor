@@ -5,6 +5,9 @@
     --dnet-chips-icon-background-size-md: 1em;
     --dnet-chips-icon-background-size-sm: 0.875em;
     --dnet-chips-icon-background-size-xs: 0.625em;
+    --dnet-chips-sm-font-size: var(--dnet-component-sm-font-size);
+    --dnet-chips-border-radius: var(--dnet-component-border-radius);
+    --dnet-chips-padding: 7px 12px;
 }
 
 .dnet-chip-list-wrapper {
@@ -31,8 +34,8 @@
 .dnet-standard-chip {
     transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
-    padding: 7px 12px;
-    border-radius: 5px;
+    padding: var(--dnet-chips-padding);
+    border-radius: var(--dnet-chips-border-radius);
     align-items: center;
     cursor: default;
     min-height: 32px;
@@ -50,7 +53,7 @@
 }
 
 .dnet-chip {
-    font-size: var(--dnet-component-sm-font-size);
+    font-size: var(--dnet-chips-sm-font-size);
     font-weight: 500;
 }
 

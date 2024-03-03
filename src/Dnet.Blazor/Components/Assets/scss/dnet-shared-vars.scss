@@ -1,6 +1,6 @@
 ﻿:root {
     //General Style
-    --dnet-component-border-radius: 5px;
+    --dnet-component-border-radius: 4px;
     --dnet-component-box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 1000px 0 rgba(0, 0, 0, 0.1);
     --dnet-component-list-item-height: 50px;
     --dnet-component-headline-text-color: #5f6368;
@@ -13,16 +13,6 @@
     --dnet-component-xs-font-size: 0.625rem;
     --dnet-primary-color: #4fc3f7;
     --dnet-secundary-color: #4fc3f7;
-    //Button style
-    --dnet-button-background-color: rgba(0,0,0,.05);
-    --dnet-button-hover-color: #000;
-    --dnet-button-hover-opacity: 0.04;
-    --dnet-button-font-size: var(--dnet-component-sm-font-size);
-    --dnet-button-min-width: 64px;
-    --dnet-button-border-radius: 4px;
-    --dnet-button-line-height: 36px;
-    --dnet-button-padding: 0 16px;
-    --dnet-button-margin: 0;
     //CheckBox Style
     --dnet-color-reset: #000000;
 }

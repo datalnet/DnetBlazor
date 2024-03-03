@@ -1,9 +1,14 @@
-﻿.dnet-connected-panel-container {
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0.1);
-    background: #fff;
-    color: rgba(0,0,0,.87);
+﻿:root {
+    --dnet-connected-panel-padding: 2px;
+    --dnet-connected-panel-background: #FFFFFF;
+}
+
+.dnet-connected-panel-container {
+    box-shadow: var(--dnet-component-box-shadow);
+    background: (--dnet-connected-panel-background);
+    color: var(--dnet-component-headline-text-color);
     width: 100%;
     height: 100%;
-    padding: 2px;
+    padding: var(--dnet-connected-panel-padding);
     border-radius: var(--dnet-dialog-border-radius);
 }

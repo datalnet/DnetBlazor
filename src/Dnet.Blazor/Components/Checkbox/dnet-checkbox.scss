@@ -2,11 +2,11 @@
     --dnet-checkbox-border-radius: 0px;
     --dnet-checkbox-border-color: rgba(0,0,0,.54);
     --dnet-checkbox-border-width: 1px;
-    --dnet-checkbox-background: #42b0d5;
+    --dnet-checkbox-background: var(--dnet-primary-color);
     --dnet-checkbox-border-color: #b0b0b0;
     --dnet-checkbox-size: 14px;
-    --dnet-checkbox-font-size: .875rem;
-    --dnet-checkbox-font-color: .875rem;
+    --dnet-checkbox-font-size: var(--dnet-component-sm-font-size);
+    --dnet-checkbox-font-color: var(--dnet-component-headline-text-color);
     --dnet-checkbox-checkmark-path: #fafafa;
 }
 

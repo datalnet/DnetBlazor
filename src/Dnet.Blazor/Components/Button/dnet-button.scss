@@ -1,4 +1,17 @@
-﻿.dnet-button, .dnet-icon-button {
+﻿:root {
+    --dnet-button-background-color: rgba(0,0,0,.05);
+    --dnet-button-hover-color: #000;
+    --dnet-button-hover-opacity: 0.04;
+    --dnet-button-font-size: var(--dnet-component-sm-font-size);
+    --dnet-button-min-width: 64px;
+    --dnet-button-border-radius: 4px;
+    --dnet-button-line-height: 36px;
+    --dnet-button-padding: 0 16px;
+    --dnet-button-margin: 0;
+}
+
+
+.dnet-button, .dnet-icon-button {
     box-sizing: border-box;
     position: relative;
     -webkit-user-select: none;
