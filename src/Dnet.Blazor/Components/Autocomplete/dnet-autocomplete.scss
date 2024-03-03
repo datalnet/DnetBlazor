@@ -2,15 +2,16 @@
     --dnet-autocomplete-list-border-color: #ebebeb;
     --dnet-autocomplete-list-background-color: #ffffff;
     --dnet-autocomplete-list-border-radius: var(--dnet-component-border-radius);
-    --dnet-autocomplete-list-item-height: 50px;
+    --dnet-autocomplete-list-item-height: var(--dnet-component-list-item-height);
     --dnet-autocomplete-list-padding-vertical: 4px;
     --dnet-autocomplete-list-padding-horizontal: 5px;
     --dnet-autocomplete-list-header-footer-height: 50px;
     --dnet-autocomplete-list-check-width: 24px;
     --dnet-autocomplete-list-prefix-suffix-min-width: 40px;
     --dnet-autocomplete-list-headline-font-size: var(--dnet-component-sm-font-size);
+    --dnet-autocomplete-list-headline-text-color: var(--dnet-component-headline-text-color);
     --dnet-autocomplete-list-supporting-text-font-size: var(--dnet-component-xs-font-size);
-    --dnet-autocomplete-list-supporting-text-color: #666666;
+    --dnet-autocomplete-list-supporting-text-color: var(--dnet-component-supporting-text-color);
     --dnet-autocomplete-list-hover-background-color: #f2f2f2;
     --dnet-autocomplete-list-hover-border-radius: 10px;
     --dnet-autocomplete-list-wrapper-horizontal-padding: 15px;
@@ -154,6 +155,7 @@
 
 .dnet-autocomplete-list-item-headline {
     font-size: var(--dnet-autocomplete-list-headline-font-size);
+    color: var(--dnet-autocomplete-list-headline-text-color);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

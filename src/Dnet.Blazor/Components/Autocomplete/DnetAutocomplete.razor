@@ -80,6 +80,9 @@
     public RenderFragment<TItem>? ItemChildContent { get; set; }
 
     [Parameter]
+    public RenderFragment<TItem>? FooterContent { get; set; }
+
+    [Parameter]
     public List<TItem> Items { get; set; } = new();
 
     [Parameter]
@@ -469,36 +472,36 @@
     private void AttachMenu()
     {
         var positions = new List<ConnectedPosition>
-{
-new()
-{
-OriginX = HorizontalConnectionPos.Start,
-OriginY = VerticalConnectionPos.Bottom,
-OverlayX = HorizontalConnectionPos.Start,
-OverlayY = VerticalConnectionPos.Top
-},
-new()
-{
-OriginX = HorizontalConnectionPos.Start,
-OriginY = VerticalConnectionPos.Top,
-OverlayX = HorizontalConnectionPos.Start,
-OverlayY = VerticalConnectionPos.Bottom
-},
-new()
-{
-OriginX = HorizontalConnectionPos.End,
-OriginY = VerticalConnectionPos.Bottom,
-OverlayX = HorizontalConnectionPos.End,
-OverlayY = VerticalConnectionPos.Top
-},
-new()
-{
-OriginX = HorizontalConnectionPos.End,
-OriginY = VerticalConnectionPos.Top,
-OverlayX = HorizontalConnectionPos.End,
-OverlayY = VerticalConnectionPos.Bottom
-}
-};
+                        {
+                            new()
+                            {
+                                OriginX = HorizontalConnectionPos.Start,
+                                OriginY = VerticalConnectionPos.Bottom,
+                                OverlayX = HorizontalConnectionPos.Start,
+                                OverlayY = VerticalConnectionPos.Top
+                            },
+                            new()
+                            {
+                                OriginX = HorizontalConnectionPos.Start,
+                                OriginY = VerticalConnectionPos.Top,
+                                OverlayX = HorizontalConnectionPos.Start,
+                                OverlayY = VerticalConnectionPos.Bottom
+                            },
+                            new()
+                            {
+                                OriginX = HorizontalConnectionPos.End,
+                                OriginY = VerticalConnectionPos.Bottom,
+                                OverlayX = HorizontalConnectionPos.End,
+                                OverlayY = VerticalConnectionPos.Top
+                            },
+                            new()
+                            {
+                                OriginX = HorizontalConnectionPos.End,
+                                OriginY = VerticalConnectionPos.Top,
+                                OverlayX = HorizontalConnectionPos.End,
+                                OverlayY = VerticalConnectionPos.Bottom
+                            }
+                        };
 
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
         .WithLockedPosition()
@@ -547,6 +550,7 @@ OverlayY = VerticalConnectionPos.Bottom
             x.AddAttribute(8, "PlaceHolder", PlaceHolder);
             x.AddAttribute(9, "Label", Label);
             x.AddAttribute(10, "CurrentValue", CurrentValue);
+            x.AddAttribute(11, "FooterContent", FooterContent);
             x.CloseComponent();
         });
 

@@ -1,5 +1,12 @@
 ﻿@use 'form-field-input';
 
+:root {
+    --dnet-form-field-plain-label-font-size: var(--dnet-component-smx-font-size);
+    --dnet-form-field-plain-label-color: #757575;
+    --dnet-form-field-hint-font-size: var(--dnet-component-xs-font-size);
+    --dnet-form-field-hint-color: var(--dnet-component-supporting-text-color);
+}
+
 .dnet-form-field-plain-wrapper {
     display: flex;
     flex-direction: column;
@@ -8,13 +15,12 @@
 }
 
 .dnet-form-field-plain-label-wrapper {
-    margin-bottom: 1px;
     padding-left: 3px;
 }
 
 .dnet-form-field-plain-label {
-    font-size: 0.72rem;
-    color: #757575;
+    font-size: var(--dnet-form-field-plain-label-font-size);
+    color: var(--dnet-form-field-plain-label-color);
 }
 
 .dnet-form-field-plain-label-wrapper > label {
@@ -86,13 +92,23 @@
     margin-left: 2px;
     margin-right: 0px;
     content: "*";
-    font-size: .75rem;
+    font-size: var(--dnet-component-smx-font-size);
 }
 
 .dnet-component-clear-button {
     background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path fill-rule='evenodd' clip-rule='evenodd' d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/></svg>");
 }
 
-.mat-error {
+.dnet-error {
     color: red;
+}
+
+.dnet-form-field-hint-wrapper {
+    display: flex;
+    padding-left: 3px;
+}
+
+.dnet-hint {
+    color: var(--dnet-form-field-hint-color);
+    font-size: var(--dnet-form-field-hint-font-size);
 }

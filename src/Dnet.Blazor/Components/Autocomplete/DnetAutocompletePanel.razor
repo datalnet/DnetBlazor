@@ -107,6 +107,9 @@
         }
     </div>
     <div class="dnet-autocomplete-list-footer">
+        @if(FooterContent is not null) {
+            @FooterContent;
+        }
     </div>
 </div>
 
@@ -135,6 +138,9 @@
 
     [Parameter]
     public RenderFragment<TItem>? ItemSufixContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem>? FooterContent { get; set; }
 
     [Parameter]
     public int ItemHeight { get; set; } = 40;
