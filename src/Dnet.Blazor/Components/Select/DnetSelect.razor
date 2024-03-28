@@ -722,6 +722,15 @@
             case decimal @decimal:
                 return BindConverter.FormatValue(@decimal, CultureInfo.InvariantCulture);
 
+            case uint @uint:
+                return @uint.ToString(CultureInfo.InvariantCulture);
+
+            case ushort @ushort:
+                return @ushort.ToString(CultureInfo.InvariantCulture);
+
+            case UInt64 @uInt64:
+                return @uInt64.ToString(CultureInfo.InvariantCulture);
+
             case string @string:
                 return @string;
 

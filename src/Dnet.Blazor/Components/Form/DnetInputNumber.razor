@@ -108,7 +108,10 @@ else
             targetType == typeof(short) ||
             targetType == typeof(float) ||
             targetType == typeof(double) ||
-            targetType == typeof(decimal))
+            targetType == typeof(decimal) ||
+            targetType == typeof(uint) ||
+            targetType == typeof(ushort) ||
+            targetType == typeof(UInt64))
         {
             return "any";
         }
@@ -265,6 +268,15 @@ else
 
             case decimal @decimal:
                 return BindConverter.FormatValue(@decimal, CultureInfo.InvariantCulture);
+
+            case uint @uint:
+                return @uint.ToString(CultureInfo.InvariantCulture);
+
+            case ushort @ushort:
+                return @ushort.ToString(CultureInfo.InvariantCulture);
+
+            case UInt64 @uInt64:
+                return @uInt64.ToString(CultureInfo.InvariantCulture);
 
             default:
                 throw new InvalidOperationException($"Unsupported type {value.GetType()}");
