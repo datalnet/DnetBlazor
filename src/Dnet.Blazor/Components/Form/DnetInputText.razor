@@ -11,15 +11,32 @@
 
 @if (!ImmediateResponse)
 {
-    <input @ref="__inputReference" @attributes="AdditionalAttributes" class="@_inputTextClass"
-           value="@BindConverter.FormatValue(CurrentValue)" @onchange="HandleChange" @onfocus=@(() => Focus()) @onblur=@(() =>
-       Blur()) placeholder="@_placeHolder" disabled="@Disabled" type="text" />
+    <input @ref="__inputReference" 
+           @attributes="AdditionalAttributes" 
+           class="@_inputTextClass"
+           value="@BindConverter.FormatValue(CurrentValue)" 
+           @onchange="HandleChange" 
+           @onfocus=@(() => Focus()) 
+           @onblur=@(() =>Blur()) 
+           placeholder="@_placeHolder" 
+           disabled="@Disabled" 
+           type="text" />
 }
 else
 {
-    <input @ref="__inputReference" @attributes="AdditionalAttributes" class="@_inputTextClass" @bind="CurrentValueAsString"
-           @bind:event="oninput" @onkeyup="ResetTimer" @onkeyup:stopPropagation="true" @onkeyup:preventDefault="true"
-           @onfocus=@(() => Focus()) @onblur=@(() => Blur()) placeholder="@_placeHolder" disabled="@Disabled" type="text" />
+    <input @ref="__inputReference"
+           @attributes="AdditionalAttributes"
+           class="@_inputTextClass"
+           @bind="CurrentValueAsString"
+           @bind:event="oninput" 
+           @onkeyup="ResetTimer" 
+           @onkeyup:stopPropagation="true" 
+           @onkeyup:preventDefault="true"
+           @onfocus=@(() => Focus()) 
+           @onblur=@(() => Blur()) 
+           placeholder="@_placeHolder" 
+           disabled="@Disabled" 
+           type="text" />
 }
 
 

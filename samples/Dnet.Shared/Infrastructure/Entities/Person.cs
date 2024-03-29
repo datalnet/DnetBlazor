@@ -37,6 +37,7 @@ namespace Dnet.App.Shared.Infrastructure.Entities
 
         public string Phone { get; set; }
 
+        [Required]
         public string Address { get; set; }
 
         public string Registered { get; set; }

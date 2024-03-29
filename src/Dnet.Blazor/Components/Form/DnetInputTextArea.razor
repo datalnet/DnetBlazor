@@ -11,16 +11,39 @@
 
 @inject IJSRuntime JSRuntime
 
-<textarea @ref="__inputReference "
-          style="margin-bottom:5px; margin-right:5px; margin-top:5px; resize:none;"
-          @attributes="AdditionalAttributes"
-          class="@_textareaClass"
-          value="@BindConverter.FormatValue(CurrentValue)"
-          @onchange="HandleChange"
-          @onfocus=@(() => Focus())
-          @onblur=@(() => Blur())
-          placeholder="@_placeHolder"
-          disabled="@Disabled" />
+@if (!ImmediateResponse)
+{
+    <textarea @ref="__inputReference "
+              style="margin-bottom:5px; margin-right:5px; margin-top:5px; resize:none;"
+              @attributes="AdditionalAttributes"
+              class="@_textareaClass"
+              value="@BindConverter.FormatValue(CurrentValue)"
+              @onchange="HandleChange"
+              @onfocus=@(() => Focus())
+              @onblur=@(() => Blur())
+              placeholder="@_placeHolder"
+              disabled="@Disabled" />
+}
+else
+{
+    <textarea @ref="__inputReference "
+              style="margin-bottom:5px; margin-right:5px; margin-top:5px; resize:none;"
+              @attributes="AdditionalAttributes"
+              class="@_textareaClass"
+              @bind="CurrentValueAsString"
+              @bind:event="oninput"
+              @onkeyup="ResetTimer"
+              @onkeyup:stopPropagation="true"
+              @onkeyup:preventDefault="true"
+              @onchange="HandleChange"
+              @onfocus=@(() => Focus())
+              @onblur=@(() => Blur())
+              placeholder="@_placeHolder"
+              disabled="@Disabled" 
+              type="tex"/>
+}
+
+
 @code {
 
     [CascadingParameter]
@@ -86,6 +109,12 @@
 
             if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+
+        if (_formEventService is not null) _formEventService.OnClearContent += HandleClearContent;
+
+        if (EditContext is not null) EditContext.OnFieldChanged += HandleOnValidationStateChanged;
     }
 
     public void HandleChangeDebouncedDiscard(Object source, ElapsedEventArgs e)
@@ -166,6 +195,28 @@
         validationErrorMessage = null;
 
         return true;
+    }
+
+    private async void HandleClearContent()
+    {
+        CurrentValue = null;
+
+        if (EditContext is not null)
+        {
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+
+        await ValueChanged.InvokeAsync(Value);
+
+        await OnClearInput.InvokeAsync(true);
+
+        StateHasChanged();
     }
 
     public void Dispose()

@@ -177,4 +177,67 @@
     align-items: center;
 }
 
+.dnet-plain-select {
+    display: flex;
+    justify-items: end;
+    width: 100%;
+    outline: none;
+    padding-right: 5px;
+}
+
+.dnet-plain-select-trigger {
+    display: inline-table;
+    cursor: pointer;
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.dnet-plain-select-value {
+    display: table-cell;
+    max-width: 0;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dnet-plain-select-arrow-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.dnet-plain-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid rgba(0,0,0,0);
+    border-right: 5px solid rgba(0,0,0,0);
+    border-top: 5px solid;
+    margin: 0 4px;
+}
+
+.dnet-plain-select-value-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dnet-select-multi-value-wrapper {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+
+    span:last-child {
+        span {
+            display: none;
+        }
+    }
+}
+
+.dnet-select-multi-value {
+    margin-right: 5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 @media only screen and (max-width: 550px) {}

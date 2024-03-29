@@ -61,7 +61,7 @@
                 <DnetSelect TValue="string" @bind-Value="_person.Gender" Items="_genders"
                                       TItem="Gender" DisplayValueConverter="(value) => (value.Name)"
                                       ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResource1ItemSelected"
-                                      PlaceHolder="Api Resource" Label="Api Resource"
+                                      PlaceHolder="" Label="Api Resource"
                                       >
                 </DnetSelect>
             </ChildContent>
@@ -122,7 +122,7 @@
                 </DnetInputTextArea>
             </ChildContent>
             <ErrorContent>
-                <ValidationMessage For="@(() => _person.Email)" />
+                <ValidationMessage For="@(() => _person.Address)" />
             </ErrorContent>
         </DnetFormField>
 
