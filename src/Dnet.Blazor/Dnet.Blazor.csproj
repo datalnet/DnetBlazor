@@ -10,12 +10,13 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>4.2.6</PackageVersion>
+		<PackageVersion>4.3.0</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Fix bug in Grid Horizontal scroling in movil device 
+			- Fix bug in Floating panel in movile 
+			- Added inmediate response to input textarea
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
