@@ -19,7 +19,7 @@
 .dnet-panel {
     display: grid;
     grid-template-rows: 50px auto 50px;
-    height: 100dvh;
+    height: calc(100% - 0px);
     width: 100%;
     padding: 0 15px 15px 15px;
 
