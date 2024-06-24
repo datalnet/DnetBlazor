@@ -30,13 +30,13 @@
                         <DnetFormField PlaceHolder="Name" Label="Name" IsRequired="true">
                             <ChildContent>
                                 <DnetSelect Value="@_formData.Email" TValue="string"
-                                    ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                    ValueExpression="@( () => _formData.Email )" Items="_items" TItem="Person"
-                                    DisplayValueConverter="(value) => (value.Name)"
-                                    SupportTextValueConverter="(value) => (value.Address)"
-                                    ValueConverter="(value) => (value.Email)" OnItemSelected="ItemSelected"
-                                    InputTextToUpper="true" PlaceHolder="Name" Label="Name"
-                                    ItemHeight="50">
+                                            ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                            ValueExpression="@( () => _formData.Email )" Items="_items" TItem="Person"
+                                            DisplayValueConverter="(value) => (value.Name)"
+                                            SupportTextValueConverter="(value) => (value.Address)"
+                                            ValueConverter="(value) => (value.Email)" OnItemSelected="ItemSelected"
+                                            InputTextToUpper="true" PlaceHolder="Name" Label="Name"
+                                            ItemHeight="50">
                                 </DnetSelect>
                             </ChildContent>
                             <HintContent>You can add the country prefix</HintContent>
@@ -65,14 +65,14 @@
                         <DnetFormField PlaceHolder="Name" Label="Name" IsRequired="true">
                             <ChildContent>
                                 <DnetSelect Value="@_formData1.Name" TValue="string"
-                                    ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                    ValueExpression="@( () => _formData1.Name )" Items="_items"
-                                    SelectedItems="_selectedItems" TItem="Person"
-                                    DisplayValueConverter="(value) => (value.Name)"
-                                    ValueConverter="(value) => (value.Name)" OnItemSelected="ItemSelected"
-                                    OnSelectionChanged="SelectionChanged" InputTextToUpper="true" PlaceHolder="Name"
-                                    Label="Name" MultiSelect="true"
-                                    IsSelectedFn="(item1, item2) => item1.Name == item2.Name">
+                                            ValueChanged="@((string e) => MyValueChangeHandler(e))"
+                                            ValueExpression="@( () => _formData1.Name )" Items="_items"
+                                            SelectedItems="_selectedItems" TItem="Person"
+                                            DisplayValueConverter="(value) => (value.Name)"
+                                            ValueConverter="(value) => (value.Name)" OnItemSelected="ItemSelected"
+                                            OnSelectionChanged="SelectionChanged" InputTextToUpper="true" PlaceHolder="Name"
+                                            Label="Name" MultiSelect="true"
+                                            IsSelectedFn="(item1, item2) => item1.Name == item2.Name">
                                 </DnetSelect>
                             </ChildContent>
                             <HintContent>You can add the country prefix</HintContent>
@@ -100,11 +100,11 @@
                 <DnetFormField PlaceHolder="Api Resource" Label="Api Resource" IsRequired="true">
                     <ChildContent>
                         <DnetSelect Value="@_right.ApiResourceName" TValue="string"
-                            ValueChanged="@((string e) => ApiResourceChangeHandler(e))"
-                            ValueExpression="@( () => _right.ApiResourceName)" Items="_apiResources"
-                            TItem="ApiResourceDto" DisplayValueConverter="(value) => (value.Name)"
-                            ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResourceItemSelected"
-                            InputTextToUpper="true" PlaceHolder="Api Resource" Label="Api Resource">
+                                    ValueChanged="@((string e) => ApiResourceChangeHandler(e))"
+                                    ValueExpression="@( () => _right.ApiResourceName)" Items="_apiResources"
+                                    TItem="ApiResourceDto" DisplayValueConverter="(value) => (value.Name)"
+                                    ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResourceItemSelected"
+                                    InputTextToUpper="true" PlaceHolder="Api Resource" Label="Api Resource">
                         </DnetSelect>
                     </ChildContent>
                     <ErrorContent>
@@ -114,12 +114,12 @@
                 <DnetFormField PlaceHolder="ResourceType" Label="ResourceType" IsRequired="true">
                     <ChildContent>
                         <DnetSelect Value="@_right.ResourceType" TValue="string"
-                            ValueChanged="@((string e) => ApiResourceObjectChangeHandler(e))"
-                            ValueExpression="@( () => _right.ResourceType)" Items="_apiResourceObjects"
-                            TItem="ApiResourceObjectDto" DisplayValueConverter="(value) => (value.Name)"
-                            ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResourceObjectItemSelected"
-                            InputTextToUpper="true" PlaceHolder="ResourceType" Label="ResourceType"
-                            @ref="_apiResourceObjectReference">
+                                    ValueChanged="@((string e) => ApiResourceObjectChangeHandler(e))"
+                                    ValueExpression="@( () => _right.ResourceType)" Items="_apiResourceObjects"
+                                    TItem="ApiResourceObjectDto" DisplayValueConverter="(value) => (value.Name)"
+                                    ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResourceObjectItemSelected"
+                                    InputTextToUpper="true" PlaceHolder="ResourceType" Label="ResourceType"
+                                    @ref="_apiResourceObjectReference">
                         </DnetSelect>
                     </ChildContent>
                     <ErrorContent>
@@ -135,9 +135,9 @@
                 <DnetFormField PlaceHolder="Api Resource" Label="Api Resource" IsRequired="true">
                     <ChildContent>
                         <DnetSelect TValue="int" @bind-Value="_right1.ApiResourceId" Items="_apiResources"
-                            TItem="ApiResourceDto" DisplayValueConverter="(value) => (value.Name)"
-                            ValueConverter="(value) => (value.ApiResourceId)" OnItemSelected="ApiResource1ItemSelected"
-                            PlaceHolder="Api Resource" Label="Api Resource">
+                                    TItem="ApiResourceDto" DisplayValueConverter="(value) => (value.Name)"
+                                    ValueConverter="(value) => (value.ApiResourceId)" OnItemSelected="ApiResource1ItemSelected"
+                                    PlaceHolder="Api Resource" Label="Api Resource">
 
                         </DnetSelect>
                     </ChildContent>
@@ -232,70 +232,56 @@
 
 
     protected override async Task OnInitializedAsync()
-
     {
-
         _items = await GetPersons();
-
-
 
         _selectedItems = _items.Take(3).ToList();
 
-
-
         var selectedPerson = _items.FirstOrDefault();
-
-
 
         _formData.Email = selectedPerson.Email;
 
-
-
         _apiResources = new List<ApiResourceDto>()
-{
-new()
-{
-ApiResourceId = 1,
-Name = "APi_1"
-},
-new()
-{
-ApiResourceId = 2,
-Name = "APi_2"
-}
-};
-
-
+        {
+            new()
+            {
+                ApiResourceId = 1,
+                Name = "APi_1"
+            },
+            new()
+            {
+                ApiResourceId = 2,
+                Name = "APi_2"
+            }
+        };
 
         _apiResourceObjectsFromDb = new List<ApiResourceObjectDto>()
-{
-new()
-{
-ApiResourceObjectId = 1,
-Name = "ApiResourceObject1_1",
-ApiResourceId = 1
-},
-new()
-{
-ApiResourceObjectId = 2,
-Name = "ApiResourceObject1_1",
-ApiResourceId = 1
-},
-new()
-{
-ApiResourceObjectId = 3,
-Name = "ApiResourceObject2_1",
-ApiResourceId = 2
-},
-new()
-{
-ApiResourceObjectId = 4,
-Name = "ApiResourceObject2_1",
-ApiResourceId = 2
-}
-};
-
-
+        {
+            new()
+            {
+                ApiResourceObjectId = 1,
+                Name = "ApiResourceObject1_1",
+                ApiResourceId = 1
+            },
+            new()
+            {
+                ApiResourceObjectId = 2,
+                Name = "ApiResourceObject1_1",
+                ApiResourceId = 1
+            },
+            new()
+            {
+                ApiResourceObjectId = 3,
+                Name = "ApiResourceObject2_1",
+                ApiResourceId = 2
+            },
+            new()
+            {
+                ApiResourceObjectId = 4,
+                Name = "ApiResourceObject2_1",
+                ApiResourceId = 2
+            }
+        };
 
         _editContext = new EditContext(_right);
 
@@ -311,20 +297,13 @@ ApiResourceId = 2
 
         };
 
-
-
         _editContext1 = new EditContext(_right1);
 
         _editContext1.OnValidationRequested += (data, eventArgs) =>
-
         {
-
             messageStore?.Clear();
 
-
-
             StateHasChanged();
-
         };
 
 
@@ -332,47 +311,27 @@ ApiResourceId = 2
         _editContext2 = new EditContext(_right2);
 
         _editContext2.OnValidationRequested += (data, eventArgs) =>
-
         {
-
             messageStore?.Clear();
 
-
-
             StateHasChanged();
-
         };
-
-
 
         _editContext3 = new EditContext(person);
 
         _editContext3.OnValidationRequested += (data, eventArgs) =>
-
         {
-
             messageStore?.Clear();
 
-
-
             StateHasChanged();
-
         };
-
     }
 
-
-
     private async Task<List<Person>> GetPersons()
-
     {
-
         var dataPersons = await ApplicationServiceService.GetPersons();
 
-
-
         return dataPersons;
-
     }
 
 
