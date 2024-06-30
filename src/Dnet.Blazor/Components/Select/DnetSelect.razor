@@ -25,17 +25,12 @@
 
 @inject IOverlayService OverlayService
 
-
 <div class="dnet-plain-select" @onclick=@(() => OpenMenu())>
     <div @ref="_menuTrigger"
          class="dnet-plain-select-trigger">
         <div class="dnet-plain-select-value">
             @switch (DisplayData)
             {
-                case DataToShow.Placeholder:
-                    <span class="mat-select-placeholder mat-select-min-line">@_placeHolder</span>
-                    break;
-
                 case DataToShow.SingleValue:
                     <span class="dnet-plain-select-value-text">
                         <span>@_displayValueAsString</span>
@@ -47,28 +42,28 @@
                         <span class="dnet-select-multi-value">
                             @{
                                 var stringBuilder = new System.Text.StringBuilder();
+
                                 foreach (var item in _selectedRowNodes)
                                 {
-                                    if(DisplayValueConverter is not null)
+                                    if (DisplayValueConverter is not null && item is not null && item.RowData is not null)
                                     {
                                         var value = DisplayValueConverter(item.RowData);
-                                        if (stringBuilder.Length > 0) // Verificar si ya se agregó algo al StringBuilder
+                                        if (stringBuilder.Length > 0)
                                         {
-                                            stringBuilder.Append(", "); // Agregar coma y espacio antes del siguiente valor si no es el primero
+                                            stringBuilder.Append(", ");
                                         }
-                                        stringBuilder.Append(value); // Agregar el valor convertido
+                                        stringBuilder.Append(value);
                                     }
                                 }
 
-                                // Obtener la cadena resultante y mostrarla
                                 var concatenatedValues = stringBuilder.ToString();
+
                                 @concatenatedValues
                             }
-                       </span>
+                        </span>
                     </div>
                     break;
             }
-
         </div>
         <div class="dnet-plain-select-arrow-wrapper">
             <div class="dnet-plain-select-arrow"></div>
@@ -78,9 +73,8 @@
 
 
 @code {
-
     [CascadingParameter]
-    private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
+    private FormFieldCascadingValues _formFieldCascadingValues { get; set; } = default!;
 
     [Parameter]
     public EventCallback<TItem> OnItemSelected { get; set; }
@@ -107,7 +101,7 @@
     public RenderFragment<TItem>? ItemSufixContent { get; set; }
 
     [Parameter]
-    public RenderFragment? ItemChildContent { get; set; }
+    public RenderFragment<TItem>? ItemChildContent { get; set; }
 
     [Parameter]
     public List<TItem> Items { get; set; } = new();
@@ -143,9 +137,6 @@
     public string MarginTop { get; set; } = "5px";
 
     [Parameter]
-    public int DebounceTime { get; set; } = 250;
-
-    [Parameter]
     public bool InputTextToUpper { get; set; }
 
     [Parameter]
@@ -155,13 +146,7 @@
     public bool Disabled { get; set; }
 
     [Parameter]
-    public string PlaceHolder { get; set; } = "";
-
-    [Parameter]
     public string? Hint { get; set; }
-
-    [Parameter]
-    public string? Label { get; set; }
 
     [Parameter]
     public bool DisabledClearButton { get; set; }
@@ -175,6 +160,12 @@
     [Parameter]
     public bool IsRequired { get; set; }
 
+    [Parameter]
+    public string? PlaceHolder { get; set; }
+
+    [Parameter]
+    public string? ResponsiveLabel { get; set; }
+
 
     private ElementReference _menuTrigger;
 
@@ -182,15 +173,13 @@
 
     private bool _isClosing;
 
-    private OverlayReference? _menuReference;
+    private OverlayReference _menuReference = default!;
 
     private SelectService<TItem>? _selectService;
 
     private bool _hasFocus { get; set; }
 
     private bool _hasErrors { get; set; }
-
-    private string? _placeHolder { get; set; }
 
     private RenderFragment? _clearButtonContent { get; set; }
 
@@ -218,8 +207,6 @@
     protected override void OnInitialized()
     {
         _formEventService = _formFieldCascadingValues.FormEventService;
-
-        _placeHolder = PlaceHolder;
 
         SetDisplayValue();
 
@@ -318,7 +305,6 @@
             }
         }
     }
-
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -465,13 +451,16 @@
 
     private async void ItemSelected(TItem item)
     {
-        Func<TItem, TValue> func = ValueConverter.Compile();
+        if (DisplayValueConverter is not null) _displayValueAsString = DisplayValueConverter(item);
 
-        Value = func(item);
+        if (ValueConverter is not null)
+        {
+            Func<TItem, TValue> func = ValueConverter.Compile();
 
-        _displayValueAsString = DisplayValueConverter(item);
+            Value = func(item);
 
-        await ValueChanged.InvokeAsync(Value);
+            await ValueChanged.InvokeAsync(Value);
+        }
 
         if (!string.IsNullOrEmpty(CurrentValueAsString))
         {
@@ -618,7 +607,7 @@
             x.AddAttribute(14, "ChildContent", ItemChildContent);
             x.AddAttribute(15, "MultiSelect", MultiSelect);
             x.AddAttribute(16, "SelectedRowNodes", _selectedRowNodes);
-            x.AddAttribute(17, "Label", Label);
+            x.AddAttribute(17, "Label", ResponsiveLabel);
             x.AddAttribute(18, "SupportTextValueConverter", SupportTextValueConverter);
             x.CloseComponent();
         });
@@ -699,44 +688,21 @@
 
     protected override string? FormatValueAsString(TValue? value)
     {
-        switch (value)
+        return value switch
         {
-            case null:
-                return null;
-
-            case Int32 @int:
-                return BindConverter.FormatValue(@int, CultureInfo.InvariantCulture);
-
-            case long @long:
-                return BindConverter.FormatValue(@long, CultureInfo.InvariantCulture);
-
-            case short @short:
-                return BindConverter.FormatValue(@short, CultureInfo.InvariantCulture);
-
-            case float @float:
-                return BindConverter.FormatValue(@float, CultureInfo.InvariantCulture);
-
-            case double @double:
-                return BindConverter.FormatValue(@double, CultureInfo.InvariantCulture);
-
-            case decimal @decimal:
-                return BindConverter.FormatValue(@decimal, CultureInfo.InvariantCulture);
-
-            case uint @uint:
-                return @uint.ToString(CultureInfo.InvariantCulture);
-
-            case ushort @ushort:
-                return @ushort.ToString(CultureInfo.InvariantCulture);
-
-            case UInt64 @uInt64:
-                return @uInt64.ToString(CultureInfo.InvariantCulture);
-
-            case string @string:
-                return @string;
-
-            default:
-                throw new InvalidOperationException($"Unsupported type {value.GetType()}");
-        }
+            null => null,
+            int intValue => BindConverter.FormatValue(intValue, CultureInfo.InvariantCulture),
+            long longValue => BindConverter.FormatValue(longValue, CultureInfo.InvariantCulture),
+            short shortValue => BindConverter.FormatValue(shortValue, CultureInfo.InvariantCulture),
+            float floatValue => BindConverter.FormatValue(floatValue, CultureInfo.InvariantCulture),
+            double doubleValue => BindConverter.FormatValue(doubleValue, CultureInfo.InvariantCulture),
+            decimal decimalValue => BindConverter.FormatValue(decimalValue, CultureInfo.InvariantCulture),
+            uint uintValue => uintValue.ToString(CultureInfo.InvariantCulture),
+            ushort ushortValue => ushortValue.ToString(CultureInfo.InvariantCulture),
+            ulong ulongValue => ulongValue.ToString(CultureInfo.InvariantCulture),
+            string stringValue => stringValue,
+            _ => throw new InvalidOperationException($"Unsupported type {value.GetType()}")
+        };
     }
 
     private enum DataToShow
@@ -750,16 +716,13 @@
     {
         get
         {
-            if (string.IsNullOrEmpty(_displayValueAsString) && MultiSelect == false)
-                return DataToShow.Placeholder;
-
             if (!string.IsNullOrEmpty(_displayValueAsString) && MultiSelect == false)
                 return DataToShow.SingleValue;
 
             if (_selectedRowNodes.Any() && MultiSelect)
                 return DataToShow.MultiValue;
 
-            return DataToShow.Placeholder; // Default case
+            return DataToShow.Placeholder;
         }
     }
 

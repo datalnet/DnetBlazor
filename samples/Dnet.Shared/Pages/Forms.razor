@@ -27,7 +27,7 @@
     <EditForm EditContext="@_editContext" style="display: flex;flex-direction:column; width:300px" class="dnet-page-content-left-margin dnet-m-t-20">
         <DataAnnotationsValidator />
 
-        <DnetFormField PlaceHolder="Ex. John" Label="LastName" UseClearButton="true" IsRequired="true">
+        <DnetFormField Label="LastName" UseClearButton="true" IsRequired="true">
             <PrefixContent>
                 <div class="dnet-app-icon-wrapper">
                     <span class="dnet-app-icon dnet-app-formfield-headphones"></span>
@@ -46,7 +46,7 @@
             </ErrorContent>
         </DnetFormField>
 
-        <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+        <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
             <ChildContent>
                 <DnetInputText @bind-Value="_person.Email" PlaceHolder="Ex. Email" type="text">
                 </DnetInputText>
@@ -56,7 +56,7 @@
             </ErrorContent>
         </DnetFormField>
 
-        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+        <DnetFormField Label="Gender" IsRequired="true">
             <ChildContent>
                 <DnetSelect TValue="string" @bind-Value="_person.Gender" Items="_genders"
                                       TItem="Gender" DisplayValueConverter="(value) => (value.Name)"
@@ -70,7 +70,7 @@
             </ErrorContent>
         </DnetFormField>
 
-        <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+        <DnetFormField Label="Name" IsRequired="true" UseClearButton="true">
             <ChildContent>
                 <DnetAutocomplete TValue="string" 
                                      @bind-Value="@_person.Name" 
@@ -90,7 +90,7 @@
             </ErrorContent>
         </DnetFormField>
 
-        <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+        <DnetFormField Label="Name" IsRequired="true" UseClearButton="true">
             <ChildContent>
                 <DnetDatePicker @bind-Value="@_person.StartDate"
                                    Disabled="false"
@@ -112,7 +112,7 @@
             </ErrorContent>
         </DnetFormField>
 
-        <DnetFormField PlaceHolder="Ex. John" Label="Email" IsRequired="true">
+        <DnetFormField Label="Email" IsRequired="true">
             <ChildContent>
                 <DnetInputTextArea @bind-Value="_person.Address"
                                       PlaceHolder="Ex. 4th Street, CP: 11901"
@@ -126,7 +126,7 @@
             </ErrorContent>
         </DnetFormField>
 
-        <DnetFormField PlaceHolder="67" Label="Age" IsRequired="true">
+        <DnetFormField Label="Age" IsRequired="true">
             <ChildContent>
                 <DnetInputNumber @bind-Value="_person.Age" PlaceHolder="Ex. Pizza">
                 </DnetInputNumber>
@@ -136,7 +136,7 @@
             </ErrorContent>
         </DnetFormField>
 
-        <DnetFormField PlaceHolder="" Label="Birthday" IsRequired="true">
+        <DnetFormField Label="Birthday" IsRequired="true">
             <ChildContent>
                 <DnetInputDate @bind-Value="_person.Birthday" PlaceHolder="Ex. 2021/10/6">
                 </DnetInputDate>

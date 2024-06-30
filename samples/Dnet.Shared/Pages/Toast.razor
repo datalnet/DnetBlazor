@@ -20,7 +20,7 @@
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 250px;">
-                    <DnetFormField PlaceHolder="Toast type" Label="Toast type" IsRequired="true">
+                    <DnetFormField Label="Toast type" IsRequired="true">
                         <ChildContent>
                             <DnetSelect Value="@_formData1.Value"
                                         TValue="string"
@@ -33,7 +33,7 @@
                                         OnItemSelected="ItemSelected"
                                         InputTextToUpper="true"
                                         PlaceHolder="Toast type"
-                                        Label="Toast type">
+                                        >
                             </DnetSelect>
                         </ChildContent>
                         <ErrorContent>

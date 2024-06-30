@@ -1,4 +1,4 @@
-﻿@page "/Autocomplete"
+﻿      @page "/Autocomplete"
 
 @using System.ComponentModel.DataAnnotations
 @using Dnet.App.Shared.Infrastructure.Entities
@@ -29,23 +29,22 @@
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
                 <div style="display:flex;align-items: center;flex-direction: column; justify-content:space-between;">
-                    <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+                    <DnetFormField Label="Name" IsRequired="true" UseClearButton="true">
                         <ChildContent>
-                            <DnetAutocomplete TValue="string" 
-                                            @bind-Value="@_formData.Name" 
-                                            Items="_items"
-                                            TItem="Person" 
-                                            DisplayValueConverter="(value) => value.Name"
-                                            ValueConverter="(value) => (value.Name)" 
-                                            OnItemSelected="OnAutocompleteFilter"
-                                            InputTextToUpper="true" 
-                                            Height="300px"
-                                            Width="300px"
-                                            ItemHeight="50"
-                                            PlaceHolder="Name" 
-                                            Label="Name" 
-                                            SortBy="@sortBy"
-                                            FilterBy="@filterBy">
+                            <DnetAutocomplete TValue="string"
+                                              @bind-Value="@_formData.Name"
+                                              Items="_items"
+                                              TItem="Person"
+                                              DisplayValueConverter="(value) => value.Name"
+                                              ValueConverter="(value) => (value.Name)"
+                                              OnItemSelected="OnAutocompleteFilter"
+                                              InputTextToUpper="true"
+                                              Height="300px"
+                                              Width="300px"
+                                              ItemHeight="50"
+                                              PlaceHolder="Jhon Doe"
+                                              SortBy="@sortBy"
+                                              FilterBy="@filterBy">
                             </DnetAutocomplete>
                         </ChildContent>
                         <ErrorContent>
@@ -60,23 +59,22 @@
             </div>
             <div style="display: flex; flex-direction: column">
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;">
-                    <DnetFormField PlaceHolder="Jhon Doe" Label="Name" UseClearButton="true">
+                    <DnetFormField Label="Name" UseClearButton="true">
                         <ChildContent>
-                            <DnetAutocomplete Value="@_formData.Name" 
+                            <DnetAutocomplete Value="@_formData.Name"
                                               TValue="string"
                                               ValueChanged="@((string e) => MyValueChangeHandler(e))"
-                                              ValueExpression="@( () => _formData.Name )" 
-                                              Items="_items" 
+                                              ValueExpression="@( () => _formData.Name )"
+                                              Items="_items"
                                               TItem="Person"
-                                              DisplayValueConverter="(value) => value.Name" 
+                                              DisplayValueConverter="(value) => value.Name"
                                               ValueConverter="(value) => (value.Name)"
-                                              OnItemSelected="OnAutocompleteFilter" 
-                                              InputTextToUpper="true" 
-                                              PlaceHolder="Name" 
-                                              Label="Name" 
+                                              OnItemSelected="OnAutocompleteFilter"
+                                              InputTextToUpper="true"
+                                              PlaceHolder="Jhon Doe"
                                               Height="300px"
                                               Width="300px"
-                                              SortBy="@sortBy" 
+                                              SortBy="@sortBy"
                                               FilterBy="@filterBy">
                                 <ItemChildContent Context="Person">
                                     <div style="width:100%;display:flex;justify-content:center;flex-direction:column">
@@ -101,31 +99,28 @@
             </div>
             <div class="d-flex flex-column">
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;">
-                    <DnetFormField PlaceHolder="Jhon Doe" Label="Name" UseClearButton="true">
+                    <DnetFormField Label="Name" UseClearButton="true">
                         <ChildContent>
-                            <DnetAutocomplete @bind-Value="@_formData2.Name" 
-                                              TValue="string" 
+                            <DnetAutocomplete @bind-Value="@_formData2.Name"
+                                              TValue="string"
                                               Items="_items"
-                                              TItem="Person" 
+                                              TItem="Person"
                                               DisplayValueConverter="(value) => value.Name"
-                                              ValueConverter="(value) => (value.Name)" 
+                                              ValueConverter="(value) => (value.Name)"
                                               OnItemSelected="OnAutocompleteFilter"
-                                              ItemAutoSelection="_itemAutoSelection" 
-                                              Disabled="false" 
-                                              PlaceHolder="Name" 
-                                              Label="Name" 
+                                              ItemAutoSelection="_itemAutoSelection"
+                                              Disabled="false"
+                                              PlaceHolder="Jhon Doe"
                                               Height="300px"
                                               Width="300px"
-                                              SortBy="@sortBy" 
+                                              SortBy="@sortBy"
                                               FilterBy="@filterBy">
                                 <ItemSufixContent Context="Person">
-                                    <span
-                                        style="width: 20px; height: 20px; display: block; background-color: @Person.EyeColor; margin-right:10px"></span>
+                                    <span style="width: 20px; height: 20px; display: block; background-color: @Person.EyeColor; margin-right:10px"></span>
                                 </ItemSufixContent>
                                 <ItemPrefixContent Context="Person">
                                     <div class="dnet-app-icon-wrapper">
-                                        <span
-                                            class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
+                                        <span class="dnet-app-icon @(Person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
                                     </div>
                                 </ItemPrefixContent>
                             </DnetAutocomplete>
@@ -199,8 +194,7 @@
     private RenderFragment<Person> ItemPrefixContent = person => __builder =>
     {
         <div class="dnet-app-icon-wrapper">
-            <span
-                class="dnet-app-icon @(person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
+            <span class="dnet-app-icon @(person.Gender == "female" ? "dnet-app-formfield-female" : "dnet-app-formfield-male") "></span>
         </div>
     };
 

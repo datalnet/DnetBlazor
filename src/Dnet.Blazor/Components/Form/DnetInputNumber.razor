@@ -24,7 +24,7 @@
            @onchange="HandleChange"
            @onfocus=@(() => Focus())
            @onblur=@(() => Blur())
-           placeholder="@_placeHolder"
+           placeholder="@PlaceHolder"
            disabled="@Disabled"
            type="number"
            style="@(Convert.ToString(_styles, CultureInfo.InvariantCulture))" />
@@ -42,7 +42,7 @@ else
            @onkeyup:preventDefault="true"
            @onfocus=@(() => Focus())
            @onblur=@(() => Blur())
-           placeholder="@_placeHolder"
+           placeholder="@PlaceHolder"
            disabled="@Disabled"
            type="number"
            style="@(Convert.ToString(_styles, CultureInfo.InvariantCulture))" />
@@ -64,9 +64,6 @@ else
     public bool Disabled { get; set; }
 
     [Parameter]
-    public string? PlaceHolder { get; set; }
-
-    [Parameter]
     public bool ImmediateResponse { get; set; } = true;
 
     [Parameter] public string ParsingErrorMessage { get; set; } = "The {0} field must be a number.";
@@ -80,12 +77,13 @@ else
     [Parameter]
     public bool IsRequired { get; set; }
 
+    [Parameter]
+    public string? PlaceHolder { get; set; }
+
 
     private bool _hasFocus { get; set; }
 
     private bool _hasErrors { get; set; }
-
-    private string? _placeHolder { get; set; }
 
     private Timer? _debounceTimer;
 
@@ -191,8 +189,6 @@ else
     {
         _hasFocus = true;
 
-        _placeHolder = PlaceHolder;
-
         if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
 
         StateHasChanged();
@@ -206,8 +202,6 @@ else
 
             if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
-
-        _placeHolder = string.Empty;
 
         if (EditContext is not null)
         {

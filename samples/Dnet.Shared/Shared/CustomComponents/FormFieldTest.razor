@@ -7,7 +7,7 @@
     <div>
         <EditForm Model="@Person" style="display: flex;flex-direction:column">
             <DataAnnotationsValidator />
-            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+            <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
                 <ChildContent>
                     <DnetInputText @bind-Value="Person.Name" PlaceHolder="Ex. John" type="text" IsRequired="true">
                     </DnetInputText>
@@ -17,21 +17,21 @@
                     <ValidationMessage For="@(() => Person.Name)" />
                 </ErrorContent>
             </DnetFormField>
-            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+            <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
                 <ChildContent>
                     <DnetInputText @bind-Value="Person.LastName" PlaceHolder="Dnet TypeAhead" type="text" OnStopTyping="StopTyping">
                     </DnetInputText>
                 </ChildContent>
                 <HintContent>On stop typing: @aheadTypeResult</HintContent>
             </DnetFormField>
-            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+            <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
                 <ChildContent>
                     <DnetInputText @bind-Value="Person.Email" PlaceHolder="Ex. john.doe@mycompany.com" type="text">
                     </DnetInputText>
                 </ChildContent>
             </DnetFormField>
             <div class="dnet-m-b-10" style="width:100%">
-                <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+                <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
                     <ChildContent>
                         <DnetInputText @bind-Value="Person.Phone" PlaceHolder="Ex. +34 678 897 765" type="text">
                         </DnetInputText>
@@ -44,19 +44,19 @@
                     </SufixContent>
                 </DnetFormField>
             </div>
-            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+            <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
                 <ChildContent>
                     <DnetInputNumber @bind-Value="Person.Age" PlaceHolder="Ex. Pizza" type="text">
                     </DnetInputNumber>
                 </ChildContent>
             </DnetFormField>
-            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+            <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
                 <ChildContent>
                     <DnetInputText @bind-Value="Person.Company" PlaceHolder="Ex. MyCompany" type="text" Disabled="true">
                     </DnetInputText>
                 </ChildContent>
             </DnetFormField>
-            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+            <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
                 <ChildContent>
                     <DnetInputText @bind-Value="Person.Balance" PlaceHolder="Ex. Current Balance" type="text">
                     </DnetInputText>
@@ -65,13 +65,13 @@
                     €
                 </SufixContent>
             </DnetFormField>
-            <DnetFormField PlaceHolder="Ex. John" Label="Birthday" UseClearButton="true" IsRequired="true">
+            <DnetFormField Label="Birthday" UseClearButton="true" IsRequired="true">
                 <ChildContent>
                     <DnetInputDate @bind-Value="Person.Birthday" PlaceHolder="Ex. 2021/10/6">
                     </DnetInputDate>
                 </ChildContent>
             </DnetFormField>
-            <DnetFormField PlaceHolder="Ex. John" Label="Email" UseClearButton="true" IsRequired="true">
+            <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
                 <ChildContent>
                     <DnetInputTextArea @bind-Value="Person.Address"
                                        PlaceHolder="Ex. 4th Street, CP: 11901"

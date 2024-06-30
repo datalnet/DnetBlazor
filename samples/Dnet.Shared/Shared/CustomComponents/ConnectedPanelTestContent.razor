@@ -53,7 +53,7 @@
                 {
                     if (FilterData.Type == CellDataType.Text)
                     {
-                        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                        <DnetFormField Label="Gender" IsRequired="true">
                             <ChildContent>
                                 <DnetSelect @bind-Value="_operator"
                                             TValue="string"
@@ -63,14 +63,14 @@
                                             ValueConverter="(value) => (value.ToString())"
                                             InputTextToUpper="true"
                                             PlaceHolder="Operator"
-                                            Label="Operator">
+                                            >
                                 </DnetSelect>
                             </ChildContent>
                         </DnetFormField>
                     }
                     else if (FilterData.Type == CellDataType.Number || FilterData.Type == CellDataType.Date)
                     {
-                        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                        <DnetFormField Label="Gender" IsRequired="true">
                             <ChildContent>
                                 <DnetSelect @bind-Value="_operator"
                                             TValue="string"
@@ -80,7 +80,7 @@
                                             ValueConverter="(value) => (value.ToString())"
                                             InputTextToUpper="true"
                                             PlaceHolder="Operator"
-                                            Label="Operator">
+                                            >
                                 </DnetSelect>
                             </ChildContent>
                         </DnetFormField>
@@ -88,7 +88,7 @@
                 }
                 if (FilterData.Type == CellDataType.Boolean)
                 {
-                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                    <DnetFormField Label="Gender" IsRequired="true">
                         <ChildContent>
                             <DnetSelect @bind-Value="_operator"
                                         TValue="string"
@@ -98,14 +98,14 @@
                                         ValueConverter="(value) => (value.ToString())"
                                         InputTextToUpper="true"
                                         PlaceHolder="Operator"
-                                        Label="Operator">
+                                        >
                             </DnetSelect>
                         </ChildContent>
                     </DnetFormField>
                 }
                 else if (FilterData.Type == CellDataType.Date)
                 {
-                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                    <DnetFormField Label="Gender" IsRequired="true">
                         <ChildContent>
                             <DnetDatePicker @bind-Value="@FilterData.Value"
                                             Disabled="false"
@@ -117,7 +117,7 @@
                 }
                 if (FilterData.Type != CellDataType.Boolean)
                 {
-                    <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                    <DnetFormField Label="Gender" IsRequired="true">
                         <ChildContent>
                             <DnetSelect @bind-Value="_operator"
                                         TValue="string"
@@ -127,7 +127,7 @@
                                         ValueConverter="(value) => (value.ToString())"
                                         InputTextToUpper="true"
                                         PlaceHolder="Operator"
-                                        Label="Operator">
+                                        >
                             </DnetSelect>
                         </ChildContent>
                     </DnetFormField>
@@ -135,7 +135,7 @@
                     {
                         if (FilterData.Type == CellDataType.Text)
                         {
-                            <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                            <DnetFormField Label="Gender" IsRequired="true">
                                 <ChildContent>
                                     <DnetSelect @bind-Value="_operator"
                                                 TValue="string"
@@ -145,14 +145,14 @@
                                                 ValueConverter="(value) => (value.ToString())"
                                                 InputTextToUpper="true"
                                                 PlaceHolder="Operator"
-                                                Label="Operator">
+                                                >
                                     </DnetSelect>
                                 </ChildContent>
                             </DnetFormField>
                         }
                         if (FilterData.Type == CellDataType.Number || FilterData.Type == CellDataType.Date)
                         {
-                            <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                            <DnetFormField Label="Gender" IsRequired="true">
                                 <ChildContent>
                                     <DnetSelect @bind-Value="_operator"
                                                 TValue="string"
@@ -162,7 +162,7 @@
                                                 ValueConverter="(value) => (value.ToString())"
                                                 InputTextToUpper="true"
                                                 PlaceHolder="Operator"
-                                                Label="Operator">
+                                                >
                                     </DnetSelect>
                                 </ChildContent>
                             </DnetFormField>
@@ -170,7 +170,7 @@
                     }
                     if (FilterData.Type == CellDataType.Date)
                     {
-                        <DnetFormField PlaceHolder="Gender" Label="Gender" IsRequired="true">
+                        <DnetFormField Label="Gender" IsRequired="true">
                             <ChildContent>
                                 <DnetDatePicker @bind-Value="@FilterData.AdditionalValue"
                                                 Disabled="false"
