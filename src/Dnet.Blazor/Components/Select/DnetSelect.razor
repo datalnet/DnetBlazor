@@ -32,9 +32,18 @@
             @switch (DisplayData)
             {
                 case DataToShow.SingleValue:
-                    <span class="dnet-plain-select-value-text">
-                        <span>@_displayValueAsString</span>
-                    </span>
+                    @if (ValueDisplayContent != null && _selectedItem is not null)
+                    {
+                        <div class="dnet-select-list-item-prefix">
+                            @ValueDisplayContent(_selectedItem)
+                        </div>
+                    }
+                    else
+                    {
+                        <span class="dnet-plain-select-value-text">
+                            <span>@_displayValueAsString</span>
+                        </span>
+                    }
                     break;
 
                 case DataToShow.MultiValue:
@@ -102,6 +111,9 @@
 
     [Parameter]
     public RenderFragment<TItem>? ItemChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem>? ValueDisplayContent { get; set; }
 
     [Parameter]
     public List<TItem> Items { get; set; } = new();
@@ -203,6 +215,8 @@
 
     private IFormEventService? _formEventService { get; set; }
 
+    private TItem? _selectedItem { get; set; }
+
 
     protected override void OnInitialized()
     {
@@ -282,6 +296,7 @@
                 if (type == typeof(string) || type == typeof(int))
                 {
                     var selectedItem = FindItemByValue<TItem, TValue>(CurrentValue, Items);
+                    _selectedItem = selectedItem;
 
                     if (selectedItem != null)
                     {
@@ -295,6 +310,7 @@
                     if (propertyInfo != null)
                     {
                         var selectedItem = FindItemByPropertyValue<TItem, TValue>(propertyInfo.Name, CurrentValue, Items);
+                        _selectedItem = selectedItem;
 
                         if (selectedItem != null)
                         {
@@ -468,6 +484,8 @@
 
             if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
+
+        _selectedItem = item;
 
         await OnItemSelected.InvokeAsync(item);
 
