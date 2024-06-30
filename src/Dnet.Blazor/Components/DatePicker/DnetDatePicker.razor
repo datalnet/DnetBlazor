@@ -25,11 +25,11 @@
        value="@BindConverter.FormatValue(CurrentValue)"
        @onchange="@(async (ChangeEventArgs __e) => { CurrentValue = await UpdateTextValue(__e.Value.ToString()); })"
        disabled="@Disabled"
-       placeholder="@PlaceHolder"
        class="@_inputTextClass"
        @onfocusin=@(() => ToggleMenu())
        @onfocus="@(() => Focus())"
-       @onblur="@(() => Blur())" />
+       @onblur="@(() => Blur())" 
+       placeholder="@PlaceHolder"/>
 
 
 @code {
@@ -45,9 +45,6 @@
 
     [Parameter]
     public string Format { get; set; } = $"yyyy/MM/dd";
-
-    [Parameter]
-    public string PlaceHolder { get; set; } = "";
 
     [Parameter]
     public DateTime? MaxDayValue { get; set; }
@@ -73,6 +70,9 @@
     [Parameter]
     public string MarginTop { get; set; } = "5px";
 
+    [Parameter]
+    public string? PlaceHolder { get; set; }
+
 
     private bool _isOpen = false;
 
@@ -85,8 +85,6 @@
     private bool _hasFocus { get; set; }
 
     private bool _hasErrors { get; set; }
-
-    private string? _placeHolder { get; set; }
 
     private IFormEventService? _formEventService { get; set; }
 
@@ -380,8 +378,6 @@
     {
         _hasFocus = true;
 
-        _placeHolder = PlaceHolder;
-
         if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
 
         StateHasChanged();
@@ -395,8 +391,6 @@
 
             if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
-
-        _placeHolder = string.Empty;
 
         StateHasChanged();
     }

@@ -28,7 +28,7 @@
     <div class="dnet-page-content-left-margin dnet-m-t-30" style="width: 300px">
         <EditForm Model="@_formData1">
             <DataAnnotationsValidator />
-            <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+            <DnetFormField Label="Name" IsRequired="true" UseClearButton="true">
                 <ChildContent>
                     <DnetFloatingDoubleList @bind-Value="_personNameList"
                                             TItem="Person"

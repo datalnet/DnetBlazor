@@ -35,7 +35,7 @@
        @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
        @onclick:stopPropagation="true" 
        @onclick:preventDefault="true" 
-       placeholder="@PlaceHolder" 
+       placeholder="@PlaceHolder"
        disabled="@Disabled"
        autocomplete="none" />
 
@@ -125,12 +125,6 @@
     public bool Disabled { get; set; }
 
     [Parameter]
-    public string PlaceHolder { get; set; } = string.Empty;
-
-    [Parameter]
-    public string Label { get; set; } = string.Empty;
-
-    [Parameter]
     public bool EnableServerSide { get; set; }
 
     [Parameter]
@@ -138,6 +132,10 @@
 
     [Parameter]
     public bool IsRequired { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; } = string.Empty;
+
 
     private bool _isOpen;
 
@@ -152,8 +150,6 @@
     private bool _hasFocus { get; set; }
 
     private bool _hasErrors { get; set; }
-
-    private string? _placeHolder { get; set; }
 
     private TItem? _itemSelected { get; set; }
 
@@ -547,8 +543,6 @@
             x.AddAttribute(5, "ItemPrefixContent", ItemPrefixContent);
             x.AddAttribute(6, "ItemSufixContent", ItemSufixContent);
             x.AddAttribute(7, "ChildContent", ItemChildContent);
-            x.AddAttribute(8, "PlaceHolder", PlaceHolder);
-            x.AddAttribute(9, "Label", Label);
             x.AddAttribute(10, "CurrentValue", CurrentValue);
             x.AddAttribute(11, "FooterContent", FooterContent);
             x.CloseComponent();
@@ -583,8 +577,6 @@
     {
         _hasFocus = true;
 
-        _placeHolder = PlaceHolder;
-
         if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
 
         StateHasChanged();
@@ -598,8 +590,6 @@
 
             if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
-
-        _placeHolder = string.Empty;
 
         ClosenMenu();
 

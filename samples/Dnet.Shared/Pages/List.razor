@@ -27,14 +27,14 @@
             <div style="display: flex; flex-direction: column">
                 <div
                     style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;max-width: 300px;">
-                    <DnetFormField PlaceHolder="List options" Label="List options" IsRequired="true">
+                    <DnetFormField Label="List options" IsRequired="true">
                         <ChildContent>
                             <DnetSelect Value="@_formData1.Value" TValue="string"
                                 ValueChanged="@((string e) => MyValueChangeHandler(e))"
                                 ValueExpression="@( () => _formData1.Value )" Items="_features"
                                 TItem="KeyValueModel<int>" DisplayValueConverter="(value) => (value.Value)"
                                 OnSelectionChanged="SelectionChanged" InputTextToUpper="true"
-                                PlaceHolder="List features" Label="List features" MultiSelect="true"
+                                PlaceHolder="List features" MultiSelect="true"
                                 SelectedItems="@_selectedFeatures"
                                 IsSelectedFn="@( (item, itemSelected) => item.Key == itemSelected.Key )">
                             </DnetSelect>

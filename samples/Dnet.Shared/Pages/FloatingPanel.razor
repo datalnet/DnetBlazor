@@ -27,7 +27,7 @@
             <DataAnnotationsValidator />
             <div style="display: flex; flex-direction: column">
                 <div style="display:flex;align-items: center;flex-direction: row;justify-content:space-between;width: 250px;">
-                    <DnetFormField PlaceHolder="Panel position" Label="Panel position" IsRequired="true" UseClearButton="true">
+                    <DnetFormField Label="Panel position" IsRequired="true" UseClearButton="true">
                         <ChildContent>
                             <DnetSelect Value="@_formData1.Value"
                                         TValue="string"
@@ -40,7 +40,7 @@
                                         OnItemSelected="ItemSelected"
                                         InputTextToUpper="true"
                                         PlaceHolder="Panel position"
-                                        Label="Panel position">
+                                        >
                             </DnetSelect>
                         </ChildContent>
                         <ErrorContent>

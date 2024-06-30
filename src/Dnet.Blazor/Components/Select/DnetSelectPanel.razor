@@ -26,7 +26,7 @@
             </span>
         </div>
         <div class="dnet-select-list-header-checkall">
-              <span @onclick="CancelOverlay" class="dnet-dialog-icon-wrapper">
+            <span @onclick="CancelOverlay" class="dnet-dialog-icon-wrapper">
                 <span class="dnet-dialog-icon dnet-dialog-close-icon" unselectable="on"></span>
             </span>
         </div>
@@ -36,49 +36,52 @@
         {
             <Virtualize Items="@Items" TItem="RowNode<TItem>" Context="item" ItemSize="@ItemHeight">
                 <ItemContent>
-                    <div class="dnet-select-list-item" @onclick="@(() => SelectItem(item))"
-                         @onclick:preventDefault="true" style="margin-bottom: 2px; height:@(ItemHeight)px">
-                        @if (MultiSelect)
-                        {
-                            <div class="dnet-autoc-prefix-content">
-                                <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
-                                                   ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
-                            </div>
-                        }
-                        @if (ItemPrefixContent != null)
-                        {
-                            <div class="dnet-select-list-item-prefix">
-                                @ItemPrefixContent(item.RowData)
-                            </div>
-                        }
-                        <div class="dnet-select-list-item-content">
-                            @if (ChildContent != null)
+                    @if (item is not null)
+                    {
+                        <div class="dnet-select-list-item" @onclick="@(() => SelectItem(item))"
+                             @onclick:preventDefault="true" style="margin-bottom: 2px; height:@(ItemHeight)px">
+                            @if (MultiSelect)
                             {
-                                @ChildContent(item.RowData)
+                                <div class="dnet-autoc-prefix-content">
+                                    <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
+                                                       ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
+                                </div>
                             }
-                            else
+                            @if (ItemPrefixContent != null && item.RowData is not null)
                             {
-                                <span class="dnet-select-list-item-headline">
-                                    @if (DisplayValueConverter is not null)
-                                    {
-                                        @DisplayValueConverter(item.RowData)
-                                    }
-                                </span>
-                                 @if (SupportTextValueConverter is not null)
+                                <div class="dnet-select-list-item-prefix">
+                                    @ItemPrefixContent(item.RowData)
+                                </div>
+                            }
+                            <div class="dnet-select-list-item-content">
+                                @if (ChildContent != null && item.RowData is not null)
+                                {
+                                    @ChildContent(item.RowData)
+                                }
+                                else
+                                {
+                                    <span class="dnet-select-list-item-headline">
+                                        @if (DisplayValueConverter is not null && item.RowData is not null)
+                                        {
+                                            @DisplayValueConverter(item.RowData)
+                                        }
+                                    </span>
+                                    @if (SupportTextValueConverter is not null && item.RowData is not null)
                                     {
                                         <span class="dnet-list-item-supporting-text">
                                             @SupportTextValueConverter(item.RowData)
                                         </span>
                                     }
+                                }
+                            </div>
+                            @if (ItemSufixContent != null && item is not null && item.RowData is not null)
+                            {
+                                <div class="dnet-select-list-item-sufix">
+                                    @ItemSufixContent(item.RowData)
+                                </div>
                             }
                         </div>
-                        @if (ItemSufixContent != null)
-                        {
-                            <div class="dnet-select-list-item-sufix">
-                                @ItemSufixContent(item.RowData)
-                            </div>
-                        }
-                    </div>
+                    }
                 </ItemContent>
             </Virtualize>
         }
@@ -87,28 +90,28 @@
             <Virtualize Items="@Items" TItem="RowNode<TItem>" Context="item" ItemSize="@ItemHeight">
                 <div class="dnet-select-list-item" @onclick="@(() => SelectItem(item))" @onclick:preventDefault="true"
                      style="margin-bottom: 2px; height:@(ItemHeight)px">
-                        @if (MultiSelect)
-                        {
-                            <div class="dnet-select-list-item-prefix">
-                                <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
-                                                   ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
-                            </div>
-                        }
-                        <div class="dnet-select-list-item-content">
-                            <span class="dnet-select-list-item-headline">
-                                @if (DisplayValueConverter is not null)
-                                {
-                                    @DisplayValueConverter(item.RowData)
-                                }
-                            </span>
-                               @if (SupportTextValueConverter is not null)
-                                    {
-                                        <span class="dnet-list-item-supporting-text">
-                                            @SupportTextValueConverter(item.RowData)
-                                        </span>
-                                    }
+                    @if (MultiSelect)
+                    {
+                        <div class="dnet-select-list-item-prefix">
+                            <DnetInputCheckbox Value="item.Selected" ValueChanged="() => CheckboxClicked(item)"
+                                               ValueExpression="() => item.Selected" class="dnet-m-r-5"></DnetInputCheckbox>
                         </div>
+                    }
+                    <div class="dnet-select-list-item-content">
+                        <span class="dnet-select-list-item-headline">
+                            @if (DisplayValueConverter is not null && item.RowData is not null)
+                            {
+                                @DisplayValueConverter(item.RowData)
+                            }
+                        </span>
+                        @if (SupportTextValueConverter is not null && item.RowData is not null)
+                        {
+                            <span class="dnet-list-item-supporting-text">
+                                @SupportTextValueConverter(item.RowData)
+                            </span>
+                        }
                     </div>
+                </div>
             </Virtualize>
         }
     </div>
@@ -247,6 +250,6 @@
 
     void CancelOverlay()
     {
-        OverlayService.Detach(new OverlayResult { OverlayReferenceId = OverlayReferenceId});
+        OverlayService.Detach(new OverlayResult { OverlayReferenceId = OverlayReferenceId });
     }
 }
