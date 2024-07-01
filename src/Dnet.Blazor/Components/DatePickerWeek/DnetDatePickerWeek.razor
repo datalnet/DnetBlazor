@@ -82,9 +82,6 @@
     [Parameter]
     public ComponentTheme ComponentTheme { get; set; } = ComponentTheme.Material;
 
-    [Parameter]
-    public bool IsRequired { get; set; }
-
 
     private ElementReference _menuTrigger;
 
@@ -105,6 +102,8 @@
     private string? _placeHolder { get; set; }
 
     private IFormEventService? _formEventService { get; set; }
+
+    private bool _previousDisabled;
 
     private string _inputTextClass =>
         new CssBuilder("mat-input-element")
@@ -133,6 +132,22 @@
         _selectedDays = GetWeekDays(days.FirstOrDefault(p => p.IsToday), days);
 
         CurrentValue = GetWeekInterval(_selectedDays);
+
+        if (_formEventService is not null) _formEventService.RaiseDisabledEvent(Disabled);
+
+        _previousDisabled = Disabled;
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_previousDisabled != Disabled)
+        {
+            _previousDisabled = Disabled;
+
+            OnDisabledChanged();
+        }
     }
 
     protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
@@ -473,5 +488,12 @@
 
             StateHasChanged();
         }
+    }
+
+    private void OnDisabledChanged()
+    {
+        _formEventService?.RaiseDisabledEvent(Disabled);
+
+        StateHasChanged();
     }
 }

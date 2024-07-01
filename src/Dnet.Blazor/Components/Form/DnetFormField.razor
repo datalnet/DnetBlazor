@@ -20,7 +20,7 @@
             }
         </div>
     }
-    <div class="dnet-form-field-plain-control-container" @ref="_formField">
+    <div class="dnet-form-field-plain-control-container @(_disabled ? "dnet-control-disable" : null)" @ref="_formField">
         @if (PrefixContent != null)
         {
             <div class="dnet-form-field-plain-prefix">
@@ -98,6 +98,8 @@
 
     private bool _useClearButton { get; set; }
 
+    private bool _disabled { get; set; }
+
     private ElementReference _formField;
 
     private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
@@ -115,6 +117,8 @@
         FormEventService.OnFocus += HandleFocus;
 
         FormEventService.OnCurrentValue += HandleCurrentValue;
+
+        FormEventService.OnDisabled += HandleDisabled;
 
         _useClearButton = UseClearButton;
     }
@@ -149,12 +153,21 @@
 
     private void ClearInput()
     {
+        if (_disabled) return;
+
         FormEventService.RaiseClearContent();
     }
 
     private void SufixContentClicked()
     {
         FormEventService.RaiseSufixContentClicked();
+    }
+
+    private void HandleDisabled(bool isDisabled)
+    {
+        _disabled = isDisabled;
+
+        StateHasChanged();
     }
 
     public void Dispose()

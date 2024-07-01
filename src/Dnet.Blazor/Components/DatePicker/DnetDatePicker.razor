@@ -62,9 +62,6 @@
     public EventCallback<CalendarDay> OnDaySelected { get; set; }
 
     [Parameter]
-    public bool IsRequired { get; set; }
-
-    [Parameter]
     public string BorderRadius { get; set; } = "5px";
 
     [Parameter]
@@ -87,6 +84,8 @@
     private bool _hasErrors { get; set; }
 
     private IFormEventService? _formEventService { get; set; }
+
+    private bool _previousDisabled;
 
     private string _inputTextClass =>
         new CssBuilder("mat-input-element")
@@ -123,6 +122,22 @@
             _formEventService.OnClearContent += ClearInput;
 
             _formEventService.OnSufixContentClicked += SufixContentClicked;
+
+            _formEventService.RaiseDisabledEvent(Disabled);
+        }
+
+        _previousDisabled = Disabled;
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_previousDisabled != Disabled)
+        {
+            _previousDisabled = Disabled;
+
+            OnDisabledChanged();
         }
     }
 
@@ -415,6 +430,13 @@
     private void SufixContentClicked()
     {
         ToggleMenu();
+    }
+
+    private void OnDisabledChanged()
+    {
+        _formEventService?.RaiseDisabledEvent(Disabled);
+
+        StateHasChanged();
     }
 
     public void Dispose()

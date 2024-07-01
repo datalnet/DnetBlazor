@@ -200,7 +200,7 @@
                             break;
                         case CellDataType.Date:
                             <EditForm Model="@header" style="width:100%">
-                                <DnetFormField PlaceHolder="Jhon Doe" Label="Name" IsRequired="true" UseClearButton="true">
+                                <DnetFormField Label="Name" IsRequired="true" UseClearButton="true">
                                     <ChildContent>
                                         <DnetDatePicker @bind-Value="@header.Filter"
                                                            Disabled="false"

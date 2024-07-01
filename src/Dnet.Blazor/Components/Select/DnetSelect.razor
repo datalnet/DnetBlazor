@@ -217,6 +217,8 @@
 
     private TItem? _selectedItem { get; set; }
 
+    private bool _previousDisabled;
+
 
     protected override void OnInitialized()
     {
@@ -243,6 +245,10 @@
         if (!DisabledClearButton) _clearButtonContent = CreateClearButtonContent();
 
         _isInitialized = true;
+
+        if (_formEventService is not null) _formEventService.RaiseDisabledEvent(Disabled);
+
+        _previousDisabled = Disabled;
     }
 
     public override Task SetParametersAsync(ParameterView parameters)
@@ -280,6 +286,13 @@
             SetDisplayValue();
 
             StateHasChanged();
+        }
+
+        if (_previousDisabled != Disabled)
+        {
+            _previousDisabled = Disabled;
+
+            OnDisabledChanged();
         }
 
         base.OnParametersSet();
@@ -742,6 +755,13 @@
 
             return DataToShow.Placeholder;
         }
+    }
+
+    private void OnDisabledChanged()
+    {
+        _formEventService?.RaiseDisabledEvent(Disabled);
+
+        StateHasChanged();
     }
 
     public void Dispose()

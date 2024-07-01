@@ -34,7 +34,7 @@
                 </div>
             </PrefixContent>
             <ChildContent>
-                <DnetInputText @bind-Value="_person.LastName" PlaceHolder="Ex. MyCompany" type="text">
+                <DnetInputText @bind-Value="_person.LastName" PlaceHolder="Ex. MyCompany" type="text" >
                 </DnetInputText>
             </ChildContent>
             <HintContent>You can add the country prefix</HintContent>
@@ -48,7 +48,7 @@
 
         <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
             <ChildContent>
-                <DnetInputText @bind-Value="_person.Email" PlaceHolder="Ex. Email" type="text">
+                <DnetInputText @bind-Value="_person.Email" PlaceHolder="Ex. Email" type="text" Disabled="@(string.IsNullOrEmpty(_person.LastName))">
                 </DnetInputText>
             </ChildContent>
             <ErrorContent>

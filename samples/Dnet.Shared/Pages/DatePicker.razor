@@ -29,11 +29,11 @@
                 <div class="d-flex flex-column dnet-m-b-20 dnet-m-t-20">
                     <DnetFormField Label="Departure day" UseClearButton="true" IsRequired="true">
                         <ChildContent>
-                            <DnetDatePicker @bind-Value="@_formData.DepartureDay" Disabled="false"
+                            <DnetDatePicker @bind-Value="@_formData.DepartureDay"
                                 OnDaySelected="DaySelected" PlaceHolder="Departure day"
                                 Format="@_datepickerFormat" MaxDayValue="DateTime.Now"
                                 MinDayValue="DateTime.Now.AddDays(-10)" FirstDayToShow="DateTime.Now"
-                                DatepickerFilter="(p) => { return p.DayIndex == 0; }">
+                                            DatepickerFilter="(p) => { return p.DayIndex == 0; }">
                             </DnetDatePicker>
                         </ChildContent>
                         <SufixContent>

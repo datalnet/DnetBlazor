@@ -121,6 +121,9 @@ else
 
     private string? _styles { get; set; }
 
+    private bool _previousDisabled;
+
+
     protected override void OnInitialized()
     {
         _styles = new StyleBuilder("margin-right", "10px")
@@ -150,9 +153,25 @@ else
 
         if (_formEventService is not null) _formEventService.OnClearContent += HandleClearContent;
 
+        if (_formEventService is not null) _formEventService.RaiseDisabledEvent(Disabled);
+
         if (EditContext is not null)
         {
             EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+        }
+
+        _previousDisabled = Disabled;
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_previousDisabled != Disabled)
+        {
+            _previousDisabled = Disabled;
+
+            OnDisabledChanged();
         }
     }
 
@@ -293,6 +312,13 @@ else
         await ValueChanged.InvokeAsync(Value);
 
         await OnClearInput.InvokeAsync(true);
+
+        StateHasChanged();
+    }
+
+    private void OnDisabledChanged()
+    {
+        _formEventService?.RaiseDisabledEvent(Disabled);
 
         StateHasChanged();
     }

@@ -23,7 +23,7 @@
     color: var(--dnet-form-field-plain-label-color);
 }
 
-.dnet-form-field-plain-label-wrapper > label {
+.dnet-form-field-plain-label-wrapper>label {
     font-weight: 400;
     margin: 0px;
     padding: 0px;
@@ -35,8 +35,12 @@
     min-height: 34px;
     max-height: 272px;
     margin-bottom: 3px;
-    border: 1px solid rgba(0,0,0,.08);
+    border: 1px solid rgba(0, 0, 0, .08);
     border-radius: 5px;
+
+    &.dnet-control-disable {
+        background-color: rgba(0,0,0,.08);
+    }
 }
 
 .dnet-form-field-plain-prefix,
@@ -54,7 +58,7 @@
     padding-left: 10px;
 }
 
-.dnet-form-field-plain-prefix + .dnet-form-field-plain-control {
+.dnet-form-field-plain-prefix+.dnet-form-field-plain-control {
     padding-left: 0px;
 }
 

@@ -11,13 +11,13 @@
 
 @if (!ImmediateResponse)
 {
-    <input @ref="__inputReference" 
-           @attributes="AdditionalAttributes" 
+    <input @ref="__inputReference"
+           @attributes="AdditionalAttributes"
            class="@_inputTextClass"
-           value="@BindConverter.FormatValue(CurrentValue)" 
-           @onchange="HandleChange" 
-           @onfocus=@(() => Focus()) 
-           @onblur=@(() =>Blur()) 
+           value="@BindConverter.FormatValue(CurrentValue)"
+           @onchange="HandleChange"
+           @onfocus=@(() => Focus())
+           @onblur=@(() =>Blur())
            disabled="@Disabled"
            placeholder="@PlaceHolder"
            type="text" />
@@ -28,14 +28,14 @@ else
            @attributes="AdditionalAttributes"
            class="@_inputTextClass"
            @bind="CurrentValueAsString"
-           @bind:event="oninput" 
-           @onkeyup="ResetTimer" 
-           @onkeyup:stopPropagation="true" 
+           @bind:event="oninput"
+           @onkeyup="ResetTimer"
+           @onkeyup:stopPropagation="true"
            @onkeyup:preventDefault="true"
-           @onfocus=@(() => Focus()) 
+           @onfocus=@(() => Focus())
            @onblur=@(() => Blur())
            placeholder="@PlaceHolder"
-           disabled="@Disabled" 
+           disabled="@Disabled"
            type="text" />
 }
 
@@ -75,6 +75,8 @@ else
 
     private IFormEventService? _formEventService { get; set; }
 
+    private bool _previousDisabled;
+
     private string _inputTextClass =>
     new CssBuilder("mat-input-element")
     .AddClass(CssClass)
@@ -103,9 +105,25 @@ else
 
         if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
+        if (_formEventService is not null) _formEventService.RaiseDisabledEvent(Disabled);
+
         if (_formEventService is not null) _formEventService.OnClearContent += HandleClearContent;
 
         if (EditContext is not null) EditContext.OnFieldChanged += HandleOnValidationStateChanged;
+
+        _previousDisabled = Disabled;
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_previousDisabled != Disabled)
+        {
+            _previousDisabled = Disabled;
+
+            OnDisabledChanged();
+        }
     }
 
     public void HandleChangeDebouncedDiscard(Object source, ElapsedEventArgs e)
@@ -208,9 +226,16 @@ else
         StateHasChanged();
     }
 
+    private void OnDisabledChanged()
+    {
+        _formEventService?.RaiseDisabledEvent(Disabled);
+
+        StateHasChanged();
+    }
+
     public void Dispose()
     {
-        if (ImmediateResponse)
+        if (ImmediateResponse && _debounceTimer is not null)
         {
             _debounceTimer.Elapsed -= HandleChangeDebouncedDiscard;
 

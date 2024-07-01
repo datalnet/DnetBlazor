@@ -14,6 +14,8 @@ public interface IFormEventService
 
     public event Action OnSufixContentClicked;
 
+    public event Action<bool>? OnDisabled;
+
     void RaiseError(bool hasError);
 
     void RaiseFocus(bool hasFocus);
@@ -25,4 +27,6 @@ public interface IFormEventService
     void FormRaiseEvent(string error, bool hasFocus, object currentValue);
 
     void RaiseSufixContentClicked();
+
+    void RaiseDisabledEvent(bool isDisabled);
 }

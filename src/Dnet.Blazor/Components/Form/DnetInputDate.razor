@@ -90,6 +90,8 @@ else
 
     private IFormEventService _formEventService { get; set; }
 
+    private bool _previousDisabled;
+
     private string _inputTextClass =>
                 new CssBuilder("mat-input-element")
                     .AddClass(CssClass)
@@ -141,6 +143,8 @@ else
 
         if (_formEventService is not null) _formEventService.OnClearContent += HandleClearContent;
 
+        if (_formEventService is not null) _formEventService.RaiseDisabledEvent(Disabled);
+
         if (EditContext is not null)
         {
             EditContext.OnFieldChanged += HandleOnValidationStateChanged;
@@ -149,10 +153,14 @@ else
 
             if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
         }
+
+        _previousDisabled = Disabled;
     }
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         (_typeAttributeValue, _format, var formatDescription) = Type switch
         {
             InputDateType.Date => ("date", DateFormat, "date"),
@@ -165,6 +173,13 @@ else
         _parsingErrorMessage = string.IsNullOrEmpty(ParsingErrorMessage)
             ? $"The {{0}} field must be a {formatDescription}."
             : ParsingErrorMessage;
+
+        if (_previousDisabled != Disabled)
+        {
+            _previousDisabled = Disabled;
+
+            OnDisabledChanged();
+        }
     }
 
     public void HandleChangeDebouncedDiscard(Object source, ElapsedEventArgs e)
@@ -275,6 +290,13 @@ else
         await ValueChanged.InvokeAsync(Value);
 
         await OnClearInput.InvokeAsync(true);
+
+        StateHasChanged();
+    }
+
+    private void OnDisabledChanged()
+    {
+        _formEventService?.RaiseDisabledEvent(Disabled);
 
         StateHasChanged();
     }

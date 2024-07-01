@@ -14,6 +14,8 @@ public class FormEventService : IFormEventService
 
     public event Action? OnSufixContentClicked;
 
+    public event Action<bool>? OnDisabled;
+
     public void RaiseError(bool hasError)
     {
         OnError?.Invoke(hasError);
@@ -44,6 +46,11 @@ public class FormEventService : IFormEventService
     public void RaiseSufixContentClicked()
     {
         OnSufixContentClicked?.Invoke();
+    }
+
+    public void RaiseDisabledEvent(bool isDisabled)
+    {
+        OnDisabled?.Invoke(isDisabled);
     }
 }
 
