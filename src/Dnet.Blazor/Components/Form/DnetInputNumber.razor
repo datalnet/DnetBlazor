@@ -18,7 +18,6 @@
 {
     <input @ref="__inputReference "
            @attributes="AdditionalAttributes"
-           step="_stepAttributeValue"
            class="@_inputTextClass"
            value="@BindConverter.FormatValue(CurrentValueAsString)"
            @onchange="HandleChange"
@@ -27,13 +26,17 @@
            placeholder="@PlaceHolder"
            disabled="@Disabled"
            type="number"
-           style="@(Convert.ToString(_styles, CultureInfo.InvariantCulture))" />
+           style="@(Convert.ToString(_styles, CultureInfo.InvariantCulture))" 
+           min="@Min" 
+           max="@Max" 
+           step="@Step"
+           id="@Id" 
+           />
 }
 else
 {
     <input @ref="__inputReference"
            @attributes="AdditionalAttributes"
-           step="_stepAttributeValue"
            class="@_inputTextClass"
            @bind="CurrentValueAsString"
            @bind:event="oninput"
@@ -45,7 +48,12 @@ else
            placeholder="@PlaceHolder"
            disabled="@Disabled"
            type="number"
-           style="@(Convert.ToString(_styles, CultureInfo.InvariantCulture))" />
+           style="@(Convert.ToString(_styles, CultureInfo.InvariantCulture))"
+           min="@Min"
+           max="@Max"
+           step="@Step"
+           id="@Id"
+           />
 }
 
 
@@ -79,6 +87,18 @@ else
 
     [Parameter]
     public string? PlaceHolder { get; set; }
+
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Min { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Max { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Step { get; set; } = "any";
 
 
     private bool _hasFocus { get; set; }

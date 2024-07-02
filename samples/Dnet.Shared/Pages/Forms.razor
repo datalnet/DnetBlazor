@@ -130,7 +130,7 @@
 
         <DnetFormField Label="Age" IsRequired="true">
             <ChildContent>
-                <DnetInputNumber @bind-Value="_person.Age" PlaceHolder="Ex. Pizza">
+                <DnetInputNumber @bind-Value="_person.Age" PlaceHolder="Ex. Pizza" Min="0" Step="10">
                 </DnetInputNumber>
             </ChildContent>
             <ErrorContent>
