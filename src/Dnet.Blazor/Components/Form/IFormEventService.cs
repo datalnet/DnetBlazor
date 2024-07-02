@@ -16,6 +16,8 @@ public interface IFormEventService
 
     public event Action<bool>? OnDisabled;
 
+    public event Action<Tuple<int, int>>? OnCharCount;
+
     void RaiseError(bool hasError);
 
     void RaiseFocus(bool hasFocus);
@@ -29,4 +31,6 @@ public interface IFormEventService
     void RaiseSufixContentClicked();
 
     void RaiseDisabledEvent(bool isDisabled);
+
+    void RaiseCharCountEvent(Tuple<int, int> countData);
 }

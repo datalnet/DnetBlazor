@@ -16,6 +16,8 @@ public class FormEventService : IFormEventService
 
     public event Action<bool>? OnDisabled;
 
+    public event Action<Tuple<int, int>>? OnCharCount;
+
     public void RaiseError(bool hasError)
     {
         OnError?.Invoke(hasError);
@@ -51,6 +53,11 @@ public class FormEventService : IFormEventService
     public void RaiseDisabledEvent(bool isDisabled)
     {
         OnDisabled?.Invoke(isDisabled);
+    }
+
+    public void RaiseCharCountEvent(Tuple<int, int> countData)
+    {
+        OnCharCount?.Invoke(countData);
     }
 }
 

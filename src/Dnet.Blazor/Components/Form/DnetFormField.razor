@@ -10,13 +10,21 @@
 <div class="dnet-form-field-plain-wrapper">
     @if (!string.IsNullOrEmpty(Label))
     {
-        <div class="dnet-form-field-plain-label-wrapper">
-            <label class="dnet-form-field-plain-label">@Label</label>
-            @if (IsRequired)
+        <div class="dnet-form-field-header">
+            <div class="dnet-form-field-plain-label-wrapper">
+                <label class="dnet-form-field-plain-label">@Label</label>
+                @if (IsRequired)
+                {
+                    <span aria-hidden="true"
+                          class="dnet-floating-label--required">
+                    </span>
+                }
+            </div>
+            @if (_maxCharacters > 0)
             {
-                <span aria-hidden="true"
-                      class="dnet-floating-label--required">
-                </span>
+                <div class="dnet-form-field-char-counter">
+                    @_characterCount / @_maxCharacters
+                </div>
             }
         </div>
     }
@@ -32,11 +40,20 @@
                 @ChildContent
             </CascadingValue>
         </div>
-        @if (_useClearButton == true && !string.IsNullOrEmpty(_currentValue))
+        @if (_useClearButton == true)
         {
-            <div class="dnet-component-icon-wrapper" @onclick="ClearInput">
-                <span class="dnet-component-icon dnet-component-clear-button"></span>
-            </div>
+            @if (!string.IsNullOrEmpty(_currentValue))
+            {
+                <div class="dnet-component-icon-wrapper" @onclick="ClearInput">
+                    <span class="dnet-component-icon dnet-component-clear-button"></span>
+                </div>
+            }
+            else
+            {
+                <div class="dnet-component-icon-wrapper" @onclick="ClearInput">
+                    <span class="dnet-component-icon"></span>
+                </div>
+            }
         }
         @if (SufixContent != null)
         {
@@ -100,9 +117,15 @@
 
     private bool _disabled { get; set; }
 
+    private Tuple<int, int> _countData { get; set; } = new Tuple<int, int>(0, 0);
+
     private ElementReference _formField;
 
     private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
+
+    private int _characterCount => _currentValue?.Length ?? 0;
+
+    private int _maxCharacters { get; set; }
 
 
     protected override void OnInitialized()
@@ -119,6 +142,8 @@
         FormEventService.OnCurrentValue += HandleCurrentValue;
 
         FormEventService.OnDisabled += HandleDisabled;
+
+        FormEventService.OnCharCount += CharCount;
 
         _useClearButton = UseClearButton;
     }
@@ -170,6 +195,13 @@
         StateHasChanged();
     }
 
+    private void CharCount(Tuple<int, int> countData)
+    {
+        _maxCharacters = countData.Item2;
+
+        StateHasChanged();
+    }
+
     public void Dispose()
     {
         FormEventService.OnError -= HandleError;
@@ -177,5 +209,7 @@
         FormEventService.OnFocus -= HandleFocus;
 
         FormEventService.OnCurrentValue -= HandleCurrentValue;
+
+        FormEventService.OnDisabled -= HandleDisabled;
     }
 }

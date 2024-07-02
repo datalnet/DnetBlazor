@@ -7,6 +7,16 @@
     --dnet-form-field-hint-color: var(--dnet-component-supporting-text-color);
 }
 
+.dnet-form-field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dnet-form-field-char-counter {
+    font-size: 0.75rem;
+}
+
 .dnet-form-field-plain-wrapper {
     display: flex;
     flex-direction: column;

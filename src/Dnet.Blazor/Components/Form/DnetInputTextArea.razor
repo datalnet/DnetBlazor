@@ -22,7 +22,9 @@
               @onfocus=@(() => Focus())
               @onblur=@(() => Blur())
               placeholder="@PlaceHolder"
-              disabled="@Disabled" />
+              disabled="@Disabled"
+              maxlength="@MaxCharacters"
+              @oninput="OnInput"/>
 }
 else
 {
@@ -40,8 +42,12 @@ else
               @onblur=@(() => Blur())
               placeholder="@PlaceHolder"
               disabled="@Disabled" 
-              type="tex"/>
+              type="tex"
+              maxlength="@MaxCharacters"
+              />
 }
+
+@* <div>@_characterCount / @MaxCharacters characters</div> *@
 
 @code {
 
@@ -74,6 +80,9 @@ else
     [Parameter]
     public string? PlaceHolder { get; set; }
 
+    [Parameter]
+    public int MaxCharacters { get; set; } = 0;
+
 
     private bool _hasFocus { get; set; }
 
@@ -89,6 +98,8 @@ else
                 new CssBuilder("mat-input-element")
                     .AddClass(CssClass)
                 .Build();
+
+    private int _characterCount => CurrentValue?.Length ?? 0;
 
 
     protected override void OnInitialized()
@@ -116,6 +127,9 @@ else
         if (_formEventService is not null) _formEventService.OnClearContent += HandleClearContent;
 
         if (_formEventService is not null) _formEventService.RaiseDisabledEvent(Disabled);
+
+        var countData = new Tuple<int, int>(_characterCount, MaxCharacters);
+        if (_formEventService is not null) _formEventService.RaiseCharCountEvent(countData);
 
         if (EditContext is not null) EditContext.OnFieldChanged += HandleOnValidationStateChanged;
 
@@ -145,6 +159,9 @@ else
         {
             if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
+            // var countData = new Tuple<int, int>(_characterCount, MaxCharacters);
+            // if (_formEventService is not null) _formEventService.RaiseCharCountEvent(countData);
+
             await OnStopTyping.InvokeAsync(CurrentValueAsString);
         });
     }
@@ -160,7 +177,27 @@ else
     {
         CurrentValueAsString = e.Value?.ToString();
 
+        // var countData = new Tuple<int, int>(_characterCount, MaxCharacters);
+        // if (_formEventService is not null) _formEventService.RaiseCharCountEvent(countData);
+
         if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+    }
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        var inputValue = e.Value?.ToString();
+        if (inputValue != null && inputValue.Length <= MaxCharacters)
+        {
+            CurrentValueAsString = inputValue;
+        }
+        else if (inputValue != null)
+        {
+            CurrentValueAsString = inputValue.Substring(0, MaxCharacters);
+        }
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+
+        StateHasChanged();
     }
 
     private void Focus()
