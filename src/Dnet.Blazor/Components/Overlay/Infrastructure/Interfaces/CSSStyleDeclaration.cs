@@ -1,391 +1,390 @@
-﻿namespace Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
+﻿namespace Vyntrio.Landing.Components.Shared.Overlay.Infrastructure.Interfaces;
+
+public class CSSStyleDeclaration
 {
-    public class CSSStyleDeclaration
-    {
-        public string AlignContent { get; set; }
-        public string AlignItems { get; set; }
-        public string AlignSelf { get; set; }
-        public string AlignmentBaseline { get; set; }
-        public string Animation { get; set; }
-        public string AnimationDelay { get; set; }
-        public string AnimationDirection { get; set; }
-        public string AnimationDuration { get; set; }
-        public string AnimationFillMode { get; set; }
-        public string AnimationIterationCount { get; set; }
-        public string AnimationName { get; set; }
-        public string AnimationPlayState { get; set; }
-        public string AnimationTimingFunction { get; set; }
-        public string BackfaceVisibility { get; set; }
-        public string Background { get; set; }
-        public string BackgroundAttachment { get; set; }
-        public string BackgroundClip { get; set; }
-        public string BackgroundColor { get; set; }
-        public string BackgroundImage { get; set; }
-        public string BackgroundOrigin { get; set; }
-        public string BackgroundPosition { get; set; }
-        public string BackgroundPositionX { get; set; }
-        public string BackgroundPositionY { get; set; }
-        public string BackgroundRepeat { get; set; }
-        public string BackgroundSize { get; set; }
-        public string BaselineShift { get; set; }
-        public string BlockSize { get; set; }
-        public string Border { get; set; }
-        public string BorderBlockEnd { get; set; }
-        public string BorderBlockEndColor { get; set; }
-        public string BorderBlockEndStyle { get; set; }
-        public string BorderBlockEndWidth { get; set; }
-        public string BorderBlockStart { get; set; }
-        public string BorderBlockStartColor { get; set; }
-        public string BorderBlockStartStyle { get; set; }
-        public string BorderBlockStartWidth { get; set; }
-        public string BorderBottom { get; set; }
-        public string BorderBottomColor { get; set; }
-        public string BorderBottomLeftRadius { get; set; }
-        public string BorderBottomRightRadius { get; set; }
-        public string BorderBottomStyle { get; set; }
-        public string BorderBottomWidth { get; set; }
-        public string BorderCollapse { get; set; }
-        public string BorderColor { get; set; }
-        public string BorderImage { get; set; }
-        public string BorderImageOutset { get; set; }
-        public string BorderImageRepeat { get; set; }
-        public string BorderImageSlice { get; set; }
-        public string BorderImageSource { get; set; }
-        public string BorderImageWidth { get; set; }
-        public string BorderInlineEnd { get; set; }
-        public string BorderInlineEndColor { get; set; }
-        public string BorderInlineEndStyle { get; set; }
-        public string BorderInlineEndWidth { get; set; }
-        public string BorderInlineStart { get; set; }
-        public string BorderInlineStartColor { get; set; }
-        public string BorderInlineStartStyle { get; set; }
-        public string BorderInlineStartWidth { get; set; }
-        public string BorderLeft { get; set; }
-        public string BorderLeftColor { get; set; }
-        public string BorderLeftStyle { get; set; }
-        public string BorderLeftWidth { get; set; }
-        public string BorderRadius { get; set; }
-        public string BorderRight { get; set; }
-        public string BorderRightColor { get; set; }
-        public string BorderRightStyle { get; set; }
-        public string BorderRightWidth { get; set; }
-        public string BorderSpacing { get; set; }
-        public string BorderStyle { get; set; }
-        public string BorderTop { get; set; }
-        public string BorderTopColor { get; set; }
-        public string BorderTopLeftRadius { get; set; }
-        public string BorderTopRightRadius { get; set; }
-        public string BorderTopStyle { get; set; }
-        public string BorderTopWidth { get; set; }
-        public string BorderWidth { get; set; }
-        public string Bottom { get; set; }
-        public string BoxShadow { get; set; }
-        public string BoxSizing { get; set; }
-        public string BreakAfter { get; set; }
-        public string BreakBefore { get; set; }
-        public string BreakInside { get; set; }
-        public string CaptionSide { get; set; }
-        public string CaretColor { get; set; }
-        public string Clear { get; set; }
-        public string Clip { get; set; }
-        public string ClipPath { get; set; }
-        public string ClipRule { get; set; }
-        public string Color { get; set; }
-        public string ColorInterpolation { get; set; }
-        public string ColorInterpolationFilters { get; set; }
-        public string ColumnCount { get; set; }
-        public string ColumnFill { get; set; }
-        public string ColumnGap { get; set; }
-        public string ColumnRule { get; set; }
-        public string ColumnRuleColor { get; set; }
-        public string ColumnRuleStyle { get; set; }
-        public string ColumnRuleWidth { get; set; }
-        public string ColumnSpan { get; set; }
-        public string ColumnWidth { get; set; }
-        public string Columns { get; set; }
-        public string Content { get; set; }
-        public string CounterIncrement { get; set; }
-        public string CounterReset { get; set; }
-        public string CssFloat { get; set; }
-        public string CssText { get; set; }
-        public string Cursor { get; set; }
-        public string Direction { get; set; }
-        public string Display { get; set; }
-        public string DominantBaseline { get; set; }
-        public string EmptyCells { get; set; }
-        public string EnableBackground { get; set; }
-        public string Fill { get; set; }
-        public string FillOpacity { get; set; }
-        public string FillRule { get; set; }
-        public string Filter { get; set; }
-        public string Flex { get; set; }
-        public string FlexBasis { get; set; }
-        public string FlexDirection { get; set; }
-        public string FlexFlow { get; set; }
-        public string FlexGrow { get; set; }
-        public string FlexShrink { get; set; }
-        public string FlexWrap { get; set; }
-        public string Float { get; set; }
-        public string FloodColor { get; set; }
-        public string FloodOpacity { get; set; }
-        public string Font { get; set; }
-        public string FontFamily { get; set; }
-        public string FontFeatureSettings { get; set; }
-        public string FontKerning { get; set; }
-        public string FontSize { get; set; }
-        public string FontSizeAdjust { get; set; }
-        public string FontStretch { get; set; }
-        public string FontStyle { get; set; }
-        public string FontSynthesis { get; set; }
-        public string FontVariant { get; set; }
-        public string FontVariantCaps { get; set; }
-        public string FontVariantEastAsian { get; set; }
-        public string FontVariantLigatures { get; set; }
-        public string FontVariantNumeric { get; set; }
-        public string FontVariantPosition { get; set; }
-        public string FontWeight { get; set; }
-        public string Gap { get; set; }
-        public string GlyphOrientationHorizontal { get; set; }
-        public string GlyphOrientationVertical { get; set; }
-        public string Grid { get; set; }
-        public string GridArea { get; set; }
-        public string GridAutoColumns { get; set; }
-        public string GridAutoFlow { get; set; }
-        public string GridAutoRows { get; set; }
-        public string GridColumn { get; set; }
-        public string GridColumnEnd { get; set; }
-        public string GridColumnGap { get; set; }
-        public string GridColumnStart { get; set; }
-        public string GridGap { get; set; }
-        public string GridRow { get; set; }
-        public string GridRowEnd { get; set; }
-        public string GridRowGap { get; set; }
-        public string GridRowStart { get; set; }
-        public string GridTemplate { get; set; }
-        public string GridTemplateAreas { get; set; }
-        public string GridTemplateColumns { get; set; }
-        public string GridTemplateRows { get; set; }
-        public string Height { get; set; }
-        public string Hyphens { get; set; }
-        public string ImageOrientation { get; set; }
-        public string ImageRendering { get; set; }
-        public string ImeMode { get; set; }
-        public string InlineSize { get; set; }
-        public string JustifyContent { get; set; }
-        public string JustifyItems { get; set; }
-        public string JustifySelf { get; set; }
-        public string Kerning { get; set; }
-        public string LayoutGrid { get; set; }
-        public string LayoutGridChar { get; set; }
-        public string LayoutGridLine { get; set; }
-        public string LayoutGridMode { get; set; }
-        public string LayoutGridType { get; set; }
-        public string Left { get; set; }
-        public int Length { get; set; }
-        public string LetterSpacing { get; set; }
-        public string LightingColor { get; set; }
-        public string LineBreak { get; set; }
-        public string LineHeight { get; set; }
-        public string ListStyle { get; set; }
-        public string ListStyleImage { get; set; }
-        public string ListStylePosition { get; set; }
-        public string ListStyleType { get; set; }
-        public string Margin { get; set; }
-        public string MarginBlockEnd { get; set; }
-        public string MarginBlockStart { get; set; }
-        public string MarginBottom { get; set; }
-        public string MarginInlineEnd { get; set; }
-        public string MarginInlineStart { get; set; }
-        public string MarginLeft { get; set; }
-        public string MarginRight { get; set; }
-        public string MarginTop { get; set; }
-        public string Marker { get; set; }
-        public string MarkerEnd { get; set; }
-        public string MarkerMid { get; set; }
-        public string MarkerStart { get; set; }
-        public string Mask { get; set; }
-        public string MaskComposite { get; set; }
-        public string MaskImage { get; set; }
-        public string MaskPosition { get; set; }
-        public string MaskRepeat { get; set; }
-        public string MaskSize { get; set; }
-        public string MaskType { get; set; }
-        public string MaxBlockSize { get; set; }
-        public string MaxHeight { get; set; }
-        public string MaxInlineSize { get; set; }
-        public string MaxWidth { get; set; }
-        public string MinBlockSize { get; set; }
-        public string MinHeight { get; set; }
-        public string MinInlineSize { get; set; }
-        public string MinWidth { get; set; }
-        public string MsContentZoomChaining { get; set; }
-        public string MsContentZoomLimit { get; set; }
-        public string MsContentZoomLimitMax { get; set; }
-        public string MsContentZoomLimitMin { get; set; }
-        public string MsContentZoomSnap { get; set; }
-        public string MsContentZoomSnapPoints { get; set; }
-        public string MsContentZoomSnapType { get; set; }
-        public string MsContentZooming { get; set; }
-        public string MsFlowFrom { get; set; }
-        public string MsFlowInto { get; set; }
-        public string MsFontFeatureSettings { get; set; }
-        public string MsGridColumn { get; set; }
-        public string MsGridColumnAlign { get; set; }
-        public string MsGridColumnSpan { get; set; }
-        public string MsGridColumns { get; set; }
-        public string MsGridRow { get; set; }
-        public string MsGridRowAlign { get; set; }
-        public string MsGridRowSpan { get; set; }
-        public string MsGridRows { get; set; }
-        public string MsHighContrastAdjust { get; set; }
-        public string MsHyphenateLimitChars { get; set; }
-        public string MsHyphenateLimitLines { get; set; }
-        public string MsHyphenateLimitZone { get; set; }
-        public string MsHyphens { get; set; }
-        public string MsImeAlign { get; set; }
-        public string MsOverflowStyle { get; set; }
-        public string MsScrollChaining { get; set; }
-        public string MsScrollLimit { get; set; }
-        public string MsScrollLimitXMax { get; set; }
-        public string MsScrollLimitXMin { get; set; }
-        public string MsScrollLimitYMax { get; set; }
-        public string MsScrollLimitYMin { get; set; }
-        public string MsScrollRails { get; set; }
-        public string MsScrollSnapPointsX { get; set; }
-        public string MsScrollSnapPointsY { get; set; }
-        public string MsScrollSnapType { get; set; }
-        public string MsScrollSnapX { get; set; }
-        public string MsScrollSnapY { get; set; }
-        public string MsScrollTranslation { get; set; }
-        public string MsTextCombineHorizontal { get; set; }
-        public string MsTextSizeAdjust { get; set; }
-        public string MsTouchAction { get; set; }
-        public string MsTouchSelect { get; set; }
-        public string MsUserSelect { get; set; }
-        public string MsWrapFlow { get; set; }
-        public string MsWrapMargin { get; set; }
-        public string MsWrapThrough { get; set; }
-        public string ObjectFit { get; set; }
-        public string ObjectPosition { get; set; }
-        public string Opacity { get; set; }
-        public string Order { get; set; }
-        public string Orphans { get; set; }
-        public string Outline { get; set; }
-        public string OutlineColor { get; set; }
-        public string OutlineOffset { get; set; }
-        public string OutlineStyle { get; set; }
-        public string OutlineWidth { get; set; }
-        public string Overflow { get; set; }
-        public string OverflowAnchor { get; set; }
-        public string OverflowWrap { get; set; }
-        public string OverflowX { get; set; }
-        public string OverflowY { get; set; }
-        public string Padding { get; set; }
-        public string PaddingBlockEnd { get; set; }
-        public string PaddingBlockStart { get; set; }
-        public string PaddingBottom { get; set; }
-        public string PaddingInlineEnd { get; set; }
-        public string PaddingInlineStart { get; set; }
-        public string PaddingLeft { get; set; }
-        public string PaddingRight { get; set; }
-        public string PaddingTop { get; set; }
-        public string PageBreakAfter { get; set; }
-        public string PageBreakBefore { get; set; }
-        public string PageBreakInside { get; set; }
-        public string PaintOrder { get; set; }
-        public string PenAction { get; set; }
-        public string Perspective { get; set; }
-        public string PerspectiveOrigin { get; set; }
-        public string PlaceContent { get; set; }
-        public string PlaceItems { get; set; }
-        public string PlaceSelf { get; set; }
-        public string PointerEvents { get; set; }
-        public string Position { get; set; }
-        public string Quotes { get; set; }
-        public string Resize { get; set; }
-        public string Right { get; set; }
-        public string Rotate { get; set; }
-        public string RowGap { get; set; }
-        public string RubyAlign { get; set; }
-        public string RubyOverhang { get; set; }
-        public string RubyPosition { get; set; }
-        public string Scale { get; set; }
-        public string ScrollBehavior { get; set; }
-        public string ShapeRendering { get; set; }
-        public string StopColor { get; set; }
-        public string StopOpacity { get; set; }
-        public string Stroke { get; set; }
-        public string StrokeDasharray { get; set; }
-        public string StrokeDashoffset { get; set; }
-        public string StrokeLinecap { get; set; }
-        public string StrokeLinejoin { get; set; }
-        public string StrokeMiterlimit { get; set; }
-        public string StrokeOpacity { get; set; }
-        public string StrokeWidth { get; set; }
-        public string TabSize { get; set; }
-        public string TableLayout { get; set; }
-        public string TextAlign { get; set; }
-        public string TextAlignLast { get; set; }
-        public string TextAnchor { get; set; }
-        public string TextCombineUpright { get; set; }
-        public string TextDecoration { get; set; }
-        public string TextDecorationColor { get; set; }
-        public string TextDecorationLine { get; set; }
-        public string TextDecorationStyle { get; set; }
-        public string TextEmphasis { get; set; }
-        public string TextEmphasisColor { get; set; }
-        public string TextEmphasisPosition { get; set; }
-        public string TextEmphasisStyle { get; set; }
-        public string TextIndent { get; set; }
-        public string TextJustify { get; set; }
-        public string TextKashida { get; set; }
-        public string TextKashidaSpace { get; set; }
-        public string TextOrientation { get; set; }
-        public string TextOverflow { get; set; }
-        public string TextRendering { get; set; }
-        public string TextShadow { get; set; }
-        public string TextTransform { get; set; }
-        public string TextUnderlinePosition { get; set; }
-        public string Top { get; set; }
-        public string TouchAction { get; set; }
-        public string Transform { get; set; }
-        public string TransformBox { get; set; }
-        public string TransformOrigin { get; set; }
-        public string TransformStyle { get; set; }
-        public string Transition { get; set; }
-        public string TransitionDelay { get; set; }
-        public string TransitionDuration { get; set; }
-        public string TransitionProperty { get; set; }
-        public string TransitionTimingFunction { get; set; }
-        public string Translate { get; set; }
-        public string UnicodeBidi { get; set; }
-        public string UserSelect { get; set; }
-        public string VerticalAlign { get; set; }
-        public string Visibility { get; set; }
-        public string WebkitColumnBreakAfter { get; set; }
-        public string WebkitColumnBreakBefore { get; set; }
-        public string WebkitColumnBreakInside { get; set; }
-        public string WebkitColumnCount { get; set; }
-        public string WebkitColumnGap { get; set; }
-        public string WebkitColumnRule { get; set; }
-        public string WebkitColumnRuleColor { get; set; }
-        public string WebkitColumnRuleStyle { get; set; }
-        public string WebkitColumnRuleWidth { get; set; }
-        public string WebkitColumnSpan { get; set; }
-        public string WebkitColumnWidth { get; set; }
-        public string WebkitColumns { get; set; }
-        public string WebkitUserModify { get; set; }
-        public string WebkitUserSelect { get; set; }
-        public string WebkitWritingMode { get; set; }
-        public string WhiteSpace { get; set; }
-        public string Widows { get; set; }
-        public string Width { get; set; }
-        public string WillChange { get; set; }
-        public string WordBreak { get; set; }
-        public string WordSpacing { get; set; }
-        public string WordWrap { get; set; }
-        public string WritingMode { get; set; }
-        public string ZIndex { get; set; }
-        public string Zoom { get; set; }
-    }
+    public string AlignContent { get; set; } = string.Empty;
+    public string AlignItems { get; set; } = string.Empty;
+    public string AlignSelf { get; set; } = string.Empty;
+    public string AlignmentBaseline { get; set; } = string.Empty;
+    public string Animation { get; set; } = string.Empty;
+    public string AnimationDelay { get; set; } = string.Empty;
+    public string AnimationDirection { get; set; } = string.Empty;
+    public string AnimationDuration { get; set; } = string.Empty;
+    public string AnimationFillMode { get; set; } = string.Empty;
+    public string AnimationIterationCount { get; set; } = string.Empty;
+    public string AnimationName { get; set; } = string.Empty;
+    public string AnimationPlayState { get; set; } = string.Empty;
+    public string AnimationTimingFunction { get; set; } = string.Empty;
+    public string BackfaceVisibility { get; set; } = string.Empty;
+    public string Background { get; set; } = string.Empty;
+    public string BackgroundAttachment { get; set; } = string.Empty;
+    public string BackgroundClip { get; set; } = string.Empty;
+    public string BackgroundColor { get; set; } = string.Empty;
+    public string BackgroundImage { get; set; } = string.Empty;
+    public string BackgroundOrigin { get; set; } = string.Empty;
+    public string BackgroundPosition { get; set; } = string.Empty;
+    public string BackgroundPositionX { get; set; } = string.Empty;
+    public string BackgroundPositionY { get; set; } = string.Empty;
+    public string BackgroundRepeat { get; set; } = string.Empty;
+    public string BackgroundSize { get; set; } = string.Empty;
+    public string BaselineShift { get; set; } = string.Empty;
+    public string BlockSize { get; set; } = string.Empty;
+    public string Border { get; set; } = string.Empty;
+    public string BorderBlockEnd { get; set; } = string.Empty;
+    public string BorderBlockEndColor { get; set; } = string.Empty;
+    public string BorderBlockEndStyle { get; set; } = string.Empty;
+    public string BorderBlockEndWidth { get; set; } = string.Empty;
+    public string BorderBlockStart { get; set; } = string.Empty;
+    public string BorderBlockStartColor { get; set; } = string.Empty;
+    public string BorderBlockStartStyle { get; set; } = string.Empty;
+    public string BorderBlockStartWidth { get; set; } = string.Empty;
+    public string BorderBottom { get; set; } = string.Empty;
+    public string BorderBottomColor { get; set; } = string.Empty;
+    public string BorderBottomLeftRadius { get; set; } = string.Empty;
+    public string BorderBottomRightRadius { get; set; } = string.Empty;
+    public string BorderBottomStyle { get; set; } = string.Empty;
+    public string BorderBottomWidth { get; set; } = string.Empty;
+    public string BorderCollapse { get; set; } = string.Empty;
+    public string BorderColor { get; set; } = string.Empty;
+    public string BorderImage { get; set; } = string.Empty;
+    public string BorderImageOutset { get; set; } = string.Empty;
+    public string BorderImageRepeat { get; set; } = string.Empty;
+    public string BorderImageSlice { get; set; } = string.Empty;
+    public string BorderImageSource { get; set; } = string.Empty;
+    public string BorderImageWidth { get; set; } = string.Empty;
+    public string BorderInlineEnd { get; set; } = string.Empty;
+    public string BorderInlineEndColor { get; set; } = string.Empty;
+    public string BorderInlineEndStyle { get; set; } = string.Empty;
+    public string BorderInlineEndWidth { get; set; } = string.Empty;
+    public string BorderInlineStart { get; set; } = string.Empty;
+    public string BorderInlineStartColor { get; set; } = string.Empty;
+    public string BorderInlineStartStyle { get; set; } = string.Empty;
+    public string BorderInlineStartWidth { get; set; } = string.Empty;
+    public string BorderLeft { get; set; } = string.Empty;
+    public string BorderLeftColor { get; set; } = string.Empty;
+    public string BorderLeftStyle { get; set; } = string.Empty;
+    public string BorderLeftWidth { get; set; } = string.Empty;
+    public string BorderRadius { get; set; } = string.Empty;
+    public string BorderRight { get; set; } = string.Empty;
+    public string BorderRightColor { get; set; } = string.Empty;
+    public string BorderRightStyle { get; set; } = string.Empty;
+    public string BorderRightWidth { get; set; } = string.Empty;
+    public string BorderSpacing { get; set; } = string.Empty;
+    public string BorderStyle { get; set; } = string.Empty;
+    public string BorderTop { get; set; } = string.Empty;
+    public string BorderTopColor { get; set; } = string.Empty;
+    public string BorderTopLeftRadius { get; set; } = string.Empty;
+    public string BorderTopRightRadius { get; set; } = string.Empty;
+    public string BorderTopStyle { get; set; } = string.Empty;
+    public string BorderTopWidth { get; set; } = string.Empty;
+    public string BorderWidth { get; set; } = string.Empty;
+    public string Bottom { get; set; } = string.Empty;
+    public string BoxShadow { get; set; } = string.Empty;
+    public string BoxSizing { get; set; } = string.Empty;
+    public string BreakAfter { get; set; } = string.Empty;
+    public string BreakBefore { get; set; } = string.Empty;
+    public string BreakInside { get; set; } = string.Empty;
+    public string CaptionSide { get; set; } = string.Empty;
+    public string CaretColor { get; set; } = string.Empty;
+    public string Clear { get; set; } = string.Empty;
+    public string Clip { get; set; } = string.Empty;
+    public string ClipPath { get; set; } = string.Empty;
+    public string ClipRule { get; set; } = string.Empty;
+    public string Color { get; set; } = string.Empty;
+    public string ColorInterpolation { get; set; } = string.Empty;
+    public string ColorInterpolationFilters { get; set; } = string.Empty;
+    public string ColumnCount { get; set; } = string.Empty;
+    public string ColumnFill { get; set; } = string.Empty;
+    public string ColumnGap { get; set; } = string.Empty;
+    public string ColumnRule { get; set; } = string.Empty;
+    public string ColumnRuleColor { get; set; } = string.Empty;
+    public string ColumnRuleStyle { get; set; } = string.Empty;
+    public string ColumnRuleWidth { get; set; } = string.Empty;
+    public string ColumnSpan { get; set; } = string.Empty;
+    public string ColumnWidth { get; set; } = string.Empty;
+    public string Columns { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
+    public string CounterIncrement { get; set; } = string.Empty;
+    public string CounterReset { get; set; } = string.Empty;
+    public string CssFloat { get; set; } = string.Empty;
+    public string CssText { get; set; } = string.Empty;
+    public string Cursor { get; set; } = string.Empty;
+    public string Direction { get; set; } = string.Empty;
+    public string Display { get; set; } = string.Empty;
+    public string DominantBaseline { get; set; } = string.Empty;
+    public string EmptyCells { get; set; } = string.Empty;
+    public string EnableBackground { get; set; } = string.Empty;
+    public string Fill { get; set; } = string.Empty;
+    public string FillOpacity { get; set; } = string.Empty;
+    public string FillRule { get; set; } = string.Empty;
+    public string Filter { get; set; } = string.Empty;
+    public string Flex { get; set; } = string.Empty;
+    public string FlexBasis { get; set; } = string.Empty;
+    public string FlexDirection { get; set; } = string.Empty;
+    public string FlexFlow { get; set; } = string.Empty;
+    public string FlexGrow { get; set; } = string.Empty;
+    public string FlexShrink { get; set; } = string.Empty;
+    public string FlexWrap { get; set; } = string.Empty;
+    public string Float { get; set; } = string.Empty;
+    public string FloodColor { get; set; } = string.Empty;
+    public string FloodOpacity { get; set; } = string.Empty;
+    public string Font { get; set; } = string.Empty;
+    public string FontFamily { get; set; } = string.Empty;
+    public string FontFeatureSettings { get; set; } = string.Empty;
+    public string FontKerning { get; set; } = string.Empty;
+    public string FontSize { get; set; } = string.Empty;
+    public string FontSizeAdjust { get; set; } = string.Empty;
+    public string FontStretch { get; set; } = string.Empty;
+    public string FontStyle { get; set; } = string.Empty;
+    public string FontSynthesis { get; set; } = string.Empty;
+    public string FontVariant { get; set; } = string.Empty;
+    public string FontVariantCaps { get; set; } = string.Empty;
+    public string FontVariantEastAsian { get; set; } = string.Empty;
+    public string FontVariantLigatures { get; set; } = string.Empty;
+    public string FontVariantNumeric { get; set; } = string.Empty;
+    public string FontVariantPosition { get; set; } = string.Empty;
+    public string FontWeight { get; set; } = string.Empty;
+    public string Gap { get; set; } = string.Empty;
+    public string GlyphOrientationHorizontal { get; set; } = string.Empty;
+    public string GlyphOrientationVertical { get; set; } = string.Empty;
+    public string Grid { get; set; } = string.Empty;
+    public string GridArea { get; set; } = string.Empty;
+    public string GridAutoColumns { get; set; } = string.Empty;
+    public string GridAutoFlow { get; set; } = string.Empty;
+    public string GridAutoRows { get; set; } = string.Empty;
+    public string GridColumn { get; set; } = string.Empty;
+    public string GridColumnEnd { get; set; } = string.Empty;
+    public string GridColumnGap { get; set; } = string.Empty;
+    public string GridColumnStart { get; set; } = string.Empty;
+    public string GridGap { get; set; } = string.Empty;
+    public string GridRow { get; set; } = string.Empty;
+    public string GridRowEnd { get; set; } = string.Empty;
+    public string GridRowGap { get; set; } = string.Empty;
+    public string GridRowStart { get; set; } = string.Empty;
+    public string GridTemplate { get; set; } = string.Empty;
+    public string GridTemplateAreas { get; set; } = string.Empty;
+    public string GridTemplateColumns { get; set; } = string.Empty;
+    public string GridTemplateRows { get; set; } = string.Empty;
+    public string Height { get; set; } = string.Empty;
+    public string Hyphens { get; set; } = string.Empty;
+    public string ImageOrientation { get; set; } = string.Empty;
+    public string ImageRendering { get; set; } = string.Empty;
+    public string ImeMode { get; set; } = string.Empty;
+    public string InlineSize { get; set; } = string.Empty;
+    public string JustifyContent { get; set; } = string.Empty;
+    public string JustifyItems { get; set; } = string.Empty;
+    public string JustifySelf { get; set; } = string.Empty;
+    public string Kerning { get; set; } = string.Empty;
+    public string LayoutGrid { get; set; } = string.Empty;
+    public string LayoutGridChar { get; set; } = string.Empty;
+    public string LayoutGridLine { get; set; } = string.Empty;
+    public string LayoutGridMode { get; set; } = string.Empty;
+    public string LayoutGridType { get; set; } = string.Empty;
+    public string Left { get; set; } = string.Empty;
+    public int Length { get; set; }
+    public string LetterSpacing { get; set; } = string.Empty;
+    public string LightingColor { get; set; } = string.Empty;
+    public string LineBreak { get; set; } = string.Empty;
+    public string LineHeight { get; set; } = string.Empty;
+    public string ListStyle { get; set; } = string.Empty;
+    public string ListStyleImage { get; set; } = string.Empty;
+    public string ListStylePosition { get; set; } = string.Empty;
+    public string ListStyleType { get; set; } = string.Empty;
+    public string Margin { get; set; } = string.Empty;
+    public string MarginBlockEnd { get; set; } = string.Empty;
+    public string MarginBlockStart { get; set; } = string.Empty;
+    public string MarginBottom { get; set; } = string.Empty;
+    public string MarginInlineEnd { get; set; } = string.Empty;
+    public string MarginInlineStart { get; set; } = string.Empty;
+    public string MarginLeft { get; set; } = string.Empty;
+    public string MarginRight { get; set; } = string.Empty;
+    public string MarginTop { get; set; } = string.Empty;
+    public string Marker { get; set; } = string.Empty;
+    public string MarkerEnd { get; set; } = string.Empty;
+    public string MarkerMid { get; set; } = string.Empty;
+    public string MarkerStart { get; set; } = string.Empty;
+    public string Mask { get; set; } = string.Empty;
+    public string MaskComposite { get; set; } = string.Empty;
+    public string MaskImage { get; set; } = string.Empty;
+    public string MaskPosition { get; set; } = string.Empty;
+    public string MaskRepeat { get; set; } = string.Empty;
+    public string MaskSize { get; set; } = string.Empty;
+    public string MaskType { get; set; } = string.Empty;
+    public string MaxBlockSize { get; set; } = string.Empty;
+    public string MaxHeight { get; set; } = string.Empty;
+    public string MaxInlineSize { get; set; } = string.Empty;
+    public string MaxWidth { get; set; } = string.Empty;
+    public string MinBlockSize { get; set; } = string.Empty;
+    public string MinHeight { get; set; } = string.Empty;
+    public string MinInlineSize { get; set; } = string.Empty;
+    public string MinWidth { get; set; } = string.Empty;
+    public string MsContentZoomChaining { get; set; } = string.Empty;
+    public string MsContentZoomLimit { get; set; } = string.Empty;
+    public string MsContentZoomLimitMax { get; set; } = string.Empty;
+    public string MsContentZoomLimitMin { get; set; } = string.Empty;
+    public string MsContentZoomSnap { get; set; } = string.Empty;
+    public string MsContentZoomSnapPoints { get; set; } = string.Empty;
+    public string MsContentZoomSnapType { get; set; } = string.Empty;
+    public string MsContentZooming { get; set; } = string.Empty;
+    public string MsFlowFrom { get; set; } = string.Empty;
+    public string MsFlowInto { get; set; } = string.Empty;
+    public string MsFontFeatureSettings { get; set; } = string.Empty;
+    public string MsGridColumn { get; set; } = string.Empty;
+    public string MsGridColumnAlign { get; set; } = string.Empty;
+    public string MsGridColumnSpan { get; set; } = string.Empty;
+    public string MsGridColumns { get; set; } = string.Empty;
+    public string MsGridRow { get; set; } = string.Empty;
+    public string MsGridRowAlign { get; set; } = string.Empty;
+    public string MsGridRowSpan { get; set; } = string.Empty;
+    public string MsGridRows { get; set; } = string.Empty;
+    public string MsHighContrastAdjust { get; set; } = string.Empty;
+    public string MsHyphenateLimitChars { get; set; } = string.Empty;
+    public string MsHyphenateLimitLines { get; set; } = string.Empty;
+    public string MsHyphenateLimitZone { get; set; } = string.Empty;
+    public string MsHyphens { get; set; } = string.Empty;
+    public string MsImeAlign { get; set; } = string.Empty;
+    public string MsOverflowStyle { get; set; } = string.Empty;
+    public string MsScrollChaining { get; set; } = string.Empty;
+    public string MsScrollLimit { get; set; } = string.Empty;
+    public string MsScrollLimitXMax { get; set; } = string.Empty;
+    public string MsScrollLimitXMin { get; set; } = string.Empty;
+    public string MsScrollLimitYMax { get; set; } = string.Empty;
+    public string MsScrollLimitYMin { get; set; } = string.Empty;
+    public string MsScrollRails { get; set; } = string.Empty;
+    public string MsScrollSnapPointsX { get; set; } = string.Empty;
+    public string MsScrollSnapPointsY { get; set; } = string.Empty;
+    public string MsScrollSnapType { get; set; } = string.Empty;
+    public string MsScrollSnapX { get; set; } = string.Empty;
+    public string MsScrollSnapY { get; set; } = string.Empty;
+    public string MsScrollTranslation { get; set; } = string.Empty;
+    public string MsTextCombineHorizontal { get; set; } = string.Empty;
+    public string MsTextSizeAdjust { get; set; } = string.Empty;
+    public string MsTouchAction { get; set; } = string.Empty;
+    public string MsTouchSelect { get; set; } = string.Empty;
+    public string MsUserSelect { get; set; } = string.Empty;
+    public string MsWrapFlow { get; set; } = string.Empty;
+    public string MsWrapMargin { get; set; } = string.Empty;
+    public string MsWrapThrough { get; set; } = string.Empty;
+    public string ObjectFit { get; set; } = string.Empty;
+    public string ObjectPosition { get; set; } = string.Empty;
+    public string Opacity { get; set; } = string.Empty;
+    public string Order { get; set; } = string.Empty;
+    public string Orphans { get; set; } = string.Empty;
+    public string Outline { get; set; } = string.Empty;
+    public string OutlineColor { get; set; } = string.Empty;
+    public string OutlineOffset { get; set; } = string.Empty;
+    public string OutlineStyle { get; set; } = string.Empty;
+    public string OutlineWidth { get; set; } = string.Empty;
+    public string Overflow { get; set; } = string.Empty;
+    public string OverflowAnchor { get; set; } = string.Empty;
+    public string OverflowWrap { get; set; } = string.Empty;
+    public string OverflowX { get; set; } = string.Empty;
+    public string OverflowY { get; set; } = string.Empty;
+    public string Padding { get; set; } = string.Empty;
+    public string PaddingBlockEnd { get; set; } = string.Empty;
+    public string PaddingBlockStart { get; set; } = string.Empty;
+    public string PaddingBottom { get; set; } = string.Empty;
+    public string PaddingInlineEnd { get; set; } = string.Empty;
+    public string PaddingInlineStart { get; set; } = string.Empty;
+    public string PaddingLeft { get; set; } = string.Empty;
+    public string PaddingRight { get; set; } = string.Empty;
+    public string PaddingTop { get; set; } = string.Empty;
+    public string PageBreakAfter { get; set; } = string.Empty;
+    public string PageBreakBefore { get; set; } = string.Empty;
+    public string PageBreakInside { get; set; } = string.Empty;
+    public string PaintOrder { get; set; } = string.Empty;
+    public string PenAction { get; set; } = string.Empty;
+    public string Perspective { get; set; } = string.Empty;
+    public string PerspectiveOrigin { get; set; } = string.Empty;
+    public string PlaceContent { get; set; } = string.Empty;
+    public string PlaceItems { get; set; } = string.Empty;
+    public string PlaceSelf { get; set; } = string.Empty;
+    public string PointerEvents { get; set; } = string.Empty;
+    public string Position { get; set; } = string.Empty;
+    public string Quotes { get; set; } = string.Empty;
+    public string Resize { get; set; } = string.Empty;
+    public string Right { get; set; } = string.Empty;
+    public string Rotate { get; set; } = string.Empty;
+    public string RowGap { get; set; } = string.Empty;
+    public string RubyAlign { get; set; } = string.Empty;
+    public string RubyOverhang { get; set; } = string.Empty;
+    public string RubyPosition { get; set; } = string.Empty;
+    public string Scale { get; set; } = string.Empty;
+    public string ScrollBehavior { get; set; } = string.Empty;
+    public string ShapeRendering { get; set; } = string.Empty;
+    public string StopColor { get; set; } = string.Empty;
+    public string StopOpacity { get; set; } = string.Empty;
+    public string Stroke { get; set; } = string.Empty;
+    public string StrokeDasharray { get; set; } = string.Empty;
+    public string StrokeDashoffset { get; set; } = string.Empty;
+    public string StrokeLinecap { get; set; } = string.Empty;
+    public string StrokeLinejoin { get; set; } = string.Empty;
+    public string StrokeMiterlimit { get; set; } = string.Empty;
+    public string StrokeOpacity { get; set; } = string.Empty;
+    public string StrokeWidth { get; set; } = string.Empty;
+    public string TabSize { get; set; } = string.Empty;
+    public string TableLayout { get; set; } = string.Empty;
+    public string TextAlign { get; set; } = string.Empty;
+    public string TextAlignLast { get; set; } = string.Empty;
+    public string TextAnchor { get; set; } = string.Empty;
+    public string TextCombineUpright { get; set; } = string.Empty;
+    public string TextDecoration { get; set; } = string.Empty;
+    public string TextDecorationColor { get; set; } = string.Empty;
+    public string TextDecorationLine { get; set; } = string.Empty;
+    public string TextDecorationStyle { get; set; } = string.Empty;
+    public string TextEmphasis { get; set; } = string.Empty;
+    public string TextEmphasisColor { get; set; } = string.Empty;
+    public string TextEmphasisPosition { get; set; } = string.Empty;
+    public string TextEmphasisStyle { get; set; } = string.Empty;
+    public string TextIndent { get; set; } = string.Empty;
+    public string TextJustify { get; set; } = string.Empty;
+    public string TextKashida { get; set; } = string.Empty;
+    public string TextKashidaSpace { get; set; } = string.Empty;
+    public string TextOrientation { get; set; } = string.Empty;
+    public string TextOverflow { get; set; } = string.Empty;
+    public string TextRendering { get; set; } = string.Empty;
+    public string TextShadow { get; set; } = string.Empty;
+    public string TextTransform { get; set; } = string.Empty;
+    public string TextUnderlinePosition { get; set; } = string.Empty;
+    public string Top { get; set; } = string.Empty;
+    public string TouchAction { get; set; } = string.Empty;
+    public string Transform { get; set; } = string.Empty;
+    public string TransformBox { get; set; } = string.Empty;
+    public string TransformOrigin { get; set; } = string.Empty;
+    public string TransformStyle { get; set; } = string.Empty;
+    public string Transition { get; set; } = string.Empty;
+    public string TransitionDelay { get; set; } = string.Empty;
+    public string TransitionDuration { get; set; } = string.Empty;
+    public string TransitionProperty { get; set; } = string.Empty;
+    public string TransitionTimingFunction { get; set; } = string.Empty;
+    public string Translate { get; set; } = string.Empty;
+    public string UnicodeBidi { get; set; } = string.Empty;
+    public string UserSelect { get; set; } = string.Empty;
+    public string VerticalAlign { get; set; } = string.Empty;
+    public string Visibility { get; set; } = string.Empty;
+    public string WebkitColumnBreakAfter { get; set; } = string.Empty;
+    public string WebkitColumnBreakBefore { get; set; } = string.Empty;
+    public string WebkitColumnBreakInside { get; set; } = string.Empty;
+    public string WebkitColumnCount { get; set; } = string.Empty;
+    public string WebkitColumnGap { get; set; } = string.Empty;
+    public string WebkitColumnRule { get; set; } = string.Empty;
+    public string WebkitColumnRuleColor { get; set; } = string.Empty;
+    public string WebkitColumnRuleStyle { get; set; } = string.Empty;
+    public string WebkitColumnRuleWidth { get; set; } = string.Empty;
+    public string WebkitColumnSpan { get; set; } = string.Empty;
+    public string WebkitColumnWidth { get; set; } = string.Empty;
+    public string WebkitColumns { get; set; } = string.Empty;
+    public string WebkitUserModify { get; set; } = string.Empty;
+    public string WebkitUserSelect { get; set; } = string.Empty;
+    public string WebkitWritingMode { get; set; } = string.Empty;
+    public string WhiteSpace { get; set; } = string.Empty;
+    public string Widows { get; set; } = string.Empty;
+    public string Width { get; set; } = string.Empty;
+    public string WillChange { get; set; } = string.Empty;
+    public string WordBreak { get; set; } = string.Empty;
+    public string WordSpacing { get; set; } = string.Empty;
+    public string WordWrap { get; set; } = string.Empty;
+    public string WritingMode { get; set; } = string.Empty;
+    public string ZIndex { get; set; } = string.Empty;
+    public string Zoom { get; set; } = string.Empty;
 }

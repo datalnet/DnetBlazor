@@ -42,8 +42,11 @@
                 €
             </SufixContent>
             <ErrorContent>
-                <ValidationMessage For="@(() => _person.LastName)" />
+                @* <ValidationMessage For="@(() => _person.LastName)" /> *@
             </ErrorContent>
+            <HintContent>
+                <ValidationMessage For="@(() => new FieldIdentifier(_editContext, "MiCampo"))" />
+            </HintContent>
         </DnetFormField>
 
         <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
@@ -135,6 +138,16 @@
             </ChildContent>
             <ErrorContent>
                 <ValidationMessage For="@(() => _person.Age)" />
+            </ErrorContent>
+        </DnetFormField>
+
+        <DnetFormField Label="Amount">
+            <ChildContent>
+                <DnetInputNumber @bind-Value="_person.Amount" PlaceHolder="">
+                </DnetInputNumber>
+            </ChildContent>
+            <ErrorContent>
+                <ValidationMessage For="@(() => _person.Amount)" />
             </ErrorContent>
         </DnetFormField>
 

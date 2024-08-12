@@ -392,6 +392,13 @@
                 }
             }
 
+            if (EditContext is not null)
+            {
+                _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+                if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            }
+
             if (ItemPrefixContent is null && ItemSufixContent is null) return;
 
             StateHasChanged();

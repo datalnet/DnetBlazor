@@ -14,7 +14,6 @@
 @if (!ImmediateResponse)
 {
     <textarea @ref="__inputReference "
-              style="margin-bottom:5px; margin-right:5px; margin-top:5px; resize:none;"
               @attributes="AdditionalAttributes"
               class="@_textareaClass"
               value="@BindConverter.FormatValue(CurrentValue)"
@@ -29,7 +28,6 @@
 else
 {
     <textarea @ref="__inputReference "
-              style="margin-bottom:5px; margin-right:5px; margin-top:5px; resize:none;"
               @attributes="AdditionalAttributes"
               class="@_textareaClass"
               @bind="CurrentValueAsString"
@@ -278,8 +276,11 @@ else
 
     public void Dispose()
     {
-        _debounceTimer.Elapsed -= HandleChangeDebouncedDiscard;
+        if(_debounceTimer is not null)
+        {
+            _debounceTimer.Elapsed -= HandleChangeDebouncedDiscard;
 
-        _debounceTimer.Dispose();
+            _debounceTimer.Dispose();
+        }
     }
 }

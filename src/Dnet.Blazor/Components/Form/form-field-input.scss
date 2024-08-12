@@ -156,6 +156,7 @@ textarea.mat-input-element {
   // We also add a negative margin to negate the effect of the padding on the layout.
   padding: 2px 0;
   margin: -2px 0;
+  resize: none;
 }
 
 // Remove the native select down arrow and replace it with material design arrow
