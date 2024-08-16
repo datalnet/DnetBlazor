@@ -1,6 +1,6 @@
 ﻿@using Dnet.Blazor.Components.AdminLayout.Menu
 
-<div class="dnet-desktop-navigation-menu">
+@* <div class="dnet-desktop-navigation-menu">
     <nav>
         <ul>
              @foreach (var item in Menus)
@@ -9,7 +9,15 @@
             }
         </ul>
     </nav>
-</div>
+</div> *@
+<nav>
+    <ul>
+        @foreach (var item in Menus)
+        {
+            <MenuTree Menu="@item"></MenuTree>
+        }
+    </ul>
+</nav>
 
 @code {
     [Parameter]

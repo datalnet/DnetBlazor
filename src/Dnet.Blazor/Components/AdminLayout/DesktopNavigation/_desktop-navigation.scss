@@ -1,7 +1,7 @@
 ﻿.dnet-aside {
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: var(--dnet-dash-header-height) 1fr var(--dnet-dash-footer-height);
+    grid-template-rows: var(--dnet-dash-header-height) calc(100% - calc(var(--dnet-dash-header-height) + var(--dnet-dash-footer-height))) var(--dnet-dash-footer-height);
     height: 100%;
 }
 
@@ -11,7 +11,7 @@
 
 .dnet-navigation-flex {
     grid-row: 2 / 3;
-    height: calc(100vh - 100px);
+    height: calc(100% - 0px);
 }
 
 .hidden-left-column {

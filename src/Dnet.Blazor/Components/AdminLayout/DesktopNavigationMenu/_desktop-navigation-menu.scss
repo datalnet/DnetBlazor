@@ -1,4 +1,4 @@
-﻿.dnet-desktop-navigation-menu {
+﻿/*.dnet-desktop-navigation-menu {
     flex: 1 1 auto;
     height: calc(100% - 0px);
 
@@ -7,6 +7,11 @@
         padding-bottom: 20px;
         padding-top: 20px;
     }
+}*/
+nav {
+    height: calc(100% - 0px);
+    padding-bottom: 20px;
+    padding-top: 20px;
 }
 
 .fixed-left-column {

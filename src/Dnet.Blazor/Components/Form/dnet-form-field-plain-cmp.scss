@@ -126,3 +126,21 @@
     color: var(--dnet-form-field-hint-color);
     font-size: var(--dnet-form-field-hint-font-size);
 }
+
+.dnet-property-form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.dnet-property-form-group .dnet-property-value {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 1);
+    display: block;
+}
+
+.dnet-property-form-group .dnet-property-name {
+    font-size: 11px;
+    color: #757575;
+    display: block;
+}

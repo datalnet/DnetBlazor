@@ -30,6 +30,10 @@
         <CustomValidation @ref="customValidation" />
         <MyValidationSummary />
 
+        <PropertyDisplay Property="Display Component">
+            Display Component
+        </PropertyDisplay>
+
         <DnetFormField Label="Name" UseClearButton="true" IsRequired="true">
             <ChildContent>
                 <DnetInputText @bind-Value="_worker.Name" PlaceHolder="" type="text">
