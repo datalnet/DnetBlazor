@@ -42,6 +42,8 @@ namespace Dnet.Blazor.Components.RadioButton
         /// </summary>
         [Parameter] public string? Name { get; set; }
 
+        [Parameter] public bool TextPlacedBefore { get; set; } = false;
+
         [CascadingParameter] private DnetInputRadioContext? CascadedContext { get; set; }
 
         /// <inheritdoc />
@@ -62,6 +64,7 @@ namespace Dnet.Blazor.Components.RadioButton
         [Parameter] 
         public bool Disabled { get; set; }
 
+
         /// <inheritdoc />
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
@@ -71,7 +74,14 @@ namespace Dnet.Blazor.Components.RadioButton
             builder.OpenElement(s++, "div");
             builder.AddAttribute(s++, "class", _dnetRadioButtonClass);
             builder.OpenElement(s++, "label");
-            builder.AddAttribute(s++, "class", "dnet-radio-label");
+			if (TextPlacedBefore)
+			{
+				builder.AddAttribute(s++, "class", "dnet-radio-label text-before");
+			}
+			else
+			{
+				builder.AddAttribute(s++, "class", "dnet-radio-label text-after");
+			}
             builder.OpenElement(s++, "span");
             builder.AddAttribute(s++, "class", "dnet-radio-container");
             builder.OpenElement(s++, "span");

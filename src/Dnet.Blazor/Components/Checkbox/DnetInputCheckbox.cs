@@ -35,14 +35,24 @@ namespace Dnet.Blazor.Components.Checkbox
         [Parameter] 
         public bool Disabled { get; set; }
 
-        /// <inheritdoc />
-        protected override void BuildRenderTree(RenderTreeBuilder builder)
+		[Parameter] 
+        public bool TextPlacedBefore { get; set; } = false;
+
+		/// <inheritdoc />
+		protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             var s = -1;
             builder.OpenElement(s++, "div");
             builder.AddAttribute(s++, "class", _dnetCheckboxClass);
             builder.OpenElement(s++, "label");
-            builder.AddAttribute(s++, "class", "dnet-checkbox-layout");
+			if (TextPlacedBefore)
+			{
+				builder.AddAttribute(s++, "class", "dnet-checkbox-layout text-before");
+			}
+			else
+			{
+				builder.AddAttribute(s++, "class", "dnet-checkbox-layout text-after");
+			}
             builder.OpenElement(s++, "span");
             builder.AddAttribute(s++, "class", "dnet-checkbox-inner-container");
             builder.OpenElement(s++, "input");

@@ -35,13 +35,29 @@
                     @if (ValueDisplayContent != null && _selectedItem is not null)
                     {
                         <div class="dnet-select-list-item-prefix">
-                            @ValueDisplayContent(_selectedItem)
+                            @if (string.IsNullOrEmpty(_displayValueAsString))
+                            {
+                                @PlaceHolder
+                            }
+                            else
+                            {
+                                @ValueDisplayContent(_selectedItem)
+                            }
                         </div>
                     }
                     else
                     {
                         <span class="dnet-plain-select-value-text">
-                            <span>@_displayValueAsString</span>
+                            <span>
+                                @if (string.IsNullOrEmpty(_displayValueAsString))
+                                {
+                                    @PlaceHolder
+                                }
+                                else
+                                {
+                                    @_displayValueAsString
+                                }
+                            </span>
                         </span>
                     }
                     break;
@@ -177,6 +193,9 @@
 
     [Parameter]
     public string? ResponsiveLabel { get; set; }
+
+    [Parameter]
+    public string? OverlayPanelClass { get; set; }
 
 
     private ElementReference _menuTrigger;
@@ -616,7 +635,8 @@
                 MarginTop = MarginTop,
                 Height = Height,
                 Width = Width,
-                ComponentType = ComponentType.Select
+                ComponentType = ComponentType.Select,
+                PanelClass = OverlayPanelClass
             };
 
         var menuContent = new RenderFragment(x =>

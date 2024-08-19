@@ -136,6 +136,9 @@
     [Parameter]
     public string PlaceHolder { get; set; } = string.Empty;
 
+    [Parameter]
+    public string? OverlayPanelClass { get; set; }
+
 
     private bool _isOpen;
 
@@ -544,7 +547,8 @@
                 MarginTop = MarginTop,
                 Height = Height,
                 Width = Width,
-                ComponentType = ComponentType.Autocomplete
+                ComponentType = ComponentType.Autocomplete,
+                PanelClass = OverlayPanelClass
             };
 
         var items = new List<TItem>();

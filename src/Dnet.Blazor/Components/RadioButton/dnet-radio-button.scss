@@ -28,12 +28,23 @@
     -ms-user-select: none;
     user-select: none;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
+    /*display: inline-flex;*/
+    /*align-items: center;*/
     white-space: nowrap;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
     width: 100%;
     font-size: var(--dnet-radio-button-font-size);
+    display: grid;
+    align-items: center;
+    gap: 5px;
+
+    &.text-after {
+        grid-template-areas: "one two";
+    }
+
+    &.text-before {
+        grid-template-areas: "two one";
+    }
 }
 
 .dnet-radio-button.dnet-radio-disabled .dnet-radio-label-content {
@@ -47,6 +58,7 @@
     width: var(--dnet-radio-button-size);
     height: var(--dnet-radio-button-size);
     flex-shrink: 0;
+    grid-area: one;
 }
 
 .dnet-radio-button.dnet-accent.dnet-radio-checked .dnet-radio-outer-circle {
@@ -168,6 +180,7 @@
     display: inline-block;
     order: 0;
     line-height: inherit;
-    padding-left: 8px;
     padding-right: 0;
+    grid-area: two;
+    padding-top: 1px;
 }

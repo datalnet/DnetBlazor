@@ -31,10 +31,21 @@
     -ms-user-select: none;
     user-select: none;
     cursor: inherit;
-    align-items: baseline;
-    vertical-align: middle;
-    display: inline-flex;
+   /* align-items: baseline;
+    vertical-align: middle;*/
+    /*display: inline-flex;*/
     white-space: nowrap;
+    display: grid;
+    align-items: center;
+    gap: 5px;
+
+    &.text-after {
+        grid-template-areas: "one two";
+    }
+
+    &.text-before {
+        grid-template-areas: "two one";
+    }
 }
 
 .dnet-checkbox-inner-container {
@@ -43,12 +54,12 @@
     width: var(--dnet-checkbox-size);
     line-height: 0;
     margin: auto;
-    margin-right: 8px;
     order: 0;
     position: relative;
     vertical-align: middle;
     white-space: nowrap;
     flex-shrink: 0;
+    grid-area: one;
 }
 
 .dnet-checkbox-input {
@@ -164,6 +175,8 @@
     -ms-user-select: auto;
     user-select: auto;
     font-size: var(--dnet-checkbox-font-size);
+    grid-area: two;
+    padding-top: 2px;
 }
 
 .dnet-checkbox .dnet-checkbox-ripple {

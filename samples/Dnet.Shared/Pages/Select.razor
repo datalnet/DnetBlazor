@@ -41,7 +41,8 @@
                                             OnItemSelected="ItemSelected"
                                             InputTextToUpper="true" 
                                             ItemHeight="50"
-                                            Disabled="true">
+                                            Disabled="true"
+                                            >
                                 </DnetSelect>
                             </ChildContent>
                             <HintContent>You can add the country prefix</HintContent>
@@ -77,7 +78,8 @@
                                             ValueConverter="(value) => (value.Name)" OnItemSelected="ItemSelected"
                                             OnSelectionChanged="SelectionChanged" InputTextToUpper="true" PlaceHolder="Name"
                                             MultiSelect="true"
-                                            IsSelectedFn="(item1, item2) => item1.Name == item2.Name">
+                                            IsSelectedFn="(item1, item2) => item1.Name == item2.Name"
+                                            OverlayPanelClass="vyn-text-class">
                                 </DnetSelect>
                             </ChildContent>
                             <HintContent>You can add the country prefix</HintContent>
