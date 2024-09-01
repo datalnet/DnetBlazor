@@ -10,12 +10,12 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>4.8.0</PackageVersion>
+		<PackageVersion>4.9.0</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Now the label for the radio button and checkbox can be placed before or after the input.
+			- New Dynamic Stepper component.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
