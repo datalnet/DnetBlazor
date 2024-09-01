@@ -58,5 +58,10 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Services
         {
             return _jsRuntime.InvokeAsync<int>("dnetoverlay.getWindowWidth");
         }
-    }
+
+		public ValueTask<int> GetContainerWidth(string containerId)
+		{
+			return _jsRuntime.InvokeAsync<int>("dnetoverlay.getContainerWidth", containerId);
+		}
+	}
 }

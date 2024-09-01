@@ -19,7 +19,6 @@
 
 @inject IApplicationServiceService ApplicationServiceService
 
-
 <div class="container-fluid" style="padding-top: 10px;">
     <div class="d-flex dnet-page-content-left-margin dnet-m-t-20">
         <span class="dnet-m-r-10 dnet-app-comp-name">Forms</span>
@@ -115,7 +114,7 @@
             </ErrorContent>
         </DnetFormField>
 
-        <DnetFormField Label="Email" IsRequired="true">
+        <DnetFormField Label="Address" IsRequired="true">
             <ChildContent>
                 <DnetInputTextArea @bind-Value="_person.Address"
                                       PlaceHolder="Ex. 4th Street, CP: 11901"

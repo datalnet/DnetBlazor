@@ -1,0 +1,76 @@
+﻿@page "/DynamicStepper"
+@using Dnet.Blazor.Components.DynamicStepper
+@using Dnet.Blazor.Components.Stepper
+@using Dnet.Blazor.Components.Checkbox
+
+<div class="container-fluid" style="padding-top: 10px;">
+    <div class="d-flex dnet-page-content-left-margin dnet-m-t-20">
+        <span class="dnet-m-r-10 dnet-app-comp-name">Stepper</span>
+    </div>
+    <div class="dnet-page-content-left-margin dnet-m-t-30">
+        <div class="dnet-app-dstepper-container">
+            <DnetDynamicStepper dnet-align-tabs="start" OnSelectionChange="StepClicked">
+                <DnetDynamicStep Label="Stepper 1">
+                    <span>Stepper Content 1</span>
+                </DnetDynamicStep>
+                <DnetDynamicStep Label="Stepper 2">
+                    <span>Stepper Content 2</span>
+                </DnetDynamicStep>
+                <DnetDynamicStep Label="Stepper 3">
+                    <span>Stepper Content 3</span>
+                </DnetDynamicStep>
+                <DnetDynamicStep Label="Stepper 4">
+                    <span>Stepper Content 4</span>
+                </DnetDynamicStep>
+                <DnetDynamicStep Label="Stepper 5">
+                    <span>Stepper Content 5</span>
+                </DnetDynamicStep>
+                <DnetDynamicStep Label="Stepper 6">
+                    <span>Stepper Content 6</span>
+                </DnetDynamicStep>
+                <DnetDynamicStep Label="Stepper 7">
+                    <span>Stepper Content 7</span>
+                </DnetDynamicStep>
+                <DnetDynamicStep Label="Stepper 8">
+                    <span>Stepper Content 8</span>
+                </DnetDynamicStep>
+                <DnetDynamicStep Label="Stepper 9">
+                    <span>Stepper Content 9</span>
+                </DnetDynamicStep>
+                <DnetDynamicStep Label="Stepper 10">
+                    <span>Stepper Content 10</span>
+                </DnetDynamicStep>
+            </DnetDynamicStepper>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    private int _selectedId;
+
+    private int _previousSelectedId;
+
+    private bool _isCompletedStep1 { get; set; }
+
+    private bool _isCompletedStep2 { get; set; }
+
+    private bool _isCompletedStep3 { get; set; }
+
+    private bool _isCompletedStep4 { get; set; }
+
+
+    public void StepClicked(Tuple<int, int> tabClikedEventData)
+    {
+        (_selectedId, _previousSelectedId) = tabClikedEventData;
+    }
+
+    RenderFragment CreateTemplate()
+    {
+        return @<span>Stepper 2 RF</span>;
+    }
+}
+
+
+

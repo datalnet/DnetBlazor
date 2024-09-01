@@ -257,5 +257,6 @@
     {
         ((OverlayService)OverlayService).OnAttach -= AttachOverlay;
         ((OverlayService)OverlayService).OnDetach -= DetachOverlay;
+        ViewportRuler.OnResized -= UpdateWindowsSize;
     }
 }

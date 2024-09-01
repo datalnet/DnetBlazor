@@ -81,6 +81,14 @@ window.dnetoverlay = (function () {
         getWindowWidth: function () {
 
             return window.innerWidth;
+        },
+
+        getContainerWidth: function (containerId) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                return container.offsetWidth;
+            }
+            return 0;
         }
 
     };

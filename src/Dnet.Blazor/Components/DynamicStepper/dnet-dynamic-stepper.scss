@@ -1,0 +1,123 @@
+﻿:root {
+    --dnet-step-icon-height: 25px;
+    --dnet-step-icon-width: 25px;
+    --dnet-step-font-size: var(--dnet-component-sm-font-size);
+}
+
+.dnet-horizontal-dstepper-header-container {
+    display: grid;
+    gap: 0.3rem;
+    overflow: hidden;
+    align-items: center;
+    width: 100%;
+}
+
+.dnet-dstep-header {
+    width: 100%;
+    transition: grid-column 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    opacity: 1;
+    visibility: visible;
+}
+
+.dnet-dstep-header.hidden {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+}
+
+.dnet-horizontal-dstepper-content {
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.dnet-horizontal-dstepper-controls {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.dnet-dstep-header .dnet-dstep-icon {
+    background-color: rgba(0,0,0,.54);
+    color: #fff;
+}
+
+.dnet-horizontal-dstepper-header .dnet-dstep-icon {
+    margin-right: 8px;
+    flex: none;
+}
+
+.dnet-dstep-header .dnet-dstep-icon-selected, .dnet-dstep-header .dnet-dstep-icon-state-done, .dnet-dstep-header .dnet-dstep-icon-state-edit {
+    background-color: #3f51b5;
+    color: #fff;
+}
+
+.dnet-dstep-header {
+    &.dnet-dstep-selected {
+        .dnet-dstep-icon {
+            background-color: #3f51b5;
+            color: #fff;
+        }
+    }
+}
+
+.dnet-dstep-icon {
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.dnet-dstep-icon-content, .dnet-dstep-icon .dnet-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.dnet-dstep-label {
+    display: inline-block;
+    min-width: 50px;
+    vertical-align: middle;
+    font-size: var(--dnet-step-font-size);
+    margin-right: 0.3rem;
+}
+
+.dnet-dstepper-horizontal-line {
+    border-top-width: 1px;
+    border-top-style: solid;
+    flex: auto;
+    height: 0;
+    min-width: 32px;
+}
+
+.dnet-horizontal-dstepper-header:after, .dnet-horizontal-dstepper-header:before, .dnet-dstepper-horizontal-line {
+    border-top-color: rgba(0,0,0,.12);
+}
+
+.dnet-app-dstepper-container {
+    width: 800px;
+}
+
+@media (max-width: 768px) {
+    .dnet-dstep-header {
+        max-width: 100%;
+        flex-direction: column;
+    }
+
+    .dnet-app-dstepper-container {
+        width: calc(100% - 0px);
+    }
+
+    .dnet-dstepper-horizontal-line{
+        display: none;
+    }
+
+    .dnet-horizontal-dstepper-header-container{
+        gap: 0px;
+    }
+}

@@ -1,0 +1,271 @@
+﻿@using Dnet.Blazor.Components.Button
+@using Dnet.Blazor.Components.Overlay.Infrastructure.Services
+@using Microsoft.AspNetCore.Components.Web
+
+@inject DnetOverlayInterop DnetOverlayInterop
+
+<div id="stepperContainer" class="dnet-dstepper-horizontal" style="width: calc(100% - 0px)">
+    <div class="dnet-horizontal-dstepper-header-container"
+         style="grid-template-columns: repeat(@_visibleSteps, minmax(@($"{_stepWidth}px"), 1fr));">
+        @foreach (var step in Steps.OrderBy(p => p.Order))
+
+        {
+            <div class="dnet-dstep-header dnet-horizontal-dstepper-header @(IsNextStepVisible(step) ? "visible" : "hidden") @(_selectedId == step.Id ? "dnet-dstep-selected" : null)"
+                 style="@(IsNextStepVisible(step) ? $"grid-column: {(Steps.IndexOf(step) - _startIndex + 1)} / span 1;" : "grid-column: unset;")"
+                 @onclick="(() => StepClicked(step))">
+                @if (step.StepHeaderTemplate != null)
+                {
+                    @step.StepHeaderTemplate
+                }
+                else
+
+                {
+                    <div class="dnet-dstep-icon dnet-step-icon-state-number">
+                        <div class="dnet-dstep-icon-content">
+                            @step.Id
+                        </div>
+                    </div>
+                    <div class="dnet-dstep-label dnet-dstep-label-active">
+                        <div class="dnet-dstep-text-label">
+                            <span>@step.Label</span>
+                        </div>
+                    </div>
+                }
+                @if (step.Id != _startIndex + (_visibleSteps))
+                {
+                    <div class="dnet-dstepper-horizontal-line"></div>
+                }
+            </div>
+        }
+    </div>
+    <div class="dnet-horizontal-content-container">
+        <div class="dnet-horizontal-dstepper-content">
+            @_activeStepContent
+        </div>
+    </div>
+    @if(ShowButtons)
+    {
+        <div class="dnet-horizontal-dstepper-controls">
+            <DnetButton OnClick="() => PreviousStep()" disabled="@(_startIndex == 0)">Previous</DnetButton>
+            <DnetButton OnClick="() => NextStep()" disabled="@(_startIndex + _visibleSteps >= Steps.Count)">Next</DnetButton>
+        </div>
+    }
+</div>
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public EventCallback<Tuple<int, int>> OnSelectionChange { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AllOtherAttributes { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool ShowButtons { get; set; } = true;
+
+    [Parameter]
+    public int SelectedStepId { get; set; }
+
+    [Parameter]
+    public int LabelPosition { get; set; }
+
+    [Parameter]
+    public bool Linear { get; set; } = false;
+
+    [Parameter]
+    public bool Editable { get; set; } = true;
+
+    private List<DnetDynamicStep> Steps = new();
+
+    private int _selectedId;
+
+    private RenderFragment? _activeStepContent;
+
+    private List<int> stepIds = new();
+
+    private int _nextId { get; set; } = 0;
+
+    private int _visibleSteps { get; set; }
+
+    private int _stepWidth = 150;
+
+    private int _startIndex = 0;
+
+    private int _windowWidth { get; set; }
+
+
+
+    protected override void OnInitialized()
+    {
+        _selectedId = SelectedStepId > 0 ? SelectedStepId : 1;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        if (Steps.Any())
+        {
+            _activeStepContent = Steps.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent!;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var containerWidth = await DnetOverlayInterop.GetContainerWidth("stepperContainer");
+
+            _windowWidth = await DnetOverlayInterop.GetWindowWidth();
+
+            SetStepWidth();
+
+            _visibleSteps = Math.Max(containerWidth / _stepWidth, 1);
+
+            StateHasChanged();
+        }
+    }
+
+    internal void AddStep(DnetDynamicStep step)
+    {
+        step.Id = GetNextId();
+
+        stepIds.Add(step.Id);
+        Steps.Add(step);
+    }
+
+    private bool IsNextStepVisible(DnetDynamicStep step)
+    {
+        var index = Steps.IndexOf(step);
+
+        var tt = index >= _startIndex && (index) <= _startIndex + (_visibleSteps - 1);
+
+        return tt;
+    }
+
+    private void StepClicked(DnetDynamicStep step)
+    {
+        var stepIndex = Steps.IndexOf(step);
+
+        var lastVisibleIndex = _startIndex + _visibleSteps - 1;
+
+        if (stepIndex == lastVisibleIndex && lastVisibleIndex < Steps.Count - 1)
+        {
+            _startIndex++;
+        }
+        else if (stepIndex == _startIndex && _startIndex > 0)
+        {
+            _startIndex--;
+        }
+
+        var previousId = _selectedId;
+
+        _selectedId = step.Id;
+
+        _activeStepContent = Steps.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent!;
+
+        OnSelectionChange.InvokeAsync(new Tuple<int, int>(_selectedId, previousId));
+
+        StateHasChanged();
+    }
+
+    public void NextStep()
+    {
+        var selectedStep = Steps.Where(s => s.Id == _selectedId).Select(p => p).FirstOrDefault();
+
+        var stepIndex = Steps.IndexOf(selectedStep) + 1;
+
+        var lastVisibleIndex = _startIndex + _visibleSteps - 1;
+
+        if (stepIndex == lastVisibleIndex && lastVisibleIndex < Steps.Count - 1)
+        {
+            _startIndex++;
+        }
+
+        var step = Steps[stepIndex];
+
+        var previousId = _selectedId;
+
+        _selectedId = step.Id;
+
+        _activeStepContent = Steps.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent!;
+
+        OnSelectionChange.InvokeAsync(new Tuple<int, int>(_selectedId, previousId));
+
+        StateHasChanged();
+    }
+
+    public void PreviousStep()
+    {
+        var selectedStep = Steps.Where(s => s.Id == _selectedId).Select(p => p).FirstOrDefault();
+
+        var stepIndex = Steps.IndexOf(selectedStep) - 1;
+
+        if (_startIndex > 0 && _startIndex == stepIndex)
+        {
+            _startIndex--;
+        }
+        else if (_startIndex > 0 && _visibleSteps == 2)
+        {
+            _startIndex--;
+        }
+
+        var step = Steps[stepIndex];
+
+        var previousId = _selectedId;
+
+        _selectedId = step.Id;
+
+        _activeStepContent = Steps.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent!;
+
+        OnSelectionChange.InvokeAsync(new Tuple<int, int>(_selectedId, previousId));
+
+        StateHasChanged();
+    }
+
+    private bool CanNavigateToStep(DnetDynamicStep step)
+    {
+        var previousStep = Steps.FirstOrDefault(p => p.Id == _selectedId);
+
+        if (Linear && step.Id > _selectedId)
+        {
+            if ((step.Id - _selectedId != 1) || (previousStep != null && !previousStep.Completed && step.Id > 1))
+                return false;
+        }
+
+        return true;
+    }
+
+    private void SetStepWidth()
+    {
+        const int mobileWidth = 768; // Ancho máximo para móviles
+        const int tabletWidth = 1024; // Ancho máximo para tablets
+
+        if (_windowWidth <= mobileWidth)
+        {
+            // DeviceType.Mobile;
+            _stepWidth = 110;
+        }
+        else if (_windowWidth <= tabletWidth)
+        {
+            // DeviceType.Tablet;
+            _stepWidth = 150;
+        }
+        else
+        {
+            // DeviceType.Desktop;
+            _stepWidth = 150;
+        }
+    }
+
+    private int GetNextId()
+    {
+        return ++_nextId;
+    }
+
+}

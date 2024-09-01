@@ -399,11 +399,24 @@
                     "CanReadDashboard"
                 },
             },
-             new NavigationMenu {
+            new NavigationMenu {
                 MenuId = 11,
                 Link = "/Stepper",
                 ParentId = 0,
                 Text = "Stepper",
+                MinifiedText = "Sr",
+                IconClass = "",
+                Children = new List<NavigationMenu>(),
+                IsNode = true,
+                Rights = new List<string> {
+                    "CanReadDashboard"
+                },
+            },
+            new NavigationMenu {
+                MenuId = 11,
+                Link = "/DynamicStepper",
+                ParentId = 0,
+                Text = "Dynamic Stepper",
                 MinifiedText = "Sr",
                 IconClass = "",
                 Children = new List<NavigationMenu>(),

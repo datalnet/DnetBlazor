@@ -1,6 +1,6 @@
 ﻿/*@import '../core/style/variables';
-@import '../../cdk/a11y/a11y';
-*/
+@import '../../cdk/a11y/a11y';*/
+
 :root {
     --dnet-step-icon-height: 25px;
     --dnet-step-icon-width: 25px;
@@ -48,10 +48,10 @@
     flex: none;
 }
 
-/*.dnet-step-header .dnet-step-icon-selected, .dnet-step-header .dnet-step-icon-state-done, .dnet-step-header .dnet-step-icon-state-edit {
+.dnet-step-header .dnet-step-icon-selected, .dnet-step-header .dnet-step-icon-state-done, .dnet-step-header .dnet-step-icon-state-edit {
     background-color: #3f51b5;
     color: #fff;
-}*/
+}
 
 .dnet-step-header {
     &.dnet-step-selected {
@@ -91,9 +91,9 @@
     font-size: var(--dnet-step-font-size);
 }
 
-/*.dnet-step-label-selected {
+.dnet-step-label-selected {
     font-size: var(--dnet-step-font-size);
-}*/
+}
 
 .dnet-step-header {
     &.dnet-step-selected {

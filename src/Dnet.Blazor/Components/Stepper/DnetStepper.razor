@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 
-@if (Orientation == (int) StepperOrientation.Horizontal)
+@if (Orientation == (int)StepperOrientation.Horizontal)
 {
     <div class="dnet-stepper-horizontal" @attributes=AllOtherAttributes>
         <div class="dnet-horizontal-stepper-header-container">
@@ -78,9 +78,7 @@ else
     @ChildContent
 </CascadingValue>
 
-
 @code {
-
     [Parameter]
     public EventCallback<Tuple<int, int>> OnSelectionChange { get; set; }
 
@@ -94,7 +92,7 @@ else
     public int SelectedStepId { get; set; }
 
     [Parameter]
-    public int Orientation { get; set; } = (int) StepperOrientation.Horizontal;
+    public int Orientation { get; set; } = (int)StepperOrientation.Horizontal;
 
     [Parameter]
     public int LabelPosition { get; set; }
@@ -115,7 +113,6 @@ else
 
     private int _nextId { get; set; } = 0;
 
-
     protected override void OnInitialized()
     {
         _selectedId = SelectedStepId > 0 ? SelectedStepId : 1;
@@ -124,43 +121,66 @@ else
     protected override void OnAfterRender(bool firstRender)
     {
         if (!firstRender) return;
-        
+
         if (Steps.Any())
         {
-            _activeStepContent = Steps.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent!;
+            UpdateActiveStepContent();
         }
-
-        StateHasChanged();
     }
 
     internal void AddStep(DnetStep step)
     {
-        step.Id = GetId();
+        step.Id = GetNextId();
 
         stepIds.Add(step.Id);
-
         Steps.Add(step);
+    }
 
-        StateHasChanged();
+    public void GoToStep(int stepId)
+    {
+        var step = Steps.FirstOrDefault(p => p.Id == stepId);
+
+        if (step != null)
+        {
+            StepClicked(step);
+        }
     }
 
     private void StepClicked(DnetStep step)
     {
+        if (!CanNavigateToStep(step))
+            return;
+
+        var previousId = _selectedId;
+        _selectedId = step.Id;
+        SelectedStepId = step.Id;
+
+        UpdateActiveStepContent();
+
+        OnSelectionChange.InvokeAsync(new Tuple<int, int>(_selectedId, previousId));
+    }
+
+    private void UpdateActiveStepContent()
+    {
+        _activeStepContent = Steps.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent!;
+        StateHasChanged();
+    }
+
+    private bool CanNavigateToStep(DnetStep step)
+    {
         var previousStep = Steps.FirstOrDefault(p => p.Id == _selectedId);
 
-        if (Linear && (step.Id - _selectedId != 1) && step.Id > _selectedId || (Linear && previousStep != null && !(previousStep.Completed && step.Id > 1) && step.Id > _selectedId)) return;
+        if (Linear && step.Id > _selectedId)
+        {
+            if ((step.Id - _selectedId != 1) || (previousStep != null && !previousStep.Completed && step.Id > 1))
+                return false;
+        }
 
-        _activeStepContent = Steps.FirstOrDefault(p => p.Id == step.Id)?.ChildContent!;
-
-        OnSelectionChange.InvokeAsync(new Tuple<int, int>(step.Id, _selectedId));
-
-        _selectedId = step.Id;
+        return true;
     }
 
-    private int GetId()
+    private int GetNextId()
     {
-        _nextId++;
-        return _nextId;
+        return ++_nextId;
     }
-
 }

@@ -157,8 +157,8 @@ else
         {
             if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
-            // var countData = new Tuple<int, int>(_characterCount, MaxCharacters);
-            // if (_formEventService is not null) _formEventService.RaiseCharCountEvent(countData);
+            var countData = new Tuple<int, int>(_characterCount, MaxCharacters);
+            if (_formEventService is not null) _formEventService.RaiseCharCountEvent(countData);
 
             await OnStopTyping.InvokeAsync(CurrentValueAsString);
         });
@@ -175,8 +175,8 @@ else
     {
         CurrentValueAsString = e.Value?.ToString();
 
-        // var countData = new Tuple<int, int>(_characterCount, MaxCharacters);
-        // if (_formEventService is not null) _formEventService.RaiseCharCountEvent(countData);
+        var countData = new Tuple<int, int>(_characterCount, MaxCharacters);
+        if (_formEventService is not null) _formEventService.RaiseCharCountEvent(countData);
 
         if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
     }
