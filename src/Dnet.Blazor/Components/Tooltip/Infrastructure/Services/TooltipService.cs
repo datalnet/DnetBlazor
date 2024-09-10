@@ -19,15 +19,15 @@ namespace Dnet.Blazor.Components.Tooltip.Infrastructure.Services
 
         public OverlayReference Show(TooltipConfig tooltipConfig, ElementReference elementReference)
         {
-            return Open(null, tooltipConfig, elementReference);
+            return Open(null, null, tooltipConfig, elementReference);
         }
 
-        public OverlayReference Show<TComponent>(TooltipConfig tooltipConfig, ElementReference elementReference) where TComponent : ComponentBase
+        public OverlayReference Show<TComponent>(TooltipConfig tooltipConfig, IDictionary<string, object> parameters, ElementReference elementReference) where TComponent : ComponentBase
         {
-            return Open(typeof(TComponent), tooltipConfig, elementReference);
+            return Open(typeof(TComponent), parameters, tooltipConfig, elementReference);
         }
 
-        private OverlayReference Open(Type componentType, TooltipConfig tooltipConfig, ElementReference elementReference)
+        private OverlayReference Open(Type? componentType, IDictionary<string, object>? parameters, TooltipConfig tooltipConfig, ElementReference elementReference)
         {
             if (!typeof(ComponentBase).IsAssignableFrom(componentType) && componentType != null)
             {
@@ -116,18 +116,6 @@ namespace Dnet.Blazor.Components.Tooltip.Infrastructure.Services
                 ComponentType = ComponentType.ToolTip
             };
 
-            var userContent = new RenderFragment(x => { });
-
-            if (componentType != null)
-            {
-                userContent = x =>
-                {
-                    x.OpenComponent(0, componentType);
-                    x.AddAttribute(1, "ContentData", tooltipConfig.Text);
-                    x.CloseComponent();
-                };
-            }
-
             var tooltip = new RenderFragment(x =>
             {
                 x.OpenComponent(0, typeof(DnetTooltipPanel));
@@ -136,7 +124,8 @@ namespace Dnet.Blazor.Components.Tooltip.Infrastructure.Services
                 x.AddAttribute(3, "TooltipColor", tooltipConfig.TooltipColor);
                 x.AddAttribute(4, "MaxWidth", tooltipConfig.MaxWidth);
                 x.AddAttribute(5, "MaxHeight", tooltipConfig.MaxHeight);
-                x.AddAttribute(6, "ContentChild", userContent);
+                x.AddAttribute(6, "ComponentType", componentType);
+                x.AddAttribute(7, "Parameters", parameters);
                 x.CloseComponent();
             });
 

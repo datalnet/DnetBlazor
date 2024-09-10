@@ -1,0 +1,38 @@
+<p>@(Title)</p>
+<div class="test-content-container">
+    <div class="test-content">
+        somecontent 1
+    </div>
+    <div class="test-content">
+        somecontent 2
+    </div>
+    <div class="test-content">
+        somecontent 3
+    </div>
+    <div class="test-content">
+        somecontent 4
+    </div>
+    <div class="test-content">
+        somecontent 5
+    </div>
+    <div class="test-content">
+        somecontent 6
+    </div>
+</div>
+
+<style>
+    .test-content-container {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        width: 100%;
+    }
+    .test-content {
+        padding: 10px;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+}

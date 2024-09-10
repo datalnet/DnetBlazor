@@ -9,7 +9,7 @@ namespace Dnet.Blazor.Components.Tooltip.Infrastructure.Interfaces
     {
         OverlayReference Show(TooltipConfig tooltipConfig, ElementReference elementReference);
 
-        OverlayReference Show<TComponent>(TooltipConfig tooltipConfig, ElementReference elementReference) where TComponent : ComponentBase;
+        OverlayReference Show<TComponent>(TooltipConfig tooltipConfig, IDictionary<string, object> parameters, ElementReference elementReference) where TComponent : ComponentBase;
 
         void Close(OverlayResult overlayDataResult);
     }
