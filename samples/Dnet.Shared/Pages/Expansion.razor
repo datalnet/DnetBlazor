@@ -39,71 +39,21 @@
 
 	private int _selectedId;
 
-
-
-
-
-
-
 	private int _previousSelectedId;
 
-
-
-
-
-
-
 	private DnetExpansionPanel _dnetExpansionPanel;
-
-
-
-
-
-
 
 	private bool _isExpanded { get; set; }
 
 
-
-
-
-
-
 	public void ExpandedChanged(DnetExpansionPanelItem expansionPanelItem)
-
-
-
 	{
-
-
-
 		var panel = expansionPanelItem;
-
-
-
 	}
 
-
-
-
-
-
-
 	private void Expand()
-
-
-
 	{
-
-
-
 		_isExpanded = !_isExpanded;
-
-
-
 		_dnetExpansionPanel.ExpandAll(_isExpanded);
-
-
-
 	}
 }

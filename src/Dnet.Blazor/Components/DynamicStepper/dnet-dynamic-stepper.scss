@@ -21,6 +21,9 @@
     justify-content: flex-start;
     opacity: 1;
     visibility: visible;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
 }
 
 .dnet-dstep-header.hidden {
