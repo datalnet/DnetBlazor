@@ -32,8 +32,8 @@
                             <DnetDatePicker @bind-Value="@_formData.DepartureDay"
                                 OnDaySelected="DaySelected" PlaceHolder="Departure day"
                                 Format="@_datepickerFormat" MaxDayValue="DateTime.Now"
-                                MinDayValue="DateTime.Now.AddDays(-10)" FirstDayToShow="DateTime.Now"
-                                            DatepickerFilter="(p) => { return p.DayIndex == 0; }">
+                                Formats="@(new string[] {"yyyy/MM/dd","yyyy/M/d","dd/MM/yyyy","d/M/yyyy"})"
+                                >
                             </DnetDatePicker>
                         </ChildContent>
                         <SufixContent>
@@ -60,7 +60,9 @@
                         <ChildContent>
                             <DnetDatePickerWeek @ref="_datepickerWeek" @bind-Value="_formData1.DepartureDay"
                                 Disabled="false" OnWeekSelected="DaySelectedWeek" PlaceHolder="Current week"
-                                Format="@_datepickerFormat" FirstDayToShow="DateTime.Now"
+                                Format="@_datepickerFormat" 
+                                
+                                FirstDayToShow="DateTime.Now"
                                 DatepickerFilter="(p) => { return p.DayIndex == 0; }"
                                 ComponentTheme="@Blazor.Infrastructure.Enums.ComponentTheme.Raw">
                             </DnetDatePickerWeek>
