@@ -21,21 +21,16 @@
 
 @inject IOverlayService OverlayService
 
-<input @ref="__inputReference"
-       value="@BindConverter.FormatValue(CurrentValue)"
-       @onchange="@(async (ChangeEventArgs __e) => { CurrentValue = await UpdateTextValue(__e.Value.ToString()); })"
-       disabled="@Disabled"
-       class="@_inputTextClass"
-       @onfocusin=@(() => ToggleMenu())
-       @onfocus="@(() => Focus())"
-       @onblur="@(() => Blur())" 
-       placeholder="@PlaceHolder"/>
-
+<input @ref="__inputReference" @bind="CurrentValue" disabled="@Disabled" class="@_inputTextClass" @onfocusin=@(() =>
+    ToggleMenu()) @onfocus="@(() => Focus())" @onblur="@(() => Blur())" placeholder="@PlaceHolder" />
 
 @code {
 
     [CascadingParameter]
     private FormFieldCascadingValues? _formFieldCascadingValues { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnError { get; set; }
 
     [DisallowNull]
     public ElementReference __inputReference { get; protected set; }
@@ -45,6 +40,9 @@
 
     [Parameter]
     public string Format { get; set; } = $"yyyy/MM/dd";
+
+    [Parameter]
+    public string[] Formats { get; set; } = new[] { "yyyy/MM/dd", "yyyy/M/dd", "yyyy/MM/d" };
 
     [Parameter]
     public DateTime? MaxDayValue { get; set; }
@@ -70,6 +68,9 @@
     [Parameter]
     public string? PlaceHolder { get; set; }
 
+    [Parameter]
+    public bool ShowInternalErrors { get; set; } = true;
+
 
     private bool _isOpen = false;
 
@@ -88,9 +89,11 @@
     private bool _previousDisabled;
 
     private string _inputTextClass =>
-        new CssBuilder("mat-input-element")
-            .AddClass(CssClass)
-            .Build();
+    new CssBuilder("mat-input-element")
+    .AddClass(CssClass)
+    .Build();
+
+    private ValidationMessageStore? _messageStore;
 
 
     protected override void OnInitialized()
@@ -113,7 +116,7 @@
             if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
         }
 
-        _datePickerService.OnDaySelected += DaySelected;
+        _datePickerService.OnDaySelected += DaySelectedAsync;
 
         if (_formEventService is not null)
         {
@@ -127,6 +130,26 @@
         }
 
         _previousDisabled = Disabled;
+
+        if(!ShowInternalErrors) return;
+
+        if (EditContext is not null)
+        {
+            _messageStore = new(EditContext);
+
+            EditContext.OnFieldChanged += async (data, eventArgs) =>
+            {
+                _messageStore.Clear(FieldIdentifier);
+
+                DateTime selectedDay;
+                if (!DateTime.TryParseExact(CurrentValue, Formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out selectedDay))
+                {
+                    await OnError.InvokeAsync($"Invalid Date format. valid formats: {string.Join(", ", Formats)}");
+
+                    _messageStore.Add(FieldIdentifier, $"Invalid Date format. valid formats: {string.Join(", ", Formats)}");
+                }
+            };
+        }
     }
 
     protected override void OnParametersSet()
@@ -141,11 +164,32 @@
         }
     }
 
+    private async void DaySelectedAsync(CalendarDay day)
+    {
+        await HandleDaySelectedAsync(day);
+    }
+
     protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
     {
-        result = value;
-        validationErrorMessage = null;
-        return true;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            result = "";
+            validationErrorMessage = null;
+            return true;
+        }
+
+        if (DateTime.TryParseExact(value, Formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
+        {
+            result = parsedDate.ToString(Formats[0]);
+            validationErrorMessage = null;
+            return true;
+        }
+        else
+        {
+            result = null;
+            validationErrorMessage = $"Fecha inválida. Formatos aceptados: {string.Join(", ", Formats)}";
+            return false;
+        }
     }
 
     private void ToggleMenu()
@@ -173,23 +217,23 @@
                 OriginY = VerticalConnectionPos.Bottom,
                 OverlayX = HorizontalConnectionPos.Start,
                 OverlayY = VerticalConnectionPos.Top
-            },
-            new ConnectedPosition
-            {
+                },
+                new ConnectedPosition
+                {
                 OriginX = HorizontalConnectionPos.Start,
                 OriginY = VerticalConnectionPos.Top,
                 OverlayX = HorizontalConnectionPos.Start,
                 OverlayY = VerticalConnectionPos.Bottom
-            },
-            new ConnectedPosition
-            {
+                },
+                new ConnectedPosition
+                {
                 OriginX = HorizontalConnectionPos.End,
                 OriginY = VerticalConnectionPos.Bottom,
                 OverlayX = HorizontalConnectionPos.End,
                 OverlayY = VerticalConnectionPos.Top
-            },
-            new ConnectedPosition
-            {
+                },
+                new ConnectedPosition
+                {
                 OriginX = HorizontalConnectionPos.End,
                 OriginY = VerticalConnectionPos.Top,
                 OverlayX = HorizontalConnectionPos.End,
@@ -198,11 +242,11 @@
         };
 
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
-            .WithLockedPosition()
-            .WithViewportMargin(8)
-            .SetOrigin(_formFieldCascadingValues.FormField)
-            .WithFlexibleDimensions(false)
-            .WithPositions(positions);
+        .WithLockedPosition()
+        .WithViewportMargin(8)
+        .SetOrigin(_formFieldCascadingValues.FormField)
+        .WithFlexibleDimensions(false)
+        .WithPositions(positions);
 
         var connectedPanelConfig = new OverlayConfig()
             {
@@ -218,7 +262,11 @@
 
         if (!string.IsNullOrEmpty(CurrentValue))
         {
-            selectedDay = DateTime.ParseExact(CurrentValue, Format ?? "yyyy/MM/dd", CultureInfo.InvariantCulture);
+            if (DateTime.TryParseExact(CurrentValue, Formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime
+            parsedDate))
+            {
+                selectedDay = parsedDate;
+            }
         }
 
         _selectedDay.Year = selectedDay.Year;
@@ -245,15 +293,19 @@
 
     private void DetachMenu()
     {
-        _isOpen = false;
+        if (_menuReference != null)
+        {
+            _isOpen = false;
 
-        var result = new OverlayResult
-            {
-                OverlayReferenceId = _menuReference.GetOverlayReferenceId(),
-                CloseReason = CloseReason.Cancel
-            };
+            var result = new OverlayResult
+                {
+                    OverlayReferenceId = _menuReference.GetOverlayReferenceId(),
+                    CloseReason = CloseReason.Cancel
+                };
 
-        OverlayService.Detach(result);
+            OverlayService.Detach(result);
+            _menuReference = null;
+        }
     }
 
     void CloseDialog(OverlayResult overlayDataResult)
@@ -264,48 +316,58 @@
     private async Task<string> UpdateTextValue(string dayValue)
     {
         DateTime selectedDay;
-        CalendarDay day = null;
+        CalendarDay day = default!;
         var currentValue = "";
 
         if (!string.IsNullOrEmpty(dayValue))
         {
-            selectedDay = DateTime.ParseExact(CurrentValue, Format ?? "yyyy/MM/dd", CultureInfo.InvariantCulture);
-
-            day = GetCalendarDay((DateTime)selectedDay);
-
-            currentValue = !EvaluateMinMaxDates(day) ? dayValue : "";
-
-            if (!string.IsNullOrEmpty(currentValue))
+            if (DateTime.TryParseExact(dayValue, Formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out selectedDay))
             {
-                day.Date = new DateTime(day.Year, day.Month, day.DayNumber);
+                day = GetCalendarDay(selectedDay);
+                currentValue = !EvaluateMinMaxDates(day) ? dayValue : "";
 
-                day.FormattedDate = day.Date.ToString(Format ?? "yyyy/MM/dd");
+                if (!string.IsNullOrEmpty(currentValue))
+                {
+                    day.Date = new DateTime(day.Year, day.Month, day.DayNumber);
+                    day.FormattedDate = day.Date.ToString(Formats[0]);
 
-                _hasFocus = true;
+                    _hasFocus = true;
 
-                if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+                    if (_formEventService is not null)
+                        _formEventService.RaiseFocus(_hasFocus);
 
-                await OnDaySelected.InvokeAsync(day);
+                    _selectedDay = day;
+                }
+                else
+                {
+                    _hasFocus = false;
+
+                    if (_formEventService is not null)
+                        _formEventService.RaiseFocus(_hasFocus);
+                }
             }
             else
             {
-                _hasFocus = false;
-
-                if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+                currentValue = "";
+                if (OnError.HasDelegate)
+                {
+                    await OnError.InvokeAsync($"Invalid Date format. valid formats: {string.Join(", ", Formats)}");
+                }
             }
         }
 
-        if (EditContext is not null)
+        if (EditContext != null)
         {
             _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null)
+                _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
         }
 
         return currentValue;
     }
 
-    private async void DaySelected(CalendarDay day)
+    private async Task HandleDaySelectedAsync(CalendarDay day)
     {
         _selectedDay = day;
 
@@ -314,32 +376,30 @@
         if (day.DayNumber != 0 && day.Month != 0 && day.Year != 0)
         {
             day.Date = new DateTime(day.Year, day.Month, day.DayNumber);
-
-            value = day.Date.ToString(Format ?? "yyyy/MM/dd");
-
+            value = day.Date.ToString(Formats[0]);
             day.FormattedDate = value;
+
+            CurrentValue = await UpdateTextValue(value.ToString());
+        }
+        else
+        {
+            CurrentValue = string.Empty;
         }
 
-        CurrentValue = value;
+        _hasFocus = !string.IsNullOrEmpty(CurrentValue);
 
-        _hasFocus = !string.IsNullOrEmpty(CurrentValue) ? true : false;
-
-        if (EditContext is not null)
+        if (EditContext != null)
         {
             _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService != null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
         }
 
-        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
-
-        await ValueChanged.InvokeAsync(value);
-
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
+        if (_formEventService != null) _formEventService.RaiseFocus(_hasFocus);
 
         await OnDaySelected.InvokeAsync(_selectedDay);
 
-        DetachMenu();
+        if (_isOpen) DetachMenu();
 
         StateHasChanged();
     }
@@ -358,14 +418,16 @@
         var filterEvaluation = false;
 
         if (minCalendarDay != null)
-            minEvaluation = (day.DayNumber < minCalendarDay.DayNumber && day.Year == minCalendarDay.Year && day.Month == minCalendarDay.Month) ||
-                            day.Year < minCalendarDay.Year ||
-                            (day.Month < minCalendarDay.Month && day.Year == minCalendarDay.Year);
+            minEvaluation = (day.DayNumber < minCalendarDay.DayNumber && day.Year == minCalendarDay.Year && day.Month ==
+            minCalendarDay.Month) ||
+            day.Year < minCalendarDay.Year ||
+            (day.Month < minCalendarDay.Month && day.Year == minCalendarDay.Year);
 
         if (maxCalendarDay != null)
-            maxEvaluation = (day.DayNumber > maxCalendarDay.DayNumber && day.Year == maxCalendarDay.Year && day.Month == maxCalendarDay.Month) ||
-                            day.Year > maxCalendarDay.Year ||
-                            (day.Month > maxCalendarDay.Month && day.Year == maxCalendarDay.Year);
+            maxEvaluation = (day.DayNumber > maxCalendarDay.DayNumber && day.Year == maxCalendarDay.Year && day.Month ==
+            maxCalendarDay.Month) ||
+            day.Year > maxCalendarDay.Year ||
+            (day.Month > maxCalendarDay.Month && day.Year == maxCalendarDay.Year);
 
         if (DatepickerFilter != null)
             filterEvaluation = DatepickerFilter(day);
@@ -420,11 +482,13 @@
         }
     }
 
-    private void ClearInput()
+    private async void ClearInput()
     {
         var day = new CalendarDay();
 
-        DaySelected(day);
+        await HandleDaySelectedAsync(day);
+
+        StateHasChanged();
     }
 
     private void SufixContentClicked()
@@ -445,7 +509,7 @@
 
         if (_menuReference != null) _menuReference.Close -= CloseDialog;
 
-        _datePickerService.OnDaySelected -= DaySelected;
+        if (_datePickerService != null) _datePickerService.OnDaySelected -= DaySelectedAsync;
 
         if (_formEventService is not null)
         {

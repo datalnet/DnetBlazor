@@ -6,9 +6,10 @@
 <div>
     <div class="@_cssClasses" style="@_styles">
         @Text
-        <CascadingValue Value="OverlayReferenceId" IsFixed="true">
-            @ContentChild
-        </CascadingValue>
+        @if (ComponentType != null)
+        {
+            <DynamicComponent Type="@ComponentType" Parameters="@Parameters" />
+        }
     </div>
 </div>
 
@@ -17,6 +18,12 @@
 
     [Parameter]
     public RenderFragment? ContentChild { get; set; }
+
+    [Parameter]
+    public Type? ComponentType { get; set; } = null;
+
+    [Parameter]
+    public IDictionary<string, object>? Parameters { get; set; }
 
     [Parameter]
     public string? Text { get; set; }

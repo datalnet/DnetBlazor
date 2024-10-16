@@ -1,6 +1,7 @@
 ﻿@page "/Tooltip"
 
 @using Dnet.App.Shared.Infrastructure.Entities
+@using Dnet.App.Shared.Pages.TooltipContent
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Interfaces
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Models
@@ -17,10 +18,18 @@
     </div>
 
     <div class="dnet-m-l-30 dnet-m-t-30">
-        <div @ref="_tooltipTarget" style="width: 100px; height: 100px; background-color: #4fc3f7; position: absolute; top: 50%; left: 50%; display: flex; align-items: center; justify-content:center"
+        <div @ref="_tooltipTarget" style="width: 100px; height: 100px; background-color: #4fc3f7; position: absolute; top: 50%; left: 45%; display: flex; align-items: center; justify-content:center"
              @onmouseover="ShowTooltip"
              @onmouseout="HideTooltip">
             <span style="color: #FFFFFF">Show tooltip</span>
+        </div>
+    </div>
+
+    <div class="dnet-m-l-30 dnet-m-t-30">
+        <div @ref="_tooltipComponentTarget" style="width: 100px; height: 100px; background-color: #4fc3f7; position: absolute; top: 50%; left: 65%; display: flex; align-items: center; justify-content:center; text-align: center"
+             @onmouseover="ShowTooltipWithComponent"
+             @onmouseout="HideTooltipWithComponent">
+            <span style="color: #FFFFFF">Show tooltip with component</span>
         </div>
     </div>
 </div>
@@ -29,8 +38,12 @@
 @code {
 
     private ElementReference _tooltipTarget;
+    
+    private ElementReference _tooltipComponentTarget;
 
     private OverlayReference _tooltipReference;
+
+    private OverlayReference _tooltipComponentReference;
 
     public void ShowTooltip()
     {
@@ -50,6 +63,28 @@
     public void HideTooltip()
     {
         TooltipService.Close(new OverlayResult { OverlayReferenceId = _tooltipReference.GetOverlayReferenceId() });
+    }
+
+    public void ShowTooltipWithComponent()
+    {
+        var tooltipConfig = new TooltipConfig()
+        {
+            MaxWidth = "400px",
+            MinWidth = "100px",
+            TooltipColor = "rgba(97,97,97,1)"
+        };
+        
+        var parameters = new Dictionary<string, object>
+        {
+            { "Title", "Tooltip with component" }
+        };
+
+        _tooltipComponentReference = TooltipService.Show<TestTooltipContent>(tooltipConfig, parameters, _tooltipComponentTarget);
+    }
+
+    public void HideTooltipWithComponent()
+    {
+        TooltipService.Close(new OverlayResult { OverlayReferenceId = _tooltipComponentReference.GetOverlayReferenceId() });
     }
 }
 

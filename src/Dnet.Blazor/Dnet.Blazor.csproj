@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
@@ -10,6 +10,7 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
+		<PackageVersion>4.10.0</PackageVersion>
 		<PackageVersion>4.9.2</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
@@ -31,6 +32,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.6" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.8" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.8" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
