@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Dnet.Blazor.Components.Overlay.Infrastructure.Models
 {
-    public struct FlexibleConnectedPositionStrategyBuilder
+    public class FlexibleConnectedPositionStrategyBuilder
     {
 
         private bool _isPushed;

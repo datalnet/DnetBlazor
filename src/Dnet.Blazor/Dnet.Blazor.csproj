@@ -15,7 +15,9 @@
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- New Dynamic Stepper component.
+			- Fix Datepicker bugs.
+			- Add custom content to menu Item
+			- Optimize overlay performance
 		</PackageReleaseNotes>
 	</PropertyGroup>
 

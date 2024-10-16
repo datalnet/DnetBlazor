@@ -1,6 +1,6 @@
 ﻿namespace Dnet.Blazor.Components.Overlay.Infrastructure.Models
 {
-    public struct GlobalPositionStrategyBuilder
+    public class GlobalPositionStrategyBuilder
     {
 
         private string _topOffset;

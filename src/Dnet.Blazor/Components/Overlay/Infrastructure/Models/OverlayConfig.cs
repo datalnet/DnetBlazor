@@ -40,8 +40,8 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Models
 
         public PositionStrategy PositionStrategy { get; set; } = PositionStrategy.Global;
 
-        public GlobalPositionStrategyBuilder GlobalPositionStrategy { get; set; }
+        public GlobalPositionStrategyBuilder GlobalPositionStrategy { get; set; } = new();
 
-        public FlexibleConnectedPositionStrategyBuilder FlexibleConnectedPositionStrategyBuilder { get; set; }
+        public FlexibleConnectedPositionStrategyBuilder FlexibleConnectedPositionStrategyBuilder { get; set; } = new();
     }
 }

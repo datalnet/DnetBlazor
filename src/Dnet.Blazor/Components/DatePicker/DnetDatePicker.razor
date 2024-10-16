@@ -22,7 +22,7 @@
 @inject IOverlayService OverlayService
 
 <input @ref="__inputReference" @bind="CurrentValue" disabled="@Disabled" class="@_inputTextClass" @onfocusin=@(() =>
-    ToggleMenu()) @onfocus="@(() => Focus())" @onblur="@(() => Blur())" placeholder="@PlaceHolder" />
+       ToggleMenu()) @onfocus="@(() => Focus())" @onblur="@(() => Blur())" placeholder="@PlaceHolder" />
 
 @code {
 
@@ -98,6 +98,8 @@
 
     protected override void OnInitialized()
     {
+        if (!string.IsNullOrEmpty(Format) && !Formats.Any()) Formats[0] = Format;
+
         _formEventService = _formFieldCascadingValues.FormEventService;
 
         _datePickerService = new DatePickerService();
@@ -131,7 +133,7 @@
 
         _previousDisabled = Disabled;
 
-        if(!ShowInternalErrors) return;
+        if (!ShowInternalErrors) return;
 
         if (EditContext is not null)
         {

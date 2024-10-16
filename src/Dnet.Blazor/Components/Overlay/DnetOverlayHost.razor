@@ -85,7 +85,7 @@
 
             _viewportMargin = builder.ViewportMargin();
 
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -231,7 +231,8 @@
         }
 
         _styles = hostStyles;
-        StateHasChanged();
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task<ClientRect> CalculateBoundingBoxRect(Point origin, ConnectedPosition position)

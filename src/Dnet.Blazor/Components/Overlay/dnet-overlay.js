@@ -2,30 +2,56 @@
 
 window.dnetoverlay = (function () {
 
-    var sub = {};
+    //var sub = {};
+    var subs = new Map();
 
     return {
 
+        //addWindowEventListeners: function (dotnetClass) {
+
+        //    var Rx = window['rxjs'];
+
+        //    var change = Rx.merge(Rx.fromEvent(window, 'resize'), Rx.fromEvent(window, 'orientationchange')).pipe(Rx.operators.auditTime(100));
+
+        //    sub = change.subscribe((e) => {
+
+        //        dotnetClass.invokeMethodAsync('OnWindowResized', {
+        //            Width: window.innerWidth,
+        //            Height: window.innerHeight
+        //        });
+        //    });
+
+        //    return true;
+        //},
+
+        //removeWindowEventListeners: function () {
+
+        //    sub.unsubscribe();
+        //},
         addWindowEventListeners: function (dotnetClass) {
-
             var Rx = window['rxjs'];
+            var change = Rx.merge(
+                Rx.fromEvent(window, 'resize'),
+                Rx.fromEvent(window, 'orientationchange')
+            ).pipe(Rx.operators.auditTime(100));
 
-            var change = Rx.merge(Rx.fromEvent(window, 'resize'), Rx.fromEvent(window, 'orientationchange')).pipe(Rx.operators.auditTime(100));
-
-            sub = change.subscribe((e) => {
-
+            var subscription = change.subscribe((e) => {
                 dotnetClass.invokeMethodAsync('OnWindowResized', {
                     Width: window.innerWidth,
                     Height: window.innerHeight
                 });
             });
 
+            subs.set(dotnetClass, subscription);
             return true;
         },
 
-        removeWindowEventListeners: function () {
-
-            sub.unsubscribe();
+        removeWindowEventListeners: function (dotnetClass) {
+            var subscription = subs.get(dotnetClass);
+            if (subscription) {
+                subscription.unsubscribe();
+                subs.delete(dotnetClass);
+            }
         },
 
         getViewportScrollPosition: function () {

@@ -59,7 +59,7 @@
 
              ViewportRuler.OnResized += UpdateWindowsSize;
 
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
