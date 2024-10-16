@@ -148,6 +148,8 @@
 
                     _messageStore.Add(FieldIdentifier, $"Invalid Date format. valid formats: {string.Join(", ", Formats)}");
                 }
+
+                if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
             };
         }
     }
@@ -397,6 +399,8 @@
 
         if (_formEventService != null) _formEventService.RaiseFocus(_hasFocus);
 
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+
         await OnDaySelected.InvokeAsync(_selectedDay);
 
         if (_isOpen) DetachMenu();
@@ -487,6 +491,8 @@
         var day = new CalendarDay();
 
         await HandleDaySelectedAsync(day);
+
+        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
         StateHasChanged();
     }

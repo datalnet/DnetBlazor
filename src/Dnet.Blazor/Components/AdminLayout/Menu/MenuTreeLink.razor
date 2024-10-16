@@ -27,6 +27,20 @@
                     <span class="dnet-menu-text">@Menu.MinifiedText</span>
                 }
             }
+            else if (Menu is not null && Menu.CustomContent != null)
+            {
+                <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
+                    @Menu.CustomContent
+                    @if (_desktopLayout is not null && (!_desktopLayout.GetIsMinified() || (_desktopLayout.GetIsMinified() && !Menu.IsNode)))
+                    {
+                        <span class="dnet-menu-text">@Menu.Text</span>
+                    }
+                    else
+                    {
+                        <span class="dnet-menu-text">@Menu.MinifiedText</span>
+                    }
+                </div>
+            }
             else
             {
                 <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
@@ -76,10 +90,16 @@
             @if (_desktopLayout is not null && (!_desktopLayout.GetIsMinified() || (_desktopLayout.GetIsMinified() && !Menu.IsNode)))
             {
                 <div class="dnet-tree-cmp-link-indicator no-minified"></div>
-                 @if (!string.IsNullOrEmpty(Menu.IconClass))
+                @if (!string.IsNullOrEmpty(Menu.IconClass))
                 {
                     <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
                         <span class="@Menu.IconClass"></span>
+                    </div>
+                }
+                else if (Menu is not null && Menu.CustomContent != null)
+                {
+                    <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
+                        @Menu.CustomContent
                     </div>
                 }
                 <span class="dnet-menu-text">@Menu.Text</span>
@@ -91,6 +111,12 @@
                 {
                     <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
                         <span class="@Menu.IconClass"></span>
+                    </div>
+                }
+                else if (Menu is not null && Menu.CustomContent != null)
+                {
+                    <div class="dnet-menu-img" style="background-color: transparent; border-color: white">
+                        @Menu.CustomContent
                     </div>
                 }
                 <span class="dnet-menu-text">@Menu.MinifiedText</span>
