@@ -95,3 +95,7 @@ datalnet_com.key
 .vscode/tasks.json
 
 src/.DS_Store
+
+samples/Dnet.Shared/.DS_Store
+
+src/Dnet.Blazor/.DS_Store
