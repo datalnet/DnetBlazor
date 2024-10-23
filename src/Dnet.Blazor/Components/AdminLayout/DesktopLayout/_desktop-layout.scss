@@ -76,3 +76,23 @@
         }
     }
 }
+
+@media only screen and (max-width: 768px) {
+    .dnet-grid-container {
+        grid-template-columns: minmax(var(--dnet-dash-left-column-width), auto) calc(100dvw - var(--dnet-dash-left-column-width) - var(--dnet-dash-right-column-width)) minmax(var(--dnet-dash-right-column-width), auto);
+        grid-template-areas:
+            "left header right"
+            "left content right"
+            "left footer right";
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .dnet-grid-container {
+        grid-template-columns: minmax(var(--dnet-dash-left-column-width), auto) calc(100dvw - var(--dnet-dash-left-column-width) - var(--dnet-dash-right-column-width)) minmax(var(--dnet-dash-right-column-width), auto);
+        grid-template-areas:
+            "left header right"
+            "left content right"
+            "left footer right";
+    }
+}

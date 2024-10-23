@@ -21,8 +21,15 @@
 
 @inject IOverlayService OverlayService
 
-<input @ref="__inputReference" @bind="CurrentValue" disabled="@Disabled" class="@_inputTextClass" @onfocusin=@(() =>
-       ToggleMenu()) @onfocus="@(() => Focus())" @onblur="@(() => Blur())" placeholder="@PlaceHolder" />
+@* <input @ref="__inputReference" @bind="CurrentValue" disabled="@Disabled" class="@_inputTextClass" @onfocusin=@(() =>
+       ToggleMenu()) @onfocus="@(() => Focus())" @onblur="@(() => Blur())" placeholder="@PlaceHolder" /> *@
+<input @ref="__inputReference" @bind="CurrentValue" disabled="@Disabled" class="@_inputTextClass"
+       @onfocusin="@(() => ToggleMenu())"
+       @onfocus="@(() => Focus())"
+       @onblur="@(() => Blur())"
+       @onkeydown="HandleKeyDown"
+       placeholder="@PlaceHolder" />
+
 
 @code {
 
@@ -165,6 +172,14 @@
             _previousDisabled = Disabled;
 
             OnDisabledChanged();
+        }
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" || e.Key == "Tab")
+        {
+            DetachMenu();
         }
     }
 
