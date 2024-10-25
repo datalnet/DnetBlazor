@@ -24,20 +24,12 @@
 
 @inject IOverlayService OverlayService
 
-<input @ref="__inputReference" 
-       @attributes="AdditionalAttributes" 
-       class="@_inputTextClass"
-       value="@BindConverter.FormatValue(CurrentValue)"
-       @onfocus=@(() => Focus()) @onblur=@(() => Blur())
-       @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" 
-       @onfocusin=@(() => OpenMenu())
-       @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) 
-       @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
-       @onclick:stopPropagation="true" 
-       @onclick:preventDefault="true" 
-       placeholder="@PlaceHolder"
-       disabled="@Disabled"
-       autocomplete="none" />
+<input @ref="__inputReference" @attributes="AdditionalAttributes" class="@_inputTextClass"
+    value="@BindConverter.FormatValue(CurrentValue)" @onfocus=@(() => Focus()) @onblur=@(() => Blur())
+    @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" @onfocusin=@(() => OpenMenu())
+    @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
+    @onclick:stopPropagation="true" @onclick:preventDefault="true" placeholder="@PlaceHolder" disabled="@Disabled"
+    autocomplete="none" />
 
 @code {
 
@@ -138,6 +130,9 @@
 
     [Parameter]
     public string? OverlayPanelClass { get; set; }
+
+    [Parameter]
+    public string PanelLabel { get; set; } = string.Empty;
 
 
     private bool _isOpen;
@@ -274,7 +269,7 @@
 
                 var item = items.FirstOrDefault();
 
-                if(_autoCompleteListService is not null) _autoCompleteListService.UdateList(items);
+                if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(items);
 
                 if (item == null)
                 {
@@ -285,7 +280,7 @@
             }
             else
             {
-                if(_autoCompleteListService is not null) _autoCompleteListService.UdateList(_items);
+                if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(_items);
 
                 _itemSelected = default;
 
@@ -376,7 +371,7 @@
 
                     var item = items.FirstOrDefault();
 
-                    if(_autoCompleteListService is not null) _autoCompleteListService.UdateList(items);
+                    if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(items);
 
                     if (item == null)
                     {
@@ -387,7 +382,7 @@
                 }
                 else
                 {
-                    if(_autoCompleteListService is not null) _autoCompleteListService.UdateList(_items);
+                    if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(_items);
 
                     _itemSelected = default;
 
@@ -496,36 +491,36 @@
     private void AttachMenu()
     {
         var positions = new List<ConnectedPosition>
-                        {
-                            new()
-                            {
-                                OriginX = HorizontalConnectionPos.Start,
-                                OriginY = VerticalConnectionPos.Bottom,
-                                OverlayX = HorizontalConnectionPos.Start,
-                                OverlayY = VerticalConnectionPos.Top
-                            },
-                            new()
-                            {
-                                OriginX = HorizontalConnectionPos.Start,
-                                OriginY = VerticalConnectionPos.Top,
-                                OverlayX = HorizontalConnectionPos.Start,
-                                OverlayY = VerticalConnectionPos.Bottom
-                            },
-                            new()
-                            {
-                                OriginX = HorizontalConnectionPos.End,
-                                OriginY = VerticalConnectionPos.Bottom,
-                                OverlayX = HorizontalConnectionPos.End,
-                                OverlayY = VerticalConnectionPos.Top
-                            },
-                            new()
-                            {
-                                OriginX = HorizontalConnectionPos.End,
-                                OriginY = VerticalConnectionPos.Top,
-                                OverlayX = HorizontalConnectionPos.End,
-                                OverlayY = VerticalConnectionPos.Bottom
-                            }
-                        };
+{
+new()
+{
+OriginX = HorizontalConnectionPos.Start,
+OriginY = VerticalConnectionPos.Bottom,
+OverlayX = HorizontalConnectionPos.Start,
+OverlayY = VerticalConnectionPos.Top
+},
+new()
+{
+OriginX = HorizontalConnectionPos.Start,
+OriginY = VerticalConnectionPos.Top,
+OverlayX = HorizontalConnectionPos.Start,
+OverlayY = VerticalConnectionPos.Bottom
+},
+new()
+{
+OriginX = HorizontalConnectionPos.End,
+OriginY = VerticalConnectionPos.Bottom,
+OverlayX = HorizontalConnectionPos.End,
+OverlayY = VerticalConnectionPos.Top
+},
+new()
+{
+OriginX = HorizontalConnectionPos.End,
+OriginY = VerticalConnectionPos.Top,
+OverlayX = HorizontalConnectionPos.End,
+OverlayY = VerticalConnectionPos.Bottom
+}
+};
 
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
         .WithLockedPosition()
@@ -574,6 +569,7 @@
             x.AddAttribute(7, "ChildContent", ItemChildContent);
             x.AddAttribute(10, "CurrentValue", CurrentValue);
             x.AddAttribute(11, "FooterContent", FooterContent);
+            x.AddAttribute(12, "PanelLabel", PanelLabel);
             x.CloseComponent();
         });
 
