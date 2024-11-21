@@ -45,6 +45,8 @@
                                               PlaceHolder="Jhon Doe"
                                               SortBy="@sortBy"
                                               FilterBy="@filterBy"
+                                              OnFocus="HandleFocus"
+                                              OnFocusin="HandleFocusin"
                                               PanelLabel="Esta es una prueba khgaDKLGFK KGKLADG FKGa lkgaFKGka kGAFKLGkagf jlagFHLKGaf aFJLGafk lAFKGLa">
                             </DnetAutocomplete>
                         </ChildContent>
@@ -245,6 +247,16 @@
         operatorCount--;
 
         StateHasChanged();
+    }
+
+    private async Task HandleFocus(string value)
+    {
+        var tt = value;
+    }
+
+    private async Task HandleFocusin(string value)
+    {
+        var tt = value;
     }
 
     public class DnetOperator

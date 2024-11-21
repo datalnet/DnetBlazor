@@ -46,6 +46,12 @@
     public EventCallback<string> OnStopTyping { get; set; }
 
     [Parameter]
+    public EventCallback<string> OnFocus { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnFocusin { get; set; }
+
+    [Parameter]
     public EventCallback<bool> OnClearInput { get; set; }
 
     [Parameter]
@@ -413,6 +419,8 @@
 
         AttachMenu();
 
+        await OnFocusin.InvokeAsync(CurrentValueAsString);
+
         _isOpen = true;
     }
 
@@ -491,36 +499,36 @@
     private void AttachMenu()
     {
         var positions = new List<ConnectedPosition>
-{
-new()
-{
-OriginX = HorizontalConnectionPos.Start,
-OriginY = VerticalConnectionPos.Bottom,
-OverlayX = HorizontalConnectionPos.Start,
-OverlayY = VerticalConnectionPos.Top
-},
-new()
-{
-OriginX = HorizontalConnectionPos.Start,
-OriginY = VerticalConnectionPos.Top,
-OverlayX = HorizontalConnectionPos.Start,
-OverlayY = VerticalConnectionPos.Bottom
-},
-new()
-{
-OriginX = HorizontalConnectionPos.End,
-OriginY = VerticalConnectionPos.Bottom,
-OverlayX = HorizontalConnectionPos.End,
-OverlayY = VerticalConnectionPos.Top
-},
-new()
-{
-OriginX = HorizontalConnectionPos.End,
-OriginY = VerticalConnectionPos.Top,
-OverlayX = HorizontalConnectionPos.End,
-OverlayY = VerticalConnectionPos.Bottom
-}
-};
+        {
+            new()
+            {
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.Start,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.Start,
+                OverlayY = VerticalConnectionPos.Bottom
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Bottom,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Top
+            },
+            new()
+            {
+                OriginX = HorizontalConnectionPos.End,
+                OriginY = VerticalConnectionPos.Top,
+                OverlayX = HorizontalConnectionPos.End,
+                OverlayY = VerticalConnectionPos.Bottom
+            }
+        };
 
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
         .WithLockedPosition()
@@ -548,9 +556,16 @@ OverlayY = VerticalConnectionPos.Bottom
 
         var items = new List<TItem>();
 
-        if (!string.IsNullOrEmpty(CurrentValueAsString))
+        if(!EnableServerSide)
         {
-            items = FilterAndSort(CurrentValueAsString);
+            if (!string.IsNullOrEmpty(CurrentValueAsString))
+            {
+                items = FilterAndSort(CurrentValueAsString);
+            }
+            else
+            {
+                items = _items;
+            }
         }
         else
         {
@@ -598,9 +613,11 @@ OverlayY = VerticalConnectionPos.Bottom
         _isOpen = false;
     }
 
-    private void Focus()
+    private async Task Focus()
     {
         _hasFocus = true;
+
+        await OnFocus.InvokeAsync(CurrentValueAsString);
 
         if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
 

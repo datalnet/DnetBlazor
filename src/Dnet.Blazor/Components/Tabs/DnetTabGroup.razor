@@ -15,7 +15,7 @@
         <div @ref="_tabLabelContainer" class="mat-tab-label-container">
             <div @ref="_tabList" class="mat-tab-list" style="transform: translateX(@_transformX)">
                 <div class="mat-tab-labels">
-                    @foreach (var tab in Tabs.OrderBy(p => p.Order))
+                    @foreach (var tab in _tabs.OrderBy(p => p.Order))
                     {
                         <div @ref="@tab.TabElementReference" 
                              class="mat-tab-label mat-focus-indicator @(_selectedId == tab.Id ? "mat-tab-label-active" : null) @(tab.Disabled ? "mat-tab-disabled" : null)" 
@@ -77,7 +77,7 @@
 
     private DnetTab _selectedTab;
 
-    public List<DnetTab> Tabs = new List<DnetTab>();
+    public List<DnetTab> _tabs = new List<DnetTab>();
 
     private RenderFragment _activeTabContent;
 
@@ -115,9 +115,9 @@
     {
         if (firstRender)
         {
-            if (Tabs.Any())
+            if (_tabs.Any())
             {
-                _activeTabContent = Tabs.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent;
+                _activeTabContent = _tabs.FirstOrDefault(p => p.Id == _selectedId)?.ChildContent;
             }
 
             _tabListScrollWidth = await DnetInterop.GetElementScrollWidth(JSRuntime, _tabList);
@@ -138,7 +138,7 @@
 
         tabIds.Add(tab.Id);
 
-        Tabs.Add(tab);
+        _tabs.Add(tab);
 
         StateHasChanged();
     }
@@ -157,7 +157,7 @@
 
         _selectedTab = tab;
 
-        _activeTabContent = Tabs.FirstOrDefault(p => p.Id == tab.Id)?.ChildContent;
+        _activeTabContent = _tabs.FirstOrDefault(p => p.Id == tab.Id)?.ChildContent;
 
         await ScrollToLabel();
 
@@ -249,6 +249,11 @@
     {
         Before = 1,
         After
+    }
+
+    public List<DnetTab> GetTabs()
+    {
+        return _tabs;
     }
 
 }

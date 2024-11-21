@@ -10,13 +10,12 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>4.13.0</PackageVersion>
+		<PackageVersion>4.14.4</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Add enter and tab response to Autocomplete.
-			- Add optional Label to Autocomplete panel
+			- Fix connected panel styling.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
