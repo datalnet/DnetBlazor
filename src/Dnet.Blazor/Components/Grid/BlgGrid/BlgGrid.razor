@@ -663,13 +663,13 @@
         _lastColumnPosition = 0;
 
         _searchModel = new SearchModel
-        {
-            PaginationModel = new PaginationModel
             {
-                CurrentPage = GridOptions.PaginationStartPage,
-                PageSize = GridOptions.PaginationPageSize
-            }
-        };
+                PaginationModel = new PaginationModel
+                {
+                    CurrentPage = GridOptions.PaginationStartPage,
+                    PageSize = GridOptions.PaginationPageSize
+                }
+            };
 
         _treeRn = BuildRowNodes();
 
@@ -683,15 +683,15 @@
     private TreeRowNode<TItem> InitializeTree()
     {
         var treeRn = new TreeRowNode<TItem>
-        {
-            Data = new RowNode<TItem>
             {
-                IsGroup = true,
-                Show = false,
-                Expanded = true
-            },
-            Children = new List<TreeRowNode<TItem>>()
-        };
+                Data = new RowNode<TItem>
+                {
+                    IsGroup = true,
+                    Show = false,
+                    Expanded = true
+                },
+                Children = new List<TreeRowNode<TItem>>()
+            };
 
         return treeRn;
     }
@@ -735,18 +735,18 @@
         foreach (var data in _gridData)
         {
             treeRn.Children.Add(new TreeRowNode<TItem>
-            {
-                Data = new RowNode<TItem>
                 {
-                    RowNodeId = GetId(),
-                    RowData = data,
-                    Show = true,
-                    Expanded = true,
-                    AdvShow = true
-                },
-                Children = new List<TreeRowNode<TItem>>(),
-                ColumnName = ""
-            });
+                    Data = new RowNode<TItem>
+                    {
+                        RowNodeId = GetId(),
+                        RowData = data,
+                        Show = true,
+                        Expanded = true,
+                        AdvShow = true
+                    },
+                    Children = new List<TreeRowNode<TItem>>(),
+                    ColumnName = ""
+                });
         }
 
         return treeRn;
@@ -858,17 +858,17 @@
                 if (gridColumn.CellDataType != CellDataType.None && !string.IsNullOrEmpty(gridColumn.Filter))
                 {
                     filterList.Add(new FilterModel
-                    {
-                        Filter = gridColumn.Filter,
-                        DataDield = gridColumn.DataField,
-                        Type = gridColumn.CellDataType
-                    });
+                        {
+                            Filter = gridColumn.Filter,
+                            DataDield = gridColumn.DataField,
+                            Type = gridColumn.CellDataType
+                        });
                 }
 
             var cellParams = new CellParams<TItem>
-            {
-                GridApi = _gridApi,
-            };
+                {
+                    GridApi = _gridApi,
+                };
 
             _treeRn = FilteringService.FilterBy(_treeRn, filterList, _gridColumns, cellParams);
 
@@ -895,15 +895,15 @@
                     };
 
                     var advancedFilterModel = new AdvancedFilterModel
-                    {
-                        AdditionalOperator = FilterOperator.None,
-                        AdditionalValue = null,
-                        Column = gridColumn.DataField,
-                        Condition = FilterCondition.None,
-                        Operator = filterOperator,
-                        Type = gridColumn.CellDataType,
-                        Value = gridColumn.Filter
-                    };
+                        {
+                            AdditionalOperator = FilterOperator.None,
+                            AdditionalValue = null,
+                            Column = gridColumn.DataField,
+                            Condition = FilterCondition.None,
+                            Operator = filterOperator,
+                            Type = gridColumn.CellDataType,
+                            Value = gridColumn.Filter
+                        };
 
                     filterModels.Add(advancedFilterModel);
                 }
@@ -925,9 +925,9 @@
         else
         {
             var cellParams = new CellParams<TItem>
-            {
-                GridApi = _gridApi,
-            };
+                {
+                    GridApi = _gridApi,
+                };
 
             _treeRn = AdvancedFilteringService.FilterBy(_treeRn, advancedFilterList, _gridColumns, cellParams);
             OnAdvancedFilterChanged.InvokeAsync(_searchModel);
@@ -952,9 +952,9 @@
     private async void SortBy(GridColumn<TItem> gridColumn)
     {
         var cellParams = new CellParams<TItem>
-        {
-            GridApi = _gridApi,
-        };
+            {
+                GridApi = _gridApi,
+            };
 
         if (gridColumn.SortStatus == SortOrder.None && !GridOptions.EnableServerSideSorting)
         {
@@ -964,10 +964,10 @@
         }
 
         _searchModel.SortModel = new SortModel
-        {
-            ColumnName = gridColumn.DataField,
-            Order = gridColumn.SortStatus
-        };
+            {
+                ColumnName = gridColumn.DataField,
+                Order = gridColumn.SortStatus
+            };
 
         if (GridOptions.EnableServerSideSorting)
         {
@@ -1007,9 +1007,9 @@
         }
 
         var cellParams = new CellParams<TItem>
-        {
-            GridApi = _gridApi,
-        };
+            {
+                GridApi = _gridApi,
+            };
 
         for (var i = 0; i < _renderedRowNodes.Count; ++i)
         {
@@ -1124,17 +1124,17 @@
         if (GridOptions.EnableServerSideGrouping)
         {
             OnGroupingChanged.InvokeAsync(new GroupModel()
-            {
-                ColumnName = dataField,
-                Operation = GroupOperation.Add
-            });
+                {
+                    ColumnName = dataField,
+                    Operation = GroupOperation.Add
+                });
         }
         else
         {
             var cellParams = new CellParams<TItem>
-            {
-                GridApi = _gridApi,
-            };
+                {
+                    GridApi = _gridApi,
+                };
 
             var lastId = _nextId;
 
@@ -1171,19 +1171,19 @@
         if (GridOptions.EnableServerSideGrouping)
         {
             OnGroupingChanged.InvokeAsync(new GroupModel()
-            {
-                ColumnName = dataField,
-                Operation = GroupOperation.Delete
-            });
+                {
+                    ColumnName = dataField,
+                    Operation = GroupOperation.Delete
+                });
         }
         else
         {
             var lastId = _nextId;
 
             var cellParams = new CellParams<TItem>
-            {
-                GridApi = _gridApi,
-            };
+                {
+                    GridApi = _gridApi,
+                };
 
             var gridColumn = _gridColumns.Find(e => e.DataField == dataField);
 
@@ -1459,6 +1459,8 @@
 
         var rowNodes = selectedRowNodes.Where(p => p.RowData is not null).ToList();
 
+        if (_blgCenter is not null) _blgCenter.SelectallNotify(value);
+
         await OnSelectionChanged.InvokeAsync(rowNodes);
     }
 
@@ -1651,15 +1653,15 @@
             };
 
             var advancedFilterModel = new AdvancedFilterModel
-            {
-                AdditionalOperator = FilterOperator.None,
-                AdditionalValue = null,
-                Column = filterModel.DataDield,
-                Condition = FilterCondition.None,
-                Operator = filterOperator,
-                Type = filterModel.Type,
-                Value = filterModel.Filter
-            };
+                {
+                    AdditionalOperator = FilterOperator.None,
+                    AdditionalValue = null,
+                    Column = filterModel.DataDield,
+                    Condition = FilterCondition.None,
+                    Operator = filterOperator,
+                    Type = filterModel.Type,
+                    Value = filterModel.Filter
+                };
 
             advancedFilterModels.Add(advancedFilterModel);
         }

@@ -10,12 +10,12 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>4.14.4</PackageVersion>
+		<PackageVersion>4.14.5</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Fix connected panel styling.
+			- Fix grid selection bug after select all and deselect all.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 

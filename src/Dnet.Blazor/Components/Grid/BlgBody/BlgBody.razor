@@ -327,6 +327,76 @@
                 return foundParent;
             }
         }
+
         return null;
+    }
+
+   public void SelectallNotify(bool isSelected)
+    {
+        var tree = GridApi.GetTreeRowNodes();
+
+        if (isSelected)
+        {
+            foreach (var rowNode in RowNodes)
+            {
+                ManageSelectionsForSelectAll(rowNode, isSelected, tree);
+            }
+        }
+        else
+        {
+            foreach (var rowNode in RowNodes)
+            {
+                rowNode.SelectThisNode(false);
+            }
+            _selectedRowNodes = new Dictionary<long, RowNode<TItem>>();
+        }
+    }
+
+    private void ManageSelectionsForSelectAll(RowNode<TItem> rowNode, bool isSelected, TreeRowNode<TItem> tree)
+    {
+        rowNode.SelectThisNode(isSelected);
+        if (isSelected)
+        {
+            _selectedRowNodes[rowNode.RowNodeId] = rowNode;
+        }
+        else
+        {
+            _selectedRowNodes.Remove(rowNode.RowNodeId);
+        }
+
+        if (rowNode.IsGroup)
+        {
+            var found = Find(tree, n => n.Data.RowNodeId == rowNode.RowNodeId);
+            if (found != null)
+            {
+                var flat = FlattenTree(found, isSelected);
+                foreach (var item in flat)
+                {
+                    item.SelectThisNode(isSelected);
+                    if (isSelected)
+                    {
+                        _selectedRowNodes[item.RowNodeId] = item;
+                    }
+                    else
+                    {
+                        _selectedRowNodes.Remove(item.RowNodeId);
+                    }
+                }
+
+                var parentNode = FindParent(tree, rowNode.RowNodeId);
+                if (parentNode != null && AreAllChildrenInDesiredState(parentNode, isSelected))
+                {
+                    parentNode.Data.SelectThisNode(isSelected);
+                    if (isSelected)
+                    {
+                        _selectedRowNodes[parentNode.Data.RowNodeId] = parentNode.Data;
+                    }
+                    else
+                    {
+                        _selectedRowNodes.Remove(parentNode.Data.RowNodeId);
+                    }
+                }
+            }
+        }
     }
 }
