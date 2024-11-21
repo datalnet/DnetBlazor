@@ -1,8 +1,4 @@
-﻿using Dnet.Blazor.Components.Grid.BlgRow;
-using Microsoft.AspNetCore.Components;
-using System.Collections.Generic;
-
-namespace Dnet.Blazor.Components.Grid.Infrastructure.Entities
+﻿namespace Dnet.Blazor.Components.Grid.Infrastructure.Entities
 {
     public class RowNode<TItem>
     {
