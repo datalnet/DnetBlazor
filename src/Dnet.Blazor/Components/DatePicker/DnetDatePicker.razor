@@ -147,31 +147,6 @@
             EditContext.OnFieldChanged += async (data, eventArgs) =>
             {
                 _messageStore.Clear(FieldIdentifier);
-
-                DateTime curDay;
-                
-                if (!DateTime.TryParseExact(CurrentValue, Formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out curDay))
-                {
-                    await OnError.InvokeAsync($"Invalid Date format. valid formats: {string.Join(", ", Formats)}");
-
-                    _messageStore.Add(FieldIdentifier, $"Invalid Date format. valid formats: {string.Join(", ", Formats)}");
-                }
-                else
-                {
-                    if (_selectedDay.DayNumber != curDay.Day ||
-                        _selectedDay.Month != curDay.Month || 
-                        _selectedDay.Year != curDay.Year)
-                    {
-                        var newDay = new CalendarDay();
-                        newDay.DayNumber = curDay.Day;
-                        newDay.Month = curDay.Month;
-                        newDay.Year = curDay.Year;
-                    
-                        await HandleDaySelectedAsync(newDay);
-                    }
-                }
-
-                if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
             };
         }
     }
@@ -187,14 +162,6 @@
             OnDisabledChanged();
         }
     }
-
-    // private void HandleKeyDown(KeyboardEventArgs e)
-    // {
-    //     if (e.Key == "Enter" || e.Key == "Tab")
-    //     {
-    //         DetachMenu();
-    //     }
-    // }
 
     private async void HandleKeyDown(KeyboardEventArgs e)
     {
@@ -233,10 +200,6 @@
                 if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
                 await OnDaySelected.InvokeAsync(_selectedDay);
-
-                if (_isOpen) DetachMenu();
-
-                StateHasChanged();
             }
             else
             {
@@ -244,7 +207,24 @@
                 {
                     await OnError.InvokeAsync($"Invalid Date format. Valid formats: {string.Join(", ", Formats)}");
                 }
+
+                if (_messageStore is not null)
+                {
+                    _messageStore.Clear();
+
+                    _messageStore.Add(FieldIdentifier, $"Invalid Date format. valid formats: {string.Join(", ", Formats)}");
+                }
+
+                _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+                if (_formEventService != null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+
+
             }
+
+            if (_isOpen) DetachMenu();
+
+            StateHasChanged();
         }
     }
 
@@ -392,8 +372,63 @@
         }
     }
 
-    void CloseDialog(OverlayResult overlayDataResult)
+    private async void CloseDialog(OverlayResult overlayDataResult)
     {
+        if (DateTime.TryParseExact(CurrentValue, Formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
+        {
+            var day = GetCalendarDay(parsedDate);
+
+            _selectedDay = day;
+
+            var value = "";
+
+            if (day.DayNumber != 0 && day.Month != 0 && day.Year != 0)
+            {
+                day.Date = new DateTime(day.Year, day.Month, day.DayNumber);
+                value = day.Date.ToString(Formats[0]);
+                day.FormattedDate = value;
+            }
+            else
+            {
+                CurrentValue = string.Empty;
+            }
+
+            _hasFocus = !string.IsNullOrEmpty(CurrentValue);
+
+            if (EditContext != null)
+            {
+                _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+                if (_formEventService != null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            }
+
+            if (_formEventService != null) _formEventService.RaiseFocus(_hasFocus);
+
+            if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+
+            await OnDaySelected.InvokeAsync(_selectedDay);
+
+            StateHasChanged();
+        }
+        else
+        {
+            if (OnError.HasDelegate)
+            {
+                await OnError.InvokeAsync($"Invalid Date format. Valid formats: {string.Join(", ", Formats)}");
+            }
+
+            if (_messageStore is not null)
+            {
+                _messageStore.Clear();
+
+                _messageStore.Add(FieldIdentifier, $"Invalid Date format. valid formats: {string.Join(", ", Formats)}");
+            }
+
+            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+            if (_formEventService != null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        }
+
         _isOpen = false;
     }
 

@@ -62,6 +62,7 @@ namespace Dnet.Blazor.Components.DatePicker
             set
             {
                 var hasChanged = !EqualityComparer<TValue>.Default.Equals(value, Value);
+
                 if (hasChanged)
                 {
                     Value = value;
