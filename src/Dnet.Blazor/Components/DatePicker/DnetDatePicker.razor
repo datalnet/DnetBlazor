@@ -148,12 +148,27 @@
             {
                 _messageStore.Clear(FieldIdentifier);
 
-                DateTime selectedDay;
-                if (!DateTime.TryParseExact(CurrentValue, Formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out selectedDay))
+                DateTime curDay;
+                
+                if (!DateTime.TryParseExact(CurrentValue, Formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out curDay))
                 {
                     await OnError.InvokeAsync($"Invalid Date format. valid formats: {string.Join(", ", Formats)}");
 
                     _messageStore.Add(FieldIdentifier, $"Invalid Date format. valid formats: {string.Join(", ", Formats)}");
+                }
+                else
+                {
+                    if (_selectedDay.DayNumber != curDay.Day ||
+                        _selectedDay.Month != curDay.Month || 
+                        _selectedDay.Year != curDay.Year)
+                    {
+                        var newDay = new CalendarDay();
+                        newDay.DayNumber = curDay.Day;
+                        newDay.Month = curDay.Month;
+                        newDay.Year = curDay.Year;
+                    
+                        await HandleDaySelectedAsync(newDay);
+                    }
                 }
 
                 if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
