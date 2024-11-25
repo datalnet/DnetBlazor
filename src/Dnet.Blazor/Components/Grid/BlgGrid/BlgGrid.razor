@@ -1621,6 +1621,8 @@
 
         if (_blgHeader != null) _blgHeader.ActiveRender();
 
+        if (_blgCenter is not null) _blgCenter.SelectallNotify(false);
+
         await Update();
     }
 
