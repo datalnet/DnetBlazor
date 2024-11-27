@@ -41,16 +41,12 @@
                 €
             </SufixContent>
             <ErrorContent>
-                @* <ValidationMessage For="@(() => _person.LastName)" /> *@
             </ErrorContent>
-            <HintContent>
-                <ValidationMessage For="@(() => new FieldIdentifier(_editContext, "MiCampo"))" />
-            </HintContent>
         </DnetFormField>
 
         <DnetFormField Label="Email" UseClearButton="true" IsRequired="true">
             <ChildContent>
-                <DnetInputText @bind-Value="_person.Email" PlaceHolder="Ex. Email" type="text" Disabled="@(string.IsNullOrEmpty(_person.LastName))">
+                <DnetInputText @bind-Value="_person.Email" PlaceHolder="Ex. Email" Disabled="@(string.IsNullOrEmpty(_person.LastName))">
                 </DnetInputText>
             </ChildContent>
             <ErrorContent>
@@ -63,7 +59,7 @@
                 <DnetSelect TValue="string" @bind-Value="_person.Gender" Items="_genders"
                                       TItem="Gender" DisplayValueConverter="(value) => (value.Name)"
                                       ValueConverter="(value) => (value.Name)" OnItemSelected="ApiResource1ItemSelected"
-                                      PlaceHolder="" Label="Api Resource"
+                                      PlaceHolder=""
                                       >
                 </DnetSelect>
             </ChildContent>
@@ -142,7 +138,7 @@
 
         <DnetFormField Label="Amount">
             <ChildContent>
-                <DnetInputNumber @bind-Value="_person.Amount" PlaceHolder="">
+                <DnetInputNumber TValue="double?" @bind-Value="_person.Amount" PlaceHolder="" ImmediateResponse="true">
                 </DnetInputNumber>
             </ChildContent>
             <ErrorContent>
@@ -165,17 +161,9 @@
 
 @code {
 
-    private Person _person { get; set; } = new Person()
-        {
-            Name = "John",
-            LastName = "Doe",
-            Email = "john.doe@datalnet.com",
-            Phone = "678 89 90 09",
-            Age = 34,
-            Company = "Datalnet",
-            Balance = "90000",
-            Address = "597 Frost Street, Brogan, Indiana, 8687",
-        };
+   
+
+    private Person _person { get; set; }
 
     private EditContext? _editContext;
 
@@ -240,6 +228,19 @@
 
     protected override void OnInitialized()
     {
+         var person = new Person()
+        {
+            Name = "John",
+            LastName = "Doe",
+            Email = "john.doe@datalnet.com",
+            Phone = "678 89 90 09",
+            Age = 34,
+            Company = "Datalnet",
+            Balance = "90000",
+            Address = "597 Frost Street, Brogan, Indiana, 8687",
+        };
+        _person = person;
+
         _leftListOptions = GetListOptions();
         _leftListOptions.HeaderText = "Left";
         _leftListOptions.ContainerName = "LeftContainer";
