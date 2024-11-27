@@ -19,7 +19,7 @@
     <input @ref="__inputReference "
            @attributes="AdditionalAttributes"
            class="@_inputTextClass"
-           value="@BindConverter.FormatValue(CurrentValueAsString)"
+           value="CurrentValueAsString"
            @onchange="HandleChange"
            @onfocus=@(() => Focus())
            @onblur=@(() => Blur())
@@ -72,9 +72,10 @@ else
     public bool Disabled { get; set; }
 
     [Parameter]
-    public bool ImmediateResponse { get; set; } = true;
+    public bool ImmediateResponse { get; set; } = false;
 
-    [Parameter] public string ParsingErrorMessage { get; set; } = "The {0} field must be a number.";
+    [Parameter] 
+    public string ParsingErrorMessage { get; set; } = "The {0} field must be a number.";
 
     [DisallowNull]
     public ElementReference? __inputReference { get; protected set; }
@@ -149,7 +150,7 @@ else
         _styles = new StyleBuilder("margin-right", "10px")
                   .Build();
 
-        _formEventService = _formFieldCascadingValues.FormEventService;
+        _formEventService = _formFieldCascadingValues?.FormEventService;
 
         if (ImmediateResponse)
         {
@@ -195,7 +196,7 @@ else
         }
     }
 
-    public void HandleChangeDebouncedDiscard(Object source, ElapsedEventArgs e)
+    public void HandleChangeDebouncedDiscard(Object? source, ElapsedEventArgs e)
     {
         _ = HandleChangeDebounced(e);
     }
@@ -212,14 +213,14 @@ else
 
     private void ResetTimer(KeyboardEventArgs data)
     {
-        _debounceTimer.Stop();
+        _debounceTimer?.Stop();
 
-        _debounceTimer.Start();
+        _debounceTimer?.Start();
     }
 
     private void HandleChange(ChangeEventArgs e)
     {
-        CurrentValueAsString = e.Value.ToString();
+        CurrentValueAsString = e.Value?.ToString();
 
         if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
     }
@@ -252,7 +253,7 @@ else
         StateHasChanged();
     }
 
-    private void HandleOnValidationStateChanged(object sender, FieldChangedEventArgs? args)
+    private void HandleOnValidationStateChanged(object? sender, FieldChangedEventArgs? args)
     {
         if (EditContext is not null)
         {
@@ -324,9 +325,9 @@ else
         {
             EditContext?.NotifyFieldChanged(FieldIdentifier);
 
-            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+            if (EditContext is not null) _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (_formEventService is not null && EditContext is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
         }
 
         await ValueChanged.InvokeAsync(Value);
@@ -345,7 +346,7 @@ else
 
     public void Dispose()
     {
-        if (ImmediateResponse) _debounceTimer.Elapsed -= HandleChangeDebouncedDiscard;
+        if (ImmediateResponse && _debounceTimer is not null) _debounceTimer.Elapsed -= HandleChangeDebouncedDiscard;
 
         if (_formEventService is not null) _formEventService.OnClearContent -= HandleClearContent;
 
