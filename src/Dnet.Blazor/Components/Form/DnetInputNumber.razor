@@ -19,7 +19,7 @@
     <input @ref="__inputReference "
            @attributes="AdditionalAttributes"
            class="@_inputTextClass"
-           value="CurrentValueAsString"
+           value="@BindConverter.FormatValue(CurrentValueAsString)"
            @onchange="HandleChange"
            @onfocus=@(() => Focus())
            @onblur=@(() => Blur())
