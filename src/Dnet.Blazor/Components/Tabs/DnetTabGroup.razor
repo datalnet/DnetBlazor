@@ -19,7 +19,7 @@
                     {
                         <div @ref="@tab.TabElementReference" 
                              class="mat-tab-label mat-focus-indicator @(_selectedId == tab.Id ? "mat-tab-label-active" : null) @(tab.Disabled ? "mat-tab-disabled" : null)"
-                             @onclick="(() => TabClicked(tab))" visibility="@(tab.IsHidden ? "hidden" : "visible")">
+                             @onclick="(() => TabClicked(tab))" style="visibility:@(tab.IsHidden ? "hidden" : "visible")">
                             <div class="mat-tab-label-content">
 
                                 @if (tab.HeaderTemplate != null && typeof(ComponentBase).IsAssignableFrom(tab.HeaderTemplate))
