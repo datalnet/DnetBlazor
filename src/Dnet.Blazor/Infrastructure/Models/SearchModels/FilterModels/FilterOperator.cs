@@ -11,5 +11,7 @@ public enum FilterOperator
     NotContains = 6,
     GreaterThan = 7,
     LessThan = 8,
-    Range = 9
+    Range = 9,
+    GreaterThanOrEqual = 10,
+    LessThanOrEqual = 11
 }
