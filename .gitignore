@@ -101,3 +101,5 @@ samples/Dnet.Shared/.DS_Store
 src/Dnet.Blazor/.DS_Store
 
 src/Dnet.Blazor/Components/DatePicker/Infrastructure/.DS_Store
+
+src/Dnet.Blazor/Components/.DS_Store
