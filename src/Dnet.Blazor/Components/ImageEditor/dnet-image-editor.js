@@ -144,7 +144,7 @@
 
                     this._resizeEndSub = mouseupResizer$.subscribe((mouseupEvent) => {
 
-                        var resultResizeData = getResizeData(resizer.resizerType, mouseupEvent.clientX, mouseupEvent.clientY, startX, startY);
+                        var resultResizeData = getResizeData(resizer.resizerType, mouseupEvent.clientX, mouseupEvent.clientY, startX, startY, imgWidth, imgHeight, resizerMinWidth, resizerMinHeight);
 
                         targetLeft = resultResizeData.left;
                         targetTop = resultResizeData.top;
@@ -164,7 +164,7 @@
 
                             mouseMoveEvent.preventDefault();
 
-                            return getResizeData(resizer.resizerType, mouseMoveEvent.clientX, mouseMoveEvent.clientY, startX, startY);
+                            return getResizeData(resizer.resizerType, mouseMoveEvent.clientX, mouseMoveEvent.clientY, startX, startY, imgWidth, imgHeight, resizerMinWidth, resizerMinHeight);
                         }),
                         Rx.operators.takeUntil(mouseupResizer$)
                     );
@@ -183,7 +183,7 @@
         }
     }
 
-    function getResizeData(resizerType, clientX, clientY, startX, startY) {
+    function getResizeData(resizerType, clientX, clientY, startX, startY, imgWidth, imgHeight, resizerMinWidth, resizerMinHeight) {
 
         let height;
         let width;
@@ -252,6 +252,27 @@
                 break;
         }
 
+        // Clamp values to ensure crop area stays within image bounds
+        // Ensure minimum size
+        width = Math.max(width, resizerMinWidth);
+        height = Math.max(height, resizerMinHeight);
+        
+        // Ensure left boundary
+        left = Math.max(0, left);
+        
+        // Ensure top boundary  
+        top = Math.max(0, top);
+        
+        // Ensure right boundary (left + width <= imgWidth)
+        if (left + width > imgWidth) {
+            width = imgWidth - left;
+        }
+        
+        // Ensure bottom boundary (top + height <= imgHeight)
+        if (top + height > imgHeight) {
+            height = imgHeight - top;
+        }
+
         return {
             height: height,
             width: width,
@@ -265,56 +286,62 @@
         if (!imageElement) {
             throw new Error('Image element is required');
         }
-
-        // Offscreen canvas for crop+resize
-        var canvas = document.createElement('canvas');
-        var ctx = canvas.getContext('2d');
-
-        canvas.width = Math.max(1, Math.round(cropWidth));
-        canvas.height = Math.max(1, Math.round(cropHeight));
-
-        ctx.drawImage(
-            imageElement,
-            cropLeft,
-            cropTop,
-            cropWidth,
-            cropHeight,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-        // Nota: en esta rama tratamos el WASM como recurso estático.
-        // Una integración completa con Photon requerirá inicializar explícitamente
-        // el módulo wasm desde una URL conocida y usar sus helpers aquí.
-        // Mientras tanto, devolvemos el recorte usando sólo canvas.
-
-        // Resize to preview / final size usando canvas 2D
+        
+        const photon = await window.photonInit.get();
+        
+        // Create canvas with the original image
+        var sourceCanvas = document.createElement('canvas');
+        var sourceCtx = sourceCanvas.getContext('2d');
+        sourceCanvas.width = imageElement.naturalWidth || imageElement.width;
+        sourceCanvas.height = imageElement.naturalHeight || imageElement.height;
+        sourceCtx.drawImage(imageElement, 0, 0);
+        
+        // Validate crop parameters
+        const x1 = Math.max(0, Math.min(Math.round(cropLeft), sourceCanvas.width - 1));
+        const y1 = Math.max(0, Math.min(Math.round(cropTop), sourceCanvas.height - 1));
+        const w = Math.max(1, Math.min(Math.round(cropWidth), sourceCanvas.width - x1));
+        const h = Math.max(1, Math.min(Math.round(cropHeight), sourceCanvas.height - y1));
+        
+        // Photon crop expects x1, y1, x2, y2 (NOT x, y, width, height!)
+        const x2 = x1 + w;
+        const y2 = y1 + h;
+        
+        // Convert canvas to PhotonImage
+        let photonImage = photon.open_image(sourceCanvas, sourceCtx);
+        
+        // Crop using Photon (high quality) - parameters are (image, x1, y1, x2, y2)
+        let croppedImage = photon.crop(photonImage, x1, y1, x2, y2);
+        
+        // Resize if needed using Photon's resize with Lanczos3 sampling
+        let finalImage = croppedImage;
         if (targetWidth && targetHeight) {
-            var resizedCanvas = document.createElement('canvas');
-            var resizedCtx = resizedCanvas.getContext('2d');
-
-            resizedCanvas.width = Math.max(1, Math.round(targetWidth));
-            resizedCanvas.height = Math.max(1, Math.round(targetHeight));
-
-            resizedCtx.drawImage(
-                canvas,
-                0,
-                0,
-                canvas.width,
-                canvas.height,
-                0,
-                0,
-                resizedCanvas.width,
-                resizedCanvas.height
-            );
-
-            canvas = resizedCanvas;
+            const resizeW = Math.max(1, Math.min(Math.round(targetWidth), 8192)); // Max 8K dimension
+            const resizeH = Math.max(1, Math.min(Math.round(targetHeight), 8192)); // Max 8K dimension
+            
+            // Validate buffer size won't overflow (width * height * 4 channels < 2^31)
+            const bufferSize = resizeW * resizeH * 4;
+            const maxBufferSize = 2147483647; // 2^31 - 1 (safe for 32-bit WASM)
+            
+            if (bufferSize > maxBufferSize) {
+                throw new Error(`Resize dimensions too large: ${resizeW}x${resizeH} would create ${bufferSize} byte buffer (max: ${maxBufferSize})`);
+            }
+            
+            // Photon resize(img, width, height, sampling_filter)
+            // SamplingFilter: Nearest=1, Triangle=2, CatmullRom=3, Gaussian=4, Lanczos3=5
+            finalImage = photon.resize(croppedImage, resizeW, resizeH, 5); // Lanczos3 for best quality
         }
-
-        // JPEG data URL with good quality
-        return canvas.toDataURL('image/jpeg', 0.95);
+        
+        // Convert PhotonImage back to canvas
+        var resultCanvas = document.createElement('canvas');
+        resultCanvas.width = finalImage.get_width();
+        resultCanvas.height = finalImage.get_height();
+        var resultCtx = resultCanvas.getContext('2d');
+        
+        // Put image data on canvas
+        photon.putImageData(resultCanvas, resultCtx, finalImage);
+        
+        // Return high-quality JPEG
+        return resultCanvas.toDataURL('image/jpeg', 0.95);
     }
 
     return {

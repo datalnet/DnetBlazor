@@ -2,6 +2,7 @@
 
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var config = {
 
@@ -75,6 +76,21 @@ var dnetBlazor = Object.assign({}, config, {
     output: {
         path: path.resolve(__dirname, "src/Dnet.Blazor/wwwroot"),
     },
+    plugins: [
+        ...config.plugins,
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, 'node_modules/@silvia-odwyer/photon/photon_rs_bg.wasm'),
+                    to: path.resolve(__dirname, 'src/Dnet.Blazor/wwwroot/photon_rs_bg.wasm')
+                },
+                {
+                    from: path.resolve(__dirname, 'node_modules/@silvia-odwyer/photon/photon_rs.js'),
+                    to: path.resolve(__dirname, 'src/Dnet.Blazor/wwwroot/photon_rs.js')
+                }
+            ]
+        })
+    ]
 });
 
 var workingConfig = (env) => {

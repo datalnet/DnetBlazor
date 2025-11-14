@@ -163,6 +163,17 @@
     {
         _jsInterop = new DnetImageEditorInterop(this, JSRuntime);
 
+        // Initialize Photon WASM for high-quality image processing
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("photonInit.init");
+            Console.WriteLine("✅ Photon WASM pre-initialized for editor");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Photon initialization warning (will use fallback): {ex.Message}");
+        }
+
         await _jsInterop.GetBoundingClientRect(_image);
 
         var _imageSizeData = await _jsInterop.GetBoundingClientRect(_image);
