@@ -290,3 +290,28 @@ $color-reset: #000000;
         }
     }
 }
+
+/* Responsive styles for small screens */
+@media only screen and (max-width: 768px) {
+    .blg-header-container,
+    .blg-center-cols-container,
+    .blg-pinned-left-cols-container,
+    .blg-pinned-right-cols-container,
+    .blg-pinned-left-header,
+    .blg-pinned-right-header {
+        min-width: 100% !important;
+        overflow-x: auto !important;
+    }
+
+    .blg-viewport {
+        overflow-x: auto !important;
+    }
+
+    .blg-center-cols-viewport {
+        overflow-x: auto !important;
+    }
+
+    .blg-header-viewport {
+        overflow-x: auto !important;
+    }
+}
