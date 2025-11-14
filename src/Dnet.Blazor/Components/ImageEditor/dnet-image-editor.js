@@ -344,6 +344,72 @@
         return resultCanvas.toDataURL('image/jpeg', 0.95);
     }
 
+    async function flipHorizontal(imageElement) {
+        if (!imageElement) {
+            throw new Error('Image element is required');
+        }
+        
+        const photon = await window.photonInit.get();
+        
+        // Create canvas with the original image
+        var sourceCanvas = document.createElement('canvas');
+        var sourceCtx = sourceCanvas.getContext('2d');
+        sourceCanvas.width = imageElement.naturalWidth || imageElement.width;
+        sourceCanvas.height = imageElement.naturalHeight || imageElement.height;
+        sourceCtx.drawImage(imageElement, 0, 0);
+        
+        // Convert canvas to PhotonImage
+        let photonImage = photon.open_image(sourceCanvas, sourceCtx);
+        
+        // Flip horizontally
+        photon.fliph(photonImage);
+        
+        // Convert PhotonImage back to canvas
+        var resultCanvas = document.createElement('canvas');
+        resultCanvas.width = photonImage.get_width();
+        resultCanvas.height = photonImage.get_height();
+        var resultCtx = resultCanvas.getContext('2d');
+        
+        // Put image data on canvas
+        photon.putImageData(resultCanvas, resultCtx, photonImage);
+        
+        // Return high-quality JPEG
+        return resultCanvas.toDataURL('image/jpeg', 0.95);
+    }
+
+    async function flipVertical(imageElement) {
+        if (!imageElement) {
+            throw new Error('Image element is required');
+        }
+        
+        const photon = await window.photonInit.get();
+        
+        // Create canvas with the original image
+        var sourceCanvas = document.createElement('canvas');
+        var sourceCtx = sourceCanvas.getContext('2d');
+        sourceCanvas.width = imageElement.naturalWidth || imageElement.width;
+        sourceCanvas.height = imageElement.naturalHeight || imageElement.height;
+        sourceCtx.drawImage(imageElement, 0, 0);
+        
+        // Convert canvas to PhotonImage
+        let photonImage = photon.open_image(sourceCanvas, sourceCtx);
+        
+        // Flip vertically
+        photon.flipv(photonImage);
+        
+        // Convert PhotonImage back to canvas
+        var resultCanvas = document.createElement('canvas');
+        resultCanvas.width = photonImage.get_width();
+        resultCanvas.height = photonImage.get_height();
+        var resultCtx = resultCanvas.getContext('2d');
+        
+        // Put image data on canvas
+        photon.putImageData(resultCanvas, resultCtx, photonImage);
+        
+        // Return high-quality JPEG
+        return resultCanvas.toDataURL('image/jpeg', 0.95);
+    }
+
     return {
 
         setFocus: function (element) {
@@ -366,6 +432,10 @@
             initializeResize(dotNetHelper, resizers, initialLeft, initialTop, initialHeight, initialWidth, imgWidth, imgHeight, resizerType, resizerMinWidth, resizerMinHeight);
         },
 
-        cropWithPhoton: cropWithPhoton
+        cropWithPhoton: cropWithPhoton,
+        
+        flipHorizontal: flipHorizontal,
+        
+        flipVertical: flipVertical
     };
 })();

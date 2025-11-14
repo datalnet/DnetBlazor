@@ -40,7 +40,9 @@
                          ModalDialogWidth="1024"
                          MaxFileSizes="@_maxFileSizes"
                          ImageEditingControls="@(new List<ImageEditorControlType>{
-                                               ImageEditorControlType.Crop
+                                               ImageEditorControlType.Crop,
+                                               ImageEditorControlType.FlipHorizontal,
+                                               ImageEditorControlType.FlipVertical
                                            })"
                          AllowedFormats="@(new List<string>{ ImageFormat.JPEG, ImageFormat.PNG })"
                          OnImageSelected="OnImageSelected"

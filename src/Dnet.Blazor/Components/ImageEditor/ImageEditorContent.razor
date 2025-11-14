@@ -24,6 +24,14 @@
                 <span class="dnet-icon dnet-icon-crop" unselectable="on"></span>
                 <span class="dnet-icon-text" unselectable="on">Crop</span>
             </span>
+            <span @onclick="OnFlipHorizontal" class="dnet-icon-wrapper">
+                <span class="dnet-icon dnet-icon-flip-h" unselectable="on">⇄</span>
+                <span class="dnet-icon-text" unselectable="on">Flip H</span>
+            </span>
+            <span @onclick="OnFlipVertical" class="dnet-icon-wrapper">
+                <span class="dnet-icon dnet-icon-flip-v" unselectable="on">⇅</span>
+                <span class="dnet-icon-text" unselectable="on">Flip V</span>
+            </span>
         </div>
         <div class="dnet-editor-container">
             <div class="dnet-image-container">
@@ -235,6 +243,54 @@
             var bytes = Convert.FromBase64String(base64Part);
             _resulImageStream = new MemoryStream(bytes);
         }
+    }
+
+    private async Task OnFlipHorizontal()
+    {
+        // Flip horizontal usando Photon WASM
+        var dataUrl = await JSRuntime.InvokeAsync<string>(
+            "dnetimageeditor.flipHorizontal",
+            _image);
+
+        // Actualizamos la imagen actual con el flip
+        _imageUrl = dataUrl;
+        _imagePreviewUrl = dataUrl;
+
+        // Convertimos a MemoryStream
+        var commaIndex = dataUrl.IndexOf(',', StringComparison.Ordinal);
+        if (commaIndex > 0)
+        {
+            var base64Part = dataUrl.Substring(commaIndex + 1);
+            var bytes = Convert.FromBase64String(base64Part);
+            _workingImageStream = new MemoryStream(bytes);
+            _resulImageStream = new MemoryStream(bytes);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task OnFlipVertical()
+    {
+        // Flip vertical usando Photon WASM
+        var dataUrl = await JSRuntime.InvokeAsync<string>(
+            "dnetimageeditor.flipVertical",
+            _image);
+
+        // Actualizamos la imagen actual con el flip
+        _imageUrl = dataUrl;
+        _imagePreviewUrl = dataUrl;
+
+        // Convertimos a MemoryStream
+        var commaIndex = dataUrl.IndexOf(',', StringComparison.Ordinal);
+        if (commaIndex > 0)
+        {
+            var base64Part = dataUrl.Substring(commaIndex + 1);
+            var bytes = Convert.FromBase64String(base64Part);
+            _workingImageStream = new MemoryStream(bytes);
+            _resulImageStream = new MemoryStream(bytes);
+        }
+
+        StateHasChanged();
     }
 
     void IDragAndDropJsCallbacks.OnDragStart()
