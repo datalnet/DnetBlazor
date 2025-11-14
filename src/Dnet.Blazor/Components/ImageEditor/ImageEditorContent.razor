@@ -6,9 +6,6 @@
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Enums
 @using Dnet.Blazor.Components.Overlay.Infrastructure.Services
 @using Microsoft.JSInterop
-@using SixLabors.ImageSharp
-@using SixLabors.ImageSharp.Formats.Jpeg
-@using SixLabors.ImageSharp.Processing
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Dnet.Blazor.Components.Button
@@ -27,18 +24,6 @@
                 <span class="dnet-icon dnet-icon-crop" unselectable="on"></span>
                 <span class="dnet-icon-text" unselectable="on">Crop</span>
             </span>
-            @* <span @onclick="OnResize" class="dnet-icon-wrapper">
-                <span class="dnet-icon dnet-icon-resize" unselectable="on"></span>
-                <span class="dnet-icon-text" unselectable="on">Resize</span>
-                </span>
-                <span @onclick="OnRotateLeft" class="dnet-icon-wrapper">
-                <span class="dnet-icon dnet-icon-rotate-left" unselectable="on"></span>
-                <span class="dnet-icon-text" unselectable="on">Rotate Left</span>
-                </span>
-                <span @onclick="OnRotateRight" class="dnet-icon-wrapper">
-                <span class="dnet-icon dnet-icon-rotate-right" unselectable="on"></span>
-                <span class="dnet-icon-text" unselectable="on">Rotate right</span>
-                </span>*@
         </div>
         <div class="dnet-editor-container">
             <div class="dnet-image-container">
@@ -216,89 +201,29 @@
         _jsInterop.InitializeResize(_resizerData, cropBoxLeft, cropBoxTop, _cropBoxHeight, _cropBoxWidth, _imgWidth, _imgHeight, "TopCenter", 50, 50);
     }
 
-    private MemoryStream CropImage(MemoryStream fullSizeImageStream, DraggedData draggedData)
+    private async Task OnCropImage()
     {
-        using var outStream = new MemoryStream();
+        // Invocamos a Photon en el lado JS para hacer crop+resize
+        var dataUrl = await JSRuntime.InvokeAsync<string>(
+            "dnetimageeditor.cropWithPhoton",
+            _image,
+            _draggedData.Left,
+            _draggedData.Top,
+            _draggedData.Width,
+            _draggedData.Height,
+            _imgPreviewWidth,
+            _imgPreviewHeight);
 
-        using var image = Image.Load(fullSizeImageStream.ToArray());
+        _imagePreviewUrl = dataUrl;
 
-        // 1) Recortamos a la región seleccionada a resolución original
-        var cropped = image.Clone(i => i.Crop(new Rectangle(
-            Convert.ToInt32(draggedData.Left),
-            Convert.ToInt32(draggedData.Top),
-            Convert.ToInt32(draggedData.Width),
-            Convert.ToInt32(draggedData.Height))));
-
-        // 2) Redimensionamos a la resolución de salida con un resampler de alta calidad
-        cropped.Mutate(i => i.Resize(
-            new ResizeOptions
-            {
-                Size = new Size(Convert.ToInt32(_imgPreviewWidth), Convert.ToInt32(_imgPreviewHeight)),
-                Sampler = KnownResamplers.Lanczos3,
-                Mode = ResizeMode.Stretch
-            }));
-
-        // 3) Guardamos con calidad alta
-        var jpegEncoder = new JpegEncoder { Quality = 95 };
-
-        cropped.Save(outStream, jpegEncoder);
-
-        return outStream;
-    }
-
-    private void OnCropImage()
-    {
-        _resulImageStream = CropImage(_workingImageStream, _draggedData);
-
-        _imagePreviewUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(_resulImageStream.ToArray())}";
-    }
-
-    private void OnResize()
-    {
-        using var outStream = new MemoryStream();
-
-        using var image = Image.Load(_workingImageStream.ToArray());
-
-        var clone = image.Clone(i => i.Resize(Convert.ToInt32(_imgWidth), Convert.ToInt32(_imgHeight)));
-
-        var jpegEncoder = new JpegEncoder { Quality = 75 };
-
-        clone.Save(outStream, jpegEncoder);
-
-        _imagePreviewUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(outStream.ToArray())}";
-    }
-
-    private void OnRotateRight()
-    {
-        _workingImageStream = Rotate(90);
-
-        _imagePreviewUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(_workingImageStream.ToArray())}";
-
-        StateHasChanged();
-    }
-
-    private void OnRotateLeft()
-    {
-        _workingImageStream = Rotate(-90);
-
-        _imagePreviewUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(_workingImageStream.ToArray())}";
-
-        StateHasChanged();
-    }
-
-    private MemoryStream Rotate(int degree)
-    {
-        using var outStream = new MemoryStream();
-
-        using var image = Image.Load(_workingImageStream.ToArray());
-
-        var clone = image.Clone(i => i.Rotate(degree));
-
-        var jpegEncoder = new JpegEncoder { Quality = 75 };
-
-        clone.Save(outStream, jpegEncoder);
-
-        return outStream;
+        // Convertimos el data URL devuelto a MemoryStream para seguir usando el mismo contrato
+        var commaIndex = dataUrl.IndexOf(',', StringComparison.Ordinal);
+        if (commaIndex > 0)
+        {
+            var base64Part = dataUrl.Substring(commaIndex + 1);
+            var bytes = Convert.FromBase64String(base64Part);
+            _resulImageStream = new MemoryStream(bytes);
+        }
     }
 
     void IDragAndDropJsCallbacks.OnDragStart()

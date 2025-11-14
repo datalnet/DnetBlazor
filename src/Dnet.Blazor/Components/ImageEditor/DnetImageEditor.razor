@@ -11,10 +11,6 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
-@using SixLabors.ImageSharp
-@using SixLabors.ImageSharp.Formats
-@using SixLabors.ImageSharp.Formats.Jpeg
-@using SixLabors.ImageSharp.Processing
 
 @implements IDisposable
 
@@ -88,28 +84,7 @@
                 Height = $"{ModalDialogHeight}px"
             };
 
-        var image = Image.Load(fullSizeImageStream.ToArray());
-        //var jpegDecoder = new JpegDecoder();
-        //var image = await Image.LoadAsync(fullSizeImageStream, jpegDecoder);
-
-        MemoryStream workingImageStream = new();
-
-        if (image.Height > ImageContainerHeight || image.Width > ImageContainerWidth)
-        {
-            using var outStream = new MemoryStream();
-
-            var clone = image.Clone(i => i.Resize(Convert.ToInt32(ImageContainerWidth), Convert.ToInt32(ImageContainerHeight)));
-
-            var jpegEncoder = new JpegEncoder { Quality = 75 };
-
-            clone.Save(outStream, jpegEncoder);
-
-            workingImageStream = outStream;
-        }
-        else
-        {
-            workingImageStream = fullSizeImageStream;
-        }
+        var workingImageStream = fullSizeImageStream;
 
         var imageUrl = $"data:image/jpeg;base64, {Convert.ToBase64String(workingImageStream.ToArray())}";
 

@@ -7,6 +7,7 @@
   },
   "private": true,
   "dependencies": {
+    "@silvia-odwyer/photon": "^0.3.3",
     "sass": "1.60.0"
   },
   "devDependencies": {
