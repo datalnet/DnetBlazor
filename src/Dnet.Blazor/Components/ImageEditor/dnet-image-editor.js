@@ -17,6 +17,10 @@
         const areaWidth = boardArea.offsetWidth;
         const areaHeight = boardArea.offsetHeight;
 
+        // Margen horizontal para evitar que los "puntos" de los resizers
+        // se metan hacia dentro cuando el área toca los bordes.
+        const resizerHorizontalMargin = 6;
+
         let startX = 0;
         let startY = 0;
         let startLeft = 0;
@@ -34,7 +38,10 @@
 
         function applyTransform(left, top) {
 
-            const clampedLeft = Math.min(Math.max(left, 0), areaWidth - targetWidth);
+            const clampedLeft = Math.min(
+                Math.max(left, resizerHorizontalMargin),
+                areaWidth - targetWidth - resizerHorizontalMargin
+            );
             const clampedTop = Math.min(Math.max(top, 0), areaHeight - targetHeight);
 
             currentLeft = clampedLeft;
