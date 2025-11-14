@@ -222,12 +222,26 @@
 
         using var image = Image.Load(fullSizeImageStream.ToArray());
 
-        var clone = image.Clone(i => i.Crop(new Rectangle(Convert.ToInt32(draggedData.Left), Convert.ToInt32(draggedData.Top), Convert.ToInt32(draggedData.Width), Convert.ToInt32(draggedData.Height)))
-                                                                  .Resize(Convert.ToInt32(_imgPreviewWidth), Convert.ToInt32(_imgPreviewHeight)));
+        // 1) Recortamos a la región seleccionada a resolución original
+        var cropped = image.Clone(i => i.Crop(new Rectangle(
+            Convert.ToInt32(draggedData.Left),
+            Convert.ToInt32(draggedData.Top),
+            Convert.ToInt32(draggedData.Width),
+            Convert.ToInt32(draggedData.Height))));
 
-        var jpegEncoder = new JpegEncoder { Quality = 100 };
+        // 2) Redimensionamos a la resolución de salida con un resampler de alta calidad
+        cropped.Mutate(i => i.Resize(
+            new ResizeOptions
+            {
+                Size = new Size(Convert.ToInt32(_imgPreviewWidth), Convert.ToInt32(_imgPreviewHeight)),
+                Sampler = KnownResamplers.Lanczos3,
+                Mode = ResizeMode.Stretch
+            }));
 
-        clone.Save(outStream, jpegEncoder);
+        // 3) Guardamos con calidad alta
+        var jpegEncoder = new JpegEncoder { Quality = 95 };
+
+        cropped.Save(outStream, jpegEncoder);
 
         return outStream;
     }
