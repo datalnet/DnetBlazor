@@ -260,6 +260,63 @@
         };
     }
 
+    async function cropWithPhoton(imageElement, cropLeft, cropTop, cropWidth, cropHeight, targetWidth, targetHeight) {
+
+        if (!imageElement) {
+            throw new Error('Image element is required');
+        }
+
+        // Offscreen canvas for crop+resize
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+
+        canvas.width = Math.max(1, Math.round(cropWidth));
+        canvas.height = Math.max(1, Math.round(cropHeight));
+
+        ctx.drawImage(
+            imageElement,
+            cropLeft,
+            cropTop,
+            cropWidth,
+            cropHeight,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        // Nota: en esta rama tratamos el WASM como recurso estático.
+        // Una integración completa con Photon requerirá inicializar explícitamente
+        // el módulo wasm desde una URL conocida y usar sus helpers aquí.
+        // Mientras tanto, devolvemos el recorte usando sólo canvas.
+
+        // Resize to preview / final size usando canvas 2D
+        if (targetWidth && targetHeight) {
+            var resizedCanvas = document.createElement('canvas');
+            var resizedCtx = resizedCanvas.getContext('2d');
+
+            resizedCanvas.width = Math.max(1, Math.round(targetWidth));
+            resizedCanvas.height = Math.max(1, Math.round(targetHeight));
+
+            resizedCtx.drawImage(
+                canvas,
+                0,
+                0,
+                canvas.width,
+                canvas.height,
+                0,
+                0,
+                resizedCanvas.width,
+                resizedCanvas.height
+            );
+
+            canvas = resizedCanvas;
+        }
+
+        // JPEG data URL with good quality
+        return canvas.toDataURL('image/jpeg', 0.95);
+    }
+
     return {
 
         setFocus: function (element) {
@@ -280,6 +337,8 @@
 
         initializeResize: function (dotNetHelper, resizers, initialLeft, initialTop, initialHeight, initialWidth, imgWidth, imgHeight, resizerType, resizerMinWidth, resizerMinHeight) {
             initializeResize(dotNetHelper, resizers, initialLeft, initialTop, initialHeight, initialWidth, imgWidth, imgHeight, resizerType, resizerMinWidth, resizerMinHeight);
-        }
+        },
+
+        cropWithPhoton: cropWithPhoton
     };
 })();
