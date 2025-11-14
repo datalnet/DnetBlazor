@@ -17,62 +17,102 @@
         const areaWidth = boardArea.offsetWidth;
         const areaHeight = boardArea.offsetHeight;
 
-        const mousedown$ = Rx.fromEvent(draggedContainerElement, 'mousedown');
-        const mousemove$ = Rx.fromEvent(boardArea, 'mousemove');
-        const mouseup$ = Rx.fromEvent(document.body, 'mouseup').pipe(Rx.operators.take(1));
+        let startX = 0;
+        let startY = 0;
+        let startLeft = 0;
+        let startTop = 0;
+        let isDragging = false;
+        let pendingFrame = null;
+        let currentLeft = targetLeft;
+        let currentTop = targetTop;
 
-        const mousedrag$ = mousedown$.pipe(
+        const dummy = draggedContainerElement.nextElementSibling &&
+            draggedContainerElement.nextElementSibling.classList &&
+            draggedContainerElement.nextElementSibling.classList.contains('dnet-crop-box-dummy')
+            ? draggedContainerElement.nextElementSibling
+            : null;
 
-            Rx.operators.switchMap((mousedownEvent) => {
+        function applyTransform(left, top) {
 
-                const startX = mousedownEvent.clientX;
-                const startY = mousedownEvent.clientY;
+            const clampedLeft = Math.min(Math.max(left, 0), areaWidth - targetWidth);
+            const clampedTop = Math.min(Math.max(top, 0), areaHeight - targetHeight);
 
-                this._dragEndSub = mouseup$.subscribe((mouseupEvent) => {
+            currentLeft = clampedLeft;
+            currentTop = clampedTop;
 
-                    targetLeft = targetLeft + mouseupEvent.clientX - startX;
-                    targetTop = targetTop + mouseupEvent.clientY - startY;
+            // Usar left/top como fuente de verdad para posición
+            draggedContainerElement.style.left = clampedLeft + 'px';
+            draggedContainerElement.style.top = clampedTop + 'px';
 
-                    if (targetLeft < 0) targetLeft = 0;
-                    if (targetTop < 0) targetTop = 0;
-                    if (targetLeft + targetWidth > areaWidth) targetLeft = areaWidth - targetWidth;
-                    if (targetTop + targetHeight > areaHeight) targetTop = areaHeight - targetHeight;
+            if (dummy) {
+                dummy.style.left = clampedLeft + 'px';
+                dummy.style.top = clampedTop + 'px';
+            }
 
-                    dotNetHelper.invokeMethodAsync('OnDragEnd', { height: targetHeight, width: targetWidth, left: targetLeft, top:targetTop });
+            // Notificar a Blazor en el mismo frame (requestAnimationFrame ya limita a ~60fps)
+            dotNetHelper.invokeMethodAsync('OnDrag', {
+                height: targetHeight,
+                width: targetWidth,
+                left: clampedLeft,
+                top: clampedTop
+            });
+        }
+
+        function onMouseMove(e) {
+
+            if (!isDragging) return;
+
+            const newLeft = startLeft + (e.clientX - startX);
+            const newTop = startTop + (e.clientY - startY);
+
+            if (pendingFrame == null) {
+                pendingFrame = window.requestAnimationFrame(function () {
+                    pendingFrame = null;
+                    applyTransform(newLeft, newTop);
                 });
+            }
+        }
 
-                dotNetHelper.invokeMethodAsync('OnDragStart');
+        function onMouseUp(e) {
 
-                return mousemove$.pipe(
+            if (!isDragging) return;
+            isDragging = false;
 
-                    Rx.operators.map((mouseMoveEvent) => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
 
-                        mouseMoveEvent.preventDefault();
+            targetLeft = currentLeft;
+            targetTop = currentTop;
 
-                        let left = targetLeft + mouseMoveEvent.clientX - startX;
-                        let top = targetTop + mouseMoveEvent.clientY - startY;
+            dotNetHelper.invokeMethodAsync('OnDragEnd', {
+                height: targetHeight,
+                width: targetWidth,
+                left: targetLeft,
+                top: targetTop
+            });
+        }
 
-                        if (left < 0) left = 0;
-                        if (top < 0) top = 0;
-                        if (left + targetWidth > areaWidth) left = areaWidth - targetWidth;
-                        if (top + targetHeight > areaHeight) top = areaHeight - targetHeight;
+        function onMouseDown(e) {
 
-                        return {
-                            height: targetHeight,
-                            width: targetWidth,
-                            left: left,
-                            top: top
-                        };
+            e.preventDefault();
 
-                    }),
+            isDragging = true;
 
-                    Rx.operators.takeUntil(mouseup$)
-                );
-            }));
+            startX = e.clientX;
+            startY = e.clientY;
+            startLeft = targetLeft;
+            startTop = targetTop;
 
-        this._dragSub = mousedrag$.subscribe((pos) => {
-            dotNetHelper.invokeMethodAsync('OnDrag', pos);
-        });
+            dotNetHelper.invokeMethodAsync('OnDragStart');
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        // Posición inicial
+        applyTransform(targetLeft, targetTop);
+
+        draggedContainerElement.addEventListener('mousedown', onMouseDown);
     }
 
     function initializeResize(dotNetHelper, resizers, initialLeft, initialTop, initialHeight, initialWidth, imgWidth, imgHeight, resizerType, resizerMinWidth, resizerMinHeight) {
@@ -119,7 +159,6 @@
 
                             return getResizeData(resizer.resizerType, mouseMoveEvent.clientX, mouseMoveEvent.clientY, startX, startY);
                         }),
-
                         Rx.operators.takeUntil(mouseupResizer$)
                     );
                 }));
