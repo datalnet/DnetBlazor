@@ -5,6 +5,8 @@
         Crop = 1,
         Resize = 2,
         RotateClockWise = 3,
-        RotateCounterClockWise = 4
+        RotateCounterClockWise = 4,
+        FlipHorizontal = 5,
+        FlipVertical = 6
     }
 }
