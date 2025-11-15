@@ -20,10 +20,20 @@ public partial class BlgGrid<TItem>
     private async Task UpdateGridData()
     {
         var lastItemIndex = Math.Min(_itemsBefore + _visibleItemCapacity, _itemCount);
+        // Si la ventana que queremos mostrar aún no está completamente cargada
+        // en _loadedItems, mantenemos la vista anterior para evitar zonas en blanco
+        if (_loadedItems == null ||
+            _itemsBefore < _loadedItemsStartIndex ||
+            lastItemIndex > _loadedItemsStartIndex + _loadedItems.Count())
+        {
+            _updatingGridData = false;
+            return;
+        }
 
-        _itemsToShow = _loadedItems.Skip(_itemsBefore - _loadedItemsStartIndex)
-                                   .Take(lastItemIndex - _loadedItemsStartIndex)
-                                   .ToList();
+        _itemsToShow = _loadedItems
+            .Skip(_itemsBefore - _loadedItemsStartIndex)
+            .Take(lastItemIndex - _loadedItemsStartIndex)
+            .ToList();
 
         foreach (var rowNode in _itemsToShow)
             rowNode.First = false;

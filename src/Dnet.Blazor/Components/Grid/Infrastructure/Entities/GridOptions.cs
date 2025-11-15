@@ -85,6 +85,13 @@ namespace Dnet.Blazor.Components.Grid.Infrastructure.Entities
 
         public bool UseVirtualization { get; set; } = true;
 
+        /// <summary>
+        /// Number of extra items to render before and after the viewport
+        /// to reduce blank areas when scrolling fast. Similar to the
+        /// overscan behavior in Blazor's built-in Virtualize component.
+        /// </summary>
+        public int OverscanCount { get; set; } = 3;
+
         public Func<TItem, bool>? DisableRow { get; set; }
 
         public bool ShowExpandCollapseButtons { get; set; } = true;
