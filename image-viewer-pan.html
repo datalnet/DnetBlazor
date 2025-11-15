@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor de Imágenes con Pan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .viewer-container {
+            border: 3px solid #333;
+            position: relative;
+            width: 640px;
+            height: 480px;
+            overflow: hidden;
+            cursor: grab;
+            background: #e0e0e0;
+        }
+
+        .viewer-container:active {
+            cursor: grabbing;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .zoom-controls {
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 8px 15px;
+            margin: 0 5px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .instructions {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            border-radius: 5px;
+        }
+
+        .instructions h3 {
+            margin-top: 0;
+            color: #1976D2;
+        }
+
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Visor de Imágenes con Pan</h1>
+        
+        <div class="controls">
+            <input type="file" id="imageInput" accept="image/*">
+        </div>
+
+        <div class="viewer-container" id="viewerContainer">
+            <canvas id="canvas" width="640" height="480"></canvas>
+        </div>
+
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">🔍 Zoom In</button>
+            <button onclick="zoomOut()">🔍 Zoom Out</button>
+            <button onclick="resetView()">🔄 Reset</button>
+            <button onclick="fitToScreen()">📐 Ajustar a Pantalla</button>
+        </div>
+
+        <div class="info" id="info">
+            <strong>Área de visualización:</strong> 640 x 480 px<br>
+            <strong>Imagen cargada:</strong> Ninguna
+        </div>
+
+        <div class="instructions">
+            <h3>📌 Instrucciones:</h3>
+            <ul>
+                <li>Carga una imagen usando el botón de arriba</li>
+                <li>Arrastra con el mouse para hacer <strong>pan</strong> (desplazar la imagen)</li>
+                <li>Usa los botones de zoom para acercar o alejar</li>
+                <li>Usa "Reset" para volver a la vista original</li>
+                <li>Usa "Ajustar a Pantalla" para ver toda la imagen</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const imageInput = document.getElementById('imageInput');
+        const info = document.getElementById('info');
+        const viewerContainer = document.getElementById('viewerContainer');
+
+        let image = null;
+        let offsetX = 0;
+        let offsetY = 0;
+        let scale = 1;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+
+        // Cargar imagen
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    image = new Image();
+                    image.onload = function() {
+                        // Resetear vista
+                        scale = 1;
+                        offsetX = 0;
+                        offsetY = 0;
+                        
+                        // Actualizar información
+                        updateInfo();
+                        
+                        // Dibujar imagen
+                        drawImage();
+                    };
+                    image.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Dibujar imagen en el canvas
+        function drawImage() {
+            if (!image) return;
+
+            // Limpiar canvas
+            ctx.fillStyle = '#e0e0e0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Calcular dimensiones escaladas
+            const scaledWidth = image.width * scale;
+            const scaledHeight = image.height * scale;
+
+            // Dibujar imagen con offset y escala
+            ctx.drawImage(
+                image,
+                offsetX,
+                offsetY,
+                scaledWidth,
+                scaledHeight
+            );
+
+            // Dibujar borde si la imagen es más pequeña que el canvas
+            if (scaledWidth < canvas.width || scaledHeight < canvas.height) {
+                ctx.strokeStyle = '#999';
+                ctx.strokeRect(offsetX, offsetY, scaledWidth, scaledHeight);
+            }
+        }
+
+        // Eventos de mouse para pan
+        canvas.addEventListener('mousedown', function(e) {
+            if (!image) return;
+            isDragging = true;
+            startX = e.offsetX;
+            startY = e.offsetY;
+        });
+
+        canvas.addEventListener('mousemove', function(e) {
+            if (!isDragging || !image) return;
+
+            const dx = e.offsetX - startX;
+            const dy = e.offsetY - startY;
+
+            offsetX += dx;
+            offsetY += dy;
+
+            // Limitar el desplazamiento para no perder la imagen
+            const scaledWidth = image.width * scale;
+            const scaledHeight = image.height * scale;
+
+            // Permitir que la imagen se vea al menos parcialmente
+            const minOffsetX = Math.min(0, canvas.width - scaledWidth);
+            const maxOffsetX = Math.max(0, canvas.width - scaledWidth);
+            const minOffsetY = Math.min(0, canvas.height - scaledHeight);
+            const maxOffsetY = Math.max(0, canvas.height - scaledHeight);
+
+            offsetX = Math.max(minOffsetX, Math.min(maxOffsetX, offsetX));
+            offsetY = Math.max(minOffsetY, Math.min(maxOffsetY, offsetY));
+
+            startX = e.offsetX;
+            startY = e.offsetY;
+
+            drawImage();
+        });
+
+        canvas.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+
+        canvas.addEventListener('mouseleave', function() {
+            isDragging = false;
+        });
+
+        // Zoom con la rueda del mouse
+        canvas.addEventListener('wheel', function(e) {
+            if (!image) return;
+            e.preventDefault();
+
+            const zoomIntensity = 0.1;
+            const delta = e.deltaY > 0 ? -zoomIntensity : zoomIntensity;
+            const newScale = Math.max(0.1, Math.min(5, scale + delta));
+
+            // Zoom hacia el cursor
+            const mouseX = e.offsetX;
+            const mouseY = e.offsetY;
+
+            const scaleChange = newScale / scale;
+            offsetX = mouseX - (mouseX - offsetX) * scaleChange;
+            offsetY = mouseY - (mouseY - offsetY) * scaleChange;
+
+            scale = newScale;
+            drawImage();
+            updateInfo();
+        });
+
+        // Funciones de control
+        function zoomIn() {
+            if (!image) return;
+            scale = Math.min(5, scale * 1.2);
+            drawImage();
+            updateInfo();
+        }
+
+        function zoomOut() {
+            if (!image) return;
+            scale = Math.max(0.1, scale / 1.2);
+            drawImage();
+            updateInfo();
+        }
+
+        function resetView() {
+            if (!image) return;
+            scale = 1;
+            offsetX = 0;
+            offsetY = 0;
+            drawImage();
+            updateInfo();
+        }
+
+        function fitToScreen() {
+            if (!image) return;
+            const scaleX = canvas.width / image.width;
+            const scaleY = canvas.height / image.height;
+            scale = Math.min(scaleX, scaleY);
+            
+            // Centrar la imagen
+            offsetX = (canvas.width - image.width * scale) / 2;
+            offsetY = (canvas.height - image.height * scale) / 2;
+            
+            drawImage();
+            updateInfo();
+        }
+
+        function updateInfo() {
+            if (image) {
+                const scaledWidth = Math.round(image.width * scale);
+                const scaledHeight = Math.round(image.height * scale);
+                info.innerHTML = `
+                    <strong>Área de visualización:</strong> 640 x 480 px<br>
+                    <strong>Imagen original:</strong> ${image.width} x ${image.height} px<br>
+                    <strong>Escala actual:</strong> ${(scale * 100).toFixed(0)}%<br>
+                    <strong>Tamaño escalado:</strong> ${scaledWidth} x ${scaledHeight} px
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
