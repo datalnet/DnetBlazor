@@ -84,9 +84,9 @@ public partial class BlgGrid<TItem>
         // by at least one element. If we're not doing that, the previous item size info we had must
         // have been wrong, so just move along by one in that case to trigger an update and apply the
         // new size info.
-        if (itemsBefore == _itemsBefore && itemsBefore > 0)
+        if (itemsBefore == _itemsBefore && itemsBefore < _itemCount - visibleItemCapacity)
         {
-            itemsBefore--;
+            itemsBefore++;
         }
 
         UpdateItemDistribution(itemsBefore, visibleItemCapacity);
@@ -113,7 +113,8 @@ public partial class BlgGrid<TItem>
             _itemSize = GridOptions.RowHeight;
         }
 
-        itemsInSpacer = Math.Max(0, (int)Math.Floor(spacerSize / _itemSize) - 1 - OverscanCount);
+        // Align with Virtualize<TItem> in .NET 10: no extra -1
+        itemsInSpacer = Math.Max(0, (int)Math.Floor(spacerSize / _itemSize) - OverscanCount);
 
         visibleItemCapacity = (int)Math.Ceiling(containerSize / _itemSize) + 2 * OverscanCount;
     }
