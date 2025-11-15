@@ -17,9 +17,13 @@ namespace Dnet.Blazor.Infrastructure.Forms
     {
         private readonly EventHandler<ValidationStateChangedEventArgs> _validationStateChangedHandler;
         private bool _hasInitializedParameters;
+        private bool _parsingFailed;
+        private string? _incomingValueBeforeParsing;
+        private string? _formattedValueExpression;
         private bool _previousParsingAttemptFailed;
         private ValidationMessageStore? _parsingValidationMessages;
         private Type? _nullableUnderlyingType;
+        private bool _shouldGenerateFieldNames;
 
         [CascadingParameter] private EditContext? CascadedEditContext { get; set; }
 
@@ -62,7 +66,7 @@ namespace Dnet.Blazor.Infrastructure.Forms
         /// <summary>
         /// Gets the <see cref="FieldIdentifier"/> for the bound value.
         /// </summary>
-        public FieldIdentifier FieldIdentifier { get; set; }
+        protected internal FieldIdentifier FieldIdentifier { get; set; }
 
         /// <summary>
         /// Gets or sets the current value of the input.
@@ -87,29 +91,29 @@ namespace Dnet.Blazor.Infrastructure.Forms
         /// </summary>
         protected string? CurrentValueAsString
         {
-            get => FormatValueAsString(CurrentValue);
+            // Igual que InputBase de .NET 10: si el parseo falló, mantenemos el valor rechazado
+            get => _parsingFailed ? _incomingValueBeforeParsing : FormatValueAsString(CurrentValue);
             set
             {
+                _incomingValueBeforeParsing = value;
                 _parsingValidationMessages?.Clear();
-
-                bool parsingFailed;
 
                 if (_nullableUnderlyingType != null && string.IsNullOrEmpty(value))
                 {
                     // Assume if it's a nullable type, null/empty inputs should correspond to default(T)
                     // Then all subclasses get nullable support almost automatically (they just have to
                     // not reject Nullable<T> based on the type itself).
-                    parsingFailed = false;
+                    _parsingFailed = false;
                     CurrentValue = default!;
                 }
                 else if (TryParseValueFromString(value, out var parsedValue, out var validationErrorMessage))
                 {
-                    parsingFailed = false;
+                    _parsingFailed = false;
                     CurrentValue = parsedValue!;
                 }
                 else
                 {
-                    parsingFailed = true;
+                    _parsingFailed = true;
 
                     // EditContext may be null if the input is not a child component of EditForm.
                     if (EditContext is not null)
@@ -123,10 +127,10 @@ namespace Dnet.Blazor.Infrastructure.Forms
                 }
 
                 // We can skip the validation notification if we were previously valid and still are
-                if (parsingFailed || _previousParsingAttemptFailed)
+                if (_parsingFailed || _previousParsingAttemptFailed)
                 {
                     EditContext?.NotifyValidationStateChanged();
-                    _previousParsingAttemptFailed = parsingFailed;
+                    _previousParsingAttemptFailed = _parsingFailed;
                 }
             }
         }
@@ -193,6 +197,12 @@ namespace Dnet.Blazor.Infrastructure.Forms
                 {
                     EditContext = CascadedEditContext;
                     EditContext.OnValidationStateChanged += _validationStateChangedHandler;
+                    _shouldGenerateFieldNames = EditContext.ShouldUseFieldIdentifiers;
+                }
+                else
+                {
+                    // Si no hay EditContext, seguimos la misma lógica que InputBase: generamos nombres salvo en Browser
+                    _shouldGenerateFieldNames = !OperatingSystem.IsBrowser();
                 }
 
                 _nullableUnderlyingType = Nullable.GetUnderlyingType(typeof(TValue));
@@ -206,7 +216,7 @@ namespace Dnet.Blazor.Infrastructure.Forms
                 // handlers for the previous one, and there's no strong use case. If a strong use case
                 // emerges, we can consider changing this.
                 throw new InvalidOperationException($"{GetType()} does not support changing the " +
-                    $"{nameof(EditContext)} dynamically.");
+                        $"{nameof(EditContext)} dynamically.");
             }
 
             UpdateAdditionalValidationAttributes();
@@ -232,6 +242,8 @@ namespace Dnet.Blazor.Infrastructure.Forms
             var hasAriaInvalidAttribute = AdditionalAttributes != null && AdditionalAttributes.ContainsKey("aria-invalid");
             if (EditContext.GetValidationMessages(FieldIdentifier).Any())
             {
+                // Si hay errores de validación, e InputBase original tenía un valor intentado desde HTTP post, lo recuperaría aquí.
+                // Replicamos solo la parte de aria-invalid pero dejamos la infraestructura preparada.
                 if (hasAriaInvalidAttribute)
                 {
                     // Do not overwrite the attribute value
@@ -245,7 +257,7 @@ namespace Dnet.Blazor.Infrastructure.Forms
 
                 // To make the `Input` components accessible by default
                 // we will automatically render the `aria-invalid` attribute when the validation fails
-                additionalAttributes["aria-invalid"] = true;
+                additionalAttributes["aria-invalid"] = "true";
             }
             else if (hasAriaInvalidAttribute)
             {
@@ -307,6 +319,13 @@ namespace Dnet.Blazor.Infrastructure.Forms
             if (EditContext is not null)
             {
                 EditContext.OnValidationStateChanged -= _validationStateChangedHandler;
+            }
+
+            // Limpiamos mensajes de validación de parseo como hace InputBase en .NET 10
+            if (_parsingValidationMessages != null)
+            {
+                _parsingValidationMessages.Clear();
+                EditContext?.NotifyValidationStateChanged();
             }
 
             Dispose(disposing: true);
