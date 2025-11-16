@@ -20,5 +20,14 @@
 
         public string? MaxHeight { get; set; }
 
+        /// <summary>
+        /// Delay in milliseconds before showing the tooltip. Default is 0 (immediate).
+        /// </summary>
+        public int ShowDelay { get; set; } = 0;
+
+        /// <summary>
+        /// Delay in milliseconds before hiding the tooltip. Default is 0 (immediate).
+        /// </summary>
+        public int HideDelay { get; set; } = 0;
     }
 }
