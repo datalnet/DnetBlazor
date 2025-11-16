@@ -1,16 +1,60 @@
 # DnetBlazor
-Blazor component library. All components are written in C#.
-Current ver: 4.0.0 Breaking changes. Please read the Changelog https://github.com/datalnet/DnetBlazor/blob/master/Changelog.md
+Blazer component library. All components are written in C#.
+Current ver: 5.0.0 - See Changelog for latest improvements
 
 ### Demo
 https://www.datalnet.com
 
 ### Compatibility
-Net 8.0.0
+Net 10.0
 Server-side Blazor and Blazor WASM
 
 ### Documentation
 No documentation available yet, but many examples in the source code.
+
+## Recent Updates (v5.0.0)
+
+### Tooltip Component
+Enhanced with memory management and configurable delays:
+
+- **ShowDelay**: Configure delay before tooltip appears
+- **HideDelay**: Configure delay before tooltip hides
+- **Memory Leak Prevention**: Automatic cleanup of timers and references
+- **Smart Cancellation**: Intelligently handles rapid mouse movements
+
+```csharp
+@inject ITooltipService TooltipService
+
+<div @ref="_element" 
+     @onmouseover="ShowTooltip"
+     @onmouseout="HideTooltip">
+    Hover me
+</div>
+
+@code {
+    private ElementReference _element;
+    private OverlayReference _tooltipRef;
+
+    void ShowTooltip()
+    {
+        var config = new TooltipConfig()
+        {
+            Text = "I appear after 300ms!",
+            ShowDelay = 300,
+            HideDelay = 200,
+            TooltipColor = "rgba(97,97,97,1)"
+        };
+        _tooltipRef = TooltipService.Show(config, _element);
+    }
+
+    void HideTooltip()
+    {
+        TooltipService.Close(new OverlayResult { 
+            OverlayReferenceId = _tooltipRef.GetOverlayReferenceId() 
+        });
+    }
+}
+```
 
 ## Using the library
 ### Installation
