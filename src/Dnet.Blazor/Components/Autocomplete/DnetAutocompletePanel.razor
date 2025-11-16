@@ -44,7 +44,7 @@
     <div class="dnet-autocomplete-list-items">
         @if (ItemPrefixContent != null || ItemSufixContent != null || ChildContent != null)
         {
-            <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
+            <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight" OverscanCount="@OverscanCount">
                 <ItemContent>
                     <div class="dnet-autocomplete-list-item" @onclick="@(() => SelectItem(item))"
                          style="margin-bottom: 2px; height:@(ItemHeight)px">
@@ -87,7 +87,7 @@
         }
         else
         {
-            <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight">
+            <Virtualize Items="@_items" TItem="TItem" Context="item" ItemSize="@ItemHeight" OverscanCount="@OverscanCount">
                 <div class="dnet-autocomplete-list-item" @onclick="@(() => SelectItem(item))"
                      style="margin-bottom: 2px; height:@(ItemHeight)px">
                     <span class="dnet-autocomplete-list-item-headline">
@@ -147,6 +147,9 @@
 
     [Parameter]
     public int ContainerHeight { get; set; } = 200;
+
+    [Parameter]
+    public int OverscanCount { get; set; } = 3;
 
     [Parameter]
     public string PlaceHolder { get; set; } = string.Empty;

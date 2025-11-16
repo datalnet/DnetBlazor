@@ -26,7 +26,7 @@
 
 <input @ref="__inputReference" @attributes="AdditionalAttributes" class="@_inputTextClass"
     value="@BindConverter.FormatValue(CurrentValue)" @onfocus=@(() => Focus()) @onblur=@(() => Blur())
-    @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value))" @onfocusin=@(() => OpenMenu())
+    @oninput="@((ChangeEventArgs __e) => UpdateCurrentValue(__e.Value ?? string.Empty))" @onfocusin=@(() => OpenMenu())
     @onkeyup=@((KeyboardEventArgs __e) => HandleKeyUp(__e)) @onkeydown=@((KeyboardEventArgs __e) => HandleKeydown(__e))
     @onclick:stopPropagation="true" @onclick:preventDefault="true" placeholder="@PlaceHolder" disabled="@Disabled"
     autocomplete="none" />
@@ -114,6 +114,9 @@
     public int DebounceTime { get; set; } = 300;
 
     [Parameter]
+    public int OverscanCount { get; set; } = 3;
+
+    [Parameter]
     public bool InputTextToUpper { get; set; }
 
     [Parameter]
@@ -147,9 +150,12 @@
 
     private OverlayReference? _menuReference;
 
-    private Timer? _debounceTimer;
+    private CancellationTokenSource? _debounceCts;
 
     private AutoCompleteListService<TItem>? _autoCompleteListService;
+
+    private string? _lastFilterValue;
+    private List<TItem>? _cachedFilteredItems;
 
     private bool _hasFocus { get; set; }
 
@@ -159,7 +165,7 @@
 
     private bool _hasInitializedParameters;
 
-    private IFormEventService _formEventService { get; set; }
+    private IFormEventService? _formEventService { get; set; }
 
     private List<TItem> _items { get; set; } = new();
 
@@ -173,13 +179,9 @@
 
     protected override void OnInitialized()
     {
-        _formEventService = _formFieldCascadingValues.FormEventService;
+        _formEventService = _formFieldCascadingValues!.FormEventService;
 
-        _debounceTimer = new Timer(DebounceTime);
-
-        _debounceTimer.Elapsed += OnUserFinished;
-
-        _debounceTimer.AutoReset = false;
+        _debounceCts = new CancellationTokenSource();
 
         if (!string.IsNullOrEmpty(CurrentValueAsString))
         {
@@ -196,7 +198,7 @@
 
         if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
 
-        if (_formEventService is not null) _formEventService.OnClearContent += ClearInput;
+        if (_formEventService is not null) _formEventService.OnClearContent += () => _ = ClearInputAsync();
 
         if (_formEventService is not null) _formEventService.RaiseDisabledEvent(Disabled);
 
@@ -211,9 +213,11 @@
         {
             if (!EnableServerSide)
             {
-                if (SortBy == null) throw new NullReferenceException($"SortBy could not be Null");
+                if (SortBy == null)
+                    throw new ArgumentNullException(nameof(SortBy), "SortBy parameter is required when EnableServerSide is false.");
 
-                if (FilterBy == null) throw new NullReferenceException($"FilterBy could not be Null");
+                if (FilterBy == null)
+                    throw new ArgumentNullException(nameof(FilterBy), "FilterBy parameter is required when EnableServerSide is false.");
             }
 
             _hasInitializedParameters = true;
@@ -252,51 +256,57 @@
 
         _autoCompleteListService = new AutoCompleteListService<TItem>();
 
-        _autoCompleteListService.OnItemSelected += ItemSelected;
+        _autoCompleteListService.OnItemSelected += (item) => _ = ItemSelectedAsync(item);
 
-        _autoCompleteListService.OnUpdateCurrentValueFrontDialog += UpdateCurrentValueFrontDialog;
+        _autoCompleteListService.OnUpdateCurrentValueFrontDialog += (value) => _ = UpdateCurrentValueFrontDialogAsync(value);
     }
 
-    private async void UpdateCurrentValueFrontDialog(string currentValue)
+    private async Task UpdateCurrentValueFrontDialogAsync(string currentValue)
     {
-        UpdateCurrentValue(currentValue);
+        try
+        {
+            UpdateCurrentValue(currentValue);
 
-        if (EnableServerSide)
-        {
-            await OnStopTyping.InvokeAsync(CurrentValueAsString);
-        }
-        else
-        {
-            if (!string.IsNullOrEmpty(CurrentValueAsString))
+            if (EnableServerSide)
             {
-                var items = new List<TItem>();
-
-                items = FilterAndSort(CurrentValueAsString);
-
-                var item = items.FirstOrDefault();
-
-                if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(items);
-
-                if (item == null)
-                {
-                    _itemSelected = item;
-
-                    await OnItemSelected.InvokeAsync(item);
-                }
+                await OnStopTyping.InvokeAsync(CurrentValueAsString);
             }
             else
             {
-                if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(_items);
+                if (!string.IsNullOrEmpty(CurrentValueAsString))
+                {
+                    var items = FilterAndSort(CurrentValueAsString);
 
-                _itemSelected = default;
+                    var item = items.FirstOrDefault();
 
-                await OnItemSelected.InvokeAsync(_itemSelected);
+                    if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(items);
+
+                    if (item == null)
+                    {
+                        _itemSelected = item;
+
+                        await OnItemSelected.InvokeAsync(item);
+                    }
+                }
+                else
+                {
+                    if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(_items);
+
+                    _itemSelected = default;
+
+                    await OnItemSelected.InvokeAsync(_itemSelected);
+                }
             }
+
+            if (ItemPrefixContent is null && ItemSufixContent is null) return;
+
+            StateHasChanged();
         }
-
-        if (ItemPrefixContent is null && ItemSufixContent is null) return;
-
-        StateHasChanged();
+        catch (Exception ex)
+        {
+            // Log or handle exception appropriately
+            Console.Error.WriteLine($"Error updating autocomplete value: {ex.Message}");
+        }
     }
 
     private void UpdateCurrentValue(object value)
@@ -320,7 +330,7 @@
     {
         if (typeof(TValue) == typeof(string))
         {
-            result = (TValue)(object)value;
+            result = (TValue)(object)(value ?? string.Empty);
             validationErrorMessage = null;
             return true;
         }
@@ -334,7 +344,7 @@
             }
         }
 
-        result = default;
+        result = default!;
         validationErrorMessage = $"The provided value '{value}' is not valid.";
         return false;
     }
@@ -342,7 +352,8 @@
     private void HandleKeydown(KeyboardEventArgs data)
     {
         if (data.Key != "Tab") return;
-        _debounceTimer.Stop();
+        _debounceCts?.Cancel();
+        _debounceCts = new CancellationTokenSource();
         _isClosing = true;
     }
 
@@ -354,59 +365,83 @@
             return;
         }
 
-        _debounceTimer.Stop();
-
-        _debounceTimer.Start();
+        _ = HandleDebounceAsync();
     }
 
-    private async void OnUserFinished(Object? source, ElapsedEventArgs e)
+    private async Task HandleDebounceAsync()
     {
-        await InvokeAsync(async () =>
+        try
         {
-            if (EnableServerSide)
-            {
-                await OnStopTyping.InvokeAsync(CurrentValueAsString);
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(CurrentValueAsString))
+            _debounceCts?.Cancel();
+            _debounceCts = new CancellationTokenSource();
+            var currentCts = _debounceCts;
+
+            await Task.Delay(DebounceTime, currentCts.Token);
+
+            if (currentCts.IsCancellationRequested) return;
+
+            await OnUserFinishedAsync();
+        }
+        catch (TaskCanceledException)
+        {
+            // Expected when debounce is cancelled
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error in debounce handler: {ex.Message}");
+        }
+    }
+
+    private async Task OnUserFinishedAsync()
+    {
+        try
+        {
+                if (EnableServerSide)
                 {
-                    var items = new List<TItem>();
-
-                    items = FilterAndSort(CurrentValueAsString);
-
-                    var item = items.FirstOrDefault();
-
-                    if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(items);
-
-                    if (item == null)
-                    {
-                        _itemSelected = item;
-
-                        await OnItemSelected.InvokeAsync(item);
-                    }
+                    await OnStopTyping.InvokeAsync(CurrentValueAsString);
                 }
                 else
                 {
-                    if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(_items);
+                    if (!string.IsNullOrEmpty(CurrentValueAsString))
+                    {
+                        var items = FilterAndSort(CurrentValueAsString);
 
-                    _itemSelected = default;
+                        var item = items.FirstOrDefault();
 
-                    await OnItemSelected.InvokeAsync(_itemSelected);
+                        if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(items);
+
+                        if (item == null)
+                        {
+                            _itemSelected = item;
+
+                            await OnItemSelected.InvokeAsync(item);
+                        }
+                    }
+                    else
+                    {
+                        if (_autoCompleteListService is not null) _autoCompleteListService.UdateList(_items);
+
+                        _itemSelected = default;
+
+                        await OnItemSelected.InvokeAsync(_itemSelected);
+                    }
                 }
-            }
 
-            if (EditContext is not null)
-            {
-                _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+                if (EditContext is not null)
+                {
+                    _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
 
-                if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
-            }
+                    if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+                }
 
             if (ItemPrefixContent is null && ItemSufixContent is null) return;
 
-            StateHasChanged();
-        });
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error in autocomplete processing: {ex.Message}");
+        }
     }
 
     private async Task OpenMenu()
@@ -433,67 +468,81 @@
         }
     }
 
-    public async void ItemSelected(TItem item)
+    private async Task ItemSelectedAsync(TItem item)
     {
-        Func<TItem, TValue> func = ValueConverter.Compile();
-
-        Value = func(item);
-
-        _itemSelected = item;
-
-        await ValueChanged.InvokeAsync(Value);
-
-        if (!string.IsNullOrEmpty(CurrentValueAsString))
+        try
         {
-            _hasFocus = true;
+            Func<TItem, TValue> func = ValueConverter.Compile();
 
-            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+            Value = func(item);
+
+            _itemSelected = item;
+
+            await ValueChanged.InvokeAsync(Value);
+
+            if (!string.IsNullOrEmpty(CurrentValueAsString))
+            {
+                _hasFocus = true;
+
+                if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+            }
+
+            if (EditContext is not null)
+            {
+                _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+                if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            }
+
+            if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+
+            await OnItemSelected.InvokeAsync(item);
+
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+            DetachMenu();
+
+            StateHasChanged();
         }
-
-        if (EditContext is not null)
+        catch (Exception ex)
         {
-            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
-
-            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            Console.Error.WriteLine($"Error selecting autocomplete item: {ex.Message}");
         }
-
-        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
-
-        await OnItemSelected.InvokeAsync(item);
-
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
-
-        DetachMenu();
-
-        StateHasChanged();
     }
 
-    private async void ClearInput()
+    private async Task ClearInputAsync()
     {
-        CurrentValue = default(TValue);
-
-        if (EditContext is not null)
+        try
         {
-            _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+            CurrentValue = default(TValue);
 
-            if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            if (EditContext is not null)
+            {
+                _hasErrors = EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+                if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+            }
+
+            _hasFocus = false;
+
+            if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
+
+            if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
+
+            await ValueChanged.InvokeAsync(Value);
+
+            await OnClearInput.InvokeAsync(true);
+
+            EditContext?.NotifyFieldChanged(FieldIdentifier);
+
+            DetachMenu();
+
+            StateHasChanged();
         }
-
-        _hasFocus = false;
-
-        if (_formEventService is not null) _formEventService.RaiseFocus(_hasFocus);
-
-        if (_formEventService is not null) _formEventService.RaiseCurrentValue(CurrentValueAsString);
-
-        await ValueChanged.InvokeAsync(Value);
-
-        await OnClearInput.InvokeAsync(true);
-
-        EditContext?.NotifyFieldChanged(FieldIdentifier);
-
-        DetachMenu();
-
-        StateHasChanged();
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error clearing autocomplete input: {ex.Message}");
+        }
     }
 
     private void AttachMenu()
@@ -533,7 +582,7 @@
         var flexibleConnectedPositionStrategyBuilder = new FlexibleConnectedPositionStrategyBuilder()
         .WithLockedPosition()
         .WithViewportMargin(8)
-        .SetOrigin(_formFieldCascadingValues.FormField)
+        .SetOrigin(_formFieldCascadingValues!.FormField)
         .WithFlexibleDimensions(false)
         .WithPositions(positions);
 
@@ -585,6 +634,7 @@
             x.AddAttribute(10, "CurrentValue", CurrentValue);
             x.AddAttribute(11, "FooterContent", FooterContent);
             x.AddAttribute(12, "PanelLabel", PanelLabel);
+            x.AddAttribute(13, "OverscanCount", OverscanCount);
             x.CloseComponent();
         });
 
@@ -595,7 +645,7 @@
 
     private void DetachMenu()
     {
-        if (!_isOpen) return;
+        if (!_isOpen || _menuReference == null) return;
 
         var result = new OverlayResult
             {
@@ -642,20 +692,31 @@
     {
         _hasErrors = EditContext?.GetValidationMessages(FieldIdentifier).Count() > 0;
 
-        if (_formEventService is not null) _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
+        if (_formEventService is not null && EditContext is not null)
+            _formEventService.RaiseError(_hasErrors && EditContext.IsModified(FieldIdentifier));
     }
 
     public void UpdateData(List<TItem> items)
     {
         _items = items ?? new List<TItem>();
 
-        _autoCompleteListService.UdateList(items);
+        // Invalidar cache cuando cambian los datos
+        _lastFilterValue = null;
+        _cachedFilteredItems = null;
+
+        _autoCompleteListService?.UdateList(_items);
 
         StateHasChanged();
     }
 
     private List<TItem> FilterAndSort(string filterValue)
     {
+        // Cacheo: si el filterValue no ha cambiado, retornar resultado cacheado
+        if (_lastFilterValue == filterValue && _cachedFilteredItems != null)
+        {
+            return _cachedFilteredItems;
+        }
+
         var items = new List<TItem>();
 
         if (FilterBy != null)
@@ -676,12 +737,51 @@
             items = _items;
         }
 
-        if (SortBy != null)
+        // Ordenar primero por si empieza con el patrón de búsqueda, luego aplicar sort personalizado
+        if (!string.IsNullOrEmpty(filterValue) && DisplayValueConverter != null)
         {
-            var qfItems = items.AsQueryable();
-
-            items = SortBy.Apply(qfItems, filterValue, OrderStartingBySearchedString).ToList();
+            var searchPattern = filterValue.ToLower();
+            
+            // Separar items que empiezan con el patrón vs los que solo lo contienen
+            var startsWithPattern = new List<TItem>();
+            var containsPattern = new List<TItem>();
+            
+            foreach (var item in items)
+            {
+                var displayValue = DisplayValueConverter(item)?.ToLower() ?? "";
+                if (displayValue.StartsWith(searchPattern))
+                {
+                    startsWithPattern.Add(item);
+                }
+                else
+                {
+                    containsPattern.Add(item);
+                }
+            }
+            
+            // Aplicar sort personalizado a cada grupo si existe
+            if (SortBy != null)
+            {
+                var qStartsWith = startsWithPattern.AsQueryable();
+                startsWithPattern = SortBy.Apply(qStartsWith, filterValue, OrderStartingBySearchedString).ToList();
+                
+                var qContains = containsPattern.AsQueryable();
+                containsPattern = SortBy.Apply(qContains, filterValue, OrderStartingBySearchedString).ToList();
+            }
+            
+            // Combinar: primero los que empiezan, luego los que contienen
+            items = startsWithPattern.Concat(containsPattern).ToList();
         }
+        else if (SortBy != null)
+        {
+            // Si no hay filterValue, aplicar sort normal
+            var qfItems = items.AsQueryable();
+            items = SortBy.Apply(qfItems, filterValue ?? "", OrderStartingBySearchedString).ToList();
+        }
+
+        // Cachear el resultado
+        _lastFilterValue = filterValue;
+        _cachedFilteredItems = items;
 
         return items;
     }
@@ -697,10 +797,18 @@
     {
         if (_menuReference != null) _menuReference.Close -= CloseFilter;
 
-        if (_autoCompleteListService != null) _autoCompleteListService.OnItemSelected -= ItemSelected;
+        // AutoCompleteListService event handlers are using lambdas, 
+        // they will be garbage collected with this component instance
 
-        _debounceTimer.Elapsed -= OnUserFinished;
+        _debounceCts?.Cancel();
+        _debounceCts?.Dispose();
 
-        if (_formEventService is not null) _formEventService.OnClearContent -= ClearInput;
+        if (EditContext != null)
+        {
+            EditContext.OnFieldChanged -= HandleOnValidationStateChanged;
+        }
+
+        // FormEventService.OnClearContent uses lambda, 
+        // it will be garbage collected with this component instance
     }
 }
