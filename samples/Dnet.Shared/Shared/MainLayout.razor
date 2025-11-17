@@ -170,24 +170,6 @@
                 },
                 HasImage = true
             },
-            new NavigationMenu
-            {
-                MenuId = 1,
-                Text = "Inicio",
-                Link = "/home",
-                ParentId = 0,
-                HasImage = true,
-                IsNode = true,
-                Children = new List<NavigationMenu>() {
-                },
-                CustomContent = builder =>
-                {
-                    builder.OpenElement(0, "span");
-                    builder.AddAttribute(1, "style", "font-size: 1.2rem;/* padding-bottom: 5px; */height: 24px;width: 24px;margin-right:5px;display: flex;align-items: center;");
-                    builder.AddContent(2, new MarkupString("<i class=\"bi bi-question-circle\"></i>"));
-                    builder.CloseElement();
-                }
-            },
              new NavigationMenu {
                 MenuId = 10,
                 Link = "/BlGrid",
