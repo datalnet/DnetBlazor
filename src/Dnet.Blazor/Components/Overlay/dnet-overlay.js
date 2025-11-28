@@ -80,6 +80,8 @@ window.dnetoverlay = (function () {
 
         getBoundingClientRect: function (elementRef) {
 
+            if (!elementRef) return null;
+
             var tt = elementRef.getBoundingClientRect();
 
             return tt;
