@@ -256,6 +256,9 @@
 
         var originRect = await builder.GetOriginRect(DnetOverlayInterop);
 
+        // If origin element is no longer in DOM, return empty styles
+        if (originRect == null) return "";
+
         var paneContainerClientRec = await DnetOverlayInterop.GetBoundingClientRect(_paneReference);
 
         var overlayRect = new ClientRect
@@ -320,6 +323,9 @@
         var builder = OverlayConfig.FlexibleConnectedPositionStrategyBuilder;
 
         var originRect = await builder.GetOriginRect(DnetOverlayInterop);
+
+        // If origin element is no longer in DOM, return empty styles
+        if (originRect == null) return "";
 
         var hasExactPosition = builder.HasExactPosition();
 

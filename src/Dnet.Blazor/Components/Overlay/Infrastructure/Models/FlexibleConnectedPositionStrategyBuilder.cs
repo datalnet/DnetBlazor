@@ -221,6 +221,9 @@ namespace Dnet.Blazor.Components.Overlay.Infrastructure.Models
 
             _origin = await dnetOverlayInterop.GetBoundingClientRect(_originElementReference);
 
+            // Handle null response from GetBoundingClientRect (element may have been removed from DOM)
+            if (_origin == null) return null;
+
             var originRect = new ClientRect
             {
                 Top = _origin.Top,
