@@ -10,19 +10,12 @@
 		<Description>Set of Components for Blazor Framework</Description>
 		<Copyright>Datalnet</Copyright>
 		<PackageTags>Blazor-Components-Datalnet</PackageTags>
-		<PackageVersion>5.0.0</PackageVersion>
+		<PackageVersion>5.0.1</PackageVersion>
 		<PackageProjectUrl>https://datalnet.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datalnet/DnetBlazor</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- Tooltip: Added ShowDelay and HideDelay properties for configurable delays
-			- Tooltip: Implemented IDisposable pattern to prevent memory leaks
-			- Tooltip: Smart cancellation for rapid mouse movements
-			- DatePicker: Culture-aware date parsing and formatting improvements
-			- DatePicker: Enhanced validation with EditContext integration
-			- Grid: Performance improvements and optimizations
-			- ImageEditor: Improvements and bug fixes
-			- Added hide/show tabs programatically
+			- Overlay: Fix bug
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
