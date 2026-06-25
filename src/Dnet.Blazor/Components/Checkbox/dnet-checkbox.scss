@@ -37,6 +37,7 @@
     white-space: nowrap;
     display: grid;
     align-items: center;
+    justify-content: start;
     gap: 5px;
 
     &.text-after {
@@ -176,7 +177,6 @@
     user-select: auto;
     font-size: var(--dnet-checkbox-font-size);
     grid-area: two;
-    padding-top: 2px;
 }
 
 .dnet-checkbox .dnet-checkbox-ripple {
